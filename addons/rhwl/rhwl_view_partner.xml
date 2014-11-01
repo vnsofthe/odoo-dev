@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="rhwl_res_partner_view_form" model="ir.ui.view">
+            <field name="name">rhwl.res.partner.view.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <data>
+                     <xpath expr="//field[@name='parent_id']" position="before">
+                        <field name="partner_unid" placeholder="编号"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+        <record id="rhwl_res_partner_view_tree1" model="ir.ui.view">
+            <field name="name">rhwl.res.partner.view.tree1</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <data>
+                     <xpath expr="//field[@name='display_name']" position="after">
+                       <field name="partner_unid"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>
