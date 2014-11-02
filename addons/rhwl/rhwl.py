@@ -24,6 +24,10 @@ class rhwl_partner(osv.osv):
 
     _columns = {
         "partner_unid":fields.char(u"编号",required=True),
+        "dev_user_id":fields.many2one('res.users', string=u'开发人员'),
+        "cust_level":fields.selection([('AA','AA'),('AB','AB'),('BC','BC'),('CC','CC')],u'客户级别'),
+        "hospital_level":fields.selection([(u'二级以下',u'二级以下'),(u'二乙',u'二乙'),(u'二甲',u'二甲'),(u'三甲',u'三甲')],u'医院等级'),
+        "cust_type":fields.selection([(u'私立',u'私立'),(u'公立',u'公立')],u'客户性质'),
     }
 
     _sql_constraints=[
