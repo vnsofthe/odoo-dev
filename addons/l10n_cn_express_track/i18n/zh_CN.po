@@ -1,0 +1,9 @@
+#. module: l10n_cn_express_track
+#: field:stock.picking.express,deliver_id:0
+msgid "Deliver Company"
+msgstr "物流公司"
+
+#. module: l10n_cn_express_track
+#: model:ir.ui.menu,name:l10n_cn_express_track.menu_stock_express
+msgid "Express"
+msgstr "物流"
