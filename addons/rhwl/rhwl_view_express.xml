@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_stock_picking_express_form">
+            <field name="name">rhwl.stock.picking.express.form</field>
+            <field name="model">stock.picking.express</field>
+            <field name="inherit_id" ref="l10n_cn_express_track.stock_picking_express_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='partner_id']" position="replace"/>
+                    <xpath expr="//field[@name='date']" position="replace">
+                        <field name="is_receiv"/>
+                    </xpath>
+
+                    <xpath expr="//sheet/group[last()]" position="after">
+                        <group cols="4" string="发货方填写信息">
+                            <field name="deliver_user" on_change="get_address(deliver_user,'deliver_addr')"/>
+                            <field name="deliver_addr"/>
+                            <field name="date"/>
+                            <field name="receiv_user" on_change="get_address(receiv_user,'receiv_addr')"/>
+                            <field name="receiv_addr"/>
+                            <field name="receiv_date"/>
+                            <field name="product_id"/>
+                            <field name="product_qty"/>
+                        </group>
+                        <group cols="4" string="收货方填写信息">
+                            <field name="receiv_real_user"/>
+                            <field name="receiv_real_date"/>
+                            <field name="is_loss"/>
+                        </group>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>
