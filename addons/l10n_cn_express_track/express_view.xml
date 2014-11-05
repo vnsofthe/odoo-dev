@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <data>
-                     <xpath expr="//page[@name='sales_purchases']/group/group/field[@name='supplier']" position="after">
+                    <xpath expr="//page[@name='sales_purchases']/group/group/field[@name='supplier']" position="after">
                         <field name="is_deliver"/>
                     </xpath>
                 </data>
@@ -36,10 +36,13 @@
             <field name="arch" type="xml">
                 <form string="Stock Express">
                     <header>
-                        <button name="action_cancel" states="manual,progress" string="Cancel Order" type="object" groups="base.group_user"/>
-                        <button name="action_send" states="draft" string="Send" type="object" groups="base.group_user" />
-                        <button name="action_ok" states="progress" string="Confirm" type="object" groups="base.group_user" />
-                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel" statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                        <button name="action_cancel" states="manual,progress" string="Cancel Order" type="object"
+                                groups="base.group_user"/>
+                        <button name="action_send" states="draft" string="Send" type="object" groups="base.group_user"/>
+                        <button name="action_ok" states="progress" string="Confirm" type="object"
+                                groups="base.group_user"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
 
                     </header>
                     <sheet>
@@ -91,8 +94,8 @@
             </field>
         </record>
 
-        <menuitem id="menu_stock_express" parent="stock.menu_stock_warehouse_mgmt" name="Express" sequence="90"
-                  action='action_stock_express'/>
+        <menuitem id="menu_stock_express" parent="stock.menu_stock_warehouse_mgmt" name="Express" sequence="10"
+                  action='action_stock_express' groups="stock.group_stock_user"/>
 
 
         <!-- Deliver Data-->

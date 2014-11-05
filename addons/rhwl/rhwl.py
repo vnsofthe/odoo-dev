@@ -71,47 +71,43 @@ class rhwl_express(osv.osv):
             return {}
         if isinstance(ids, (long, int)):
             ids = [ids]
-        if SUPERUSER_ID == uid:
-            return dict([(id, True) for id in ids])
+        # if SUPERUSER_ID == uid:
+        #    return dict([(id, True) for id in ids])
         user = self.pool.get('res.users').browse(cr, SUPERUSER_ID, uid, context=context)
         if not user.partner_id:
-            return {ids: False}
-        if user.partner_id.is_compnay:
+            return dict([(id, False) for id in ids])
+        if user.partner_id.is_company:
             curr_company = user.partner_id.id
         else:
             if not user.partner_id.parent_id:
-                return {ids: False}
+                return dict([(id, False) for id in ids])
             curr_company = user.partner_id.parent_id.id
 
         res = self.browse(cr, SUPERUSER_ID, ids, context=context)
         if not res:
-            return False
-        if prop == "is_deliver":
-            userid = res[0].deliver_user
-        elif prop == "is_receiv":
-            userid = res[0].receiv_user
-        else:
-            userid = None
-
-        if not userid:
-            return {ids: False}
-
-        if not userid.partner_id:
-            return {ids: False}
-        if userid.partner_id.is_company:
-            if userid.partner_id.id == curr_company:
-                return {ids: True}
+            return {}
+        result = []
+        for k in res:
+            if prop == "is_deliver":
+                userid = k.deliver_user
+            elif prop == "is_receiv":
+                userid = k.receiv_user
             else:
-                return {ids: False}
-        else:
-            if not userid.partner_id.parent_id:
-                return {ids: False}
+                userid = None
+
+            if not userid:
+                result.append((k.id, False))
             else:
-                if userid.partner_id.parent_id.id == curr_company:
-                    return {ids: True}
+                if not userid.partner_id:
+                    result.append((k.id, False))
+                if userid.partner_id.is_company:
+                    result.append((k.id, userid.partner_id.id == curr_company))
                 else:
-                    return {ids: False}
-
+                    if not userid.partner_id.parent_id:
+                        result.append((k.id, False))
+                    else:
+                        result.append((k.id, userid.partner_id.parent_id.id == curr_company))
+        return dict(result)
 
     _columns = {
         "deliver_user": fields.many2one('res.users', string=u'发货人员'),
