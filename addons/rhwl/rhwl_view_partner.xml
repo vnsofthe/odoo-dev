@@ -14,12 +14,116 @@
                         <field name="dev_user_id"></field>
                     </xpath>
                     <xpath expr="//field[@name='website']" position="after">
-                        <field name="cust_level" attrs="{'invisible': [('is_company','!=', True)]}"/>
-                        <field name="hospital_level" attrs="{'invisible': [('is_company','!=', True)]}"/>
-                        <field name="cust_type" attrs="{'invisible': [('is_company','!=', True)]}"/>
+                        <field name="cust_level"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="hospital_level"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+
                     </xpath>
                     <xpath expr="//div[@name='buttons']" position="attributes">
                         <attribute name="attrs">{'invisible':'1'}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='fax']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='title']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='title']" position="after">
+                        <field name="cust_type"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}" widget="radio"/>
+                        <field name="zydb"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                    </xpath>
+                    <xpath expr="//field[@name='bank_ids']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='credit_limit']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='debit']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='credit']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='property_supplier_payment_term']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='property_payment_term']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='property_account_payable']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='property_account_receivable']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='last_reconciliation_date']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='property_account_position']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='last_reconciliation_date']" position="before">
+                        <field name="amt"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                    </xpath>
+                    <xpath expr="//field[@name='property_account_position']" position="before">
+                       <field name="sfdw"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                    </xpath>
+                    <xpath expr="//page[@name='accounting']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('is_company','=',False),('supplier','=',False)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='is_deliver']" position="attributes">
+                      <attribute name="attrs">{'readonly':[('supplier','=',False)]}</attribute>
+                      <attribute name="attrs">{'invisible':[('supplier','=',False)]}</attribute>
+                    </xpath>
+
+                    <xpath expr="//page[@name='sales_purchases']//field[@name='customer']" position="attributes">
+                      <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//page[@name='sales_purchases']//field[@name='supplier']" position="attributes">
+                      <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='property_stock_supplier']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='property_stock_customer']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='notify_email']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                     <xpath expr="//field[@name='opt_out']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='ref']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='lang']" position="attributes">
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
+                    </xpath>
+                    <xpath expr="//field[@name='ref']" position="before">
+                       <field name="sncjrs"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="snwcrs"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="jnmbrs"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="jnsjrs"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                    </xpath>
+                     <xpath expr="//field[@name='active']" position="after">
+                             <field name="qyks"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="jzds"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="mbjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="sjjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <!-- <xpath expr="//div[@name='buttons']/button[last()]" position="replace">
                      </xpath>-->
