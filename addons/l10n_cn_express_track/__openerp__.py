@@ -37,7 +37,7 @@
 * Next version will include a full API with state management.
 
     """,
-    'depends': ['base'],
+    'depends': ['base','stock'],
     'category': '',
     'sequence': 10,
     'demo': [],

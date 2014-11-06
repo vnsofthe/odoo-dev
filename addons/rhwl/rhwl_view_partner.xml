@@ -18,7 +18,7 @@
                         <field name="hospital_level" attrs="{'invisible': [('is_company','!=', True)]}"/>
                         <field name="cust_type" attrs="{'invisible': [('is_company','!=', True)]}"/>
                     </xpath>
-                    <xpath expr="//div[@name='buttons']/button[0]" position="attributes">
+                    <xpath expr="//div[@name='buttons']" position="attributes">
                         <attribute name="attrs">{'invisible':'1'}</attribute>
                     </xpath>
                     <!-- <xpath expr="//div[@name='buttons']/button[last()]" position="replace">
