@@ -18,6 +18,8 @@ CRM业务增加模块
     'data': ["rhwl_view_hr.xml",
              "rhwl_view_partner.xml",
              "rhwl_view_express.xml",
+             "rhwl_view_sample.xml",
+              'security/ir.model.access.csv',
     ],
     'demo': [],
     'test': [],

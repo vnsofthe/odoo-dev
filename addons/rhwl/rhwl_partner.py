@@ -31,6 +31,9 @@ class rhwl_partner(osv.osv):
         "jzds": fields.selection([(u'贝瑞', u'贝瑞'), (u'华大', u'华大'), ], u"竞争对手"),
         "mbjysj": fields.date(u'目标进院时间'),
         "sjjysj": fields.date(u'实际进院时间'),
+        "eduction":fields.selection([(u'中专',u'中专'),(u'专科',u'专科'),(u'本科',u'本科'),(u'硕士',u'硕士'),(u'博士',u'博士')],string=u'学历'),
+        "yjfx":fields.char(u"研究方向",size=100),
+        "cprz":fields.selection([("1",u"初识"),("2",u"认可"),("3",u"推荐")],string=u"产品认知"),
     }
 
     _defaults = {

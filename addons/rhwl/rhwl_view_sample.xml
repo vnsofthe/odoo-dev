@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+         <record model="ir.ui.view" id="sale_sample_tree">
+            <field name="name">sale.sample.tree</field>
+            <field name="model">sale.sampleone</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Sampleone">
+                    <field name="name"/>
+                    <field name="sampletype"/>
+                    <field name="receiv_user"/>
+                    <field name="lyyy"/>
+                    <field name="lyys" />
+                    <field name="cxyy"/>
+                    <field name="cxys"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sale_sample_form">
+            <field name="name">sale.sample.form</field>
+            <field name="model">sale.sampleone</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample">
+                    <header>
+                        <button name="action_done" states="draft" string="done" type="object"
+                                groups="base.group_user"/>
+                        <button name="action_cancel" states="draft" string="Cancel" type="object"
+                                groups="base.group_user"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group cols='12'>
+                            <group cols="4">
+                                <field name="name" colspan='2'/>
+                            <field name="sampletype" colspan='2'/>
+                            <field name="cx_date" colspan='2'/>
+                            </group>
+                             <group cols="4">
+                                <field name="receiv_user" colspan='2'/>
+                                <field name="is_reused" colspan='2'/>
+                            </group>
+                            <group cols="4">
+                                 <field name="reuse_name" colspan='2'/>
+                            </group>
+
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+           <record model="ir.ui.view" id="sale_sample_search">
+            <field name="name">sale.sample.search</field>
+            <field name="model">sale.sampleone</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="name" string="Sample NO"/>
+                    <field name="sampletype"/>
+                    <seperaotr/>
+
+                    <group expand="0" string="Group By...">
+                        <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'receiv_user'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+         <record id="action_sale_sample" model="ir.actions.act_window">
+            <field name="name">sale.sample</field>
+            <field name="res_model">sale.sampleone</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+         <menuitem id="menu_sale_sample" parent="base.menu_sales" name="Sample Informat" sequence="10"
+                  action='action_sale_sample' groups="base.group_sale_salesman"/>
+    </data>
+</openerp>

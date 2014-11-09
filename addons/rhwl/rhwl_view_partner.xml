@@ -18,7 +18,6 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="hospital_level"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
-
                     </xpath>
                     <xpath expr="//div[@name='buttons']" position="attributes">
                         <attribute name="attrs">{'invisible':'1'}</attribute>
@@ -77,8 +76,7 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <xpath expr="//page[@name='accounting']" position="attributes">
-                        <attribute name="attrs">{'invisible':[('is_company','=',False),('supplier','=',False)]}
-                        </attribute>
+                        <attribute name="attrs">{'invisible':[('is_company','=',False),('supplier','=',False)]}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='is_deliver']" position="attributes">
                         <attribute name="attrs">{'readonly':[('supplier','=',False)]}</attribute>
@@ -86,12 +84,10 @@
                     </xpath>
 
                     <xpath expr="//page[@name='sales_purchases']//field[@name='customer']" position="attributes">
-                        <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}
-                        </attribute>
+                        <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}</attribute>
                     </xpath>
                     <xpath expr="//page[@name='sales_purchases']//field[@name='supplier']" position="attributes">
-                        <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}
-                        </attribute>
+                        <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='property_stock_supplier']" position="attributes">
                         <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
@@ -124,14 +120,21 @@
                     <xpath expr="//field[@name='active']" position="after">
                         <field name="qyks"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
-
                         <field name="mbjysj"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="sjjysj"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
-                    <!-- <xpath expr="//div[@name='buttons']/button[last()]" position="replace">
-                     </xpath>-->
+                    <xpath expr="//group/field[@name='date']" position="before">
+                        <field name="eduction"  attrs="{'invisible': ['|',('is_company','=', True),('customer','=',False)]}"/>
+                        <field name="yjfx"  attrs="{'invisible': ['|',('is_company','=', True),('customer','=',False)]}"/>
+                        <field name="cprz"  attrs="{'invisible': ['|',('is_company','=', True),('customer','=',False)]}"/>
+                    </xpath>
+                    <xpath expr="//field[@name='child_ids']/form/sheet/group/field[@name='mobile']" position="after">
+                        <field name="eduction"  attrs="{'invisible': [('customer','=',False)]}"/>
+                        <field name="yjfx"  attrs="{'invisible': [('customer','=',False)]}"/>
+                        <field name="cprz"  attrs="{'invisible': [('customer','=',False)]}"/>
+                    </xpath>
                 </data>
             </field>
         </record>

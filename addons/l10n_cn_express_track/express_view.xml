@@ -102,13 +102,13 @@
         <record model="res.partner.category" id="tag_deliver">
             <field name="name">Deliver</field>
         </record>
-        <record model="res.partner" id="partner_deliver_aae">
+       <!-- <record model="res.partner" id="partner_deliver_aae">
             <field name="name">aae全球专递</field>
             <field name="ref">aae</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_anjie">
@@ -116,8 +116,8 @@
             <field name="ref">anjie</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_anxindakuaixi">
@@ -125,8 +125,8 @@
             <field name="ref">anxindakuaixi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_biaojikuaidi">
@@ -134,8 +134,8 @@
             <field name="ref">biaojikuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_bht">
@@ -143,8 +143,8 @@
             <field name="ref">bht</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_baifudongfang">
@@ -152,8 +152,8 @@
             <field name="ref">baifudongfang</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_coe">
@@ -161,8 +161,8 @@
             <field name="ref">coe</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_changyuwuliu">
@@ -170,8 +170,8 @@
             <field name="ref">changyuwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_datianwuliu">
@@ -179,8 +179,8 @@
             <field name="ref">datianwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_debangwuliu">
@@ -188,8 +188,8 @@
             <field name="ref">debangwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_dhl">
@@ -197,8 +197,8 @@
             <field name="ref">dhl</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_dpex">
@@ -206,8 +206,8 @@
             <field name="ref">dpex</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_dsukuaidi">
@@ -215,8 +215,8 @@
             <field name="ref">dsukuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_disifang">
@@ -224,8 +224,8 @@
             <field name="ref">disifang</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_ems">
@@ -233,8 +233,8 @@
             <field name="ref">ems</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_fedex">
@@ -242,8 +242,8 @@
             <field name="ref">fedex</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_feikangda">
@@ -251,8 +251,8 @@
             <field name="ref">feikangda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_fenghuangkuaidi">
@@ -260,8 +260,8 @@
             <field name="ref">fenghuangkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_feikuaida">
@@ -269,8 +269,8 @@
             <field name="ref">feikuaida</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_guotongkuaidi">
@@ -278,8 +278,8 @@
             <field name="ref">guotongkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_ganzhongnengda">
@@ -287,8 +287,8 @@
             <field name="ref">ganzhongnengda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_guangdongyouzhengwuliu">
@@ -296,8 +296,8 @@
             <field name="ref">guangdongyouzhengwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_gongsuda">
@@ -305,8 +305,8 @@
             <field name="ref">gongsuda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_huitongkuaidi">
@@ -314,8 +314,8 @@
             <field name="ref">huitongkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_hengluwuliu">
@@ -323,8 +323,8 @@
             <field name="ref">hengluwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_huaxialongwuliu">
@@ -332,8 +332,8 @@
             <field name="ref">huaxialongwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_haihongwangsong">
@@ -341,8 +341,8 @@
             <field name="ref">haihongwangsong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_haiwaihuanqiu">
@@ -350,8 +350,8 @@
             <field name="ref">haiwaihuanqiu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jiayiwuliu">
@@ -359,8 +359,8 @@
             <field name="ref">jiayiwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jinguangsudikuaijian">
@@ -368,8 +368,8 @@
             <field name="ref">jinguangsudikuaijian</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jixianda">
@@ -377,8 +377,8 @@
             <field name="ref">jixianda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jjwl">
@@ -386,8 +386,8 @@
             <field name="ref">jjwl</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jymwl">
@@ -395,8 +395,8 @@
             <field name="ref">jymwl</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jindawuliu">
@@ -404,8 +404,8 @@
             <field name="ref">jindawuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jialidatong">
@@ -413,8 +413,8 @@
             <field name="ref">jialidatong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_jykd">
@@ -422,8 +422,8 @@
             <field name="ref">jykd</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_kuaijiesudi">
@@ -431,8 +431,8 @@
             <field name="ref">kuaijiesudi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_lianb">
@@ -440,8 +440,8 @@
             <field name="ref">lianb</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_lianhaowuliu">
@@ -449,8 +449,8 @@
             <field name="ref">lianhaowuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_longbanwuliu">
@@ -458,8 +458,8 @@
             <field name="ref">longbanwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_lijisong">
@@ -467,8 +467,8 @@
             <field name="ref">lijisong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_lejiedi">
@@ -476,8 +476,8 @@
             <field name="ref">lejiedi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_minghangkuaidi">
@@ -485,8 +485,8 @@
             <field name="ref">minghangkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_meiguokuaidi">
@@ -494,8 +494,8 @@
             <field name="ref">meiguokuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_menduimen">
@@ -503,8 +503,8 @@
             <field name="ref">menduimen</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_ocs">
@@ -512,8 +512,8 @@
             <field name="ref">ocs</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_peisihuoyunkuaidi">
@@ -521,8 +521,8 @@
             <field name="ref">peisihuoyunkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_quanchenkuaidi">
@@ -530,8 +530,8 @@
             <field name="ref">quanchenkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_quanfengkuaidi">
@@ -539,8 +539,8 @@
             <field name="ref">quanfengkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_quanjitong">
@@ -548,8 +548,8 @@
             <field name="ref">quanjitong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_quanritongkuaidi">
@@ -557,8 +557,8 @@
             <field name="ref">quanritongkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_quanyikuaidi">
@@ -566,8 +566,8 @@
             <field name="ref">quanyikuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_rufengda">
@@ -575,8 +575,8 @@
             <field name="ref">rufengda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_santaisudi">
@@ -584,8 +584,8 @@
             <field name="ref">santaisudi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_shenghuiwuliu">
@@ -593,8 +593,8 @@
             <field name="ref">shenghuiwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_shentong">
@@ -602,26 +602,26 @@
             <field name="ref">shentong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
-
+        -->
         <record model="res.partner" id="partner_deliver_shunfeng">
             <field name="name">顺丰</field>
             <field name="ref">shunfeng</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            <field name="company">False</field>
+            <field name="supplier">True</field>
         </record>
-
+        <!--
         <record model="res.partner" id="partner_deliver_sue">
             <field name="name">速尔物流</field>
             <field name="ref">sue</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_shengfeng">
@@ -629,8 +629,8 @@
             <field name="ref">shengfeng</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_saiaodi">
@@ -638,8 +638,8 @@
             <field name="ref">saiaodi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_tiandihuayu">
@@ -647,8 +647,8 @@
             <field name="ref">tiandihuayu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_tiantian">
@@ -656,8 +656,8 @@
             <field name="ref">tiantian</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_tnt">
@@ -665,8 +665,8 @@
             <field name="ref">tnt</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_ups">
@@ -674,8 +674,8 @@
             <field name="ref">ups</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_wanjiawuliu">
@@ -683,8 +683,8 @@
             <field name="ref">wanjiawuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_wenjiesudi">
@@ -692,8 +692,8 @@
             <field name="ref">wenjiesudi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_wuyuan">
@@ -701,8 +701,8 @@
             <field name="ref">wuyuan</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_wxwl">
@@ -710,8 +710,8 @@
             <field name="ref">wxwl</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_xinbangwuliu">
@@ -719,8 +719,8 @@
             <field name="ref">xinbangwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_xinfengwuliu">
@@ -728,8 +728,8 @@
             <field name="ref">xinfengwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yafengsudi">
@@ -737,8 +737,8 @@
             <field name="ref">yafengsudi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yibangwuliu">
@@ -746,8 +746,8 @@
             <field name="ref">yibangwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_youshuwuliu">
@@ -755,8 +755,8 @@
             <field name="ref">youshuwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_youzhengguonei">
@@ -764,8 +764,8 @@
             <field name="ref">youzhengguonei</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_youzhengguoji">
@@ -773,8 +773,8 @@
             <field name="ref">youzhengguoji</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yuanchengwuliu">
@@ -782,8 +782,8 @@
             <field name="ref">yuanchengwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yuantong">
@@ -791,8 +791,8 @@
             <field name="ref">yuantong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yuanweifeng">
@@ -800,8 +800,8 @@
             <field name="ref">yuanweifeng</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yuanzhijiecheng">
@@ -809,8 +809,8 @@
             <field name="ref">yuanzhijiecheng</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yunda">
@@ -818,8 +818,8 @@
             <field name="ref">yunda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yuntongkuaidi">
@@ -827,8 +827,8 @@
             <field name="ref">yuntongkuaidi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yuefengwuliu">
@@ -836,8 +836,8 @@
             <field name="ref">yuefengwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yad">
@@ -845,8 +845,8 @@
             <field name="ref">yad</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_yinjiesudi">
@@ -854,8 +854,8 @@
             <field name="ref">yinjiesudi</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_zhaijisong">
@@ -863,8 +863,8 @@
             <field name="ref">zhaijisong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_zhongtiekuaiyun">
@@ -872,8 +872,8 @@
             <field name="ref">zhongtiekuaiyun</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_zhongtong">
@@ -881,8 +881,8 @@
             <field name="ref">zhongtong</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_zhongyouwuliu">
@@ -890,8 +890,8 @@
             <field name="ref">zhongyouwuliu</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_zhongxinda">
@@ -899,8 +899,8 @@
             <field name="ref">zhongxinda</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
         </record>
 
         <record model="res.partner" id="partner_deliver_zhimakaimen">
@@ -908,9 +908,9 @@
             <field name="ref">zhimakaimen</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <!-- <field name="notification_email_send">None</field> -->
-            <!-- <field name="category_id">"tag_deliver"</field> -->
-        </record>
+            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+        </record>-->
 
     </data>
 </openerp>

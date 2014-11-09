@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_sample,sale.sample,model_sale_sampleone,base.group_sale_salesman,1,1,1,1
+access_stock_picking_express,stock_picking_express,model_stock_picking_express,stock.group_stock_user,1,1,1,1
