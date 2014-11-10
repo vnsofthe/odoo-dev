@@ -20,7 +20,7 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <xpath expr="//div[@name='buttons']" position="attributes">
-                        <attribute name="attrs">{'invisible':'1'}</attribute>
+                        <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='fax']" position="attributes">
                         <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>

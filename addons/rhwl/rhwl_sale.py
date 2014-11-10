@@ -6,13 +6,6 @@ import openerp.addons.decimal_precision as dp
 import datetime
 
 
-class rhwl_sale(osv.osv):
-    _inherit = "sale.order"
-    _columns = {
-        "sample_name": fields.many2one("sale.sampleone", u"样品单号"),
-    }
-
-
 class rhwl_sample_info(osv.osv):
     _name = "sale.sampleone"
     _description = "样品信息表"

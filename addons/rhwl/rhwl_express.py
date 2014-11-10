@@ -82,7 +82,7 @@ class rhwl_express(osv.osv):
         "receiv_user": fields.many2one('res.users', string=u'收货人员'),
         "receiv_date": fields.datetime('Date Receiv', required=True),
         "receiv_addr": fields.char(size=120, string=u"收货地址"),
-        "product_id": fields.many2one('product.product', 'Product', domain=[('purchase_ok', '=', True)], required=True,
+        "product_id": fields.many2one('product.product', 'Product', domain=[('sale_ok', '=', True)], required=True,
                                       change_default=True),
         "product_qty": fields.float('Quantity', digits_compute=dp.get_precision('Product Unit of Measure'),
                                     required=True),
