@@ -33,7 +33,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name" colspan='2'/>
+                                <field name="name" colspan='2' on_change="onchange_check_sample(name)"/>
                                 <field name="sampletype" colspan='2'/>
                                 <field name="cx_date" colspan='2'/>
                                 <field name="is_reused" colspan='2'/>

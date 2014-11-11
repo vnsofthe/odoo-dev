@@ -82,7 +82,74 @@ class rhwl_sample_info(osv.osv):
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
+        "sampletype": lambda obj, cr, uid, context: u"全血",
+        "receiv_user": lambda obj, cr, uid, context: uid,
+        "is_free": lambda obj, cr, uid, context: u"否",
+        "fzr": lambda obj, cr, uid, context: uid,
+
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
     ]
+
+    def onchange_check_sample(self, cr, uid, ids, name, context=None):
+        detail = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", name)],
+                                                               context=context)
+        if not detail:
+            return {}
+        express = self.pool.get("stock.picking.express").browse(cr, uid, detail, context=context)
+        if not express:
+            return {}
+        vals = {}
+        id = self.pool.get("res.partner").search(cr, uid, [("zydb", "=", express.deliver_user.id)],
+                                                 context=context)  # 检查用户是否为某客户的驻院代表
+        partner = self.pool.get("res.partner").browse(cr, uid, id, context=context)
+        if id:
+            vals["lyyy"] = id
+            vals["cxyy"] = id
+            vals["state_id"] = partner.state_id
+            vals["city"] = partner.city
+        else:
+            user = self.pool.get('res.users').browse(cr, uid, express.deliver_user.id, context=context)
+            if user.partner_id:
+                if user.partner_id.parent_id:
+                    vals["lyyy"] = user.partner_id.parent_id.id
+                    vals["cxyy"] = user.partner_id.parent_id.id
+                    vals["state_id"] = user.partner_id.parent_id.state_id
+                    vals["city"] = user.partner_id.parent_id.city
+
+        return {
+            "value": vals
+        }
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+
+    def action_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        cxys = self.browse(cr, uid, ids, context=context)
+
+        warehouse = self.pool.get("stock.warehouse")
+        w_id = warehouse.search(cr, uid, [("partner_id", "=", cxys.cxyy.id)], context=context)
+        if isinstance(w_id, (list, tuple)):
+            w_id = w_id[0]
+        vals = {
+            "partner_id": cxys.cxys.id,
+            "client_order_ref": cxys.name,
+            "warehouse_id": w_id,
+            "pricelist_id": 1,
+            "date_order": cxys.cx_date,
+        }
+        order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
+
+        partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
+        express = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", cxys.name)],
+                                                                context=context)
+        express = self.pool.get("stock.picking.express").browse(cr, uid, express, context=context)
+        if isinstance(express, (list, tuple)):
+            express = express[0]
+        orderline = self.pool.get("sale.order.line")
+        orderline_id = orderline.create(cr, uid, {"order_id": order_id, "product_id": express.product_id.id,
+                                                  "price_unit": partner.amt, "product_uom_qty": 1}, context=context)
+        self.pool.get("sale.order").write(cr, uid, order_id, {'order_line': [(6, 0, [orderline_id])]})
+        self.pool.get("sale.order").action_button_confirm(cr, uid, order_id)

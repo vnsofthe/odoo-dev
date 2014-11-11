@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-##############################################################################
+# #############################################################################
 #
 #    OpenERP, Open Source Management Solution
 #    Copyright (c) 2010-2013 Elico Corp. All Rights Reserved.
@@ -28,7 +28,7 @@ from openerp.tools import ustr
 class res_partner(osv.Model):
     _inherit = 'res.partner'
     _columns = {
-        'is_deliver':  fields.boolean(u'物流公司'),
+        'is_deliver': fields.boolean(u'物流公司'),
     }
     _defaults = {
         'is_deliver': False,
@@ -52,31 +52,37 @@ class stock_picking_express(bs, osv.Model):
     _columns = {
         'deliver_id': fields.many2one(
             'res.partner', 'Deliver Company',
-            domain=[('is_deliver', '=', 1)],required=True),
+            domain=[('is_deliver', '=', 1)], required=True),
         'state': fields.selection(
             [('draft', 'Draft Quotation'),
              ('cancel', 'Cancelled'),
              ('progress', 'Progress'),
              ('manual', 'Sale to Invoice'),
              ('done', 'Done')],
-            'Status',required=True, readonly=True, copy=False),
+            'Status', required=True, readonly=True, copy=False),
         'partner_id': fields.many2one('res.partner', 'Partner'),
-        'num_express':  fields.char('No. Express',required=True),
+        'num_express': fields.char('No. Express', required=True),
         'url_express': fields.function(
             _get_url_express, method=True, type='char',
             string='Link', readonly=1),
-        'date': fields.datetime('Date Deliver',required=True),
+        'date': fields.datetime('Date Deliver', required=True),
     }
 
     _defaults = {
         'state': 'draft',
-        }
+    }
 
-    def action_send(self,cr,uid,ids,context=None):
-         self.write(cr, uid, ids, {'state': 'progress'}, context=context)
+    def action_send(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'progress'}, context=context)
+        rec = self.browse(cr, uid, ids, context=context)
+        for i in rec.detail_ids:
+            i.write({"out_flag": True})
 
-    def action_ok(self,cr,uid,ids,context=None):
-        self._write(cr,uid,ids,{'state':'done'},context=context)
+    def action_ok(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        rec = self.browse(cr, uid, ids, context=context)
+        for i in rec.detail_ids:
+            i.write({"in_flag": True})
 
-    def action_cancel(self,cr,uid,ids,context=None):
-        self._write(cr,uid,ids,{'state':'cancel'},context=context)
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)

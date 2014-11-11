@@ -27,10 +27,40 @@
                         <group cols="4" string="收货方填写信息">
                             <field name="receiv_real_user"/>
                             <field name="receiv_real_date"/>
-                            <field name="is_loss"/>
+                            <field name="receiv_real_qty"/>
                         </group>
+                        <notebook>
+                            <page string="收发明细">
+                                <field name="detail_ids"/>
+                            </page>
+                        </notebook>
                     </xpath>
                 </data>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_stock_picking_express_detail_tree">
+            <field name="name">rhwl.stock.picking.express.detail.tree</field>
+            <field name="model">stock.picking.express.detail</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Sampleone">
+                    <field name="number_seq"/>
+                    <field name="number_seq_ori"/>
+                    <field name="out_flag"/>
+                    <field name="in_flag"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_stock_picking_express_detail_form">
+            <field name="name">rhwl.stock.picking.express.detail.form</field>
+            <field name="model">stock.picking.express.detail</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sampleone">
+                    <field name="number_seq"/>
+                    <field name="number_seq_ori"/>
+                    <field name="out_flag"/>
+                    <field name="in_flag"/>
+                </form>
             </field>
         </record>
     </data>
