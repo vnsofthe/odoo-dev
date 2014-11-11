@@ -5,12 +5,14 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 import datetime
 
+
 class rhwl_stock_warehouse(osv.osv):
     _inherit = "stock.warehouse"
 
-    def write(self,cr,uid,ids,vals,context=None):
+    def write(self, cr, uid, ids, vals, context=None):
         print vals
-        return super(rhwl_stock_warehouse,self).write(cr,uid,ids,vals,context=context)
+        return super(rhwl_stock_warehouse, self).write(cr, uid, ids, vals, context=context)
+
 
 class rhwl_partner(osv.osv):
     _name = "res.partner"
@@ -37,43 +39,46 @@ class rhwl_partner(osv.osv):
         "jzds": fields.selection([(u'贝瑞', u'贝瑞'), (u'华大', u'华大'), ], u"竞争对手"),
         "mbjysj": fields.date(u'目标进院时间'),
         "sjjysj": fields.date(u'实际进院时间'),
-        "eduction":fields.selection([(u'中专',u'中专'),(u'专科',u'专科'),(u'本科',u'本科'),(u'硕士',u'硕士'),(u'博士',u'博士')],string=u'学历'),
-        "yjfx":fields.char(u"研究方向",size=100),
-        "cprz":fields.selection([("1",u"初识"),("2",u"认可"),("3",u"推荐")],string=u"产品认知"),
+        "eduction": fields.selection([(u'中专', u'中专'), (u'专科', u'专科'), (u'本科', u'本科'), (u'硕士', u'硕士'), (u'博士', u'博士')],
+                                     string=u'学历'),
+        "yjfx": fields.char(u"研究方向", size=100),
+        "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
     }
 
     _defaults = {
         "date": fields.date.today,
+        "amt": 0,
     }
     _sql_constraints = [
         ("partner_unid_uniq", "unique(partner_unid)", u"编号必须为唯一!"),
     ]
 
     def create(self, cr, uid, vals, context=None):
-        id = super(rhwl_partner,self).create(cr,uid,vals,context)
-        partner = self.pool.get("res.company").search(cr,uid,[("id",'=',vals.get("company_id"))],context=context)
+        id = super(rhwl_partner, self).create(cr, uid, vals, context)
+        partner = self.pool.get("res.company").search(cr, uid, [("id", '=', vals.get("company_id"))], context=context)
         if not partner:
             return id
-        partner = self.pool.get("res.company").browse(cr,uid,partner,context=context)
-        val={
-            "name":vals.get("name"),
-            "code":vals.get("partner_unid"),
-            "partner_id":id,
-            "company_id":vals.get("company_id"),
-            "buy_to_resupply":False,
-            "default_resupply_wh_id":0
+        partner = self.pool.get("res.company").browse(cr, uid, partner, context=context)
+        val = {
+            "name": vals.get("name"),
+            "code": vals.get("partner_unid"),
+            "partner_id": id,
+            "company_id": vals.get("company_id"),
+            "buy_to_resupply": False,
+            "default_resupply_wh_id": 0
         }
         if vals.get("customer") and vals.get("is_company"):
             stock_warehouse = self.pool.get("stock.warehouse")
 
-            default_id = stock_warehouse.search(cr,uid,[('partner_id','=',partner.partner_id.id)],context=context)
+            default_id = stock_warehouse.search(cr, uid, [('partner_id', '=', partner.partner_id.id)], context=context)
             val["default_resupply_wh_id"] = default_id[0]
-            val["resupply_wh_ids"]= [[6,False,[default_id[0]]]]
-            wh = stock_warehouse.search(cr,uid,[('code','=',vals.get("partner_unid")),('partner_id','=',id)],context=context)
+            val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
+            wh = stock_warehouse.search(cr, uid, [('code', '=', vals.get("partner_unid")), ('partner_id', '=', id)],
+                                        context=context)
             if not wh:
-                id_s = stock_warehouse.create(cr,uid,val,context=None)
-                #v = stock_warehouse.browse(cr,uid,id_s,context=context)
-               # v.resupply_wh_ids = [[6,False,[default_id[0]]]]
+                id_s = stock_warehouse.create(cr, uid, val, context=None)
+                # v = stock_warehouse.browse(cr,uid,id_s,context=context)
+                # v.resupply_wh_ids = [[6,False,[default_id[0]]]]
                 #stock_warehouse.write(cr,uid,id_s,v,context=context)
         return id
 
