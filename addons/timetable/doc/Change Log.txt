@@ -1,0 +1,11 @@
+===============================================================================
+ Version Change Log
+ Module: timetable
+===============================================================================
+
+Version 1.1 on 2013-09-30 by Sudhir Arya
+    * v7 Standard
+    
+Version 1.0 on 2013-09-19 by Anu Patel
+    * Added record rule in time.table for teacher and student.
+
