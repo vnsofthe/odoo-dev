@@ -16,7 +16,41 @@
                 </tree>
             </field>
         </record>
-
+        <record model="ir.ui.view" id="sale_sample_reuse_tree">
+            <field name="name">sale.sample.reuse.tree</field>
+            <field name="model">sale.sampleone.reuse</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Sampleone">
+                    <field name="name"/>
+                    <field name="yfxm"/>
+                    <field name="notice_user"/>
+                    <field name="notice_date"/>
+                    <field name="reuse_note"/>
+                    <field name="note"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="sale_sample_exception_tree">
+            <field name="name">sale.sample.exception.tree</field>
+            <field name="model">sale.sampleone.exception</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Sampleone" style="width:400">
+                    <field name="name"/>
+                    <field name="lib_notice"/>
+                    <field name="cs_notice"/>
+                    <field name="notice_user"/>
+                    <field name="notice_date"/>
+                    <field name="fz_user"/>
+                    <field name="is_notice"/>
+                    <field name="is_take"/>
+                    <field name="is_next"/>
+                    <field name="next_date"/>
+                    <field name="next_hospital"/>
+                    <field name="next_result"/>
+                    <field name="is_equal"/>
+                </tree>
+            </field>
+        </record>
         <record model="ir.ui.view" id="sale_sample_form">
             <field name="name">sale.sample.form</field>
             <field name="model">sale.sampleone</field>
@@ -63,9 +97,6 @@
                                         <group col="4" colspan="4">
                                             <group colspan="2">
                                                 <field name="yfzjmc" width="90"/>
-                                            </group>
-                                            <group colspan="2">
-                                                <field name="yfzjmcother" nolabel="1"/>
                                             </group>
                                         </group>
                                         <field name="yfage"/>
@@ -159,6 +190,38 @@
                         </notebook>
 
                     </sheet>
+                    <footer>
+                        <field name="check_state" widget="statusbar"
+                               statusbar_colors='{u"需重采血"":"red",u"检验结果阳性":"red",u"检验结果正常":"blue"}' readonly="1"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sale_sample_reuse_form">
+            <field name="name">sale.sample.reuse.form</field>
+            <field name="model">sale.sampleone.reuse</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sale_sample_exception_form">
+            <field name="name">sale.sample.exception.form</field>
+            <field name="model">sale.sampleone.exception</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
                 </form>
             </field>
         </record>
@@ -171,9 +234,40 @@
                     <field name="name" string="Sample NO"/>
                     <field name="sampletype"/>
                     <seperaotr/>
-
                     <group expand="0" string="Group By...">
                         <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'receiv_user'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sale_sample_reuse_search">
+            <field name="name">sale.sample.reuse.search</field>
+            <field name="model">sale.sampleone.reuse</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="name" string="Sample NO"/>
+                    <field name="notice_user"/>
+                    <seperaotr/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Notice User" icon="terp-partner" domain="[]"
+                                context="{'group_by':'notice_user'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="sale_sample_exception_search">
+            <field name="name">sale.sample.exception.search</field>
+            <field name="model">sale.sampleone.exception</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="name" string="Sample NO"/>
+                    <field name="notice_user"/>
+                    <seperaotr/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Notice User" icon="terp-partner" domain="[]"
+                                context="{'group_by':'notice_user'}"/>
                     </group>
                 </search>
             </field>
@@ -193,7 +287,37 @@
             </field>
         </record>
 
-        <menuitem id="menu_sale_sample" parent="base.menu_sales" name="Sample Informat" sequence="10"
+        <record id="action_sale_sample_reuse" model="ir.actions.act_window">
+            <field name="name">sale.sample.reuse</field>
+            <field name="res_model">sale.sampleone.reuse</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <record id="action_sale_sample_exception" model="ir.actions.act_window">
+            <field name="name">sale.sample.exception</field>
+            <field name="res_model">sale.sampleone.exception</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_sale_sample" parent="base.menu_sales" name="Sample Information" sequence="10"
                   action='action_sale_sample' groups="base.group_sale_salesman"/>
+        <menuitem id="menu_sale_sample_reuse" parent="base.menu_sales" name="Again Blood" sequence="11"
+                  action='action_sale_sample_reuse' groups="base.group_sale_salesman"/>
+        <menuitem id="menu_sale_sample_exception" parent="base.menu_sales" name="Excep Information" sequence="12"
+                  action='action_sale_sample_exception' groups="base.group_sale_salesman"/>
     </data>
 </openerp>

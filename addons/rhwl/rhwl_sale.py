@@ -18,29 +18,31 @@ class rhwl_sample_info(osv.osv):
     ]
     _columns = {
         "name": fields.char(u"样品编号", required=True, size=20),
-        "sampletype": fields.selection(SELECTION_TYPE, u"样品类型"),
-        "cx_date": fields.datetime(u'采血时间'),
+        "sampletype": fields.selection(SELECTION_TYPE, u"样品类型", required=True),
+        "cx_date": fields.datetime(u'采血时间', required=True),
         "receiv_user": fields.many2one('res.users', string=u'收样人员'),
         "state_id": fields.many2one('res.country.state', string=u'样品区域（省）'),
         "city": fields.char(u"样品区域（市)"),
         "lyyy": fields.many2one('res.partner', string=u'来源医院',
-                                domain=[('is_company', '=', True), ('customer', '=', True)]),
+                                domain="[('is_company', '=', True), ('customer', '=', True)]"),
         "cxyy": fields.many2one('res.partner', string=u'采血医院',
-                                domain=[('is_company', '=', True), ('customer', '=', True)]),
+                                domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "lyys": fields.many2one('res.partner', string=u'来源医生',
-                                domain=[('is_company', '=', False), ('customer', '=', True)]),
+                                domain="[('is_company', '=', False), ('customer', '=', True),('parent_id','=',lyyy)]"),
         "cxys": fields.many2one('res.partner', string=u'采血医生',
-                                domain=[('is_company', '=', False), ('customer', '=', True)]),
+                                domain="[('is_company', '=', False), ('customer', '=', True),('parent_id','=',cxyy)]",
+                                required=True),
         "fzr": fields.many2one('res.users', string=u'负责人'),
         # "state": fields.selection([('draf','draf')], u'状态'),
         "is_reused": fields.selection([(u'首次', u'首次'), (u'重采血', u'重采血')], u'是否重采血', required=True),
         "reuse_name": fields.many2one("sale.sampleone", u"重采血编号"),
         "reuse_type": fields.selection(SELECTION_TYPE, u"重采血类型"),
         "is_free": fields.selection([(u'是', u'是'), (u'否', u'否')], u'是否免费'),
-        "yfxm": fields.char(u"孕妇姓名", size=20),
+        "yfxm": fields.char(u"孕妇姓名", size=20, required=True),
         "yfyzweek": fields.integer(u"孕周_周"),
         "yfyzday": fields.integer(u"孕周_天"),
-        "yfzjmc": fields.selection([(u"身份证", u"身份证"), (u"其它", u"其它")], u"证件类型"),
+        "yfzjmc": fields.selection(
+            [(u"身份证", u"身份证"), (u"护照", u"护照"), (u'军官证', u'军官证'), (u'士兵证', u'士兵证'), (u'工作证', u'工作证')], u"证件类型"),
         "yfzjmcother": fields.char(u"名称", size=10),
         "yfzjmc_no": fields.char(u"证件号码", size=30),
         "yfage": fields.integer(u"孕妇年龄(周岁)"),
@@ -79,6 +81,9 @@ class rhwl_sample_info(osv.osv):
         "yftsqkbz": fields.char(u'特殊情况备注', size=100),
         "note": fields.text(u'备注'),
         "state": fields.selection([('draft', u'草稿'), ('done', u'完成'), ('cancel', u'取消')], u'状态'),
+        "check_state": fields.selection(
+            [(u'已接收', u'已接收'), (u'已进实验室', u'已进实验室'), (u'已上机', u'已上机'), (u'需重采血', u'需重采血'), (u'检验结果正常', u'检验结果正常'),
+             (u'检验结果阳性', u'检验结果阳性')], u'检验状态'),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -86,6 +91,8 @@ class rhwl_sample_info(osv.osv):
         "receiv_user": lambda obj, cr, uid, context: uid,
         "is_free": lambda obj, cr, uid, context: u"否",
         "fzr": lambda obj, cr, uid, context: uid,
+        "yfzjmc": lambda obj, cr, uid, context: u"身份证",
+        "check_state": lambda obj, cr, uid, context: u'已接收',
 
     }
     _sql_constraints = [
@@ -153,3 +160,43 @@ class rhwl_sample_info(osv.osv):
                                                   "price_unit": partner.amt, "product_uom_qty": 1}, context=context)
         self.pool.get("sale.order").write(cr, uid, order_id, {'order_line': [(6, 0, [orderline_id])]})
         self.pool.get("sale.order").action_button_confirm(cr, uid, order_id)
+
+
+class rhwl_reuse(osv.osv):
+    _name = "sale.sampleone.reuse"
+    _description = "样本信息重采血"
+
+    _columns = {
+        "name": fields.many2one("sale.sampleone", u"样本单号"),
+        "yfxm": fields.related('name', 'yfxm', type='char', string=u'孕妇姓名', readonly=1),
+        "notice_user": fields.many2one("res.users", u"通知人员"),
+        "notice_date": fields.date(u"通知日期"),
+        "reuse_note": fields.char(u"重采原因", size=200),
+        "note": fields.text(u"孕妇说明及备注"),
+        "state": fields.selection(
+            [(u"未通知", u"未通知"), (u"已通知", u"已通知"), (u"重复通知", u"重复通知"), (u"孕妇放弃", u"孕妇放弃"), (u"已重采血", u"已重采血")], u"状态"),
+    }
+
+
+class rhwl_exception(osv.osv):
+    _name = "sale.sampleone.exception"
+    _description = "样本阳性跟踪"
+
+    _columns = {
+        "name": fields.many2one("sale.sampleone", u"样本单号"),
+        "lib_notice": fields.char(u"无创结论", size=100),
+        "cs_notice": fields.char(u"客服备注", size=100),
+        "notice_user": fields.many2one("res.users", u"通知人员"),
+        "notice_date": fields.date(u"通知日期"),
+        "fz_user": fields.many2one("res.users", u"阳性跟踪负责人"),
+        "is_notice": fields.boolean(u"是否已通知"),
+        "is_take": fields.boolean(u"是否取走检测报告"),
+        "is_next": fields.boolean(u"是否行进一步诊断"),
+        "next_date": fields.date(u"诊断时间"),
+        "next_hospital": fields.char(u"诊断医院", size=20),
+        "next_result": fields.char(u"诊断结果", size=100),
+        "is_equal": fields.boolean(u"是否与无创结果一致"),
+        "state": fields.selection(
+            [(u"未通知", u"未通知"), (u"已通知", u"已通知"), (u"重复通知", u"重复通知"), (u"已取报告", u"已取报告"), (u"已进一步诊断", u"已进一步诊断"),
+             (u"完成", u"完成")], u"状态"),
+    }

@@ -7,6 +7,9 @@
             <field name="inherit_id" ref="l10n_cn_express_track.stock_picking_express_form"/>
             <field name="arch" type="xml">
                 <data>
+                    <xpath expr="//field[@name='deliver_id']" position="replace">
+                        <field name="deliver_id" on_change="get_num_express(deliver_id)"/>
+                    </xpath>
                     <xpath expr="//field[@name='partner_id']" position="replace"/>
                     <xpath expr="//field[@name='date']" position="replace">
                         <field name="is_deliver"/>
@@ -24,7 +27,7 @@
                             <field name="product_id"/>
                             <field name="product_qty"/>
                         </group>
-                        <group cols="4" string="收货方填写信息">
+                        <group cols="4" string="收货方填写信息" attrs="{'invisible':[('is_receiv','=',False)]}">
                             <field name="receiv_real_user"/>
                             <field name="receiv_real_date"/>
                             <field name="receiv_real_qty"/>
