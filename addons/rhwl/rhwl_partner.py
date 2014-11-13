@@ -2,6 +2,7 @@
 
 from openerp import SUPERUSER_ID
 from openerp.osv import fields, osv
+from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 import datetime
 
@@ -54,6 +55,7 @@ class rhwl_partner(osv.osv):
     ]
 
     def create(self, cr, uid, vals, context=None):
+
         id = super(rhwl_partner, self).create(cr, uid, vals, context)
         partner = self.pool.get("res.company").search(cr, uid, [("id", '=', vals.get("company_id"))], context=context)
         if not partner:
@@ -61,7 +63,7 @@ class rhwl_partner(osv.osv):
         partner = self.pool.get("res.company").browse(cr, uid, partner, context=context)
         val = {
             "name": vals.get("name"),
-            "code": vals.get("partner_unid"),
+            "code": vals.get("name"),  # vals.get("partner_unid"),
             "partner_id": id,
             "company_id": vals.get("company_id"),
             "buy_to_resupply": False,
@@ -71,15 +73,17 @@ class rhwl_partner(osv.osv):
             stock_warehouse = self.pool.get("stock.warehouse")
 
             default_id = stock_warehouse.search(cr, uid, [('partner_id', '=', partner.partner_id.id)], context=context)
+            if not default_id:
+                raise osv.except_osv(_('Error'), u"没有找到归属当前公司的仓库。")
             val["default_resupply_wh_id"] = default_id[0]
             val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
             wh = stock_warehouse.search(cr, uid, [('code', '=', vals.get("partner_unid")), ('partner_id', '=', id)],
                                         context=context)
             if not wh:
-                id_s = stock_warehouse.create(cr, uid, val, context=None)
+                id_s = stock_warehouse.create(cr, uid, val, context=context)
                 # v = stock_warehouse.browse(cr,uid,id_s,context=context)
                 # v.resupply_wh_ids = [[6,False,[default_id[0]]]]
-                #stock_warehouse.write(cr,uid,id_s,v,context=context)
+                # stock_warehouse.write(cr,uid,id_s,v,context=context)
         return id
 
 
