@@ -34,10 +34,10 @@ class rhwl_sample_info(osv.osv):
                                 required=True),
         "fzr": fields.many2one('res.users', string=u'负责人'),
         # "state": fields.selection([('draf','draf')], u'状态'),
-        "is_reused": fields.selection([(u'首次', u'首次'), (u'重采血', u'重采血')], u'是否重采血', required=True),
+        "is_reused": fields.selection([('0', u'首次'), ('1', u'重采血')], u'是否重采血', required=True),
         "reuse_name": fields.many2one("sale.sampleone", u"重采血编号"),
         "reuse_type": fields.selection(SELECTION_TYPE, u"重采血类型"),
-        "is_free": fields.selection([(u'是', u'是'), (u'否', u'否')], u'是否免费'),
+        "is_free": fields.selection([(u'是', u'是'), (u'否', u'否')], u'是否免费', required=True),
         "yfxm": fields.char(u"孕妇姓名", size=20, required=True),
         "yfyzweek": fields.integer(u"孕周_周"),
         "yfyzday": fields.integer(u"孕周_天"),
@@ -98,6 +98,15 @@ class rhwl_sample_info(osv.osv):
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
     ]
+
+    def onchange_reused(self, cr, uid, ids, name, arg, context=None):
+        print "*" * 40, name, arg
+        if name and name == '1':
+            return {
+                "value": {
+                    "reuse_type": arg,
+                }
+            }
 
     def onchange_check_sample(self, cr, uid, ids, name, context=None):
         detail = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", name)],

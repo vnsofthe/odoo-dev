@@ -70,9 +70,11 @@
                                 <field name="name" colspan='2' on_change="onchange_check_sample(name)"/>
                                 <field name="sampletype" colspan='2'/>
                                 <field name="cx_date" colspan='2'/>
-                                <field name="is_reused" colspan='2'/>
-                                <field name="reuse_type" colspan='2'/>
-                                <field name="reuse_name" colspan='2'/>
+                                <field name="is_reused" colspan='2' on_change="onchange_reused(is_reused,sampletype)"/>
+                                <field name="reuse_type" colspan='2'
+                                       attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
+                                <field name="reuse_name" colspan='2'
+                                       attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
                                 <field name="is_free" colspan='2'/>
                             </group>
                             <group>
