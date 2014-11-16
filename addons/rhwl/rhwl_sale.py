@@ -39,7 +39,7 @@ class rhwl_sample_info(osv.osv):
         "is_reused": fields.selection([('0', u'首次'), ('1', u'重采血')], u'是否重采血', required=True),
         "reuse_name": fields.many2one("sale.sampleone", u"重采血编号"),
         "reuse_type": fields.selection(SELECTION_TYPE, u"重采血类型"),
-        "is_free": fields.selection([(u'是', u'是'), (u'否', u'否')], u'是否免费', required=True),
+        "is_free": fields.selection([('1', u'是'), ('0', u'否')], u'是否免费', required=True),
         "yfxm": fields.char(u"孕妇姓名", size=20, required=True),
         "yfyzweek": fields.integer(u"孕周_周"),
         "yfyzday": fields.integer(u"孕周_天"),
@@ -65,20 +65,20 @@ class rhwl_sample_info(osv.osv):
         "yfjzycbtext": fields.char(u"家族遗传病说明", size=20),
         "yffqsfrsthx": fields.selection([('0', u'无'), ('1', u'有')], u'夫妻双方染色体核型',required=True),
         "yffqsfrsthxtext": fields.char(u"夫妻双方染色体核型说明", size=20),
-        "yfyczk": fields.selection([(u'单胎', u'单胎'), (u'双胎', u'双胎'), (u'其它', u'其它')], u"孕娠状况"),
+        "yfyczk": fields.selection([('1', u'单胎'), ('2', u'双胎'), ('3', u'其它')], u"孕娠状况"),
         "yfyczktext": fields.char(u'孕娠说明', size=20),
-        "yfissgyr": fields.selection([(u'否', u'否'), (u'是', u'是')], u'试管婴儿'),
-        "yfcsjc": fields.selection([(u'未见异常', u'未见异常'), (u'提示异常', u'提示异常')], u"超声检查"),
+        "yfissgyr": fields.selection([('0', u'否'), ('1', u'是')], u'试管婴儿'),
+        "yfcsjc": fields.selection([('0', u'未见异常'), ('1', u'提示异常')], u"超声检查"),
         "yfcsjctext": fields.char(u'异常原因', size=20),
-        "yfxqsc": fields.selection([(u'未做', u'未做'), (u'已做', u'已做')], u'血清筛查'),
+        "yfxqsc": fields.selection([('0', u'未做'), ('1', u'已做')], u'血清筛查'),
         "yfxqsctext": fields.char(u'风险提示', size=20),
-        "yfyyjrxccss": fields.selection([(u'无', u'无'), (u'已预约', u'已预约')], u'预约介入性穿刺手术'),
+        "yfyyjrxccss": fields.selection([('0', u'无'), ('1', u'已预约')], u'预约介入性穿刺手术'),
         "yfyyjrxccssdate": fields.date(u'预约日期'),
-        "yfxbzl": fields.selection([(u'否', u'否'), (u'是', u'是')], u'细胞治疗'),
+        "yfxbzl": fields.selection([('0', u'否'), ('1', u'是')], u'细胞治疗'),
         "yfxbzltext": fields.char(u'细胞治疗说明', size=20),
-        "yfzlfz": fields.selection([(u'否', u'否'), (u'是', u'是')], u'肿瘤患者'),
+        "yfzlfz": fields.selection([('0', u'否'), ('1', u'是')], u'肿瘤患者'),
         "yfzlfztext": fields.char(u'肿瘤患者说明', size=20),
-        "yfynnytsx": fields.selection([(u'否', u'否'), (u'是', u'是')], u'一年内异体输血'),
+        "yfynnytsx": fields.selection([('0', u'否'), ('1', u'是')], u'一年内异体输血'),
         "yfynnytsxtext": fields.char(u'一年内异体输血说明', size=20),
         "yftsqkbz": fields.char(u'特殊情况备注', size=100),
         "note": fields.text(u'备注'),
@@ -91,13 +91,15 @@ class rhwl_sample_info(osv.osv):
         "state": lambda obj, cr, uid, context: "draft",
         "sampletype": lambda obj, cr, uid, context: u"全血",
         "receiv_user": lambda obj, cr, uid, context: uid,
-        "is_free": lambda obj, cr, uid, context: u"否",
+        "is_free": lambda obj, cr, uid, context: "0",
         "fzr": lambda obj, cr, uid, context: uid,
         "yfzjmc": lambda obj, cr, uid, context: u"身份证",
         "check_state": lambda obj, cr, uid, context: u'已接收',
         "yfblycs": lambda obj,cr,uid,context:"0",
         "yffqsfrsthx": lambda obj,cr,uid,context:"0",
         "yfjzycb": lambda obj,cr,uid,context:"0",
+        "yfissgyr": lambda obj,cr,uid,context:"0",
+        "yfissgyr": lambda obj,cr,uid,context: "0",
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
@@ -110,7 +112,7 @@ class rhwl_sample_info(osv.osv):
         return True
 
     _constraints = [
-        (_check_zjno, 'ID Error.', ['yfzjmc_no']),
+        (_check_zjno, u'身份证号码不能检查通过，请输入正确的身份证号.', ['yfzjmc_no']),
     ]
 
     def onchange_reused(self, cr, uid, ids, name, arg, context=None):
@@ -118,7 +120,7 @@ class rhwl_sample_info(osv.osv):
             return {
                 "value": {
                     "reuse_type": arg,
-                    "is_free":u"是",
+                    "is_free":"1",
                 }
             }
     def onchange_lyyy(self, cr, uid, ids,context=None):
@@ -195,6 +197,8 @@ class rhwl_sample_info(osv.osv):
 
         warehouse = self.pool.get("stock.warehouse")
         w_id = warehouse.search(cr, uid, [("partner_id", "=", cxys.cxyy.id)], context=context)
+        if not w_id:
+            raise osv.except_osv(_("Error"),u"采血医院无关联的仓库信息，不能做确认。")
         if isinstance(w_id, (list, tuple)):
             w_id = w_id[0]
         vals = {
@@ -205,35 +209,74 @@ class rhwl_sample_info(osv.osv):
             "date_order": cxys.cx_date,
         }
         order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
+        if cxys.is_free=='1':
+            partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
+            amt=partner.amt
+        else:
+            amt=0
 
-        partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
         express = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", cxys.name)],
                                                                 context=context)
+        if not express:
+            raise osv.except_osv(_("Error"),u"找不到此样品编号的物流信息，不可以做确认。")
         express = self.pool.get("stock.picking.express").browse(cr, uid, express, context=context)
         if isinstance(express, (list, tuple)):
             express = express[0]
         orderline = self.pool.get("sale.order.line")
         orderline_id = orderline.create(cr, uid, {"order_id": order_id, "product_id": express.product_id.id,
-                                                  "price_unit": partner.amt, "product_uom_qty": 1}, context=context)
+                                                  "price_unit": amt, "product_uom_qty": 1}, context=context)
         self.pool.get("sale.order").write(cr, uid, order_id, {'order_line': [(6, 0, [orderline_id])]})
-        self.pool.get("sale.order").action_button_confirm(cr, uid, order_id)
+        self.pool.get("sale.order").action_button_confirm(cr, SUPERUSER_ID, order_id)
 
 
 class rhwl_reuse(osv.osv):
     _name = "sale.sampleone.reuse"
     _description = "样本信息重采血"
 
+    def _get_new_name(self, cr, uid, ids, prop, arg, context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return {}
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        sample_obj = self.pool.get("sale.sampleone")
+        ids_obj = self.browse(cr,uid,ids,context=context)
+        res=[]
+        for i in ids_obj:
+            old = sample_obj.search(cr,uid,[('reuse_name','=',i.name.id)])
+            if old:
+                oldobj=sample_obj.browse(cr,uid,old[0],context=context)
+            else:
+                oldobj=None
+            res.append((i.id,oldobj))
+        return dict(res)
+
     _columns = {
         "name": fields.many2one("sale.sampleone", u"样本单号"),
         "yfxm": fields.related('name', 'yfxm', type='char', string=u'孕妇姓名', readonly=1),
+        "cx_date": fields.related('name', 'cx_date', type='char', string=u'采血日期', readonly=1),
+        "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
+        "yfyzweek": fields.related('name', 'yfyzweek', type='integer', string=u'孕周', readonly=1),
+        "yftelno": fields.related('name', 'yftelno', type='char', string=u'孕妇电话', readonly=1),
+        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医院', readonly=1),
         "notice_user": fields.many2one("res.users", u"通知人员"),
         "notice_date": fields.date(u"通知日期"),
         "reuse_note": fields.char(u"重采原因", size=200),
+        "newname": fields.function(_get_new_name,relation="sale.sampleone",type="many2one", string=u"新采血编号"),
         "note": fields.text(u"孕妇说明及备注"),
         "state": fields.selection(
-            [(u"未通知", u"未通知"), (u"已通知", u"已通知"), (u"重复通知", u"重复通知"), (u"孕妇放弃", u"孕妇放弃"), (u"已重采血", u"已重采血")], u"状态"),
+            [("draft", u"未通知"), ("done", u"已通知"), (u"重复通知", u"重复通知"), ("cancel", u"孕妇放弃"), ("reuse", u"已重采血")], u"状态"),
     }
+    _sql_constraints = [
+        ('sample_reuse_number_uniq', 'unique(name)', u'样品编号不能重复!'),
+    ]
+    _defaults = {
+        "state": lambda obj, cr, uid, context: "draft",
+        }
+    def action_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
 
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
 
 class rhwl_exception(osv.osv):
     _name = "sale.sampleone.exception"
@@ -241,6 +284,12 @@ class rhwl_exception(osv.osv):
 
     _columns = {
         "name": fields.many2one("sale.sampleone", u"样本单号"),
+        "yfxm": fields.related('name', 'yfxm', type='char', string=u'孕妇姓名', readonly=1),
+        "cx_date": fields.related('name', 'cx_date', type='char', string=u'采血日期', readonly=1),
+        "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
+        "yfyzweek": fields.related('name', 'yfyzweek', type='integer', string=u'孕周', readonly=1),
+        "yftelno": fields.related('name', 'yftelno', type='char', string=u'孕妇电话', readonly=1),
+        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医院', readonly=1),
         "lib_notice": fields.char(u"无创结论", size=100),
         "cs_notice": fields.char(u"客服备注", size=100),
         "notice_user": fields.many2one("res.users", u"通知人员"),
@@ -254,6 +303,12 @@ class rhwl_exception(osv.osv):
         "next_result": fields.char(u"诊断结果", size=100),
         "is_equal": fields.boolean(u"是否与无创结果一致"),
         "state": fields.selection(
-            [(u"未通知", u"未通知"), (u"已通知", u"已通知"), (u"重复通知", u"重复通知"), (u"已取报告", u"已取报告"), (u"已进一步诊断", u"已进一步诊断"),
-             (u"完成", u"完成")], u"状态"),
+            [("draft", u"未通知"), ("notice", u"已通知"), ("renotice", u"重复通知"), ("getreport", u"已取报告"), ("next", u"已进一步诊断"),
+             ("done", u"完成"),("cancel",u"已中止")], u"状态"),
     }
+    _sql_constraints = [
+        ('sample_except_number_uniq', 'unique(name)', u'样品编号不能重复!'),
+    ]
+    _defaults = {
+        "state": lambda obj, cr, uid, context: "draft",
+        }

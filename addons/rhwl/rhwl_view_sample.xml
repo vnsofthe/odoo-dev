@@ -5,10 +5,13 @@
             <field name="name">sale.sample.tree</field>
             <field name="model">sale.sampleone</field>
             <field name="arch" type="xml">
-                <tree string="Sale Sampleone">
+                <tree string="Sample Information">
                     <field name="name"/>
                     <field name="sampletype"/>
                     <field name="receiv_user"/>
+                    <field name="is_reused"/>
+                    <field name="is_free"/>
+                    <field name="check_state"/>
                     <field name="lyyy"/>
                     <field name="lyys"/>
                     <field name="cxyy"/>
@@ -17,16 +20,23 @@
             </field>
         </record>
         <record model="ir.ui.view" id="sale_sample_reuse_tree">
-            <field name="name">sale.sample.reuse.tree</field>
+            <field name="name">Again Blood</field>
             <field name="model">sale.sampleone.reuse</field>
             <field name="arch" type="xml">
                 <tree string="Sale Sampleone">
                     <field name="name"/>
                     <field name="yfxm"/>
+                    <field name="cx_date"/>
+                    <field name="yfage"/>
+                    <field name="yfyzweek"/>
+                    <field name="yftelno"/>
+                    <field name="cxys"/>
                     <field name="notice_user"/>
                     <field name="notice_date"/>
                     <field name="reuse_note"/>
+                    <field name="newname"/>
                     <field name="note"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -34,8 +44,14 @@
             <field name="name">sale.sample.exception.tree</field>
             <field name="model">sale.sampleone.exception</field>
             <field name="arch" type="xml">
-                <tree string="Sale Sampleone" style="width:400">
+                <tree string="Sale Sampleone">
                     <field name="name"/>
+                    <field name="yfxm"/>
+                    <field name="cx_date"/>
+                    <field name="yfage"/>
+                    <field name="yfyzweek"/>
+                    <field name="yftelno"/>
+                    <field name="cxys"/>
                     <field name="lib_notice"/>
                     <field name="cs_notice"/>
                     <field name="notice_user"/>
@@ -72,7 +88,7 @@
                                 <label for="cx_date" string="采血日期"/>
                                 <div  class="address_format">
                                     <field name="cx_date" style="width: 50%"/>
-                                    <label for="cx_time" string="时间" class="oe_form_group_cell_label" style="width: 20%"/>
+                                    <label for="cx_time" string="时间" class="oe_form_field" style="width: 20%"/>
                                     <field name="cx_time" style="width: 30%"/>
                                 </div>
                                 <field name="is_reused"  on_change="onchange_reused(is_reused,sampletype)"/>
@@ -101,11 +117,11 @@
 
                                         <field name="yfxm"/>
                                         <label for="yfyzweek" string="孕周"/>
-                                         <div>
-                                            <field name="yfyzweek"  style="width: 40%"/>
-                                             <label string="周" style="width: 10%" class="oe_form_field" />
-                                            <field name="yfyzday"  style="width: 40%"/>
-                                             <label string="天" style="width: 10%" class="oe_form_field"/>
+                                         <div class="address_format">
+                                            <field name="yfyzweek"  class="oe_align_right oe_inline" style="width: 20%%"/>
+                                            <label string="周" style="width: 10%%" class="oe_form_field" />
+                                            <field name="yfyzday"  class="oe_align_right oe_inline" style="width: 20%%"/>
+                                            <label string="天" style="width: 10%%" class="oe_form_field"/>
                                         </div>
                                         <label for="yfzjmc" string="证件名称"/>
                                         <div>
@@ -157,34 +173,58 @@
                             <page string="产前检查">
                                 <group>
                                     <group>
-                                        <field name="yfyczk"/>
-                                        <field name="yfyczktext"/>
+                                        <label for="yfyczk" string="孕娠状况"/>
+                                        <div>
+                                           <field name="yfyczk"/>
+                                           <field name="yfyczktext" placeholder="孕娠状况其它说明" attrs="{'invisible':[('yfyczk','!=','3')]}"/>
+                                        </div>
+
                                         <field name="yfissgyr"/>
-                                        <field name="yfcsjc"/>
-                                        <field name="yfcsjctext"/>
+                                        <label for="yfcsjc" string="超声检查"/>
+                                        <div>
+                                             <field name="yfcsjc"/>
+                                            <field name="yfcsjctext" placeholder="超声检查异常说明" attrs="{'invisible':[('yfcsjc','!=','1')]}"/>
+                                        </div>
+
 
                                     </group>
                                     <group>
-                                        <field name="yfxqsc"/>
-                                        <field name="yfxqsctext"/>
+                                         <label for="yfxqsc" string="血清筛查"/>
+                                        <div>
+                                            <field name="yfxqsc"/>
+                                            <field name="yfxqsctext" placeholder="血清筛查风险提示" attrs="{'invisible':[('yfxqsc','!=','1')]}"/>
+                                        </div>
+
                                         <field name="yfyyjrxccss"/>
-                                        <field name="yfyyjrxccssdate"/>
+                                        <field name="yfyyjrxccssdate" attrs="{'invisible':[('yfyyjrxccss','!=','1')]}"/>
                                     </group>
                                 </group>
                             </page>
                             <page string="其它信息">
                                 <group>
                                     <group>
-                                        <field name="yfxbzl"/>
-                                        <field name="yfxbzltext"/>
+                                        <label for="yfxbzl" string="细胞治疗"/>
+                                        <div>
+                                             <field name="yfxbzl"/>
+                                             <field name="yfxbzltext" placeholder="细胞治疗说明" attrs="{'invisible':[('yfxbzl','!=','1')]}"/>
+                                        </div>
+
 
                                         <field name="yftsqkbz"/>
                                     </group>
                                     <group>
-                                        <field name="yfzlfz"/>
-                                        <field name="yfzlfztext"/>
-                                        <field name="yfynnytsx"/>
-                                        <field name="yfynnytsxtext"/>
+                                        <label for="yfzlfz" string="肿瘤患者"/>
+                                        <div>
+                                            <field name="yfzlfz"/>
+                                            <field name="yfzlfztext" placeholder="肿瘤患者说明" attrs="{'invisible':[('yfzlfz','!=','1')]}"/>
+                                        </div>
+                                        <label for="yfynnytsx" string="一年内异体输血"/>
+                                        <div>
+                                            <field name="yfynnytsx"/>
+                                            <field name="yfynnytsxtext" placeholder="一年内异体输血说明" attrs="{'invisible':[('yfynnytsx','!=','1')]}"/>
+                                        </div>
+
+
                                     </group>
                                 </group>
                             </page>
@@ -207,10 +247,38 @@
             <field name="model">sale.sampleone.reuse</field>
             <field name="arch" type="xml">
                 <form string="Sale Sample">
+                    <header>
+                        <button name="action_done" states="draft" string="已通知" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_cancel" states="done" string="孕妇放弃" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                    </header>
                     <sheet>
                         <group>
-                            <field name="name"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="yfxm"/>
+                                <field name="cx_date"/>
+                                <field name="yfage"/>
+                                <field name="yfyzweek"/>
+                                <field name="newname"/>
+                            </group>
+                            <group>
+                                <field name="yftelno"/>
+                                <field name="cxys"/>
+                                <field name="notice_user"/>
+                                <field name="notice_date"/>
+                                <field name="reuse_note"/>
+                            </group>
                         </group>
+                        <notebook>
+                            <page string="孕妇说明及备注">
+                                <field name="note"/>
+                            </page>
+
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -221,9 +289,36 @@
             <field name="model">sale.sampleone.exception</field>
             <field name="arch" type="xml">
                 <form string="Sale Sample">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                    </header>
                     <sheet>
                         <group>
-                            <field name="name"/>
+                            <group>
+                                <field name="name"/>
+                                <field name="yfxm"/>
+                                <field name="cx_date"/>
+                                <field name="yfage"/>
+                                <field name="yfyzweek"/>
+                                 <field name="yftelno"/>
+                                <field name="cxys"/>
+                                <field name="lib_notice"/>
+                                <field name="cs_notice"/>
+                                <field name="notice_user"/>
+                                <field name="notice_date"/>
+                            </group>
+                            <group>
+                                <field name="fz_user"/>
+                                <field name="is_notice"/>
+                                <field name="is_take"/>
+                                <field name="is_next"/>
+                                <field name="next_date"/>
+                                <field name="next_hospital"/>
+                                <field name="next_result"/>
+                                <field name="is_equal"/>
+                            </group>
+
                         </group>
                     </sheet>
                 </form>
@@ -238,8 +333,10 @@
                     <field name="name" string="Sample NO"/>
                     <field name="sampletype"/>
                     <seperaotr/>
+                    <filter string="首次采血" name="type_reuse1" domain="[('is_reused','=','0')]"/>
+                    <filter string="重采血" name="type_reuse2" domain="[('is_reused','=','1')]"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'receiv_user'}"/>
+                        <filter string="收样人员" icon="terp-partner" domain="[]" context="{'group_by':'receiv_user'}"/>
                     </group>
                 </search>
             </field>
@@ -278,7 +375,7 @@
         </record>
 
         <record id="action_sale_sample" model="ir.actions.act_window">
-            <field name="name">sale.sample</field>
+            <field name="name">Sample Information</field>
             <field name="res_model">sale.sampleone</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -292,7 +389,7 @@
         </record>
 
         <record id="action_sale_sample_reuse" model="ir.actions.act_window">
-            <field name="name">sale.sample.reuse</field>
+            <field name="name">Again Blood</field>
             <field name="res_model">sale.sampleone.reuse</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -305,7 +402,7 @@
             </field>
         </record>
         <record id="action_sale_sample_exception" model="ir.actions.act_window">
-            <field name="name">sale.sample.exception</field>
+            <field name="name">Excep Information</field>
             <field name="res_model">sale.sampleone.exception</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
