@@ -2,6 +2,7 @@
 
 from openerp import SUPERUSER_ID
 from openerp.osv import fields, osv
+from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 import datetime
 
@@ -19,7 +20,8 @@ class rhwl_sample_info(osv.osv):
     _columns = {
         "name": fields.char(u"样品编号", required=True, size=20),
         "sampletype": fields.selection(SELECTION_TYPE, u"样品类型", required=True),
-        "cx_date": fields.datetime(u'采血时间', required=True),
+        "cx_date": fields.date(u'采血时间', required=True),
+        "cx_time": fields.selection([(7,u'7点'),(8,u'8点'),(9,u'9点'),(10,u'10点'),(11,u'11点'),(12,u'12点'),(13,u'13点'),(14,u'14点'),(15,u'15点'),(16,u'16点'),(17,u'17点'),(18,u'18点'),(19,u'19点'),(20,u'20点')],u'时间', required=True),
         "receiv_user": fields.many2one('res.users', string=u'收样人员'),
         "state_id": fields.many2one('res.country.state', string=u'样品区域（省）'),
         "city": fields.char(u"样品区域（市)"),
@@ -51,17 +53,17 @@ class rhwl_sample_info(osv.osv):
         "yfyjzq": fields.integer(u"月经周期"),
         "yftelno": fields.char(u"手机号", size=15),
         "yfjjlltel": fields.char(u"紧急联络电话", size=20),
-        "yfpostaddr": fields.char(u"邮件地址", size=50),
+        "yfpostaddr": fields.char(u"邮寄地址", size=50),
         "yfpostno": fields.char(u"邮编", size=6),
         "yfheight": fields.integer(u"身高(cm)"),
         "yfweight": fields.float(u"体重(kg)"),
         "yfycount": fields.integer(u'孕次数'),
         "yfzcount": fields.integer(u'产次数'),
-        "yfblycs": fields.selection([(u'无', u'无'), (u'有', u'有')], u'不良孕产史'),
+        "yfblycs": fields.selection([('0', u'无'), ('1', u'有')], u'不良孕产史',required=True),
         "yfblycstext": fields.char(u"不良孕产史说明", size=20),
-        "yfjzycb": fields.selection([(u'无', u'无'), (u'有', u'有')], u'家族遗传病'),
+        "yfjzycb": fields.selection([('0', u'无'), ('1', u'有')], u'家族遗传病',required=True),
         "yfjzycbtext": fields.char(u"家族遗传病说明", size=20),
-        "yffqsfrsthx": fields.selection([(u'无', u'无'), (u'有', u'有')], u'夫妻双方染色体核型'),
+        "yffqsfrsthx": fields.selection([('0', u'无'), ('1', u'有')], u'夫妻双方染色体核型',required=True),
         "yffqsfrsthxtext": fields.char(u"夫妻双方染色体核型说明", size=20),
         "yfyczk": fields.selection([(u'单胎', u'单胎'), (u'双胎', u'双胎'), (u'其它', u'其它')], u"孕娠状况"),
         "yfyczktext": fields.char(u'孕娠说明', size=20),
@@ -93,18 +95,64 @@ class rhwl_sample_info(osv.osv):
         "fzr": lambda obj, cr, uid, context: uid,
         "yfzjmc": lambda obj, cr, uid, context: u"身份证",
         "check_state": lambda obj, cr, uid, context: u'已接收',
-
+        "yfblycs": lambda obj,cr,uid,context:"0",
+        "yffqsfrsthx": lambda obj,cr,uid,context:"0",
+        "yfjzycb": lambda obj,cr,uid,context:"0",
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
     ]
+    def _check_zjno(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids[0], context=context)
+        if obj.yfzjmc == u'身份证':
+            if obj.yfzjmc_no and obj.yfzjmc_no.__len__()<>15 and obj.yfzjmc_no.__len__()<>18:
+                return False
+        return True
+
+    _constraints = [
+        (_check_zjno, 'ID Error.', ['yfzjmc_no']),
+    ]
 
     def onchange_reused(self, cr, uid, ids, name, arg, context=None):
-        print "*" * 40, name, arg
         if name and name == '1':
             return {
                 "value": {
                     "reuse_type": arg,
+                    "is_free":u"是",
+                }
+            }
+    def onchange_lyyy(self, cr, uid, ids,context=None):
+         return {
+                "value": {
+                    "lyys":False,
+                }
+            }
+    def onchange_cxyy(self, cr, uid, ids,context=None):
+         return {
+                "value": {
+                    "cxys":None,
+                }
+            }
+    def onchange_ys(self, cr, uid, ids, lyyy,cxyy,val,name, context=None):
+        if lyyy and cxyy and lyyy==cxyy:
+            return {
+                "value": {
+                    name: val,
+                }
+            }
+    def onchange_zjmcno(self, cr, uid, ids, tno,name, context=None):
+        if tno and name and name == u'身份证':
+
+            if tno and tno.__len__()<>15 and tno.__len__()<>18:
+                 raise osv.except_osv(_('Error'), u"身份证号码不正确。")
+            if tno.__len__()==15:
+                str = tno[6:12]
+            else:
+                str = tno[6:14]
+
+            return {
+                "value": {
+                    "yfage": (datetime.datetime.today() - datetime.datetime.strptime(str,"%Y%m%d")).days/365+1,
                 }
             }
 

@@ -57,9 +57,9 @@
             <field name="arch" type="xml">
                 <form string="Sale Sample">
                     <header>
-                        <button name="action_done" states="draft" string="done" type="object"
+                        <button name="action_done" states="draft" string="确认" type="object"
                                 groups="base.group_user" class="oe_highlight"/>
-                        <button name="action_cancel" states="draft" string="Cancel" type="object"
+                        <button name="action_cancel" states="draft" string="取消" type="object"
                                 groups="base.group_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
@@ -67,72 +67,64 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name" colspan='2' on_change="onchange_check_sample(name)"/>
-                                <field name="sampletype" colspan='2'/>
-                                <field name="cx_date" colspan='2'/>
-                                <field name="is_reused" colspan='2' on_change="onchange_reused(is_reused,sampletype)"/>
-                                <field name="reuse_type" colspan='2'
+                                <field name="name"  on_change="onchange_check_sample(name)"/>
+                                <field name="sampletype" />
+                                <label for="cx_date" string="采血日期"/>
+                                <div  class="address_format">
+                                    <field name="cx_date" style="width: 50%"/>
+                                    <label for="cx_time" string="时间" class="oe_form_group_cell_label" style="width: 20%"/>
+                                    <field name="cx_time" style="width: 30%"/>
+                                </div>
+                                <field name="is_reused"  on_change="onchange_reused(is_reused,sampletype)"/>
+                                <field name="reuse_type"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
-                                <field name="reuse_name" colspan='2'
+                                <field name="reuse_name"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
                                 <field name="is_free" colspan='2'/>
                             </group>
                             <group>
-                                <field name="receiv_user" colspan='2'/>
-                                <field name="state_id" colspan='2'/>
-                                <field name="city" colspan='2'/>
-                                <field name="lyyy" colspan='2'/>
-                                <field name="lyys" colspan='2'/>
-                                <field name="cxyy" colspan='2'/>
-                                <field name="cxys" colspan='2'/>
-                                <field name="fzr" colspan='2'/>
+                                <field name="receiv_user"/>
+                                <field name="state_id" />
+                                <field name="city" />
+                                <field name="lyyy" on_change="onchange_lyyy()"/>
+                                <field name="lyys" on_change="onchange_ys(lyyy,cxyy,lyys,'cxys')"/>
+                                <field name="cxyy" on_change="onchange_cxyy()"/>
+                                <field name="cxys" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')"/>
+                                <field name="fzr" />
                             </group>
                         </group>
 
                         <notebook>
                             <page string="孕妇信息">
-                                <group col="8" colspan="4">
-                                    <group col="4" colspan="4">
-                                        <group colspan="4">
-                                            <field name="yfxm"/>
-                                        </group>
-                                        <group col="4" colspan="4">
-                                            <group colspan="2">
-                                                <field name="yfzjmc" width="90"/>
-                                            </group>
-                                        </group>
+                                <group col="8" >
+                                    <group >
+
+                                        <field name="yfxm"/>
+                                        <label for="yfyzweek" string="孕周"/>
+                                         <div>
+                                            <field name="yfyzweek"  style="width: 40%"/>
+                                             <label string="周" style="width: 10%" class="oe_form_field" />
+                                            <field name="yfyzday"  style="width: 40%"/>
+                                             <label string="天" style="width: 10%" class="oe_form_field"/>
+                                        </div>
+                                        <label for="yfzjmc" string="证件名称"/>
+                                        <div>
+                                            <field name="yfzjmc" width="90"/>
+                                            <field name="yfzjmc_no" on_change="onchange_zjmcno(yfzjmc_no,yfzjmc)"/>
+                                        </div>
+
                                         <field name="yfage"/>
-                                        <newline/>
                                         <field name="yflastyj"/>
-                                        <newline/>
-                                        <field name="yftelno"/>
-                                        <newline/>
-                                        <field name="yfpostaddr"/>
-                                        <newline/>
-                                        <field name="yfheight"/>
-                                    </group>
-                                    <group col="4" colspan="4">
-                                        <group col="4" colspan="4">
-                                            <group colspan="2">
-                                                <field name="yfyzweek"/>
-                                            </group>
-                                            <group colspan="2">
-                                                <field name="yfyzday" nolabel="1"/>
-                                            </group>
-                                        </group>
-                                        <group colspan="4">
-                                            <field name="yfzjmc_no"/>
-                                        </group>
-                                        <field name="yffqage"/>
-                                        <newline/>
                                         <field name="yfyjzq"/>
-                                        <newline/>
-                                        <field name="yfjjlltel"/>
-                                        <newline/>
-                                        <field name="yfpostno"/>
-                                        <newline/>
+                                    </group>
+                                    <group >
+                                         <field name="yfheight"/>
                                         <field name="yfweight"/>
-                                        <newline/>
+                                        <field name="yffqage"/>
+                                        <field name="yftelno"/>
+                                        <field name="yfjjlltel"/>
+                                        <field name="yfpostaddr"/>
+                                         <field name="yfpostno"/>
                                     </group>
                                 </group>
                             </page>
@@ -143,12 +135,22 @@
                                         <field name="yfzcount"/>
                                     </group>
                                     <group>
-                                        <field name="yfblycs"/>
-                                        <field name="yfblycstext"/>
-                                        <field name="yffqsfrsthx"/>
-                                        <field name="yffqsfrsthxtext"/>
-                                        <field name="yfjzycb"/>
-                                        <field name="yfjzycbtext"/>
+                                        <label for="yfblycs" string="不良孕产史"/>
+                                        <div>
+                                            <field name="yfblycs"/>
+                                            <field name="yfblycstext" placeholder="不良孕产史说明" attrs="{'invisible':[('yfblycs','!=','1')]}"/>
+                                        </div>
+                                        <label for="yffqsfrsthx" string="家族遗传病"/>
+                                        <div>
+                                            <field name="yffqsfrsthx"/>
+                                             <field name="yffqsfrsthxtext" placeholder="家族遗传病说明" attrs="{'invisible':[('yffqsfrsthx','!=','1')]}"/>
+                                        </div>
+                                        <label for="yfjzycb" string="夫妻双方染色体核型"/>
+                                        <div>
+                                            <field name="yfjzycb"/>
+                                            <field name="yfjzycbtext" placeholder="夫妻双方染色体核型说明" attrs="{'invisible':[('yfjzycb','!=','1')]}"/>
+                                        </div>
+
                                     </group>
                                 </group>
                             </page>
