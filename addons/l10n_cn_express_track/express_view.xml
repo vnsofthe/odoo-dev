@@ -81,7 +81,7 @@
         </record>
 
         <record id="action_stock_express" model="ir.actions.act_window">
-            <field name="name">stock.picking.express</field>
+            <field name="name">Express</field>
             <field name="res_model">stock.picking.express</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
@@ -102,516 +102,516 @@
         <record model="res.partner.category" id="tag_deliver">
             <field name="name">Deliver</field>
         </record>
-       <!-- <record model="res.partner" id="partner_deliver_aae">
-            <field name="name">aae全球专递</field>
-            <field name="ref">aae</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+        <!-- <record model="res.partner" id="partner_deliver_aae">
+             <field name="name">aae全球专递</field>
+             <field name="ref">aae</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_anjie">
-            <field name="name">安捷快递</field>
-            <field name="ref">anjie</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_anjie">
+             <field name="name">安捷快递</field>
+             <field name="ref">anjie</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_anxindakuaixi">
-            <field name="name">安信达快递</field>
-            <field name="ref">anxindakuaixi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_anxindakuaixi">
+             <field name="name">安信达快递</field>
+             <field name="ref">anxindakuaixi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_biaojikuaidi">
-            <field name="name">彪记快递</field>
-            <field name="ref">biaojikuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_biaojikuaidi">
+             <field name="name">彪记快递</field>
+             <field name="ref">biaojikuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_bht">
-            <field name="name">bht</field>
-            <field name="ref">bht</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_bht">
+             <field name="name">bht</field>
+             <field name="ref">bht</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_baifudongfang">
-            <field name="name">百福东方国际物流</field>
-            <field name="ref">baifudongfang</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_baifudongfang">
+             <field name="name">百福东方国际物流</field>
+             <field name="ref">baifudongfang</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_coe">
-            <field name="name">中国东方（COE）</field>
-            <field name="ref">coe</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_coe">
+             <field name="name">中国东方（COE）</field>
+             <field name="ref">coe</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_changyuwuliu">
-            <field name="name">长宇物流</field>
-            <field name="ref">changyuwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_changyuwuliu">
+             <field name="name">长宇物流</field>
+             <field name="ref">changyuwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_datianwuliu">
-            <field name="name">大田物流</field>
-            <field name="ref">datianwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_datianwuliu">
+             <field name="name">大田物流</field>
+             <field name="ref">datianwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_debangwuliu">
-            <field name="name">德邦物流</field>
-            <field name="ref">debangwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_debangwuliu">
+             <field name="name">德邦物流</field>
+             <field name="ref">debangwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_dhl">
-            <field name="name">dhl</field>
-            <field name="ref">dhl</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_dhl">
+             <field name="name">dhl</field>
+             <field name="ref">dhl</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_dpex">
-            <field name="name">dpex</field>
-            <field name="ref">dpex</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_dpex">
+             <field name="name">dpex</field>
+             <field name="ref">dpex</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_dsukuaidi">
-            <field name="name">d速快递</field>
-            <field name="ref">dsukuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_dsukuaidi">
+             <field name="name">d速快递</field>
+             <field name="ref">dsukuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_disifang">
-            <field name="name">递四方</field>
-            <field name="ref">disifang</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_disifang">
+             <field name="name">递四方</field>
+             <field name="ref">disifang</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_ems">
-            <field name="name">ems快递</field>
-            <field name="ref">ems</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_ems">
+             <field name="name">ems快递</field>
+             <field name="ref">ems</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_fedex">
-            <field name="name">fedex（国外）</field>
-            <field name="ref">fedex</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_fedex">
+             <field name="name">fedex（国外）</field>
+             <field name="ref">fedex</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_feikangda">
-            <field name="name">飞康达物流</field>
-            <field name="ref">feikangda</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_feikangda">
+             <field name="name">飞康达物流</field>
+             <field name="ref">feikangda</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_fenghuangkuaidi">
-            <field name="name">凤凰快递</field>
-            <field name="ref">fenghuangkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_fenghuangkuaidi">
+             <field name="name">凤凰快递</field>
+             <field name="ref">fenghuangkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_feikuaida">
-            <field name="name">飞快达</field>
-            <field name="ref">feikuaida</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_feikuaida">
+             <field name="name">飞快达</field>
+             <field name="ref">feikuaida</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_guotongkuaidi">
-            <field name="name">国通快递</field>
-            <field name="ref">guotongkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_guotongkuaidi">
+             <field name="name">国通快递</field>
+             <field name="ref">guotongkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_ganzhongnengda">
-            <field name="name">港中能达物流</field>
-            <field name="ref">ganzhongnengda</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_ganzhongnengda">
+             <field name="name">港中能达物流</field>
+             <field name="ref">ganzhongnengda</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_guangdongyouzhengwuliu">
-            <field name="name">广东邮政物流</field>
-            <field name="ref">guangdongyouzhengwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_guangdongyouzhengwuliu">
+             <field name="name">广东邮政物流</field>
+             <field name="ref">guangdongyouzhengwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_gongsuda">
-            <field name="name">共速达</field>
-            <field name="ref">gongsuda</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_gongsuda">
+             <field name="name">共速达</field>
+             <field name="ref">gongsuda</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_huitongkuaidi">
-            <field name="name">汇通快运</field>
-            <field name="ref">huitongkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_huitongkuaidi">
+             <field name="name">汇通快运</field>
+             <field name="ref">huitongkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_hengluwuliu">
-            <field name="name">恒路物流</field>
-            <field name="ref">hengluwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_hengluwuliu">
+             <field name="name">恒路物流</field>
+             <field name="ref">hengluwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_huaxialongwuliu">
-            <field name="name">华夏龙物流</field>
-            <field name="ref">huaxialongwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_huaxialongwuliu">
+             <field name="name">华夏龙物流</field>
+             <field name="ref">huaxialongwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_haihongwangsong">
-            <field name="name">海红</field>
-            <field name="ref">haihongwangsong</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_haihongwangsong">
+             <field name="name">海红</field>
+             <field name="ref">haihongwangsong</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_haiwaihuanqiu">
-            <field name="name">海外环球</field>
-            <field name="ref">haiwaihuanqiu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_haiwaihuanqiu">
+             <field name="name">海外环球</field>
+             <field name="ref">haiwaihuanqiu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jiayiwuliu">
-            <field name="name">佳怡物流</field>
-            <field name="ref">jiayiwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jiayiwuliu">
+             <field name="name">佳怡物流</field>
+             <field name="ref">jiayiwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jinguangsudikuaijian">
-            <field name="name">京广速递</field>
-            <field name="ref">jinguangsudikuaijian</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jinguangsudikuaijian">
+             <field name="name">京广速递</field>
+             <field name="ref">jinguangsudikuaijian</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jixianda">
-            <field name="name">急先达</field>
-            <field name="ref">jixianda</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jixianda">
+             <field name="name">急先达</field>
+             <field name="ref">jixianda</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jjwl">
-            <field name="name">佳吉物流</field>
-            <field name="ref">jjwl</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jjwl">
+             <field name="name">佳吉物流</field>
+             <field name="ref">jjwl</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jymwl">
-            <field name="name">加运美物流</field>
-            <field name="ref">jymwl</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jymwl">
+             <field name="name">加运美物流</field>
+             <field name="ref">jymwl</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jindawuliu">
-            <field name="name">金大物流</field>
-            <field name="ref">jindawuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jindawuliu">
+             <field name="name">金大物流</field>
+             <field name="ref">jindawuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jialidatong">
-            <field name="name">嘉里大通</field>
-            <field name="ref">jialidatong</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jialidatong">
+             <field name="name">嘉里大通</field>
+             <field name="ref">jialidatong</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_jykd">
-            <field name="name">晋越快递</field>
-            <field name="ref">jykd</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_jykd">
+             <field name="name">晋越快递</field>
+             <field name="ref">jykd</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_kuaijiesudi">
-            <field name="name">快捷速递</field>
-            <field name="ref">kuaijiesudi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_kuaijiesudi">
+             <field name="name">快捷速递</field>
+             <field name="ref">kuaijiesudi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_lianb">
-            <field name="name">联邦快递（国内）</field>
-            <field name="ref">lianb</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_lianb">
+             <field name="name">联邦快递（国内）</field>
+             <field name="ref">lianb</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_lianhaowuliu">
-            <field name="name">联昊通物流</field>
-            <field name="ref">lianhaowuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_lianhaowuliu">
+             <field name="name">联昊通物流</field>
+             <field name="ref">lianhaowuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_longbanwuliu">
-            <field name="name">龙邦物流</field>
-            <field name="ref">longbanwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_longbanwuliu">
+             <field name="name">龙邦物流</field>
+             <field name="ref">longbanwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_lijisong">
-            <field name="name">立即送</field>
-            <field name="ref">lijisong</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_lijisong">
+             <field name="name">立即送</field>
+             <field name="ref">lijisong</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_lejiedi">
-            <field name="name">乐捷递</field>
-            <field name="ref">lejiedi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_lejiedi">
+             <field name="name">乐捷递</field>
+             <field name="ref">lejiedi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_minghangkuaidi">
-            <field name="name">民航快递</field>
-            <field name="ref">minghangkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_minghangkuaidi">
+             <field name="name">民航快递</field>
+             <field name="ref">minghangkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_meiguokuaidi">
-            <field name="name">美国快递</field>
-            <field name="ref">meiguokuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_meiguokuaidi">
+             <field name="name">美国快递</field>
+             <field name="ref">meiguokuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_menduimen">
-            <field name="name">门对门</field>
-            <field name="ref">menduimen</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_menduimen">
+             <field name="name">门对门</field>
+             <field name="ref">menduimen</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_ocs">
-            <field name="name">OCS</field>
-            <field name="ref">ocs</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_ocs">
+             <field name="name">OCS</field>
+             <field name="ref">ocs</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_peisihuoyunkuaidi">
-            <field name="name">配思货运</field>
-            <field name="ref">peisihuoyunkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_peisihuoyunkuaidi">
+             <field name="name">配思货运</field>
+             <field name="ref">peisihuoyunkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_quanchenkuaidi">
-            <field name="name">全晨快递</field>
-            <field name="ref">quanchenkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_quanchenkuaidi">
+             <field name="name">全晨快递</field>
+             <field name="ref">quanchenkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_quanfengkuaidi">
-            <field name="name">全峰快递</field>
-            <field name="ref">quanfengkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_quanfengkuaidi">
+             <field name="name">全峰快递</field>
+             <field name="ref">quanfengkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_quanjitong">
-            <field name="name">全际通物流</field>
-            <field name="ref">quanjitong</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_quanjitong">
+             <field name="name">全际通物流</field>
+             <field name="ref">quanjitong</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_quanritongkuaidi">
-            <field name="name">全日通快递</field>
-            <field name="ref">quanritongkuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_quanritongkuaidi">
+             <field name="name">全日通快递</field>
+             <field name="ref">quanritongkuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_quanyikuaidi">
-            <field name="name">全一快递</field>
-            <field name="ref">quanyikuaidi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_quanyikuaidi">
+             <field name="name">全一快递</field>
+             <field name="ref">quanyikuaidi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_rufengda">
-            <field name="name">如风达</field>
-            <field name="ref">rufengda</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_rufengda">
+             <field name="name">如风达</field>
+             <field name="ref">rufengda</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_santaisudi">
-            <field name="name">三态速递</field>
-            <field name="ref">santaisudi</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_santaisudi">
+             <field name="name">三态速递</field>
+             <field name="ref">santaisudi</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_shenghuiwuliu">
-            <field name="name">盛辉物流</field>
-            <field name="ref">shenghuiwuliu</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
+         <record model="res.partner" id="partner_deliver_shenghuiwuliu">
+             <field name="name">盛辉物流</field>
+             <field name="ref">shenghuiwuliu</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
 
-        <record model="res.partner" id="partner_deliver_shentong">
-            <field name="name">申通</field>
-            <field name="ref">shentong</field>
-            <field name="is_deliver">True</field>
-            <field name="is_company">True</field>
-            &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
-            &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
-        </record>
-        -->
+         <record model="res.partner" id="partner_deliver_shentong">
+             <field name="name">申通</field>
+             <field name="ref">shentong</field>
+             <field name="is_deliver">True</field>
+             <field name="is_company">True</field>
+             &lt;!&ndash; <field name="notification_email_send">None</field> &ndash;&gt;
+             &lt;!&ndash; <field name="category_id">"tag_deliver"</field> &ndash;&gt;
+         </record>
+         -->
         <record model="res.partner" id="partner_deliver_shunfeng">
             <field name="name">顺丰</field>
             <field name="ref">shunfeng</field>
             <field name="is_deliver">True</field>
             <field name="is_company">True</field>
-            <field name="company">False</field>
+            <field name="customer">False</field>
             <field name="supplier">True</field>
         </record>
         <!--

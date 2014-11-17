@@ -1,3 +1,12 @@
+#. module: rhwl
+#: field:stock.picking.express,receiv_date:0
+msgid "Date Receiv"
+msgstr "收货时间"
+
+#. module: rhwl
+#: field:stock.picking.express,product_id:0
+msgid "Product"
+msgstr "产品"
 
 #. module: rhwl
 #: model:ir.ui.menu,name:rhwl.menu_sale_sample

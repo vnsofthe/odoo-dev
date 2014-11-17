@@ -5,5 +5,21 @@ msgstr "物流公司"
 
 #. module: l10n_cn_express_track
 #: model:ir.ui.menu,name:l10n_cn_express_track.menu_stock_express
+#: model:ir.actions.act_window,name:l10n_cn_express_track.action_stock_express
 msgid "Express"
 msgstr "物流"
+
+#. module: l10n_cn_express_track
+#: field:stock.picking.express,num_express:0
+msgid "No. Express"
+msgstr "快递单号"
+
+#. module: l10n_cn_express_track
+#: field:stock.picking.express,url_express:0
+msgid "Link"
+msgstr "物流查询"
+
+#. module: l10n_cn_express_track
+#: field:stock.picking.express,date:0
+msgid "Date Deliver"
+msgstr "发货时间"

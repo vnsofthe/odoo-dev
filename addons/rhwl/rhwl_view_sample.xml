@@ -12,6 +12,8 @@
                     <field name="is_reused"/>
                     <field name="is_free"/>
                     <field name="check_state"/>
+                    <field name="state_id"/>
+                    <field name="city"/>
                     <field name="lyyy"/>
                     <field name="lyys"/>
                     <field name="cxyy"/>
@@ -83,15 +85,15 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"  on_change="onchange_check_sample(name)"/>
-                                <field name="sampletype" />
+                                <field name="name" on_change="onchange_check_sample(name)"/>
+                                <field name="sampletype"/>
                                 <label for="cx_date" string="采血日期"/>
-                                <div  class="address_format">
+                                <div class="address_format">
                                     <field name="cx_date" style="width: 50%"/>
                                     <label for="cx_time" string="时间" class="oe_form_field" style="width: 20%"/>
                                     <field name="cx_time" style="width: 30%"/>
                                 </div>
-                                <field name="is_reused"  on_change="onchange_reused(is_reused,sampletype)"/>
+                                <field name="is_reused" on_change="onchange_reused(is_reused,sampletype)"/>
                                 <field name="reuse_type"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
                                 <field name="reuse_name"
@@ -100,27 +102,28 @@
                             </group>
                             <group>
                                 <field name="receiv_user"/>
-                                <field name="state_id" />
-                                <field name="city" />
+                                <field name="state_id"/>
+                                <field name="city"/>
                                 <field name="lyyy" on_change="onchange_lyyy()"/>
                                 <field name="lyys" on_change="onchange_ys(lyyy,cxyy,lyys,'cxys')"/>
                                 <field name="cxyy" on_change="onchange_cxyy()"/>
                                 <field name="cxys" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')"/>
-                                <field name="fzr" />
+                                <field name="fzr"/>
                             </group>
                         </group>
 
                         <notebook>
                             <page string="孕妇信息">
-                                <group col="8" >
-                                    <group >
+                                <group col="8">
+                                    <group>
 
                                         <field name="yfxm"/>
                                         <label for="yfyzweek" string="孕周"/>
-                                         <div class="address_format">
-                                            <field name="yfyzweek"  class="oe_align_right oe_inline" style="width: 20%%"/>
-                                            <label string="周" style="width: 10%%" class="oe_form_field" />
-                                            <field name="yfyzday"  class="oe_align_right oe_inline" style="width: 20%%"/>
+                                        <div class="address_format">
+                                            <field name="yfyzweek" class="oe_align_right oe_inline"
+                                                   style="width: 20%%"/>
+                                            <label string="周" style="width: 10%%" class="oe_form_field"/>
+                                            <field name="yfyzday" class="oe_align_right oe_inline" style="width: 20%%"/>
                                             <label string="天" style="width: 10%%" class="oe_form_field"/>
                                         </div>
                                         <label for="yfzjmc" string="证件名称"/>
@@ -133,14 +136,14 @@
                                         <field name="yflastyj"/>
                                         <field name="yfyjzq"/>
                                     </group>
-                                    <group >
-                                         <field name="yfheight"/>
+                                    <group>
+                                        <field name="yfheight"/>
                                         <field name="yfweight"/>
                                         <field name="yffqage"/>
                                         <field name="yftelno"/>
                                         <field name="yfjjlltel"/>
                                         <field name="yfpostaddr"/>
-                                         <field name="yfpostno"/>
+                                        <field name="yfpostno"/>
                                     </group>
                                 </group>
                             </page>
@@ -154,17 +157,20 @@
                                         <label for="yfblycs" string="不良孕产史"/>
                                         <div>
                                             <field name="yfblycs"/>
-                                            <field name="yfblycstext" placeholder="不良孕产史说明" attrs="{'invisible':[('yfblycs','!=','1')]}"/>
+                                            <field name="yfblycstext" placeholder="不良孕产史说明"
+                                                   attrs="{'invisible':[('yfblycs','!=','1')]}"/>
                                         </div>
                                         <label for="yffqsfrsthx" string="家族遗传病"/>
                                         <div>
                                             <field name="yffqsfrsthx"/>
-                                             <field name="yffqsfrsthxtext" placeholder="家族遗传病说明" attrs="{'invisible':[('yffqsfrsthx','!=','1')]}"/>
+                                            <field name="yffqsfrsthxtext" placeholder="家族遗传病说明"
+                                                   attrs="{'invisible':[('yffqsfrsthx','!=','1')]}"/>
                                         </div>
                                         <label for="yfjzycb" string="夫妻双方染色体核型"/>
                                         <div>
                                             <field name="yfjzycb"/>
-                                            <field name="yfjzycbtext" placeholder="夫妻双方染色体核型说明" attrs="{'invisible':[('yfjzycb','!=','1')]}"/>
+                                            <field name="yfjzycbtext" placeholder="夫妻双方染色体核型说明"
+                                                   attrs="{'invisible':[('yfjzycb','!=','1')]}"/>
                                         </div>
 
                                     </group>
@@ -175,24 +181,27 @@
                                     <group>
                                         <label for="yfyczk" string="孕娠状况"/>
                                         <div>
-                                           <field name="yfyczk"/>
-                                           <field name="yfyczktext" placeholder="孕娠状况其它说明" attrs="{'invisible':[('yfyczk','!=','3')]}"/>
+                                            <field name="yfyczk"/>
+                                            <field name="yfyczktext" placeholder="孕娠状况其它说明"
+                                                   attrs="{'invisible':[('yfyczk','!=','3')]}"/>
                                         </div>
 
                                         <field name="yfissgyr"/>
                                         <label for="yfcsjc" string="超声检查"/>
                                         <div>
-                                             <field name="yfcsjc"/>
-                                            <field name="yfcsjctext" placeholder="超声检查异常说明" attrs="{'invisible':[('yfcsjc','!=','1')]}"/>
+                                            <field name="yfcsjc"/>
+                                            <field name="yfcsjctext" placeholder="超声检查异常说明"
+                                                   attrs="{'invisible':[('yfcsjc','!=','1')]}"/>
                                         </div>
 
 
                                     </group>
                                     <group>
-                                         <label for="yfxqsc" string="血清筛查"/>
+                                        <label for="yfxqsc" string="血清筛查"/>
                                         <div>
                                             <field name="yfxqsc"/>
-                                            <field name="yfxqsctext" placeholder="血清筛查风险提示" attrs="{'invisible':[('yfxqsc','!=','1')]}"/>
+                                            <field name="yfxqsctext" placeholder="血清筛查风险提示"
+                                                   attrs="{'invisible':[('yfxqsc','!=','1')]}"/>
                                         </div>
 
                                         <field name="yfyyjrxccss"/>
@@ -205,8 +214,9 @@
                                     <group>
                                         <label for="yfxbzl" string="细胞治疗"/>
                                         <div>
-                                             <field name="yfxbzl"/>
-                                             <field name="yfxbzltext" placeholder="细胞治疗说明" attrs="{'invisible':[('yfxbzl','!=','1')]}"/>
+                                            <field name="yfxbzl"/>
+                                            <field name="yfxbzltext" placeholder="细胞治疗说明"
+                                                   attrs="{'invisible':[('yfxbzl','!=','1')]}"/>
                                         </div>
 
 
@@ -216,12 +226,14 @@
                                         <label for="yfzlfz" string="肿瘤患者"/>
                                         <div>
                                             <field name="yfzlfz"/>
-                                            <field name="yfzlfztext" placeholder="肿瘤患者说明" attrs="{'invisible':[('yfzlfz','!=','1')]}"/>
+                                            <field name="yfzlfztext" placeholder="肿瘤患者说明"
+                                                   attrs="{'invisible':[('yfzlfz','!=','1')]}"/>
                                         </div>
                                         <label for="yfynnytsx" string="一年内异体输血"/>
                                         <div>
                                             <field name="yfynnytsx"/>
-                                            <field name="yfynnytsxtext" placeholder="一年内异体输血说明" attrs="{'invisible':[('yfynnytsx','!=','1')]}"/>
+                                            <field name="yfynnytsxtext" placeholder="一年内异体输血说明"
+                                                   attrs="{'invisible':[('yfynnytsx','!=','1')]}"/>
                                         </div>
 
 
@@ -258,7 +270,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"/>
+                                <field name="name" attrs="{'readonly':True}"/>
                                 <field name="yfxm"/>
                                 <field name="cx_date"/>
                                 <field name="yfage"/>
@@ -296,12 +308,12 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"/>
+                                <field name="name" attrs="{'readonly':True}"/>
                                 <field name="yfxm"/>
                                 <field name="cx_date"/>
                                 <field name="yfage"/>
                                 <field name="yfyzweek"/>
-                                 <field name="yftelno"/>
+                                <field name="yftelno"/>
                                 <field name="cxys"/>
                                 <field name="lib_notice"/>
                                 <field name="cs_notice"/>

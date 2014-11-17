@@ -32,10 +32,10 @@ class rhwl_partner(osv.osv):
         "zydb": fields.many2one('res.users', string=u'驻院代表'),
         "amt": fields.float(u'收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
         "sfdw": fields.many2one('res.partner', string=u'收费单位', domain=[('is_company', '=', True)]),
-        "sncjrs": fields.float(u'上年产检人数', digits_compute=0),
-        "snwcrs": fields.float(u'上年无创人数', digits_compute=0),
-        "jnmbrs": fields.float(u'今年目标人数', digits_compute=0),
-        "jnsjrs": fields.float(u'今年实际人数', digits_compute=0, readonly=True),
+        "sncjrs": fields.integer(u'上年产检人数'),
+        "snwcrs": fields.integer(u'上年无创人数'),
+        "jnmbrs": fields.integer(u'今年目标人数'),
+        "jnsjrs": fields.integer(u'今年实际人数', readonly=True),
         "qyks": fields.char(u"签约科室", size=50),
         "jzds": fields.selection([(u'贝瑞', u'贝瑞'), (u'华大', u'华大'), ], u"竞争对手"),
         "mbjysj": fields.date(u'目标进院时间'),
@@ -44,6 +44,7 @@ class rhwl_partner(osv.osv):
                                      string=u'学历'),
         "yjfx": fields.char(u"研究方向", size=100),
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
+        "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
     }
 
     _defaults = {
@@ -72,15 +73,17 @@ class rhwl_partner(osv.osv):
         if vals.get("customer") and vals.get("is_company"):
             stock_warehouse = self.pool.get("stock.warehouse")
 
-            default_id = stock_warehouse.search(cr, uid, [('partner_id', '=', partner.partner_id.id)], context=context)
+            default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', partner.partner_id.id)],
+                                                context=context)
             if not default_id:
                 raise osv.except_osv(_('Error'), u"没有找到归属当前公司的仓库。")
             val["default_resupply_wh_id"] = default_id[0]
             val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
-            wh = stock_warehouse.search(cr, uid, [('code', '=', vals.get("partner_unid")), ('partner_id', '=', id)],
+            wh = stock_warehouse.search(cr, SUPERUSER_ID,
+                                        [('code', '=', vals.get("partner_unid")), ('partner_id', '=', id)],
                                         context=context)
             if not wh:
-                id_s = stock_warehouse.create(cr, uid, val, context=context)
+                id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
                 # v = stock_warehouse.browse(cr,uid,id_s,context=context)
                 # v.resupply_wh_ids = [[6,False,[default_id[0]]]]
                 # stock_warehouse.write(cr,uid,id_s,v,context=context)
