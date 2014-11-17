@@ -2006,7 +2006,7 @@
 .openerp .oe_form td.oe_form_group_cell_label label {
   line-height: 18px;
   display: block;
-  min-width: 150px;
+  /*min-width: 150px;*/
   font-weight: bold !important;
 }
 .openerp .oe_form td.oe_form_group_cell + .oe_form_group_cell {
