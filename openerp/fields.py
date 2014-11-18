@@ -125,6 +125,9 @@ class Field(object):
             ``one2many`` and computed fields, including property fields and
             related fields)
 
+        :param string oldname: the previous name of this field, so that ORM can rename
+            it automatically at migration
+
         .. _field-computed:
 
         .. rubric:: Computed fields
@@ -199,9 +202,12 @@ class Field(object):
 
         :param related: sequence of field names
 
-        The value of some attributes from related fields are automatically taken
-        from the source field, when it makes sense. Examples are the attributes
-        `string` or `selection` on selection fields.
+        Some field attributes are automatically copied from the source field if
+        they are not redefined: `string`, `help`, `readonly`, `required` (only
+        if all fields in the sequence are required), `groups`, `digits`, `size`,
+        `translate`, `sanitize`, `selection`, `comodel_name`, `domain`,
+        `context`. All semantic-free attributes are copied from the source
+        field.
 
         By default, the values of related fields are not stored to the database.
         Add the attribute ``store=True`` to make it stored, just like computed
@@ -341,30 +347,36 @@ class Field(object):
         # traverse the class hierarchy upwards, and take the first field
         # definition with a default or _defaults for self
         for klass in cls.__mro__:
-            field = klass.__dict__.get(name, self)
-            if not isinstance(field, type(self)):
-                return      # klass contains another value overridden by self
+            if name in klass.__dict__:
+                field = klass.__dict__[name]
+                if not isinstance(field, type(self)):
+                    # klass contains another value overridden by self
+                    return
 
-            if 'default' in field._attrs:
-                # take the default in field, and adapt it for cls._defaults
-                value = field._attrs['default']
-                if callable(value):
-                    self.default = value
-                    cls._defaults[name] = lambda model, cr, uid, context: \
-                        self.convert_to_write(value(model.browse(cr, uid, [], context)))
-                else:
-                    self.default = lambda recs: value
-                    cls._defaults[name] = value
-                return
+                if 'default' in field._attrs:
+                    # take the default in field, and adapt it for cls._defaults
+                    value = field._attrs['default']
+                    if callable(value):
+                        from openerp import api
+                        self.default = value
+                        cls._defaults[name] = api.model(
+                            lambda recs: self.convert_to_write(value(recs))
+                        )
+                    else:
+                        self.default = lambda recs: value
+                        cls._defaults[name] = value
+                    return
 
             defaults = klass.__dict__.get('_defaults') or {}
             if name in defaults:
                 # take the value from _defaults, and adapt it for self.default
                 value = defaults[name]
-                value_func = value if callable(value) else lambda *args: value
+                if callable(value):
+                    func = lambda recs: value(recs._model, recs._cr, recs._uid, recs._context)
+                else:
+                    func = lambda recs: value
                 self.default = lambda recs: self.convert_to_cache(
-                    value_func(recs._model, recs._cr, recs._uid, recs._context),
-                    recs, validate=False,
+                    func(recs), recs, validate=False,
                 )
                 cls._defaults[name] = value
                 return
@@ -414,6 +426,7 @@ class Field(object):
         # put invalidation triggers on model dependencies
         for dep_model_name, field_names in model._depends.iteritems():
             dep_model = env[dep_model_name]
+            dep_model._setup_fields()
             for field_name in field_names:
                 field = dep_model._fields[field_name]
                 field._triggers.add((self, None))
@@ -432,8 +445,8 @@ class Field(object):
         recs = env[self.model_name]
         fields = []
         for name in self.related:
+            recs._setup_fields()
             field = recs._fields[name]
-            field.setup(env)
             recs = recs[name]
             fields.append(field)
 
@@ -455,6 +468,11 @@ class Field(object):
         for attr, prop in self.related_attrs:
             if not getattr(self, attr):
                 setattr(self, attr, getattr(field, prop))
+
+        for attr in field._free_attrs:
+            if attr not in self._free_attrs:
+                self._free_attrs.append(attr)
+                setattr(self, attr, getattr(field, attr))
 
         # special case for required: check if all fields are required
         if not self.store and not self.required:
@@ -494,6 +512,11 @@ class Field(object):
     _related_readonly = property(attrgetter('readonly'))
     _related_groups = property(attrgetter('groups'))
 
+    @property
+    def base_field(self):
+        """ Return the base field of an inherited field, or `self`. """
+        return self.related_field if self.inherited else self
+
     #
     # Setup of non-related fields
     #
@@ -529,6 +552,7 @@ class Field(object):
         env = model.env
         head, tail = path1[0], path1[1:]
 
+        model._setup_fields()
         if head == '*':
             # special case: add triggers on all fields of model (except self)
             fields = set(model._fields.itervalues()) - set([self])
@@ -540,8 +564,6 @@ class Field(object):
                 _logger.debug("Field %s is recursively defined", self)
                 self.recursive = True
                 continue
-
-            field.setup(env)
 
             #_logger.debug("Add trigger on %s to recompute %s", field, self)
             field._triggers.add((self, '.'.join(path0 or ['id'])))
@@ -601,7 +623,8 @@ class Field(object):
 
     def _description_string(self, env):
         if self.string and env.lang:
-            name = "%s,%s" % (self.model_name, self.name)
+            field = self.base_field
+            name = "%s,%s" % (field.model_name, field.name)
             trans = env['ir.translation']._get_source(name, 'field', env.lang)
             return trans or self.string
         return self.string
@@ -932,6 +955,11 @@ class Boolean(Field):
 
 class Integer(Field):
     type = 'integer'
+    group_operator = None       # operator for aggregating values
+
+    _related_group_operator = property(attrgetter('group_operator'))
+
+    _column_group_operator = property(attrgetter('group_operator'))
 
     def convert_to_cache(self, value, record, validate=True):
         if isinstance(value, dict):
@@ -960,6 +988,7 @@ class Float(Field):
     type = 'float'
     _digits = None              # digits argument passed to class initializer
     digits = None               # digits as computed by setup()
+    group_operator = None       # operator for aggregating values
 
     def __init__(self, string=None, digits=None, **kwargs):
         super(Float, self).__init__(string=string, _digits=digits, **kwargs)
@@ -978,11 +1007,13 @@ class Float(Field):
         self._setup_digits(env)
 
     _related_digits = property(attrgetter('digits'))
+    _related_group_operator = property(attrgetter('group_operator'))
 
     _description_digits = property(attrgetter('digits'))
 
     _column_digits = property(lambda self: not callable(self._digits) and self._digits)
     _column_digits_compute = property(lambda self: callable(self._digits) and self._digits)
+    _column_group_operator = property(attrgetter('group_operator'))
 
     def convert_to_cache(self, value, record, validate=True):
         # apply rounding here, otherwise value in cache may be wrong!
@@ -1617,7 +1648,9 @@ class One2many(_RelationalMulti):
 
         if self.inverse_name:
             # link self to its inverse field and vice-versa
-            invf = env[self.comodel_name]._fields[self.inverse_name]
+            comodel = env[self.comodel_name]
+            comodel._setup_fields()
+            invf = comodel._fields[self.inverse_name]
             # In some rare cases, a `One2many` field can link to `Int` field
             # (res_model/res_id pattern). Only inverse the field if this is
             # a `Many2one` field.

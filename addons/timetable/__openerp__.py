@@ -40,7 +40,7 @@
     'test':[
         "test/timetable.yml"
     ],
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     "application": True,
 }
