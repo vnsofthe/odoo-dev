@@ -134,12 +134,10 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <xpath expr="//page[@name='accounting']" position="attributes">
-                        <attribute name="attrs">{'invisible':[('is_company','=',False),('supplier','=',False)]}
-                        </attribute>
+                        <attribute name="attrs">{'invisible':[('is_company','=',False),('supplier','=',False)]}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='is_deliver']" position="attributes">
-                        <attribute name="attrs">
-                            {'readonly':[('supplier','=',False)],'invisible':[('supplier','=',False)]}</attribute>
+                        <attribute name="attrs">{'readonly':[('supplier','=',False)],'invisible':[('supplier','=',False)]}</attribute>
                     </xpath>
 
                     <xpath expr="//page[@name='sales_purchases']//field[@name='customer']" position="attributes">
