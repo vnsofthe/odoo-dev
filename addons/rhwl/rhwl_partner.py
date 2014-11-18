@@ -4,6 +4,7 @@ from openerp import SUPERUSER_ID
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
+from openerp import tools, api
 import datetime
 
 
@@ -26,8 +27,9 @@ class rhwl_partner(osv.osv):
         "cust_level": fields.selection(
             [('AA', u'省级、地级市产前诊断中心；大型筛查机构(筛查量1万以上)'), ('AB', u'县级市产前诊断中心、一般筛查机构、分娩5000以上的医院、有能力的三甲医院'),
              ('BC', u'年分娩量1500-3000的医院'), ('CC', u'年分娩量1500以下的医院')], u'客户级别'),
-        "hospital_level": fields.selection([(u'二级以下', u'二级以下'), (u'二乙', u'二乙'), (u'二甲', u'二甲'), (u'三甲', u'三甲')],
-                                           u'医院等级'),
+        "hospital_level": fields.selection(
+            [(u'三甲', u'三甲'), (u'三级', u'三级'), (u'二甲', u'二甲'), (u'二乙', u'二乙'), (u'一级', u'一级'), (u'卫生服务中心', u'卫生服务中主')],
+            u'医院等级'),
         "cust_type": fields.selection([(u'私立', u'私立'), (u'公立', u'公立')], u'客户性质'),
         "zydb": fields.many2one('res.users', string=u'驻院代表'),
         "amt": fields.float(u'收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
@@ -36,15 +38,22 @@ class rhwl_partner(osv.osv):
         "snwcrs": fields.integer(u'上年无创人数'),
         "jnmbrs": fields.integer(u'今年目标人数'),
         "jnsjrs": fields.integer(u'今年实际人数', readonly=True),
-        "qyks": fields.char(u"签约科室", size=50),
-        "jzds": fields.selection([(u'贝瑞', u'贝瑞'), (u'华大', u'华大'), ], u"竞争对手"),
+        "qyks": fields.selection([(u'产科', u'产科'), (u'妇产科', u'妇产科'), (u'遗传科', u'遗传科')], u"签约科室"),
+        "jzds": fields.selection([(u'人和', u'人和'), (u'华大', u'华大'), (u'贝瑞', u'贝瑞'), (u'凡迪', u'凡迪'), ('0', u'其它')],
+                                 u"客户占有"),
+        "jzdsother": fields.char(size=20),
         "mbjysj": fields.date(u'目标进院时间'),
         "sjjysj": fields.date(u'实际进院时间'),
-        "eduction": fields.selection([(u'中专', u'中专'), (u'专科', u'专科'), (u'本科', u'本科'), (u'硕士', u'硕士'), (u'博士', u'博士')],
+        "eduction": fields.selection([(u'博士', u'博士'), (u'硕士', u'硕士'), (u'本科', u'本科'), (u'专科', u'专科'), (u'中专', u'中专'), ],
                                      string=u'学历'),
         "yjfx": fields.char(u"研究方向", size=100),
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
         "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
+        "city_id": fields.many2one("res.country.state.city", string=u"城市"),
+        'function_sel': fields.selection(
+            [(u"主任", u"主任"), (u"副主任", u"副主任"), (u"主治", u"主治"), (u'住院', u'住院'), (u'护士长', u'护士长'), (u'护士', u'护士'),
+             (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),
+
     }
 
     _defaults = {
@@ -54,6 +63,44 @@ class rhwl_partner(osv.osv):
     _sql_constraints = [
         ("partner_unid_uniq", "unique(partner_unid)", u"编号必须为唯一!"),
     ]
+
+    def onchange_city_id(self, cr, uid, ids, city, arg, newid, context=None):
+        if not city:
+            return {
+                "value": {
+                    "city": '',
+                }
+            }
+        city_obj = self.pool.get("res.country.state.city").browse(cr, SUPERUSER_ID, city, context=context)
+        state_code = city_obj.state_id.code
+        city_code = city_obj.code
+        if arg and not newid:
+            cr.execute("select max(partner_unid) from res_partner where partner_unid like '%s'" % (
+            state_code + city_code + '%',))
+            for unid in cr.fetchall():
+                max_id = unid[0]
+            if max_id:
+                max_id = max_id[:4] + str(int(max_id[4:]) + 1).zfill(4)
+            else:
+                max_id = state_code + city_code + '0001'
+
+        res = {
+            "value": {
+                "city": city_obj.name
+            }
+        }
+        if arg and not newid:
+            res['value']['partner_unid'] = max_id
+        return res
+
+    @api.multi
+    def onchange_state(self, state_id):
+        val = super(rhwl_partner, self).onchange_state(state_id)
+        if not val.has_key('value'):
+            val['value'] = {}
+        val['value']['city_id'] = False
+        val['value']['city'] = ''
+        return val
 
     def create(self, cr, uid, vals, context=None):
 
@@ -90,3 +137,12 @@ class rhwl_partner(osv.osv):
         return id
 
 
+class rhwl_country_state_city(osv.osv):
+    _name = "res.country.state.city"
+
+    _columns = {
+        "state_id": fields.many2one("res.country.state", string="State"),
+        "code": fields.char("Code", size=10),
+        "name": fields.char("Name", size=20),
+
+    }
