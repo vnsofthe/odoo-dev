@@ -7,8 +7,11 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <data>
-                    <xpath expr="//field[@name='is_company']" position="attributes">
-                        <attribute name="attrs">{'invisible':True}</attribute>
+                    <xpath expr="//form[@string='Partners']/sheet/div/div[@class='oe_edit_only']" position="replace">
+                        <div class="oe_edit_only">
+                            <label for="name"/>
+                            <field name="is_company" on_change="onchange_type(is_company)" class="oe_inline" attrs="{'invisible':True}"/>
+                        </div>
                     </xpath>
                     <xpath expr="//field[@name='parent_id']" position="before">
                         <field name="partner_unid" placeholder="编号,可根据省市自动生成"

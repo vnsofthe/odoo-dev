@@ -59,6 +59,8 @@ class rhwl_partner(osv.osv):
     _defaults = {
         "date": fields.date.today,
         "amt": 0,
+        "dev_user_id": lambda obj, cr, uid, context: uid,
+        "user_id":lambda obj, cr, uid, context: uid,
     }
     _sql_constraints = [
         ("partner_unid_uniq", "unique(partner_unid)", u"编号必须为唯一!"),
