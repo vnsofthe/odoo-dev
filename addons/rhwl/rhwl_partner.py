@@ -103,7 +103,6 @@ class rhwl_partner(osv.osv):
         return val
 
     def create(self, cr, uid, vals, context=None):
-
         id = super(rhwl_partner, self).create(cr, uid, vals, context)
         partner = self.pool.get("res.company").search(cr, uid, [("id", '=', vals.get("company_id"))], context=context)
         if not partner:
@@ -117,6 +116,7 @@ class rhwl_partner(osv.osv):
             "buy_to_resupply": False,
             "default_resupply_wh_id": 0
         }
+
         if vals.get("customer") and vals.get("is_company"):
             stock_warehouse = self.pool.get("stock.warehouse")
 

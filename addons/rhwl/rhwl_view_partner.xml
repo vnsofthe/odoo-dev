@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='is_company']" position="attributes">
-                        <attribute name="attrs">{'readonly':True}</attribute>
+                        <attribute name="attrs">{'invisible':True}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='parent_id']" position="before">
                         <field name="partner_unid" placeholder="编号,可根据省市自动生成"

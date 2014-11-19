@@ -48,19 +48,26 @@ class rhwl_express(osv.osv):
             res = []
 
         res = [x for x in res if x]
-        return ','.join(res) or ""
+        return (id,','.join(res) or "")
 
     def _get_addr(self, cr, uid, context=None):
         """新增时，带出作业人员对应的联系地址。"""
-        return self._get_partner_address(cr, uid, uid, context)
+        return self._get_partner_address(cr, uid, uid, context)[1]
 
     def get_address(self, cr, uid, ids, user, colname, context=None):
         """人员栏位修改时，带出对应的联系地址。"""
-        return {
-            "value": {
-                colname: self._get_partner_address(cr, uid, user, context),
+        res = self._get_partner_address(cr, uid, user, context)
+        val = {
+            "value":{
+                 colname: res[1]
             }
         }
+        if colname=='deliver_addr':
+            val['value']['deliver_partner']=res[0]
+        elif colname=="receiv_addr":
+            val['value']['receiv_partner']=res[0]
+
+        return val
 
     def get_num_express(self, cr, uid, ids, deliver, context=None):
         partner = self.pool.get("res.partner").browse(cr, uid, deliver, context=context)
@@ -138,9 +145,11 @@ class rhwl_express(osv.osv):
     _columns = {
         "deliver_user": fields.many2one('res.users', string=u'发货人员'),
         "deliver_addr": fields.char(size=120, string=u"发货地址"),
+        "deliver_partner":fields.many2one("res.partner",string=u"发货医院",domain=[('is_company','=',True),('customer','=',True)]),
         "receiv_user": fields.many2one('res.users', string=u'收货人员'),
         "receiv_date": fields.datetime('Date Receiv', required=True),
         "receiv_addr": fields.char(size=120, string=u"收货地址"),
+        "receiv_partner":fields.many2one("res.partner",string=u"收货医院",domain=[('is_company','=',True),('customer','=',True)]),
         "product_id": fields.many2one('product.product', 'Product',
                                       domain=[('sale_ok', '=', True), ("active", "=", True)], required=True,
                                       change_default=True),
@@ -164,6 +173,10 @@ class rhwl_express(osv.osv):
         "product_id": _get_product_id,
     }
 
+    def create(self, cr, uid, vals, context=None):
+        if vals['product_qty']==0 and vals['detail_ids'].__len__()>0:
+            vals['product_qty'] =  vals['detail_ids'].__len__()
+        return super(rhwl_express,self).create(cr,uid,vals,context=context)
 
 class rhwl_express_in(osv.osv):
     _name = "stock.picking.express.detail"

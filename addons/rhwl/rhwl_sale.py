@@ -25,8 +25,8 @@ class rhwl_sample_info(osv.osv):
             [(7, u'7点'), (8, u'8点'), (9, u'9点'), (10, u'10点'), (11, u'11点'), (12, u'12点'), (13, u'13点'), (14, u'14点'),
              (15, u'15点'), (16, u'16点'), (17, u'17点'), (18, u'18点'), (19, u'19点'), (20, u'20点')], u'时间', required=True),
         "receiv_user": fields.many2one('res.users', string=u'收样人员'),
-        "state_id": fields.many2one('res.country.state', string=u'样品区域（省）'),
-        "city": fields.char(u"样品区域（市)"),
+        "state_id": fields.many2one('res.country.state', string=u'样品区域（省）',domain="[('country_id.code','=','CN')]"),
+        "city_id": fields.many2one("res.country.state.city", string=u"样品区域（市)",domain="[('state_id','=',state_id)]"),
         "lyyy": fields.many2one('res.partner', string=u'来源医院',
                                 domain="[('is_company', '=', True), ('customer', '=', True)]"),
         "cxyy": fields.many2one('res.partner', string=u'采血医院',
@@ -84,7 +84,7 @@ class rhwl_sample_info(osv.osv):
         "yfynnytsxtext": fields.char(u'一年内异体输血说明', size=20),
         "yftsqkbz": fields.char(u'特殊情况备注', size=100),
         "note": fields.text(u'备注'),
-        "state": fields.selection([('draft', u'草稿'), ('done', u'完成'), ('cancel', u'取消')], u'状态'),
+        "state": fields.selection([('draft', u'草稿'), ('done', u'确认'),('checkok',u'检验完成'), ('cancel', u'取消')], u'状态'),
         "check_state": fields.selection(
             [(u'已接收', u'已接收'), (u'已进实验室', u'已进实验室'), (u'已上机', u'已上机'), (u'需重采血', u'需重采血'), (u'检验结果正常', u'检验结果正常'),
              (u'检验结果阳性', u'检验结果阳性')], u'检验状态'),
@@ -174,14 +174,17 @@ class rhwl_sample_info(osv.osv):
         if not express:
             return {}
         vals = {}
-        id = self.pool.get("res.partner").search(cr, uid, [("zydb", "=", express.deliver_user.id)],
+        if express.deliver_partner:
+            id = express.deliver_partner.id
+        else:
+            id = self.pool.get("res.partner").search(cr, uid, [("zydb", "=", express.deliver_user.id)],
                                                  context=context)  # 检查用户是否为某客户的驻院代表
         partner = self.pool.get("res.partner").browse(cr, uid, id, context=context)
         if id:
             vals["lyyy"] = id
             vals["cxyy"] = id
             vals["state_id"] = partner.state_id
-            vals["city"] = partner.city
+            vals["city_id"] = partner.city_id
         else:
             user = self.pool.get('res.users').browse(cr, uid, express.deliver_user.id, context=context)
             if user.partner_id:
@@ -189,8 +192,22 @@ class rhwl_sample_info(osv.osv):
                     vals["lyyy"] = user.partner_id.parent_id.id
                     vals["cxyy"] = user.partner_id.parent_id.id
                     vals["state_id"] = user.partner_id.parent_id.state_id
-                    vals["city"] = user.partner_id.parent_id.city
-
+                    vals["city_id"] = user.partner_id.parent_id.city_id
+        vals['is_reused']='0'
+        vals['is_free']='0'
+        for i in express.detail_ids:
+            if i.number_seq==name:
+                if i.number_seq_ori:
+                    vals['is_reused']='1'
+                    seq_id = self.search(cr,uid,[('name','=',i.number_seq_ori)],context=context)
+                    if seq_id:
+                        se_obj = self.browse(cr,uid,seq_id,context=context)
+                        vals['reuse_name']=se_obj.id
+                        vals['yfxm'] = se_obj.yfxm
+                        vals['yfzjmc'] = se_obj.yfzjmc
+                        vals['yfzjmc_no'] = se_obj.yfzjmc_no
+                        vals['yftelno'] = se_obj.yftelno
+                    break
         return {
             "value": vals
         }
@@ -198,9 +215,28 @@ class rhwl_sample_info(osv.osv):
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
 
+    def action_check_ok(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': u"检验结果正常"}, context=context)
+
+    def action_check_reused(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': u'需重采血'}, context=context)
+        for i in ids:
+            self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+
+    def action_check_except(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': u"检验结果阳性"}, context=context)
+        for i in ids:
+            self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+
     def action_done(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'done'}, context=context)
         cxys = self.browse(cr, uid, ids, context=context)
+
+        #如果样品是重采血，则将原来的重采血样品状态改为已重采血
+        if cxys.reuse_name:
+            reuse = self.pool.get("sale.sampleone.reuse").search(cr,uid,[('name','=',cxys.reuse_name.id)],context=context)
+            if reuse:
+                self.pool.get("sale.sampleone.reuse").write(cr,SUPERUSER_ID,reuse,{'state':'reuse'})
 
         warehouse = self.pool.get("stock.warehouse")
         w_id = warehouse.search(cr, uid, [("partner_id", "=", cxys.cxyy.id)], context=context)
@@ -224,17 +260,24 @@ class rhwl_sample_info(osv.osv):
 
         express = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", cxys.name)],
                                                                 context=context)
-        if not express:
-            raise osv.except_osv(_("Error"), u"找不到此样品编号的物流信息，不可以做确认。")
-        express = self.pool.get("stock.picking.express").browse(cr, uid, express, context=context)
-        if isinstance(express, (list, tuple)):
-            express = express[0]
+        if express:
+            express = self.pool.get("stock.picking.express").browse(cr, uid, express, context=context)
+            if isinstance(express, (list, tuple)):
+                express = express[0]
+            pid = express.product_id.id
+        else:
+            pid = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True), ("active", "=", True)],
+                                                             context=context)
+            if isinstance(pid, (list, tuple)):
+                pid = pid[0]
         orderline = self.pool.get("sale.order.line")
-        orderline_id = orderline.create(cr, uid, {"order_id": order_id, "product_id": express.product_id.id,
+        orderline_id = orderline.create(cr, uid, {"order_id": order_id, "product_id": pid,
                                                   "price_unit": amt, "product_uom_qty": 1}, context=context)
         self.pool.get("sale.order").write(cr, uid, order_id, {'order_line': [(6, 0, [orderline_id])]})
-        self.pool.get("sale.order").action_button_confirm(cr, SUPERUSER_ID, order_id)
-
+        self.pool.get("sale.order").action_button_confirm(cr, SUPERUSER_ID, (order_id,))
+        move_obj = self.pool.get("stock.move")
+        move_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('origin','=',self.pool.get("sale.order").browse(cr,SUPERUSER_ID,order_id,context=context).name)],context=context)
+        move_obj.action_done(cr,SUPERUSER_ID,move_id,context=context)
 
 class rhwl_reuse(osv.osv):
     _name = "sale.sampleone.reuse"
@@ -264,7 +307,7 @@ class rhwl_reuse(osv.osv):
         "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
         "yfyzweek": fields.related('name', 'yfyzweek', type='integer', string=u'孕周', readonly=1),
         "yftelno": fields.related('name', 'yftelno', type='char', string=u'孕妇电话', readonly=1),
-        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医院', readonly=1),
+        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医生', readonly=1),
         "notice_user": fields.many2one("res.users", u"通知人员"),
         "notice_date": fields.date(u"通知日期"),
         "reuse_note": fields.char(u"重采原因", size=200),
@@ -281,10 +324,10 @@ class rhwl_reuse(osv.osv):
     }
 
     def action_done(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        self.write(cr, uid, ids, {'state': 'done','notice_user':uid}, context=context)
 
     def action_cancel(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+        self.write(cr, uid, ids, {'state': 'cancel','notice_user':uid}, context=context)
 
 
 class rhwl_exception(osv.osv):
@@ -298,7 +341,7 @@ class rhwl_exception(osv.osv):
         "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
         "yfyzweek": fields.related('name', 'yfyzweek', type='integer', string=u'孕周', readonly=1),
         "yftelno": fields.related('name', 'yftelno', type='char', string=u'孕妇电话', readonly=1),
-        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医院', readonly=1),
+        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医生', readonly=1),
         "lib_notice": fields.char(u"无创结论", size=100),
         "cs_notice": fields.char(u"客服备注", size=100),
         "notice_user": fields.many2one("res.users", u"通知人员"),

@@ -13,7 +13,7 @@
                     <field name="is_free"/>
                     <field name="check_state"/>
                     <field name="state_id"/>
-                    <field name="city"/>
+                    <field name="city_id"/>
                     <field name="lyyy"/>
                     <field name="lyys"/>
                     <field name="cxyy"/>
@@ -79,6 +79,12 @@
                                 groups="base.group_user" class="oe_highlight"/>
                         <button name="action_cancel" states="draft" string="取消" type="object"
                                 groups="base.group_user"/>
+                        <button name="action_check_ok" states="done" string="检验结果正常" type="object"
+                                groups="base.group_user"/>
+                        <button name="action_check_reused" states="done" string="需重采血" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_check_except" states="done" string="检验结果阳性" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
                     </header>
@@ -103,7 +109,7 @@
                             <group>
                                 <field name="receiv_user"/>
                                 <field name="state_id"/>
-                                <field name="city"/>
+                                <field name="city_id"/>
                                 <field name="lyyy" on_change="onchange_lyyy()"/>
                                 <field name="lyys" on_change="onchange_ys(lyyy,cxyy,lyys,'cxys')"/>
                                 <field name="cxyy" on_change="onchange_cxyy()"/>
@@ -249,7 +255,7 @@
                     </sheet>
                     <footer>
                         <field name="check_state" widget="statusbar"
-                               statusbar_colors='{u"需重采血"":"red",u"检验结果阳性":"red",u"检验结果正常":"blue"}' readonly="1"/>
+                               statusbar_colors='{"需重采血":"red","检验结果阳性":"red","检验结果正常":"blue"}' readonly="1"/>
                     </footer>
                 </form>
             </field>
