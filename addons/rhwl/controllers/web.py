@@ -4,6 +4,7 @@ from openerp import http
 from openerp.http import request
 from openerp.addons.base.res.res_users import res_users
 import json
+import simplejson
 class WebClient(http.Controller):
     @http.route('/web/applogin', type='http', auth="none")
     def login(self):
@@ -60,3 +61,12 @@ class WebClient(http.Controller):
 
         response = request.make_response(json.dumps(res), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
+
+    @http.route('/web/api/hospital', type='http', auth="none")
+    def hospital(self):
+        request.session.db = "test"
+        request.session.authenticate(request.session.db,"admin","123")
+        data = request.session.model("res.partner").get_hospital()
+        return json.dumps(data,ensure_ascii=False)
+        #response = request.make_response(simplejson.dumps(data), [('Content-Type', 'application/json;charset=utf-8')])
+        #return response.make_conditional(request.httprequest)

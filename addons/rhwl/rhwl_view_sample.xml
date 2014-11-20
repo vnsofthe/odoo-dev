@@ -438,10 +438,12 @@
             </field>
         </record>
         <menuitem id="menu_sale_sample" parent="base.menu_sales" name="Sample Information" sequence="10"
-                  action='action_sale_sample' groups="base.group_sale_salesman"/>
+                  action='action_sale_sample' groups="base.group_sale_salesman,base.group_portal"/>
         <menuitem id="menu_sale_sample_reuse" parent="base.menu_sales" name="Again Blood" sequence="11"
                   action='action_sale_sample_reuse' groups="base.group_sale_salesman"/>
         <menuitem id="menu_sale_sample_exception" parent="base.menu_sales" name="Excep Information" sequence="12"
                   action='action_sale_sample_exception' groups="base.group_sale_salesman"/>
+        <menuitem name="Sample Information" id="menu_sale_sample_portal" parent="portal.portal_orders"
+            action="action_sale_sample" sequence="5"/>
     </data>
 </openerp>

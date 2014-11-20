@@ -1,7 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_sale_sample,sale.sample,model_sale_sampleone,base.group_sale_salesman,1,1,1,1
+access_sale_sample_portal,sale_sample_portal,model_sale_sampleone,base.group_portal,1,0,0,0
 access_stock_picking_express,stock_picking_express,model_stock_picking_express,stock.group_stock_user,1,1,1,1
 access_stock_picking_express_detail,stock_picking_express_detail,model_stock_picking_express_detail,stock.group_stock_user,1,1,1,1
+access_stock_picking_express_all,stock_picking_express_all,model_stock_picking_express,,1,0,0,0
+access_stock_picking_express_detail_all,stock_picking_express_detail_all,model_stock_picking_express_detail,,1,0,0,0
 access_sale_sampleone_reuse,sale_sampleone_reuse,model_sale_sampleone_reuse,base.group_sale_salesman,1,1,0,0
 access_sale_sampleone_exception,sale_sampleone_exception,model_sale_sampleone_exception,base.group_sale_salesman,1,1,0,0
 access_res_country_state_city,res_country_state_city,model_res_country_state_city,,1,0,0,0

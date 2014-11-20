@@ -171,6 +171,7 @@ class rhwl_express(osv.osv):
         "deliver_addr": _get_addr,
         "deliver_id": _get_first_deliver,
         "product_id": _get_product_id,
+        "num_express": lambda obj,cr, uid,context: "0000000000"
     }
 
     def create(self, cr, uid, vals, context=None):

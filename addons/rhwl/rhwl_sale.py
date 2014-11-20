@@ -252,7 +252,7 @@ class rhwl_sample_info(osv.osv):
             "date_order": cxys.cx_date,
         }
         order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
-        if cxys.is_free == '1':
+        if cxys.is_free == '0':
             partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
             amt = partner.amt
         else:

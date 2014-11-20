@@ -105,21 +105,28 @@ class rhwl_partner(osv.osv):
         return val
 
     def create(self, cr, uid, vals, context=None):
+        if not vals.get('partner_unid'):
+            vals['partner_unid'] = datetime.datetime.now().__str__().replace('-','').replace(' ','').replace(":",'').replace('.','')
+        if not (vals.get("customer") or vals.get("supplier")):
+            if not vals.get('parent_id'):
+               vals['parent_id'] = 1
+
         id = super(rhwl_partner, self).create(cr, uid, vals, context)
         partner = self.pool.get("res.company").search(cr, uid, [("id", '=', vals.get("company_id"))], context=context)
         if not partner:
             return id
         partner = self.pool.get("res.company").browse(cr, uid, partner, context=context)
-        val = {
-            "name": vals.get("name"),
-            "code": vals.get("name"),  # vals.get("partner_unid"),
-            "partner_id": id,
-            "company_id": vals.get("company_id"),
-            "buy_to_resupply": False,
-            "default_resupply_wh_id": 0
-        }
+
 
         if vals.get("customer") and vals.get("is_company"):
+            val = {
+                "name": vals.get("name"),
+                "code": vals.get("name"),  # vals.get("partner_unid"),
+                "partner_id": id,
+                "company_id": vals.get("company_id"),
+                "buy_to_resupply": False,
+                "default_resupply_wh_id": 0,
+              }
             stock_warehouse = self.pool.get("stock.warehouse")
 
             default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', partner.partner_id.id)],
@@ -138,6 +145,21 @@ class rhwl_partner(osv.osv):
                 # stock_warehouse.write(cr,uid,id_s,v,context=context)
         return id
 
+    def get_hospital(self,cr,uid,context=None):
+        ids = self.search(cr,uid,[('is_company','=',True),('customer','=',True)],context = context)
+        obj = self.browse(cr,uid,ids,context=context)
+        data = {}
+
+        for i in obj:
+            if i.state_id.name and i.city_id.name:
+                cus = {"name":i.name,"tel":i.phone,"website":i.website,"accept":'Y'}
+                if not data.has_key(i.state_id.name):
+                    data[i.state_id.name]={}
+                if not data[i.state_id.name].has_key(i.city_id.name):
+                    data[i.state_id.name][i.city_id.name]=[]
+                data[i.state_id.name][i.city_id.name].append(cus)
+
+        return data
 
 class rhwl_country_state_city(osv.osv):
     _name = "res.country.state.city"
