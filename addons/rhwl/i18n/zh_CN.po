@@ -10,18 +10,21 @@ msgstr "产品"
 
 #. module: rhwl
 #: model:ir.ui.menu,name:rhwl.menu_sale_sample
+#: model:ir.ui.menu,name:rhwl.menu_sale_sample_portal
 #: model:ir.actions.act_window,name:rhwl.action_sale_sample
 msgid "Sample Information"
 msgstr "样本信息表"
 
 #. module: rhwl
 #: model:ir.ui.menu,name:rhwl.menu_sale_sample_reuse
+#: model:ir.ui.menu,name:rhwl.menu_sale_sample_reuse_portal
 #: model:ir.actions.act_window,name:rhwl.action_sale_sample_reuse
 msgid "Again Blood"
 msgstr "重采血"
 
 #. module: rhwl
 #: model:ir.ui.menu,name:rhwl.menu_sale_sample_exception
+#: model:ir.ui.menu,name:rhwl.menu_sale_sample_exception_portal
 #: model:ir.actions.act_window,name:rhwl.action_sale_sample_exception
 msgid "Excep Information"
 msgstr "阳性样本"

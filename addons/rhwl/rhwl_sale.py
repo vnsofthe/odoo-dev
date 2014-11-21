@@ -5,7 +5,7 @@ from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 import datetime
-
+import rhwl_sms
 
 class rhwl_sample_info(osv.osv):
     _name = "sale.sampleone"
@@ -126,6 +126,12 @@ class rhwl_sample_info(osv.osv):
                     "is_free": "1",
                 }
             }
+        else:
+            return {
+                "value":{
+                    "is_free":"0"
+                }
+            }
 
     def onchange_lyyy(self, cr, uid, ids, context=None):
         return {
@@ -217,6 +223,11 @@ class rhwl_sample_info(osv.osv):
 
     def action_check_ok(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': u"检验结果正常"}, context=context)
+        obj = self.browse(cr,uid,ids,context=context)
+        for i in obj:
+            if i.yftelno:
+                str = u"%s您好，您在我公司进行的无创检测样品(编号%s)，经检测，结果为阴性，详细说明请与送检医院联系。谢谢!" % (i.yfxm,i.name)
+                rhwl_sms.send_sms(i.yftelno,str )
 
     def action_check_reused(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': u'需重采血'}, context=context)

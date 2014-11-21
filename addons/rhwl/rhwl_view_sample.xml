@@ -443,7 +443,12 @@
                   action='action_sale_sample_reuse' groups="base.group_sale_salesman"/>
         <menuitem id="menu_sale_sample_exception" parent="base.menu_sales" name="Excep Information" sequence="12"
                   action='action_sale_sample_exception' groups="base.group_sale_salesman"/>
+
         <menuitem name="Sample Information" id="menu_sale_sample_portal" parent="portal.portal_orders"
             action="action_sale_sample" sequence="5"/>
+         <menuitem id="menu_sale_sample_reuse_portal" parent="portal.portal_orders" name="Again Blood" sequence="6"
+                  action='action_sale_sample_reuse' />
+        <menuitem id="menu_sale_sample_exception_portal" parent="portal.portal_orders" name="Excep Information" sequence="7"
+                  action='action_sale_sample_exception'/>
     </data>
 </openerp>
