@@ -8,6 +8,7 @@ import openerp.tools.config as config
 import openerp
 from openerp import SUPERUSER_ID
 from openerp.modules.registry import RegistryManager
+import openerp.addons.web.controllers.main as db
 
 class WebClient(http.Controller):
     def get_dbname(self):
@@ -20,7 +21,6 @@ class WebClient(http.Controller):
 
     @http.route('/web/crmapp/login/', type='http', auth="public",website=True)
     def login(self,**kw):
-        print "*"*40
         if request.httprequest.data or kw:
             if request.httprequest.data:
                 data = json.loads(request.httprequest.data)
@@ -67,7 +67,7 @@ class WebClient(http.Controller):
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
-    @http.route('/web/api/hospital/', type='http', auth="public")
+    @http.route('/web/api/hospital/', type='http', auth="none")
     def hospital(self):
         request.session.db = self.get_dbname()
         registry = RegistryManager.get(request.session.db)
