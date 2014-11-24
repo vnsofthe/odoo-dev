@@ -115,28 +115,25 @@ class WebClient(http.Controller):
                             })
                     else:
                         reuseid = sampleone.search(cr,uid,[('cx_date','<',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())])
+                        temp = {}
+                        except_count=0
                         for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):
-                            if not data.has_key(i.cx_date):
-                                data[i.cx_date]
-                            data.append({
-                                "time":i.cx_date,
+                            if not temp.has_key(i.cx_date):
+                                temp[i.cx_date]=[]
+                            if i.check_state in ['reuse','except']:
+                                except_count +=1
+                            temp[i.cx_date].append({
                                 "name":i.yfxm,
                                 "code":i.name,
                                 "status":i.state
                             })
+                        data = [{"exception":str(except_count)+"个"},]
+                        for k,v in temp.items():
+                            data.append({"time":k,"datas":v})
                     cr.commit()
         else:
             data = res
 
-        data = [{"exception":"1个"},
-                {"time":"2014-11-01","datas":[{"name":"张三","code":"XBY38575945","status":"未处理"},{"name":"李四","code":"XBY38575946","status":"未处理"}]},
-                {"time":"2014-11-02","datas":[{"name":"王五","code":"XBY38575947","status":"已处理"}]}
-                ]
-        if kw and kw.get('name'):
-            data = [
-                        {"time":"2014-07-08","name":"李四","code":"XBY54545455","status":"未处理"},
-                        {"time":"2014-07-09","name":"王五","code":"XBY54545456","status":"已处理"}
-                        ]
         return json.dumps(data,ensure_ascii=False)
 
 

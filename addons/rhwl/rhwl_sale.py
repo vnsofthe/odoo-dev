@@ -86,8 +86,8 @@ class rhwl_sample_info(osv.osv):
         "note": fields.text(u'备注'),
         "state": fields.selection([('draft', u'草稿'), ('done', u'确认'),('checkok',u'检验完成'), ('cancel', u'取消')], u'状态'),
         "check_state": fields.selection(
-            [(u'已接收', u'已接收'), (u'已进实验室', u'已进实验室'), (u'已上机', u'已上机'), (u'需重采血', u'需重采血'), (u'检验结果正常', u'检验结果正常'),
-             (u'检验结果阳性', u'检验结果阳性')], u'检验状态'),
+            [('get', u'已接收'), ('library', u'已进实验室'), ('pc', u'已上机'), ('reuse', u'需重采血'), ('ok', u'检验结果正常'),
+             ('except', u'检验结果阳性')], u'检验状态'),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
