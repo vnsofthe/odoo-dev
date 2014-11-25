@@ -205,6 +205,7 @@ class WebClient(http.Controller):
                     for j in detail:
                         did = dobj.create(cr,uid,{"parent_id":mid,"number_seq":j.code,"number_seq_ori":j.preCode,"out_flag":True},context=self.CONTEXT)
                         express.write(cr,uid,mid,{'detail_ids':[[6, False, [did]]]})
+                    express.action_send(cr,uid,mid,context=self.CONTEXT)
                     data['statu'] = 200
                     cr.commit()
         else:
@@ -231,7 +232,6 @@ class WebClient(http.Controller):
                             "logIdCompany": i.num_express+"-"+i.deliver_id.name,
                             "state": i.state
                         })
-
                     cr.commit()
         else:
             data = res
@@ -253,9 +253,9 @@ class WebClient(http.Controller):
                         "receiv_real_qty":res.get("params").get("actualNumber"),
                         "receiv_real_user": uid,
                         "receiv_real_date": datetime.datetime.now(),
-                        "state":"done",
                     }
                     express.write(cr,uid,ids,data,context=self.CONTEXT)
+                    express.action_ok(cr,uid,ids,context=self.CONTEXT)
                     data['statu'] = 200
 
                     cr.commit()
@@ -316,3 +316,7 @@ class WebClient(http.Controller):
             data = res
 
         return json.dumps(data,ensure_ascii=False)
+
+    @http.route("/web/api/express/",type="http",auth="none")
+    def api_express(self,**kw):
+        pass

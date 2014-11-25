@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
+        <record model="ir.ui.view" id="rhwl_stock_picking_express_tree">
+            <field name="name">stock.picking.express.tree</field>
+            <field name="model">stock.picking.express</field>
+            <field name="inherit_id" ref="l10n_cn_express_track.stock_picking_express_tree"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='partner_id']" position="replace">
+                        <field name="is_deliver"/>
+                        <field name="is_receiv"/>
+                        <field name="deliver_user"/>
+                        <field name="receiv_user"/>
+                        <field name="state"/>
+                    </xpath>
+
+                </data>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="rhwl_stock_picking_express_form">
             <field name="name">rhwl.stock.picking.express.form</field>
             <field name="model">stock.picking.express</field>

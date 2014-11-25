@@ -96,7 +96,7 @@ class rhwl_sample_info(osv.osv):
         "is_free": lambda obj, cr, uid, context: "0",
         "fzr": lambda obj, cr, uid, context: uid,
         "yfzjmc": lambda obj, cr, uid, context: u"身份证",
-        "check_state": lambda obj, cr, uid, context: u'已接收',
+        "check_state": lambda obj, cr, uid, context: 'get',
         "yfblycs": lambda obj, cr, uid, context: "0",
         "yffqsfrsthx": lambda obj, cr, uid, context: "0",
         "yfjzycb": lambda obj, cr, uid, context: "0",
@@ -375,3 +375,17 @@ class rhwl_exception(osv.osv):
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
     }
+    def action_notice(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'notice','notice_user':uid,"notice_date":datetime.date.today(),"is_notice":True}, context=context)
+
+    def action_report(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'getreport','is_take':True}, context=context)
+
+    def action_next(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'next','is_next':True}, context=context)
+
+    def action_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)

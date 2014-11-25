@@ -72,17 +72,3 @@ class stock_picking_express(bs, osv.Model):
         'state': 'draft',
     }
 
-    def action_send(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'progress'}, context=context)
-        rec = self.browse(cr, uid, ids, context=context)
-        for i in rec.detail_ids:
-            i.write({"out_flag": True})
-
-    def action_ok(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'done'}, context=context)
-        rec = self.browse(cr, uid, ids, context=context)
-        for i in rec.detail_ids:
-            i.write({"in_flag": True})
-
-    def action_cancel(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)

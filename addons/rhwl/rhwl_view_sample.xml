@@ -309,7 +309,17 @@
             <field name="arch" type="xml">
                 <form string="Sale Sample">
                     <header>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                        <button name="action_notice" states="draft" string="已通知" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_report" states="notice,renotice" string="已取报告" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_next" states="getreport" string="已进一步诊断" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_done" states="next" string="完成" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_cancel" states="draft,notice,getreport,next" string="中止" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,notice,getreport,next,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>

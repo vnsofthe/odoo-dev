@@ -20,6 +20,7 @@ CRM业务增加模块
              "rhwl_view_express.xml",
              "rhwl_view_sample.xml",
              "rhwl_view_stock.xml",
+             "rhwl_view_product.xml",
              'security/ir.model.access.csv',
              'security/rhwl_security.xml'
     ],

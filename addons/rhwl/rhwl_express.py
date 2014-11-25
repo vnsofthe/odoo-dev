@@ -179,6 +179,31 @@ class rhwl_express(osv.osv):
             vals['product_qty'] =  vals['detail_ids'].__len__()
         return super(rhwl_express,self).create(cr,uid,vals,context=context)
 
+    def action_send(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'progress'}, context=context)
+        rec = self.browse(cr, uid, ids, context=context)
+        for i in rec.detail_ids:
+            i.write({"out_flag": True})
+        move_obj = self.pool.get("stock.move")
+        if isinstance(ids,(long,int)):
+            ids = [ids,]
+        move_ids = move_obj.search(cr,SUPERUSER_ID,[('move_dest_id.id','>',0),('state','not in',['done','cancel']),('express_no','in',ids)],context=context)
+        if move_ids:move_obj.action_done(cr, SUPERUSER_ID, move_ids, context=None)
+
+    def action_ok(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        rec = self.browse(cr, uid, ids, context=context)
+        for i in rec.detail_ids:
+            i.write({"in_flag": True})
+        move_obj = self.pool.get("stock.move")
+        if isinstance(ids,(long,int)):
+            ids = [ids,]
+        move_ids = move_obj.search(cr,SUPERUSER_ID,[('move_dest_id','=',False),('state','not in',['done','cancel']),('express_no','in',ids)],context=context)
+        if move_ids:move_obj.action_done(cr, SUPERUSER_ID, move_ids, context=None)
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+
 class rhwl_express_in(osv.osv):
     _name = "stock.picking.express.detail"
     _columns = {
