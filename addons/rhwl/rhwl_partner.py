@@ -49,7 +49,7 @@ class rhwl_partner(osv.osv):
         "yjfx": fields.char(u"研究方向", size=100),
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
         "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
-        "city_id": fields.many2one("res.country.state.city", string=u"城市"),
+        "city_id": fields.many2one("res.country.state.city", string=u"城市",required=True),
         'function_sel': fields.selection(
             [(u"主任", u"主任"), (u"副主任", u"副主任"), (u"主治", u"主治"), (u'住院', u'住院'), (u'护士长', u'护士长'), (u'护士', u'护士'),
              (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),
@@ -104,9 +104,54 @@ class rhwl_partner(osv.osv):
         val['value']['city'] = ''
         return val
 
+    def write(self, cr, uid, ids, vals, context=None):
+        id = super(rhwl_partner,self).write(cr,uid,ids,vals,context=context)
+        obj = self.browse(cr,uid,ids,context=context)
+        company = None
+        stock_warehouse = self.pool.get("stock.warehouse")
+        for i in obj:
+            if not company:
+                company = self.pool.get("res.company").search(cr, uid, [("id", '=', i.company_id.id)], context=context)
+            if company:
+                partner = self.pool.get("res.company").browse(cr, uid, company, context=context)
+                print i.customer , i.is_company , i.sjjysj
+                if i.customer and i.is_company and i.sjjysj:
+                    val = {
+                        "name": i.name,
+                        "code": i.name,  # vals.get("partner_unid"),
+                        "partner_id": i.id,
+                        "company_id": i.company_id.id,
+                        "buy_to_resupply": False,
+                        "default_resupply_wh_id": 0,
+                      }
+                    default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', partner.partner_id.id)],
+                                                        context=context)
+                    if not default_id:
+                        raise osv.except_osv(_('Error'), u"没有找到归属当前公司的仓库。")
+                    val["default_resupply_wh_id"] = default_id[0]
+                    val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
+                    wh = stock_warehouse.search(cr, SUPERUSER_ID,
+                                                [('code', '=', i.name), ('partner_id', '=', i.id)],
+                                                context=context)
+                    if not wh:
+                        id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
+        return id
+
     def create(self, cr, uid, vals, context=None):
         if not vals.get('partner_unid'):
-            vals['partner_unid'] = datetime.datetime.now().__str__().replace('-','').replace(' ','').replace(":",'').replace('.','')
+            if vals.get("state_id"):
+                state_code = self.pool.get("res.country.state").browse(cr,uid,vals.get("state_id")).code
+            if vals.get("city_id"):
+                city_code = self.pool.get("res.country.state.city").browse(cr,uid,vals.get("city_id")).code
+            cr.execute("select max(partner_unid) from res_partner where partner_unid like '%s'" % (
+            state_code + city_code + '%',))
+            for unid in cr.fetchall():
+                max_id = unid[0]
+            if max_id:
+                max_id = max_id[:4] + str(int(max_id[4:]) + 1).zfill(4)
+            else:
+                max_id = state_code + city_code + '0001'
+            vals['partner_unid'] = max_id
         if not (vals.get("customer") or vals.get("supplier")):
             if not vals.get('parent_id'):
                vals['parent_id'] = 1
@@ -118,7 +163,7 @@ class rhwl_partner(osv.osv):
         partner = self.pool.get("res.company").browse(cr, uid, partner, context=context)
 
 
-        if vals.get("customer") and vals.get("is_company"):
+        if vals.get("customer") and vals.get("is_company") and vals.get("sjjysj"):
             val = {
                 "name": vals.get("name"),
                 "code": vals.get("name"),  # vals.get("partner_unid"),
@@ -136,13 +181,11 @@ class rhwl_partner(osv.osv):
             val["default_resupply_wh_id"] = default_id[0]
             val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
             wh = stock_warehouse.search(cr, SUPERUSER_ID,
-                                        [('code', '=', vals.get("partner_unid")), ('partner_id', '=', id)],
+                                        [('code', '=', vals.get("name")), ('partner_id', '=', id)],
                                         context=context)
             if not wh:
                 id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
-                # v = stock_warehouse.browse(cr,uid,id_s,context=context)
-                # v.resupply_wh_ids = [[6,False,[default_id[0]]]]
-                # stock_warehouse.write(cr,uid,id_s,v,context=context)
+
         return id
 
     def get_hospital(self,cr,uid,context=None):

@@ -233,11 +233,58 @@
             <field name="inherit_id" ref="base.view_partner_tree"/>
             <field name="arch" type="xml">
                 <data>
-                    <xpath expr="//field[@name='display_name']" position="after">
+                    <xpath expr="//field[@name='display_name']" position="before">
                         <field name="partner_unid"/>
+                    </xpath>
+                    <xpath expr="//field[@name='display_name']" position="after">
+                        <field name="dev_user_id"/>
+                        <field name="user_id"/>
+                        <field name="sjjysj"/>
+                        <field name="qyks"/>
+                        <field name="amt"/>
+                        <field name="jzds"/>
                     </xpath>
                 </data>
             </field>
+        </record>
+
+        <record id="rhwl_res_partner_kanban_view" model="ir.ui.view">
+            <field name="name">rhwl.res.partner_kanban</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//templates/t/div/div/ul" position="replace">
+                        <ul>
+                            <li t-if="record.parent_id.raw_value and !record.function.raw_value"><field name="parent_id"/></li>
+                            <li t-if="!record.parent_id.raw_value and record.function.raw_value"><field name="function"/></li>
+                            <li t-if="record.parent_id.raw_value and record.function.raw_value"><field name="function"/> at <field name="parent_id"/></li>
+                            <li t-if="record.city_id.raw_value and !record.state_id.raw_value"><field name="city_id"/></li>
+                            <li t-if="!record.city_id.raw_value and record.state_id.raw_value"><field name="state_id"/></li>
+                            <li t-if="record.city_id.raw_value and record.state_id.raw_value"><field name="city_id"/>, <field name="state_id"/></li>
+                            <li t-if="record.email.raw_value"><a t-attf-href="mailto:#{record.email.raw_value}"><field name="email"/></a></li>
+                        </ul>
+                    </xpath>
+                </data>
+             </field>
+        </record>
+
+        <record id="rhwl_view_res_partner_filter" model="ir.ui.view">
+            <field name="name">rhwl.res.partner.view.filter</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//filter[@name='supplier']" position="after">
+                        <separator/>
+                        <filter string="已进院" name="sjjy" domain="[('sjjysj','!=',False)]" />
+                        <filter string="未进院" name="notsjjy" domain="[('sjjysj','=',False)]" />
+                        <separator/>
+                        <filter string="已设目标" name="sjmb" domain="[('jnsjrs','>',0),('mbjysj','!=',False)]" />
+                        <filter string="未设目标" name="notsjmb" domain="['|',('jnsjrs','=',0),('mbjysj','=',False)]" />
+                    </xpath>
+                </data>
+             </field>
         </record>
 
         <record id="rhwl_view_country_state_city_tree" model="ir.ui.view">
