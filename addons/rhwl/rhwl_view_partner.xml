@@ -237,8 +237,11 @@
                         <field name="partner_unid"/>
                     </xpath>
                     <xpath expr="//field[@name='display_name']" position="after">
+                        <field name = "state_id"/>
+                        <field name = "city_id"/>
                         <field name="dev_user_id"/>
                         <field name="user_id"/>
+                        <field name="zydb"/>
                         <field name="sjjysj"/>
                         <field name="qyks"/>
                         <field name="amt"/>
@@ -280,7 +283,7 @@
                         <filter string="已进院" name="sjjy" domain="[('sjjysj','!=',False)]" />
                         <filter string="未进院" name="notsjjy" domain="[('sjjysj','=',False)]" />
                         <separator/>
-                        <filter string="已设目标" name="sjmb" domain="[('jnsjrs','>',0),('mbjysj','!=',False)]" />
+                        <filter string="年度目标" name="sjmb" domain="[('jnsjrs','>',0),('mbjysj','!=',False)]" />
                         <filter string="未设目标" name="notsjmb" domain="['|',('jnsjrs','=',0),('mbjysj','=',False)]" />
                     </xpath>
                 </data>

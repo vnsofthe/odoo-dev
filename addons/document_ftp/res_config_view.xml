@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_document_ftp_configuration" model="ir.ui.view">
+            <field name="name">Knowledge Application</field>
+            <field name="model">knowledge.config.settings</field>
+            <field name="inherit_id" ref="knowledge.view_knowledge_configuration"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//form[@string='Configure Knowledge']/group/div" position="after">
+                    <field name="document_ftp_url" widget="url"/>
+                 </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
