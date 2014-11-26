@@ -13,5 +13,9 @@
                 </data>
             </field>
         </record>
+        <record id="stock.action_move_form2" model="ir.actions.act_window">
+            <field name="context">{'search_default_future': 1}</field>
+            <field name="view_id" ref="stock.view_move_tree"/>
+        </record>
     </data>
 </openerp>
