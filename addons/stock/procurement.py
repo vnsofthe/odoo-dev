@@ -300,6 +300,7 @@ class procurement_order(osv.osv):
                     cr.close()
                 except Exception:
                     pass
+
         return {}
 
     def _get_orderpoint_date_planned(self, cr, uid, orderpoint, start_date, context=None):

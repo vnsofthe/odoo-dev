@@ -25,12 +25,14 @@ class rhwl_sample_info(osv.osv):
             [(7, u'7点'), (8, u'8点'), (9, u'9点'), (10, u'10点'), (11, u'11点'), (12, u'12点'), (13, u'13点'), (14, u'14点'),
              (15, u'15点'), (16, u'16点'), (17, u'17点'), (18, u'18点'), (19, u'19点'), (20, u'20点')], u'时间', required=True),
         "receiv_user": fields.many2one('res.users', string=u'收样人员'),
-        "state_id": fields.many2one('res.country.state', string=u'样品区域（省）',domain="[('country_id.code','=','CN')]"),
-        "city_id": fields.many2one("res.country.state.city", string=u"样品区域（市)",domain="[('state_id','=',state_id)]"),
+        #"state_id": fields.many2one('res.country.state', string=u'样品区域（省）',domain="[('country_id.code','=','CN')]"),
+        "state_id": fields.related('cxyy', 'state_id', relation="res.country.state", type='many2one', string=u'样品区域（省）', readonly=1, store=True),
+        #"city_id": fields.many2one("res.country.state.city", string=u"样品区域（市)",domain="[('state_id','=',state_id)]"),
+        "city_id": fields.related('cxyy', 'city_id', relation="res.country.state.city", type='many2one', string=u'样品区域（市)', readonly=1, store=True),
         "lyyy": fields.many2one('res.partner', string=u'来源医院',
                                 domain="[('is_company', '=', True), ('customer', '=', True)]"),
         "cxyy": fields.many2one('res.partner', string=u'采血医院',
-                                domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
+                                domain="[('is_company', '=', True), ('customer', '=', True),('sjjysj','!=',False)]", required=True,help=u"实际有进院的医院才可以作为采血医院。"),
         "lyys": fields.many2one('res.partner', string=u'来源医生',
                                 domain="[('is_company', '=', False), ('customer', '=', True),('parent_id','=',lyyy)]"),
         "cxys": fields.many2one('res.partner', string=u'采血医生',
@@ -39,7 +41,7 @@ class rhwl_sample_info(osv.osv):
         "fzr": fields.many2one('res.users', string=u'负责人'),
         # "state": fields.selection([('draf','draf')], u'状态'),
         "is_reused": fields.selection([('0', u'首次采血'), ('1', u'重采血')], u'是否重采血', required=True),
-        "reuse_name": fields.many2one("sale.sampleone", u"重采血编号"),
+        "reuse_name": fields.many2one("sale.sampleone", u"重采血编号",domain="[('check_state','=','reuse')]"),
         "reuse_type": fields.selection(SELECTION_TYPE, u"重采血类型"),
         "is_free": fields.selection([('1', u'是'), ('0', u'否')], u'是否免费', required=True),
         "yfxm": fields.char(u"孕妇姓名", size=20, required=True),
@@ -140,12 +142,19 @@ class rhwl_sample_info(osv.osv):
             }
         }
 
-    def onchange_cxyy(self, cr, uid, ids, context=None):
-        return {
+    def onchange_cxyy(self, cr, uid, ids,lyyy,cxyy, context=None):
+        val = {
             "value": {
                 "cxys": None,
             }
         }
+        if not lyyy:
+            val['value']['lyyy'] = cxyy
+        if cxyy:
+            obj = self.pool.get("res.partner").browse(cr,uid,cxyy,context=context)
+            val['value']['state_id'] = obj.state_id
+            val['value']['city_id'] = obj.city_id
+        return val
 
     def onchange_ys(self, cr, uid, ids, lyyy, cxyy, val, name, context=None):
         if lyyy and cxyy and lyyy == cxyy:
@@ -222,7 +231,7 @@ class rhwl_sample_info(osv.osv):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
 
     def action_check_ok(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': u"检验结果正常"}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok"}, context=context)
         obj = self.browse(cr,uid,ids,context=context)
         for i in obj:
             if i.yftelno:
@@ -230,12 +239,12 @@ class rhwl_sample_info(osv.osv):
                 rhwl_sms.send_sms(i.yftelno,str )
 
     def action_check_reused(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': u'需重采血'}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse'}, context=context)
         for i in ids:
             self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
     def action_check_except(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': u"检验结果阳性"}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except"}, context=context)
         for i in ids:
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
@@ -261,6 +270,7 @@ class rhwl_sample_info(osv.osv):
             "warehouse_id": w_id,
             "pricelist_id": 1,
             "date_order": cxys.cx_date,
+            "user_id":cxys.cxyy.user_id.id
         }
         order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
         if cxys.is_free == '0':
@@ -292,6 +302,7 @@ class rhwl_sample_info(osv.osv):
 
 class rhwl_reuse(osv.osv):
     _name = "sale.sampleone.reuse"
+    _inherit = ['ir.needaction_mixin']
     _description = "样本信息重采血"
 
     def _get_new_name(self, cr, uid, ids, prop, arg, context=None):
@@ -318,7 +329,8 @@ class rhwl_reuse(osv.osv):
         "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
         "yfyzweek": fields.related('name', 'yfyzweek', type='integer', string=u'孕周', readonly=1),
         "yftelno": fields.related('name', 'yftelno', type='char', string=u'孕妇电话', readonly=1),
-        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医生', readonly=1),
+        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医生', readonly=1,store=True),
+        "cxyy": fields.related('name', 'cxyy', relation="res.partner", type='many2one', string=u'采血医院', readonly=1,store=True),
         "notice_user": fields.many2one("res.users", u"通知人员"),
         "notice_date": fields.date(u"通知日期"),
         "reuse_note": fields.char(u"重采原因", size=200),
@@ -334,6 +346,10 @@ class rhwl_reuse(osv.osv):
         "state": lambda obj, cr, uid, context: "draft",
     }
 
+    def _needaction_domain_get(self, cr, uid, context=None):
+        #user = self.pool.get("res.users").browse(cr, uid, uid)
+        return [('state','=','draft')]
+
     def action_done(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'done','notice_user':uid}, context=context)
 
@@ -343,6 +359,7 @@ class rhwl_reuse(osv.osv):
 
 class rhwl_exception(osv.osv):
     _name = "sale.sampleone.exception"
+    _inherit = ['ir.needaction_mixin']
     _description = "样本阳性跟踪"
 
     _columns = {
@@ -352,7 +369,8 @@ class rhwl_exception(osv.osv):
         "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
         "yfyzweek": fields.related('name', 'yfyzweek', type='integer', string=u'孕周', readonly=1),
         "yftelno": fields.related('name', 'yftelno', type='char', string=u'孕妇电话', readonly=1),
-        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医生', readonly=1),
+        "cxys": fields.related('name', 'cxys', relation="res.partner", type='many2one', string=u'采血医生', readonly=1,store=True),
+        "cxyy": fields.related('name', 'cxyy', relation="res.partner", type='many2one', string=u'采血医院', readonly=1,store=True),
         "lib_notice": fields.char(u"无创结论", size=100),
         "cs_notice": fields.char(u"客服备注", size=100),
         "notice_user": fields.many2one("res.users", u"通知人员"),
@@ -375,6 +393,11 @@ class rhwl_exception(osv.osv):
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
     }
+
+    def _needaction_domain_get(self, cr, uid, context=None):
+        #user = self.pool.get("res.users").browse(cr, uid, uid)
+        return [('state','=','draft')]
+
     def action_notice(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'notice','notice_user':uid,"notice_date":datetime.date.today(),"is_notice":True}, context=context)
 

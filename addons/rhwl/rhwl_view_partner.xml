@@ -74,7 +74,7 @@
                         <field name="city_id" domain="[('state_id','=',state_id)]" placeholder="City"
                                style="width: 40%%" attrs="{'readonly': [('use_parent_address','=',True)]}"
                                options='{"no_open": True}'
-                               on_change="onchange_city_id(city_id,True,0)"/>
+                               on_change="onchange_city_id(city_id,True,0)" required="True"/>
                     </xpath>
                     <xpath expr="//field[@name='city']" position="attributes">
                         <attribute name="attrs">{'invisible':1}</attribute>

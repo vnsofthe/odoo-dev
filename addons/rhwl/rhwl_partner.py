@@ -49,7 +49,7 @@ class rhwl_partner(osv.osv):
         "yjfx": fields.char(u"研究方向", size=100),
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
         "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
-        "city_id": fields.many2one("res.country.state.city", string=u"城市",required=True),
+        "city_id": fields.many2one("res.country.state.city", string=u"城市"),
         'function_sel': fields.selection(
             [(u"主任", u"主任"), (u"副主任", u"副主任"), (u"主治", u"主治"), (u'住院', u'住院'), (u'护士长', u'护士长'), (u'护士', u'护士'),
              (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),

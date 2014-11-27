@@ -140,7 +140,7 @@ class MyApp(object):
                 ids.append(detail)
             else:
                 ids.append( s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','create',{"parent_id":id,"number_seq":i,"in_flag":True}))
-        s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'write',id,{"detail_ids":[[6,False,ids]]})
+        s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'write',id,{'state': 'done',"detail_ids":[[6,False,ids]]})
 
 if __name__ == "__main__":
     root = Tk.Tk()
