@@ -100,5 +100,22 @@
                 </form>
             </field>
         </record>
+        <record model="ir.ui.view" id="rhwl_stock_picking_express_search">
+            <field name="name">rhwl.stock.picking.express.search</field>
+            <field name="model">stock.picking.express</field>
+            <field name="inherit_id" ref="l10n_cn_express_track.stock_picking_express_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date']" position="after">
+
+                    <filter name="receiv_real_date" string="今日实际收货" domain="[('receiv_real_date','&gt;=',context_today().strftime('%%Y-%%m-%%d 00:00:00')),('receiv_real_date','&lt;=',context_today().strftime('%%Y-%%m-%%d 23:59:59'))]"/>
+                    <seperaotr/>
+                </xpath>
+                <xpath expr="//search/group/filter[last()]" position="after">
+
+                        <filter string="实际收货时间" icon="terp-partner" domain="[]" context="{'group_by':'receiv_real_date:day'}"/>
+
+                </xpath>
+            </field>
+        </record>
     </data>
 </openerp>

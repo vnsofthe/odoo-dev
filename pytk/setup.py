@@ -1,18 +1,17 @@
-import sys
-from cx_Freeze import setup, Executable
 
-# Dependencies are automatically detected, but it might need fine tuning.
-build_exe_options = {"packages": ["os"], "excludes": ["tkinter"]}
 
-# GUI applications require a different base on Windows (the default is for a
-# console application).
-base = None
-if sys.platform == "win32":
-    base = "Win32GUI"
+from distutils.core import setup
+import py2exe
 
-setup(  name = "rhwl",
-        version = "0.1",
-        description = "My GUI application!",
-        options = {"build_exe": build_exe_options},
-        executables = [Executable("main.py", base=base)])
+setup(
+    # The first three parameters are not required, if at least a
+    # 'version' is given, then a versioninfo resource is built from
+    # them and added to the executables.
+    version = "0.5.0",
+    description = "py2exe sample script",
+    name = "py2exe samples",
 
+    # targets to build
+    windows = ["main.py"],
+
+    )

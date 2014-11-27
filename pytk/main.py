@@ -5,6 +5,8 @@ import xmlrpclib
 import tkMessageBox
 import datetime
 import ImageTk
+import ConfigParser
+
 
 class MyApp(object):
     def __init__(self, parent):
@@ -54,12 +56,11 @@ class MyApp(object):
         Tk.Label(self.otherFrame,text="2.收货时，先扫描快递单号码，再依次扫描里面的样品标签号。").grid(row=5,columnspan=2,sticky=Tk.W)
         Tk.Label(self.otherFrame,text="3.一个包裹中的样品全部扫码完成以后，扫描一个特定的结束标签码。").grid(row=6,columnspan=2,sticky=Tk.W)
 
-        photo = Tk.PhotoImage(file='barcode.gif')
-        label = Tk.Label(image=photo)
-        label.grid(row=7, column=0, columnspan=2, rowspan=2, sticky=Tk.W+Tk.E+Tk.N+Tk.S, padx=50, pady=50)
+
         self.btn.bind("<Return>",self.printReturn)
         self.btn.focus()
         self.otherFrame.protocol('WM_DELETE_WINDOW',self.printProtocol)
+
 
     def centerWindow(self,win,w,h):
 
@@ -82,12 +83,16 @@ class MyApp(object):
                 self.write(self.data)
                 self.data=[]
             else:
-                self.count2 += 1
-                self.labval2.delete(0,Tk.END)
-                self.labval2.insert(0, str(self.count2))
-                self.data.append(no)
+                if self.data.count(no)==0:
+                    self.data.append(no)
+                    self.count2 += 1
+                    self.labval2.delete(0,Tk.END)
+                    self.labval2.insert(0, str(self.count2))
+
         else:
-            if no=="0000000000":return
+            if no=="0000000000":
+                self.btn.delete(0,Tk.END)
+                return
             self.count1 += 1
             self.labval1.delete(0,Tk.END)
 
@@ -97,10 +102,13 @@ class MyApp(object):
         self.btn.delete(0,Tk.END)
 
     def login(self):
+        config = ConfigParser.ConfigParser()
+        config.read('config.conf')
+
         self.username = self.sel1.get()
         self.pwd = self.sel2.get()
-        self.db="test"
-        self.url = 'http://127.0.0.1:8069'
+        self.db=config.get('system', 'dbname', "")
+        self.url = config.get('system', 'server', "127.0.0.1")+":"+config.get('system', 'port',"80")
         s_sock_common = xmlrpclib.ServerProxy(self.url+'/xmlrpc/common')
         self.s_uid = s_sock_common.login(self.db, self.username, self.pwd)
         if not self.s_uid:
@@ -108,7 +116,7 @@ class MyApp(object):
             return True
         else:
             self.openFrame()
-            self.otherFrame.focus()
+            self.otherFrame.focus_force()
 
     def write(self,vals):
         s_sock = xmlrpclib.ServerProxy(self.url + '/xmlrpc/object')
@@ -140,7 +148,7 @@ class MyApp(object):
                 ids.append(detail)
             else:
                 ids.append( s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','create',{"parent_id":id,"number_seq":i,"in_flag":True}))
-        s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'write',id,{'state': 'done',"detail_ids":[[6,False,ids]]})
+        s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'write',id,{'state': 'done',"receiv_real_date":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),"detail_ids":[[6,False,ids]]},{'lang': "zh_CN",'tz': "Asia/Shanghai"})
 
 if __name__ == "__main__":
     root = Tk.Tk()

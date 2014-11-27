@@ -66,12 +66,10 @@
             <field name="arch" type="xml">
                 <search string="Stock Express">
                     <field name="num_express" string="Express NO"/>
-                    <field name="deliver_id"/>
-                    <field name="partner_id"/>
                     <seperaotr/>
                     <field name="date"/>
                     <group expand="0" string="Group By...">
-                        <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter string="物流公司" icon="terp-partner" domain="[]" context="{'group_by':'deliver_id'}"/>
                         <!-- <filter string="Journal" icon="terp-folder-orange" domain="[]" context="{'group_by':'journal_id'}"/>
                         <filter string="Account"  icon="terp-folder-green" context="{'group_by':'account_id'}"/>
                         <filter string="Period" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/> -->
