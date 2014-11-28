@@ -62,9 +62,6 @@ class rhwl_partner(osv.osv):
         "dev_user_id": lambda obj, cr, uid, context: uid,
         "user_id":lambda obj, cr, uid, context: uid,
     }
-    _sql_constraints = [
-        ("partner_unid_uniq", "unique(partner_unid)", u"编号必须为唯一!"),
-    ]
 
     def onchange_city_id(self, cr, uid, ids, city, arg, newid, context=None):
         if not city:
@@ -114,7 +111,7 @@ class rhwl_partner(osv.osv):
                 company = self.pool.get("res.company").search(cr, uid, [("id", '=', i.company_id.id)], context=context)
             if company:
                 partner = self.pool.get("res.company").browse(cr, uid, company, context=context)
-                print i.customer , i.is_company , i.sjjysj
+
                 if i.customer and i.is_company and i.sjjysj:
                     val = {
                         "name": i.name,
@@ -139,6 +136,9 @@ class rhwl_partner(osv.osv):
 
     def create(self, cr, uid, vals, context=None):
         if not vals.get('partner_unid'):
+            if vals.get("use_parent_address"):
+                parent = self.pool.get("res.partner").browse(cr,uid,vals.get("parent_id"),context=context)
+                vals["city_id"] =parent.city_id.id
             if vals.get("state_id"):
                 state_code = self.pool.get("res.country.state").browse(cr,uid,vals.get("state_id")).code
             if vals.get("city_id"):

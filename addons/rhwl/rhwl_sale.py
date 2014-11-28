@@ -75,6 +75,7 @@ class rhwl_sample_info(osv.osv):
         "yfcsjc": fields.selection([('0', u'未见异常'), ('1', u'提示异常')], u"超声检查"),
         "yfcsjctext": fields.char(u'异常原因', size=20),
         "yfxqsc": fields.selection([('0', u'未做'), ('1', u'已做')], u'血清筛查'),
+        "yfxqscsel":fields.selection([(u"21-三体:1/",u"21-三体:1/"),(u"18-三体:1/",u"18-三体:1/")],""),
         "yfxqsctext": fields.char(u'风险提示', size=20),
         "yfyyjrxccss": fields.selection([('0', u'无'), ('1', u'已预约')], u'预约介入性穿刺手术'),
         "yfyyjrxccssdate": fields.date(u'预约日期'),
@@ -170,13 +171,13 @@ class rhwl_sample_info(osv.osv):
             if tno and tno.__len__() <> 15 and tno.__len__() <> 18:
                 raise osv.except_osv(_('Error'), u"身份证号码不正确。")
             if tno.__len__() == 15:
-                str = tno[6:12]
+                str = '19'+tno[6:12]
             else:
                 str = tno[6:14]
 
             return {
                 "value": {
-                    "yfage": (datetime.datetime.today() - datetime.datetime.strptime(str, "%Y%m%d")).days / 365 + 1,
+                    "yfage": (datetime.datetime.today() - datetime.datetime.strptime(str, "%Y%m%d")).days / 365 ,
                 }
             }
 

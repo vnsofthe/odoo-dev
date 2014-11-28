@@ -11,3 +11,4 @@ access_sale_sampleone_exception,sale_sampleone_exception,model_sale_sampleone_ex
 access_sale_sampleone_exception_portal,sale_sampleone_exception_portal,model_sale_sampleone_exception,base.group_portal,1,1,0,0
 access_res_country_state_city,res_country_state_city,model_res_country_state_city,,1,0,0,0
 access_account_invoice_report_all,account_invoice_report_all,account.model_account_invoice_report,,1,0,0,0
+access_rhwl_project,rhwl_project,model_rhwl_project,base.group_sale_manager,1,1,1,1

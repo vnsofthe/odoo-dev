@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_project_tree">
+            <field name="name">项目管理</field>
+            <field name="model">rhwl.project</field>
+            <field name="arch" type="xml">
+                <tree string="Sample Information">
+                    <field name="catelog"/>
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="process"/>
+                    <field name="content1"/>
+                    <field name="content2"/>
+                    <field name="content3"/>
+                    <field name="content4"/>
+                    <field name="content5"/>
+                    <field name="content6"/>
+                    <field name="content7"/>
+                    <field name="content8"/>
+                    <field name="content9"/>
+                    <field name="content10"/>
+                    <field name="content11"/>
+                    <field name="content12"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_project_form">
+            <field name="name">项目管理</field>
+            <field name="model">rhwl.project</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample">
+                    <sheet>
+                        <group>
+                            <field name="catelog"/>
+                            <field name="name"/>
+                            <field name="user_id"/>
+                            <field name="process"/>
+                            <field name="content1"/>
+                            <field name="content2"/>
+                            <field name="content3"/>
+                            <field name="content4"/>
+                            <field name="content5"/>
+                            <field name="content6"/>
+                            <field name="content7"/>
+                            <field name="content8"/>
+                            <field name="content9"/>
+                            <field name="content10"/>
+                            <field name="content11"/>
+                            <field name="content12"/>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_rhwl_project" model="ir.actions.act_window">
+            <field name="name">项目管理</field>
+            <field name="res_model">rhwl.project</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    点此建立一个新的项目内容
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_action_rhwl_project" parent="base.menu_sales" name="Project" sequence="15"
+                  action='action_rhwl_project' groups="base.group_sale_manager"/>
+    </data>
+</openerp>

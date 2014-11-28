@@ -89,10 +89,10 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
                     </header>
-                    <sheet>
+                    <sheet >
                         <group>
                             <group>
-                                <field name="name" on_change="onchange_check_sample(name)"/>
+                                <field name="name" on_change="onchange_check_sample(name)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="sampletype"/>
                                 <label for="cx_date" string="采血日期"/>
                                 <div class="address_format">
@@ -208,8 +208,9 @@
                                         <label for="yfxqsc" string="血清筛查"/>
                                         <div>
                                             <field name="yfxqsc"/>
+                                            <field name="yfxqscsel" attrs="{'invisible':[('yfxqsc','!=','1')]}" style="width: 60%"/>
                                             <field name="yfxqsctext" placeholder="血清筛查风险提示"
-                                                   attrs="{'invisible':[('yfxqsc','!=','1')]}"/>
+                                                   attrs="{'invisible':[('yfxqsc','!=','1')]}" style="width: 40%"/>
                                         </div>
 
                                         <field name="yfyyjrxccss"/>
