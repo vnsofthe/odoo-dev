@@ -10,7 +10,11 @@ from openerp import SUPERUSER_ID
 from openerp.modules.registry import RegistryManager
 import openerp.addons.web.controllers.main as db
 import datetime
+import logging
+from openerp.tools.translate import _
+from .. import rhwl_sale
 
+_logger = logging.getLogger(__name__)
 class WebClient(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
 
@@ -105,16 +109,16 @@ class WebClient(http.Controller):
                     sampleone = registry.get('sale.sampleone')
                     if res.get("params").get("name"):
                         reuseid = sampleone.search(cr,uid,['|',('yfxm','ilike',res.get("params").get("name")),('name','ilike',res.get("params").get("name"))])
-
+                        data=[]
                         for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):
                             data.append({
                                 "time":i.cx_date,
                                 "name":i.yfxm,
                                 "code":i.name,
-                                "status":i.state
+                                "status":rhwl_sale.rhwl_sale_state_select.get(i.state)
                             })
                     else:
-                        reuseid = sampleone.search(cr,uid,[('cx_date','<',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())])
+                        reuseid = sampleone.search(cr,uid,[('cx_date','<=',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())],context={'tz': "Asia/Shanghai"})
                         temp = {}
                         except_count=0
                         for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):
@@ -125,9 +129,9 @@ class WebClient(http.Controller):
                             temp[i.cx_date].append({
                                 "name":i.yfxm,
                                 "code":i.name,
-                                "status":i.state
+                                "status":rhwl_sale.rhwl_sale_state_select.get(i.state)
                             })
-                        data = [{"exception":str(except_count)+"个"},]
+                        data = [{"exception":str(except_count)+u"个"},]
                         for k,v in temp.items():
                             data.append({"time":k,"datas":v})
                     cr.commit()

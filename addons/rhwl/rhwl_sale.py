@@ -7,6 +7,11 @@ import openerp.addons.decimal_precision as dp
 import datetime
 import rhwl_sms
 
+rhwl_sale_state_select = {'draft':u'草稿',
+                          'done': u'确认',
+                          'checkok':u'检验完成',
+                          'cancel': u'取消'}
+
 class rhwl_sample_info(osv.osv):
     _name = "sale.sampleone"
     _description = "样品信息表"
@@ -87,7 +92,7 @@ class rhwl_sample_info(osv.osv):
         "yfynnytsxtext": fields.char(u'一年内异体输血说明', size=20),
         "yftsqkbz": fields.char(u'特殊情况备注', size=100),
         "note": fields.text(u'备注'),
-        "state": fields.selection([('draft', u'草稿'), ('done', u'确认'),('checkok',u'检验完成'), ('cancel', u'取消')], u'状态'),
+        "state": fields.selection([(k,rhwl_sale_state_select[k]) for k in rhwl_sale_state_select], u'状态'),
         "check_state": fields.selection(
             [('get', u'已接收'), ('library', u'已进实验室'), ('pc', u'已上机'), ('reuse', u'需重采血'), ('ok', u'检验结果正常'),
              ('except', u'检验结果阳性')], u'检验状态'),
