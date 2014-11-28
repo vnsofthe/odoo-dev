@@ -136,6 +136,8 @@ class rhwl_partner(osv.osv):
 
     def create(self, cr, uid, vals, context=None):
         if not vals.get('partner_unid'):
+            state_code=None
+            city_code=None
             if vals.get("use_parent_address"):
                 parent = self.pool.get("res.partner").browse(cr,uid,vals.get("parent_id"),context=context)
                 vals["city_id"] =parent.city_id.id
@@ -143,15 +145,16 @@ class rhwl_partner(osv.osv):
                 state_code = self.pool.get("res.country.state").browse(cr,uid,vals.get("state_id")).code
             if vals.get("city_id"):
                 city_code = self.pool.get("res.country.state.city").browse(cr,uid,vals.get("city_id")).code
-            cr.execute("select max(partner_unid) from res_partner where partner_unid like '%s'" % (
-            state_code + city_code + '%',))
-            for unid in cr.fetchall():
-                max_id = unid[0]
-            if max_id:
-                max_id = max_id[:4] + str(int(max_id[4:]) + 1).zfill(4)
-            else:
-                max_id = state_code + city_code + '0001'
-            vals['partner_unid'] = max_id
+            if state_code and city_code:
+                cr.execute("select max(partner_unid) from res_partner where partner_unid like '%s'" % (
+                state_code + city_code + '%',))
+                for unid in cr.fetchall():
+                    max_id = unid[0]
+                if max_id:
+                    max_id = max_id[:4] + str(int(max_id[4:]) + 1).zfill(4)
+                else:
+                    max_id = state_code + city_code + '0001'
+                vals['partner_unid'] = max_id
         if not (vals.get("customer") or vals.get("supplier")):
             if not vals.get('parent_id'):
                vals['parent_id'] = 1

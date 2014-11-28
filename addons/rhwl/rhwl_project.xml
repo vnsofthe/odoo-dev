@@ -18,10 +18,6 @@
                     <field name="content6"/>
                     <field name="content7"/>
                     <field name="content8"/>
-                    <field name="content9"/>
-                    <field name="content10"/>
-                    <field name="content11"/>
-                    <field name="content12"/>
                 </tree>
             </field>
         </record>
@@ -45,10 +41,6 @@
                             <field name="content6"/>
                             <field name="content7"/>
                             <field name="content8"/>
-                            <field name="content9"/>
-                            <field name="content10"/>
-                            <field name="content11"/>
-                            <field name="content12"/>
                         </group>
 
                     </sheet>
