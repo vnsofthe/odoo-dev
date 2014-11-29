@@ -213,3 +213,4 @@ class rhwl_express_in(osv.osv):
         "in_flag": fields.boolean(u"收货"),
         "out_flag": fields.boolean(u'发货')
     }
+

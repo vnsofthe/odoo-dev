@@ -14,7 +14,6 @@
                         <field name="receiv_user"/>
                         <field name="state"/>
                     </xpath>
-
                 </data>
             </field>
         </record>
@@ -106,16 +105,24 @@
             <field name="inherit_id" ref="l10n_cn_express_track.stock_picking_express_search"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='date']" position="after">
-
                     <filter name="receiv_real_date" string="今日实际收货" domain="[('receiv_real_date','&gt;=',context_today().strftime('%%Y-%%m-%%d 00:00:00')),('receiv_real_date','&lt;=',context_today().strftime('%%Y-%%m-%%d 23:59:59'))]"/>
+                    <seperaotr/>
+                    <filter name="state4" string="草稿" domain="[('state','=','draft')]"/>
+                    <filter name="state2" string="已发出" domain="[('state','=','progress')]"/>
+                    <filter name="state1" string="已完成" domain="[('state','=','done')]"/>
+                    <filter name="state3" string="已取消" domain="[('state','=','cancel')]"/>
                     <seperaotr/>
                 </xpath>
                 <xpath expr="//search/group/filter[last()]" position="after">
-
                         <filter string="实际收货时间" icon="terp-partner" domain="[]" context="{'group_by':'receiv_real_date:day'}"/>
-
                 </xpath>
             </field>
         </record>
+
+        <record id="l10n_cn_express_track.action_stock_express" model="ir.actions.act_window">
+            <field name="context">{'search_default_state4':1,'search_default_state2':1}</field>
+            <field name="view_id" ref="l10n_cn_express_track.stock_picking_express_tree"/>
+        </record>
+
     </data>
 </openerp>

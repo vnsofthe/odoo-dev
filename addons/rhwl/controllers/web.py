@@ -192,7 +192,7 @@ class WebClient(http.Controller):
         return json.dumps(data,ensure_ascii=False)
 
     @http.route("/web/crmapp/deliver/",type="http",auth="none")
-    def app_reuse(self,**kw):
+    def app_deliver(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
         if res.get('statu')==200:
@@ -217,7 +217,7 @@ class WebClient(http.Controller):
         return json.dumps(data,ensure_ascii=False)
 
     @http.route("/web/crmapp/express/",type="http",auth="none")
-    def app_reuse(self,**kw):
+    def app_express(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
         if res.get('statu')==200:
@@ -228,12 +228,12 @@ class WebClient(http.Controller):
                 registry = RegistryManager.get(request.session.db)
                 with registry.cursor() as cr:
                     express = registry.get('stock.picking.express')
-                    ids = express.search(cr,uid,[('date','>=',startTime),('date','<=',endTime),'|',('deliver_user.id','=',uid),('receiv_user.id','=',uid)])
+                    ids = express.search(cr,uid,[('date','>=',startTime),('date','<=',endTime)])
                     data[' hisinfo']=[]
                     for i in express.browse(cr,uid,ids,self.CONTEXT):
                         data[' hisinfo'].append({
                              "time":i.date,
-                            "logIdCompany": i.num_express+"-"+i.deliver_id.name,
+                            "logIdCompany": [i.num_express,i.deliver_id.name],
                             "state": i.state
                         })
                     cr.commit()
@@ -242,7 +242,7 @@ class WebClient(http.Controller):
         return json.dumps(data,ensure_ascii=False)
 
     @http.route("/web/crmapp/receive/",type="http",auth="none")
-    def app_reuse(self,**kw):
+    def app_receive(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
         if res.get('statu')==200:
@@ -268,7 +268,7 @@ class WebClient(http.Controller):
         return json.dumps(data,ensure_ascii=False)
 
     @http.route("/web/crmapp/goodsnum/",type="http",auth="none")
-    def app_reuse(self,**kw):
+    def app_goodsnum(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
         if res.get('statu')==200:
@@ -289,7 +289,7 @@ class WebClient(http.Controller):
         return json.dumps(data,ensure_ascii=False)
 
     @http.route("/web/crmapp/woman/",type="http",auth="none")
-    def app_reuse(self,**kw):
+    def app_woman(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
         if res.get('statu')==200:

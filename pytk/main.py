@@ -119,7 +119,7 @@ class MyApp(object):
             self.otherFrame.focus_force()
 
     def write(self,vals):
-        s_sock = xmlrpclib.ServerProxy(self.url + '/xmlrpc/object')
+        s_sock = xmlrpclib.ServerProxy(self.url + '/xmlrpc/object',allow_none=True)
         data = {
             "receiv_real_qty":vals.__len__() - 1,
             "product_qty": vals.__len__() - 1,
@@ -137,18 +137,18 @@ class MyApp(object):
         if not id:
             id = s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'create',data)
         else:
-            s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express','write',id,{"receiv_real_qty":vals.__len__() - 1,"receiv_real_user":self.s_uid,})
+            s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express','write',id,{"receiv_real_qty":vals.__len__() - 1,"receiv_real_user":self.s_uid,'receiv_real_date':datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')})
         if isinstance(id,(list,tuple)):
             id = id[0]
         ids=[]
         for i in vals[1:]:
-            detail = s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','search',[('parent_id','=',id),('number_seq','=',i)])
+            detail = s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','search',[('parent_id.id','=',id),('number_seq','=',i)])
             if detail:
-                s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','write',detail,{"in_flag":True})
-                ids.append(detail)
+                s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','write',detail[0],{"in_flag":1})
+                ids.append(detail[0])
             else:
-                ids.append( s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','create',{"parent_id":id,"number_seq":i,"in_flag":True}))
-        s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'write',id,{'state': 'done',"receiv_real_date":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),"detail_ids":[[6,False,ids]]},{'lang': "zh_CN",'tz': "Asia/Shanghai"})
+                ids.append( s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express.detail','create',{"parent_id":id,"number_seq":i,"in_flag":1}))
+        s_sock.execute(self.db, self.s_uid, self.pwd, 'stock.picking.express', 'write',id,{'state': 'done',"detail_ids":[[6,False,ids]]})
 
 if __name__ == "__main__":
     root = Tk.Tk()
