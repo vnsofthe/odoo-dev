@@ -175,7 +175,7 @@ class rhwl_express(osv.osv):
     }
 
     def create(self, cr, uid, vals, context=None):
-        if vals['product_qty']==0 and vals['detail_ids'].__len__()>0:
+        if vals.has_key('product_qty') and vals.has_key('detail_ids') and vals['product_qty']==0 and vals['detail_ids'].__len__()>0:
             vals['product_qty'] =  vals['detail_ids'].__len__()
         return super(rhwl_express,self).create(cr,uid,vals,context=context)
 
