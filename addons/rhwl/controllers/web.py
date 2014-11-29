@@ -166,7 +166,7 @@ class WebClient(http.Controller):
                 registry = RegistryManager.get(request.session.db)
                 with registry.cursor() as cr:
                     sampleone = registry.get('sale.sampleone.exception')
-                    reuseid = sampleone.search(cr,uid,[('state','not in',['cancel','reuse'])],order="name.cx_date desc")
+                    reuseid = sampleone.search(cr,uid,[('state','not in',['cancel','reuse'])],order="id desc")
                     data=[]
                     for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):
                         data.append({
@@ -199,7 +199,7 @@ class WebClient(http.Controller):
                 registry = RegistryManager.get(request.session.db)
                 with registry.cursor() as cr:
                     sampleone = registry.get('sale.sampleone.reuse')
-                    reuseid = sampleone.search(cr,uid,[('state','not in',['cancel','reuse'])],order="name.cx_date desc")
+                    reuseid = sampleone.search(cr,uid,[('state','not in',['cancel','reuse'])],order="id desc")
                     data=[]
                     for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):
                         data.append({
