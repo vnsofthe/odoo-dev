@@ -9,7 +9,7 @@ import re
 
 class rhwl_express(osv.osv):
     _inherit = "stock.picking.express"
-
+    _rec_name = "num_express"
     def _get_check_user(self, cr, uid, context=None):
         """判断用户是内部人员还是外部人员。"""
         if context is None:
@@ -36,19 +36,11 @@ class rhwl_express(osv.osv):
         if id:
             if isinstance(id, (list, tuple)):
                 id = id[0]
-
-            partner = self.pool.get("res.partner").browse(cr, uid, id, context=context)
-            if partner.parent_id and partner.use_parent_address:
-                res = [partner.parent_id.state_id.name, partner.parent_id.city,
-                       partner.parent_id.street, partner.parent_id.street2]
-            else:
-                res = [partner.state_id.name, partner.city, partner.street,
-                       partner.street2]
+            res = self.pool.get("res.partner").get_detail_address(cr,uid,id,context)
         else:
-            res = []
+            res = ""
 
-        res = [x for x in res if x]
-        return (id,','.join(res) or "")
+        return (id,res)
 
     def _get_addr(self, cr, uid, context=None):
         """新增时，带出作业人员对应的联系地址。"""

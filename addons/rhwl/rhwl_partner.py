@@ -207,6 +207,24 @@ class rhwl_partner(osv.osv):
 
         return data
 
+    def get_Contact_person(self,cr,uid,id,context=None):
+        obj = self.browse(cr,uid,id,context=context)
+        for i in obj.child_ids:
+            for j in i.category_id:
+                if j.name==u"联络人":
+                    return i.user_ids and i.user_ids[0].id or None
+        return None
+
+    def get_detail_address(self,cr,uid,id,context=None):
+        partner = self.browse(cr, uid, id, context=context)
+        if partner.parent_id and partner.use_parent_address:
+            res = [partner.parent_id.state_id.name, partner.parent_id.city_id.name,
+                   partner.parent_id.street, partner.parent_id.street2]
+        else:
+            res = [partner.state_id.name, partner.city_id.name, partner.street,
+                   partner.street2]
+        return ','.join([x for x in res if x])
+
 class rhwl_country_state_city(osv.osv):
     _name = "res.country.state.city"
 

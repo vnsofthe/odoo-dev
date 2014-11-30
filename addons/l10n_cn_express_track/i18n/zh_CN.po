@@ -23,3 +23,25 @@ msgstr "物流查询"
 #: field:stock.picking.express,date:0
 msgid "Date Deliver"
 msgstr "发货时间"
+
+#. module: l10n_cn_express_track
+#: selection:stock.picking.express,state:0
+msgid "Done"
+msgstr "已完成"
+
+#. module: l10n_cn_express_track
+#: selection:stock.picking.express,state:0
+msgid "Draft Quotation"
+msgstr "草稿"
+
+#. module: l10n_cn_express_track
+#: selection:stock.picking.express,state:0
+msgid "Progress"
+msgstr "已发货"
+
+#. module: l10n_cn_express_track
+#: selection:stock.picking.express,state:0
+msgid "Cancelled"
+msgstr "已取消"
+
+

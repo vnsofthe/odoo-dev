@@ -45,7 +45,7 @@ class rhwl_order(osv.osv):
                 cr = openerp.registry(cr.dbname).cursor()
             move_obj = self.pool.get("stock.move")#('warehouse_id','=',1),('rule_id','>',0),
             move_ids = move_obj.search(cr,uid,[('state','not in',['done','cancel']),('express_no','=',False)],context=context)
-            print "move_ids:",move_ids,cr,use_new_cursor
+
             for i in move_obj.browse(cr,uid,move_ids,context=context):
                 if not i.move_dest_id:continue
                 dest = move_obj.browse(cr,uid,i.move_dest_id.id,context=context)
@@ -53,9 +53,13 @@ class rhwl_order(osv.osv):
                     data = {
                         "receiv_real_qty":i.product_uos_qty,
                         "product_qty":i.product_uos_qty,
+                        "deliver_user":self.pool.get("res.partner").get_Contact_person(cr,SUPERUSER_ID,1,context),
+                        "deliver_addr":self.pool.get("res.partner").get_detail_address(cr,SUPERUSER_ID,1,context),
                         "deliver_partner":1,
                         "receiv_partner":dest.warehouse_id.partner_id.id,
-                        "product_id":i.product_id.id
+                        "product_id":i.product_id.id,
+                        "receiv_user":self.pool.get("res.partner").get_Contact_person(cr,SUPERUSER_ID,dest.warehouse_id.partner_id.id,context),
+                        "receiv_addr":self.pool.get("res.partner").get_detail_address(cr,SUPERUSER_ID,dest.warehouse_id.partner_id.id,context),
                     }
                     expressID = self.pool.get("stock.picking.express").create(cr,uid,data,context=context)
                     move_obj.write(cr,uid,[i.id,dest.id],{'express_no':expressID})

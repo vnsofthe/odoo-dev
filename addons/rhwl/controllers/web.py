@@ -230,7 +230,22 @@ class WebClient(http.Controller):
                 with registry.cursor() as cr:
                     express = registry.get('stock.picking.express')
                     dobj =registry.get("stock.picking.express.detail")
-                    mid = express.create(cr,uid,{"num_express":id,"product_qty":detail.__len__(),"receiv_real_qty":0},context=self.CONTEXT)
+                    userobj = registry.get("res.users")
+                    partnerobj = registry.get("res.partner")
+                    uobj = userobj.browse(cr,SUPERUSER_ID,uid,self.CONTEXT)
+                    partnerid = uobj.partner_id.parent_id.id
+                    vals={
+                        "num_express":id,
+                        "product_qty":detail.__len__(),
+                        "receiv_real_qty":0,
+                        "deliver_user":partnerobj.get_Contact_person(cr,SUPERUSER_ID,partnerid,self.CONTEXT),
+                        "deliver_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,partnerid,self.CONTEXT),
+                        "deliver_partner":partnerid,
+                        "receiv_partner":1,
+                        "receiv_user":partnerobj.get_Contact_person(cr,SUPERUSER_ID,1,self.CONTEXT),
+                        "receiv_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,1,self.CONTEXT),
+                    }
+                    mid = express.create(cr,uid,vals,context=self.CONTEXT)
                     did=[]
                     for j in detail:
                         did.append( dobj.create(cr,uid,{"parent_id":mid,"number_seq":j.get("code"),"number_seq_ori":j.get("preCode"),"out_flag":True},context=self.CONTEXT))
@@ -262,7 +277,9 @@ class WebClient(http.Controller):
                         data.append({
                              "time":i.date[0:10],
                             "logIdCompany": [i.num_express,i.deliver_id.name],
-                            "state": STATE.get(i.state)
+                            "state": STATE.get(i.state),
+                            "is_deliver":i.is_deliver,
+                            "is_receiv":i.is_receiv
                         })
                     cr.commit()
         else:
