@@ -1,0 +1,92 @@
+<!--===========================================================================
+  This is the build file for the pentaho-reports-for-openerp project.
+  
+  This build file will use the build-res/subfloor.xml file as the default build
+  process and should only override the tasks that need to differ from
+  the common build file.
+  
+  See build-res/subfloor.xml for more details
+============================================================================-->
+<project name="pentaho-reports-for-openerp" basedir="." default="default">
+
+    <property file="${user.home}/.pentaho-reporting-build-settings.properties"
+              description="Per user override settings-file for all pentaho-reporting projects."/>
+
+    <!-- Define the default location of the common build file -->
+    <property name="common.build.file" value="./build-res/subfloor.xml"
+              description="This is the location of the standardized build-res/subfloor.xml file"/>
+
+    <!-- Import the build-res/subfloor.xml file which contains all the default tasks -->
+    <import file="${common.build.file}"/>
+
+    <!--=======================================================================
+        This project does not have test-cases and users build it from source 
+        so no need to zip up the source
+      ====================================================================-->
+    <target name="build" depends="clean-all,resolve,dist"/>
+
+    <!--=======================================================================
+        continuous
+
+        Runs a typical continuous integration build including project dist,
+        test, and coverage artifacts
+        ====================================================================-->
+    <target name="continuous-local" depends="build,publish-local"/>
+
+
+    <!--=======================================================================
+        continuous-testless
+
+        Runs a typical continuous integration build including project dist,
+        and coverage artifacts
+        ====================================================================-->
+    <target name="continuous-local-testless" depends="build-testless,publish-local"/>
+
+    <!--
+      AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
+      THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
+      FOUND IN build-res/subfloor.xml.
+    -->
+    
+    <property name="standalone.server.class}" value="${standalone-server-class}"/>
+    
+    <target name="jar.main" 
+            depends="compile,set-build.id,generate.manifest">
+      <jar destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" manifest="${dist.manifest.file}" excludes="**/application/*">
+        <fileset dir="${classes.dir}" includes="**/StandaloneReportServer.class, **/PentahoRenderer.class" />
+      </jar>
+    </target>
+  
+    <target name="war" 
+            depends="compile">
+      <war destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.war" webxml="WebContent/WEB-INF/web.xml">
+        <lib dir="${lib.dir}/internal">
+          <exclude name="servlet-api*.jar"/>
+          <exclude name="junit*.jar"/>
+          <exclude name="xmlunit*.jar"/>
+        </lib>
+
+        <classes dir="${classes.dir}" excludes="**/StandaloneReportServer.class"/>
+
+        <zipfileset dir="${src.dir}" includes="**/*.properties" prefix="WEB-INF/classes"/>
+      </war>
+    </target>
+    
+    <!-- Build and launch the application -->
+    <target name="launch" depends="jar">
+      <java classname="${standalone-server-class}" fork="true">
+        <classpath>
+          <path refid="classpath" />
+          <path location="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar"/>
+        </classpath>
+      </java>
+    </target>
+    
+    <target name="dist-full" depends="war, jar"
+          description="Creates all the distributable items for this project">
+    </target>
+    
+    <!-- Override default dist target to do a dist-full instead -->
+    <target name="dist" depends="dist-full"/>
+
+</project>
