@@ -173,6 +173,7 @@ class WebClient(http.Controller):
                             "time":i.cx_date,
                             "name":i.yfxm,
                             "numbers":i.name.yftelno,
+                            "id":i.name.name,
                             "status":state.get(i.state)
                         })
                     cr.commit()
@@ -206,6 +207,7 @@ class WebClient(http.Controller):
                             "time":i.cx_date,
                             "name":i.yfxm,
                             "numbers":i.name.yftelno,
+                            "id":i.name.name,
                             "status":state.get(i.state)
                         })
                     cr.commit()
