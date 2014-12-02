@@ -142,7 +142,8 @@
 
                                         <field name="yfage"/>
                                         <field name="yflastyj"/>
-                                        <field name="yfyjzq"/>
+                                        <field name="yfyjzqtext"/>
+
                                     </group>
                                     <group>
                                         <field name="yfheight"/>

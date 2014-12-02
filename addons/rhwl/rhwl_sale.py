@@ -59,7 +59,7 @@ class rhwl_sample_info(osv.osv):
         "yfage": fields.integer(u"孕妇年龄(周岁)"),
         "yffqage": fields.integer(u"胎儿父亲年龄(周岁)"),
         "yflastyj": fields.date(u"末次月经"),
-        "yfyjzq": fields.integer(u"月经周期"),
+        "yfyjzqtext":fields.char(u"月经周期"),
         "yftelno": fields.char(u"手机号", size=15),
         "yfjjlltel": fields.char(u"紧急联络电话", size=20),
         "yfpostaddr": fields.char(u"邮寄地址", size=50),
