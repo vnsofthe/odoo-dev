@@ -10,7 +10,13 @@ import rhwl_sms
 rhwl_sale_state_select = {'draft':u'草稿',
                           'done': u'确认',
                           'checkok':u'检验完成',
-                          'cancel': u'取消'}
+                          'cancel': u'取消',
+                          'get': u'已接收',
+                          'library': u'已进实验室',
+                          'pc': u'已上机',
+                          'reuse': u'需重采血',
+                          'ok': u'检验结果正常',
+                        'except': u'检验结果阳性'}
 
 class rhwl_sample_info(osv.osv):
     _name = "sale.sampleone"

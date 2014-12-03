@@ -151,7 +151,7 @@ class WebClient(http.Controller):
                                 "time":i.cx_date,
                                 "name":i.yfxm,
                                 "code":i.name,
-                                "status":rhwl_sale.rhwl_sale_state_select.get(i.state)
+                                "status":rhwl_sale.rhwl_sale_state_select.get(i.check_state)
                             })
                     else:
                         reuseid = sampleone.search(cr,uid,[('cx_date','<=',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())],order="cx_date desc,id desc",context={'tz': "Asia/Shanghai"})
@@ -165,11 +165,12 @@ class WebClient(http.Controller):
                             temp[i.cx_date].append({
                                 "name":i.yfxm,
                                 "code":i.name,
-                                "status":check_state.get(i.check_state)
+                                "status":rhwl_sale.rhwl_sale_state_select.get(i.check_state)
                             })
                         data = [{"exception":str(except_count)+u"个"},]
-                        for k,v in temp.items():
-                            data.append({"time":k,"datas":v})
+
+                        for v in [(k,temp[k]) for k in sorted(temp.keys(),reverse=True)] :
+                            data.append({"time":v[0],"datas":v[1]})
                     cr.commit()
         else:
             data = res
@@ -401,7 +402,7 @@ class WebClient(http.Controller):
                         "pregnantWomanName":obj.yfxm,
                         "gestationalWeeks":str(obj.yfyzweek)+u"周+"+str(obj.yfyzday)+u"天",
                         "takeBloodTime":obj.cx_date,
-                        "state":check_state.get(obj.check_state),
+                        "state":rhwl_sale.rhwl_sale_state_select.get(obj.check_state),
                         "phoneNumber":obj.yftelno and obj.yftelno or "",
                         "emergencyCall":obj.yfjjlltel and obj.yfjjlltel or "",
                         "reTakeBloodID":reuseid and registry.get('sale.sampleone.reuse').browse(cr,uid,reuseid).newname.name or "" ,
