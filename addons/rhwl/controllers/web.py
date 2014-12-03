@@ -12,7 +12,7 @@ import openerp.addons.web.controllers.main as db
 import datetime
 import logging
 from openerp.tools.translate import _
-from .. import rhwl_sale
+from .. import rhwl_sale,rhwl_sms
 STATE = {
     'done':u"完成",
     'progress':u"待确认",
@@ -101,10 +101,42 @@ class WebClient(http.Controller):
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
+    @http.route("/web/api/sms/",type="http",auth="none")
+    def api_sms(self,**kw):
+        data={}
+        if kw.get('telno') and kw.get('id'):
+            request.session.db = self.get_dbname()
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                u = registry.get('sale.sampleone')
+                id  = u.search(cr,SUPERUSER_ID,[('name','=',kw.get('id')),('yftelno','=',kw.get('telno'))],context=None)
+                if id:
+                    obj = u.browse(cr,SUPERUSER_ID,id,context=None)
+                    rhwl_sms.send_sms(obj.yftelno,obj.check_state)
+                cr.commit()
+            data = {
+                "state":200,
+            }
+        else:
+            data = {
+                'state':500,
+                'errtext':u"请输入电话号码和样品编号"
+            }
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
     @http.route("/web/crmapp/result/",type="http",auth="none")
     def app_result(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
+        check_state={
+            'get': u'已接收',
+            'library': u'已进实验室',
+            'pc': u'已上机',
+            'reuse': u'需重采血',
+            'ok': u'检验结果正常',
+             'except': u'检验结果阳性'
+        }
         if res.get('statu')==200:
             uid = res.get("userid")
             if id:
@@ -122,7 +154,7 @@ class WebClient(http.Controller):
                                 "status":rhwl_sale.rhwl_sale_state_select.get(i.state)
                             })
                     else:
-                        reuseid = sampleone.search(cr,uid,[('cx_date','<=',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())],order="cx_date desc",context={'tz': "Asia/Shanghai"})
+                        reuseid = sampleone.search(cr,uid,[('cx_date','<=',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())],order="cx_date desc,id desc",context={'tz': "Asia/Shanghai"})
                         temp = {}
                         except_count=0
                         for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):
@@ -133,7 +165,7 @@ class WebClient(http.Controller):
                             temp[i.cx_date].append({
                                 "name":i.yfxm,
                                 "code":i.name,
-                                "status":rhwl_sale.rhwl_sale_state_select.get(i.state)
+                                "status":check_state.get(i.check_state)
                             })
                         data = [{"exception":str(except_count)+u"个"},]
                         for k,v in temp.items():
@@ -345,6 +377,14 @@ class WebClient(http.Controller):
     def app_woman(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
+        check_state={
+            'get': u'已接收',
+            'library': u'已进实验室',
+            'pc': u'已上机',
+            'reuse': u'需重采血',
+            'ok': u'检验结果正常',
+             'except': u'检验结果阳性'
+        }
         if res.get('statu')==200:
             id = res.get("params").get("pregnantWomanID") #样品编码
             uid = res.get("userid")
@@ -361,9 +401,9 @@ class WebClient(http.Controller):
                         "pregnantWomanName":obj.yfxm,
                         "gestationalWeeks":str(obj.yfyzweek)+u"周+"+str(obj.yfyzday)+u"天",
                         "takeBloodTime":obj.cx_date,
-                        "state":obj.check_state,
-                        "phoneNumber":obj.yftelno,
-                        "emergencyCall":obj.yfjjlltel,
+                        "state":check_state.get(obj.check_state),
+                        "phoneNumber":obj.yftelno and obj.yftelno or "",
+                        "emergencyCall":obj.yfjjlltel and obj.yfjjlltel or "",
                         "reTakeBloodID":reuseid and registry.get('sale.sampleone.reuse').browse(cr,uid,reuseid).newname.name or "" ,
                         "report":""
                     }

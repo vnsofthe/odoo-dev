@@ -198,7 +198,7 @@ class rhwl_partner(osv.osv):
 
         for i in obj:
             if i.state_id.name and i.city_id.name:
-                cus = {"name":i.name,"tel":i.phone,"website":i.website,"accept":'Y'}
+                cus = {"name":i.name,"accept":'Y'}
                 if not data.has_key(i.state_id.name):
                     data[i.state_id.name]={}
                 if not data[i.state_id.name].has_key(i.city_id.name):
