@@ -142,7 +142,8 @@
 
                                         <field name="yfage"/>
                                         <field name="yflastyj"/>
-                                        <field name="yfyjzq"/>
+                                        <field name="yfyjzqtext"/>
+
                                     </group>
                                     <group>
                                         <field name="yfheight"/>
@@ -208,9 +209,14 @@
                                         <label for="yfxqsc" string="血清筛查"/>
                                         <div>
                                             <field name="yfxqsc"/>
-                                            <field name="yfxqscsel" attrs="{'invisible':[('yfxqsc','!=','1')]}" style="width: 60%"/>
-                                            <field name="yfxqsctext" placeholder="血清筛查风险提示"
-                                                   attrs="{'invisible':[('yfxqsc','!=','1')]}" style="width: 40%"/>
+                                            <div attrs="{'invisible':[('yfxqsc','!=','1')]}">
+                                                <label for="yfxqscsel" string="21-三体:1/" />
+                                                <field name="yfxqscsel" style="width: 50%" />
+                                                <label for="yfxqscsel1" string="18-三体:1/" />
+                                                <field name="yfxqscsel1"  style="width: 50%"/>
+                                                <label for="yfxqscsel2" string="13-三体:1/"/>
+                                                <field name="yfxqscsel2"  style="width: 50%"/>
+                                            </div>
                                         </div>
 
                                         <field name="yfyyjrxccss"/>

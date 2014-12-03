@@ -1,0 +1,11 @@
+*.prpt
+*.class
+*.pyc
+*~
+*.jar
+.pydevproject
+.settings
+build/
+dist/
+bin/
+lib/
