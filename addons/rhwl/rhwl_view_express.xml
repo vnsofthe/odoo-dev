@@ -25,7 +25,10 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='deliver_id']" position="replace">
-                        <field name="deliver_id" />
+                        <field name="deliver_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                    </xpath>
+                    <xpath expr="//field[@name='num_express']" position="attributes">
+                        <attribute name="attrs">{'readonly':[('state','!=','draft')]}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='partner_id']" position="replace"/>
                     <xpath expr="//field[@name='date']" position="replace">
