@@ -153,7 +153,7 @@ class rhwl_express(osv.osv):
                                         required=True),
         "is_deliver": fields.function(_fun_is_company, type="boolean", string=u"发货方"),
         "is_receiv": fields.function(_fun_is_company, type="boolean", string=u"收货方"),
-        "detail_ids": fields.one2many("stock.picking.express.detail", "parent_id", u"收货明细"),
+        "detail_ids": fields.one2many("stock.picking.express.detail", "parent_id",readonly=True,states={'draft':[('readonly',False)]},string=u"收货明细"),
     }
 
     _defaults = {
