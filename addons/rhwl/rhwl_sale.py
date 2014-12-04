@@ -199,11 +199,13 @@ class rhwl_sample_info(osv.osv):
                                                                context=context)
         if not detail:
             return {}
+        if isinstance(detail,(list,tuple)):
+            detail = detail[0]
         express = self.pool.get("stock.picking.express").browse(cr, uid, detail, context=context)
         if not express:
             return {}
         vals = {}
-        if express.deliver_partner:
+        if express.deliver_partner.id:
             id = express.deliver_partner.id
         else:
             id = self.pool.get("res.partner").search(cr, uid, [("zydb", "=", express.deliver_user.id)],
@@ -232,11 +234,12 @@ class rhwl_sample_info(osv.osv):
                     if seq_id:
                         se_obj = self.browse(cr,uid,seq_id,context=context)
                         vals['reuse_name']=se_obj.id
-                        vals['yfxm'] = se_obj.yfxm
                         vals['yfzjmc'] = se_obj.yfzjmc
                         vals['yfzjmc_no'] = se_obj.yfzjmc_no
                         vals['yftelno'] = se_obj.yftelno
+                        vals['yfxm'] = se_obj.yfxm
                     break
+
         return {
             "value": vals
         }

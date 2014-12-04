@@ -100,12 +100,12 @@
                                     <label for="cx_time" string="时间" class="oe_form_field" style="width: 20%"/>
                                     <field name="cx_time" style="width: 30%"/>
                                 </div>
-                                <field name="is_reused" on_change="onchange_reused(is_reused,sampletype)"/>
+                                <field name="is_reused" on_change="onchange_reused(is_reused,sampletype)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="reuse_type"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
                                 <field name="reuse_name"
-                                       attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
-                                <field name="is_free" colspan='2'/>
+                                       attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')],'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
+                                <field name="is_free" colspan='2' attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                             </group>
                             <group>
                                 <field name="receiv_user"/>
@@ -113,8 +113,8 @@
                                 <field name="city_id"/>
                                 <field name="lyyy" on_change="onchange_lyyy()"/>
                                 <field name="lyys" on_change="onchange_ys(lyyy,cxyy,lyys,'cxys')"/>
-                                <field name="cxyy" on_change="onchange_cxyy(lyyy,cxyy)"/>
-                                <field name="cxys" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')"/>
+                                <field name="cxyy" on_change="onchange_cxyy(lyyy,cxyy)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
+                                <field name="cxys" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="fzr"/>
                             </group>
                         </group>
