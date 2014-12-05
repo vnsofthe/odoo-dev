@@ -154,7 +154,7 @@ class WebClient(http.Controller):
                                 "status":rhwl_sale.rhwl_sale_state_select.get(i.check_state)
                             })
                     else:
-                        reuseid = sampleone.search(cr,uid,[('cx_date','<=',datetime.date.today()),('cx_date','>',datetime.timedelta(-7) + datetime.date.today())],order="cx_date desc,id desc",context={'tz': "Asia/Shanghai"})
+                        reuseid = sampleone.search(cr,uid,[('cx_date','<=',datetime.date.today()),('cx_date','>',datetime.timedelta(-17) + datetime.date.today())],order="cx_date desc,id desc",context={'tz': "Asia/Shanghai"})
                         temp = {}
                         except_count=0
                         for i in sampleone.browse(cr,uid,reuseid,context=self.CONTEXT):

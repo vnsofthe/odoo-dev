@@ -16,5 +16,6 @@ class rhwl_weixin(osv.osv):
         "telno":fields.char("Tele No"),
         "state":fields.selection([('draft','draft'),('process','process'),('pass','pass')],string="State"),
         "checkNum":fields.char(u"验证码"),
-        "checkDateTime":fields.datetime(u"验证码发送时间")
+        "checkDateTime":fields.datetime(u"验证码发送时间"),
+        "sampleno":fields.char("sample No")
     }

@@ -5,4 +5,5 @@ import rhwl_sale
 import rhwl_stock
 import rhwl_product
 import rhwl_project
+import rhwl_weixin
 import controllers
