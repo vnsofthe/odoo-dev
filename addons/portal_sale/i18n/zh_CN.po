@@ -309,7 +309,7 @@ msgstr "销售订单"
 #. module: portal_sale
 #: model:ir.ui.menu,name:portal_sale.portal_sales_orders
 msgid "Sales Orders"
-msgstr "销售订单"
+msgstr ""
 
 #. module: portal_sale
 #: help:account.config.settings,group_payment_options:0

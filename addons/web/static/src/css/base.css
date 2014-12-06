@@ -1957,7 +1957,7 @@
   border-right: none;
 }
 .openerp .oe_form .oe_subtotal_footer .oe_subtotal_footer_separator {
-  width: 108px;
+  min-width: 108px;
   border-top: 1px solid #cacaca;
   margin-top: 4px;
   padding-top: 4px;
@@ -2004,6 +2004,7 @@
 .openerp .oe_form td.oe_form_group_cell_label label {
   line-height: 18px;
   display: block;
+  min-width: 150px;
   font-weight: bold !important;
 }
 .openerp .oe_form td.oe_form_group_cell + .oe_form_group_cell {

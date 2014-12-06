@@ -95,6 +95,7 @@ class weixin(http.Controller):
                         id = sample.search(cr,SUPERUSER_ID,[("name","=",obj.sampleno)])
                         sample_obj = sample.browse(cr,SUPERUSER_ID,id)
                         user.write(cr,SUPERUSER_ID,obj.id,{"state":"pass"})
+                        cr.commit()
                         return self.replyWeiXin(fromUser,toUser,u"您的样品编码"+obj.sampleno+u"检查结果为【"+rhwl_sale.rhwl_sale_state_select.get(sample_obj.check_state)+u"】,详细的检测报告请与检测医院索取。" )
         else:
             with registry.cursor() as cr:
@@ -105,6 +106,7 @@ class weixin(http.Controller):
                     rand = random.randint(111111,999999)
                     checkDateTime = datetime.datetime.utcnow()
                     user.write(cr,SUPERUSER_ID,openid,{"telno":obj.yftelno,"state":"process","checkNum":rand,"checkDateTime":checkDateTime,"sampleno":content})
+                    cr.commit()
                     if obj.yftelno:
                         rhwl_sms.send_sms(obj.yftelno,u"您查询样品检测结果的验证码为%s，请在五分钟内输入，如果不是您本人操作，请不用处理。" %(rand,))
                         return self.replyWeiXin(fromUser,toUser,u"验证码已经发送至检测知情同意书上登记的电话"+obj.yftelno[:3]+u"****"+obj.yftelno[-4:]+u"，请收到验证码后在五分钟内输入。")
