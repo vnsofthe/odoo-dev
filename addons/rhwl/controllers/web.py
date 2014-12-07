@@ -378,14 +378,6 @@ class WebClient(http.Controller):
     def app_woman(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
-        check_state={
-            'get': u'已接收',
-            'library': u'已进实验室',
-            'pc': u'已上机',
-            'reuse': u'需重采血',
-            'ok': u'检验结果正常',
-             'except': u'检验结果阳性'
-        }
         if res.get('statu')==200:
             id = res.get("params").get("pregnantWomanID") #样品编码
             uid = res.get("userid")
@@ -409,11 +401,33 @@ class WebClient(http.Controller):
                         "report":""
                     }
                     cr.commit()
-
         else:
             data = res
-
-
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
+    @http.route("/web/crmapp/notice/",type="http",auth="none")
+    def app_notice(self,**kw):
+        res = self.check_userinfo(kw)
+        data = {}
+        if res.get('statu')==200:
+            id = res.get("params").get("id") #样品编码
+            uid = res.get("userid")
+            if id:
+                registry = RegistryManager.get(request.session.db)
+                with registry.cursor() as cr:
+                    reuse_obj = registry.get('sale.sampleone.reuse')
+                    reuseid = reuse_obj.search(cr,uid,[('name.name','=',id)])
+                    if reuseid:
+                        reuse_obj.write(cr,SUPERUSER_ID,reuseid,{'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'done'},context=self.CONTEXT)
+                    else:
+                        except_obj = registry.get('sale.sampleone.exception')
+                        expid = except_obj.search(cr,uid,[('name.name','=',id)])
+                        if expid:
+                            except_obj.write(cr,SUPERUSER_ID,expid,{'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'notice'},context=self.CONTEXT)
+                    data['statu'] = 200
+                    cr.commit()
+        else:
+            data = res
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
