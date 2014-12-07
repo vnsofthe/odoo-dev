@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+	<meta charset="UTF-8">
+	<title>Blank App Designer Project Template</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<style>
+			    @-ms-viewport { width: 100vw ; zoom: 100% ; }                           @viewport { width: 100vw ; zoom: 100% ; }
+			    @-ms-viewport { user-zoom: fixed ; }                                    @viewport { user-zoom: fixed ; }
+		</style>
+	<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" type="text/css" href="css/index_main.less.css" class="main-less">
+	<script src="intelxdk.js"></script>
+	<script src="cordova.js"></script>
+	<script src="xhr.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/init-app.js"></script>
+	<script src="js/init-dev.js"></script>
+	<script type="application/javascript" src="js/jquery.min.js"></script>
+	<script type="application/javascript" src="marginal/marginal-position.min.js"></script>
+	<script type="application/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+	<script type="application/javascript" src="js/index_user_scripts.js"></script>
+	<script type="application/javascript" src="js/bs_subpage.js"></script>
+</head>
+<body>
+	<div class="uwrap">
+		<div class="upage" id="LoginPage">
+			<div class="uib-header header-bg" style="position: fixed;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">Welcome Genetalks</h2>
+			</div>
+			<div class="upage-outer" style="margin-top:50px;">
+				<div id="LoginPagesub" class="upage-content">
+					<div class="grid grid-pad urow uib_row_5 row-height-5" data-uib="layout/row" data-ver="0">
+						<div class="col uib_col_6 col-0_12-12" data-uib="layout/col" data-ver="0">
+							<div class="widget-container content-area vertical-col">
+
+								<div class="widget uib_w_6 d-margins LoginLogo" data-uib="media/text" data-ver="0">
+									<div>
+										<p>用户登陆</p>
+									</div>
+								</div>
+								<div class="table-thing widget uib_w_7 d-margins" data-uib="twitter%20bootstrap/input" data-ver="0">
+									<label class="narrow-control label-inline" for="userName">Email</label>
+									<input class="wide-control form-control default" type="text" placeholder="请输入用户名" id="userName"></div>
+								<div class="grid grid-pad urow uib_row_6 row-height-6" data-uib="layout/row" data-ver="0">
+									<div class="col uib_col_7 col-1_12-12" data-uib="layout/col" data-ver="0">
+										<div class="widget-container content-area vertical-col">
+											<span class="uib_shim"></span>
+										</div>
+									</div>
+									<span class="uib_shim"></span>
+								</div>
+								<div class="table-thing widget uib_w_9 d-margins" data-uib="twitter%20bootstrap/input" data-ver="0">
+									<label class="narrow-control label-inline" for="pwd">密 码</label>
+									<input class="wide-control form-control default" type="password" placeholder="请输入密码" id="pwd"></div>
+								<div class="grid grid-pad urow uib_row_7 row-height-7" data-uib="layout/row" data-ver="0">
+									<div class="col uib_col_8 col-1_12-12" data-uib="layout/col" data-ver="0">
+										<div class="widget-container content-area vertical-col">
+											<span class="uib_shim"></span>
+										</div>
+									</div>
+									<span class="uib_shim"></span>
+								</div>
+								<button class="btn widget uib_w_10 d-margins btn-success" data-uib="twitter%20bootstrap/button" data-ver="0" id="loginBtn"> <i class="glyphicon glyphicon-user button-icon-left" data-position="left"></i>
+									登录
+								</button>
+								<span class="uib_shim"></span>
+							</div>
+						</div>
+						<span class="uib_shim"></span>
+					</div>
+				</div>
+				<div class="uib-footer uib-footer-fixed footer-bg" data-uib="layout/footer" data-ver="0">
+					<h2></h2>
+					<div class="widget-container wrapping-col single-centered">
+						<div class="widget uib_w_12 d-margins LoginFootText" data-uib="media/text" data-ver="0">
+							<div>
+								<p>最终解释权归 ©人和未来公司 所有</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="mainpage">
+			<div class="uib-header header-bg" style="position: fixed;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">主页</h2>
+				<div class="widget-container content-area horiz-area wrapping-col right">
+					<div id="logoutBtn" style="width: 100px; height: 50px; position: absolute; z-index: 10;margin-left: -100px;"></div>
+					<div style="padding: 11px; color: white; font-size: 16px;">
+						注销登录 <i class="glyphicon glyphicon-log-out"></i>
+					</div>
+				</div>
+			</div>
+			<div class="upage-outer" style="margin-top:50px">
+				<div id="mainsub" class="upage-content">
+					<div class="grid grid-pad urow uib_row_8 row-height-8" data-uib="layout/row" data-ver="0">
+						<p class="text-primary" id="hospitalName"></p>
+						<div class="col uib_col_10 col-0_6-12" data-uib="layout/col" data-ver="0">
+							<div class="widget-container content-area vertical-col">
+								<button class="btn widget uib_w_15 d-margins firstPage_btn btn-primary BigBtn_pageOne" data-uib="twitter%20bootstrap/button" data-ver="0" id="uib_w_15"><i class="glyphicon glyphicon-plane button-icon-top" data-position="top"></i>试管物流</button>
+								<button class="btn widget uib_w_16 d-margins firstPage_btn btn-info BigBtn_pageOne" data-uib="twitter%20bootstrap/button" data-ver="0" id="uib_w_16">
+								<i class="glyphicon glyphicon-pencil button-icon-top" data-position="top"></i>
+									收货
+									<span id="receive_tip_num" class="badge">0</span>
+								</button>
+								<button class="btn widget uib_w_17 d-margins firstPage_btn btn-success BigBtn_pageOne" data-uib="twitter%20bootstrap/button" data-ver="0" id="uib_w_17"><i class="glyphicon glyphicon-asterisk button-icon-top" data-position="top"></i>阳性</button>
+								<span class="uib_shim"></span>
+							</div>
+						</div>
+						<div class="col uib_col_9 col-0_6-12" data-uib="layout/col" data-ver="0">
+							<div class="widget-container content-area vertical-col">
+								<button class="btn widget uib_w_18 d-margins firstPage_btn btn-warning BigBtn_pageOne" data-uib="twitter%20bootstrap/button" data-ver="0" id="uib_w_18"><i class="glyphicon glyphicon-list-alt button-icon-top" data-position="top"></i>结果查询</button>
+								<button class="btn widget uib_w_19 d-margins firstPage_btn btn-danger BigBtn_pageOne" data-uib="twitter%20bootstrap/button" data-ver="0" id="uib_w_19"><i class="glyphicon glyphicon-send button-icon-top" data-position="top"></i>发货</button>
+								<button class="btn widget uib_w_20 d-margins firstPage_btn btn-info BigBtn_pageOne" data-uib="twitter%20bootstrap/button" data-ver="0" id="uib_w_20"><i class="glyphicon glyphicon-refresh button-icon-top" data-position="top"></i>重抽血</button>
+								<span class="uib_shim"></span>
+							</div>
+						</div>
+						<span class="uib_shim"></span>
+					</div>
+
+					<div class="grid grid-pad urow uib_row_9 row-height-9" data-uib="layout/row" data-ver="0">
+						<div class="col uib_col_11 col-0_12-12" data-uib="layout/col" data-ver="0">
+							<div class="widget-container content-area vertical-col">
+
+								<div class="widget uib_w_21 d-margins pageMain_AllCount_text" data-uib="media/text" data-ver="0">
+									<div class="widget-container left-receptacle"></div>
+									<div class="widget-container right-receptacle"></div>
+									<div>
+										<p>
+											本院试管库存:
+											<span id="leftAllCount"></span>
+										</p>
+									</div>
+								</div>
+								<span class="uib_shim"></span>
+							</div>
+						</div>
+						<span class="uib_shim"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="send">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">医院发货</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" style="margin-top:50px;">
+				<div class="upage-content content-area vertical-col left" id="page_56_50">
+					<span id="123"></span>
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<h3 class="panel-title">物流信息</h3>
+						</div>
+						<div class="panel-body">
+							<div class="input-group" style="margin: 0px -10px;">
+								<input id="scanner" onclick="wuliu()" type="text" class="form-control input-lg" placeholder="扫码或点击右侧手动填写">		
+								<span class="input-group-btn">
+									<button class="btn btn-info input-lg" type="button" onclick="writeBySelf()">
+										<span id="scannerLogo" class="glyphicon glyphicon-pencil"></span>
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							<h3 class="panel-title">样品信息</h3>
+						</div>
+						<div class="panel-body">
+							<div id="body-one">
+								<table class="table table-striped" id="table_y">
+									<thead>
+										<tr>
+											<th style="width:20%;text-align:center;">序号</th>
+											<th style="width:40%;text-align:center;">样品代号</th>
+											<th style="width:40%;text-align:center;">操作</th>
+										</tr>
+									</thead>
+									<tbody id="tbody_y" style="text-align:center;"></tbody>
+								</table>
+								<table class="table">
+									<tbody>
+										<tr>
+											<td> <strong><p class="text-success">
+														样品:
+														<span class="demoCount">0</span>
+														个
+													</p></strong> 
+											</td>
+											<td> <strong><p class="text-info">
+														破损:
+														<span class="breakCount">0</span>
+														个
+													</p></strong> 
+											</td>
+											<td>
+												<strong>
+													<p class="text-danger">
+														合计:
+														<span class="allCount" id="allCount">0</span>
+														个
+													</p>
+												</strong>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<div class="panel widget uib_w_5 panel-default" data-uib="twitter%20bootstrap/collapsible" data-ver="1">
+									<div class="panel-heading" style="background-color:rgba(204,204,204,0.3)">
+										<h4 class="panel-title accordion-toggle" data-toggle="collapse" href="#toggle1">破损寄回</h4>
+									</div>
+									<div id="toggle1" class="panel-collapse collapse">
+										<div class="panel-body">
+											<table class="table" style="margin-bottom:-10px;">
+												<tbody>
+													<tr>
+														<td style="width: 100px;">
+															<strong>破损试验袋:</strong>
+														</td>
+														<td>
+															<div id="breakInputDiv">
+																<input class="form-control" id="breakInput" type="text"></div>
+														</td>
+														<td style="width: 60px;">
+															<strong>个</strong>
+														</td>
+													</tr>
+													<tr id="breakNumErr">
+														<td colspan="3">
+															<div class="alert alert-danger" role="alert"></div>
+														</td>
+													</tr>
+													<tr>
+														<td></td>
+														<td></td>
+														<td>
+															<button type="button" class="btn btn-info" onclick="addBreak()">提交</button>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div id="body-two">
+								<button type="button" class="btn btn-info btn-block btn-lg" onclick="addDemo()">新增样品</button>
+							</div>
+						</div>
+						<div class="panel-footer" id="confrimOut">
+							<button type="button" class="btn btn-success btn-block btn-lg" data-toggle="modal" data-target="#sendConfrim">确认发货</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="logisticsMSG">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">试管物流</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" style="margin-top:50px;">
+				<div class="upage-content content-area vertical-col left" id="page_5_62">
+					<div class="input-group">
+						<input class="form-control" type="text" placeholder="按时间/物流公司/状态" id="searchlog"></div>
+					<table class="table table-bordered">
+						<thead>
+							<tr class="warning" >
+								<td colspan="3">我发送的</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="success">
+								<td>时间</td>
+								<td>物流单号(公司)</td>
+								<td>状态</td>
+							</tr>
+						</tbody>
+						<tbody id="logtb_deliver01"></tbody>
+					</table>
+
+					<table class="table table-bordered">
+						<thead>
+							<tr class="warning">
+								<td colspan="3">我接收的</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="success">
+								<td>时间</td>
+								<td>物流单号(公司)</td>
+								<td>状态</td>
+							</tr>
+						</tbody>
+						<tbody id="logtb_receive01"></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="receive">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">医院收货</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" style="margin-top:50px;">
+				<div class="upage-content content-area vertical-col left" id="page_57_34">
+					<div class="table-thing widget uib_w_4 d-margins" data-uib="twitter%20bootstrap/input" data-ver="0"></div>
+					<div id="showTake">
+						<div class="widget uib_w_12 d-margins" data-uib="media/text" data-ver="0">
+							<div id="hasNewOrder">
+								<p class="lead" style="color:orange">
+									您有新的快递单号，请注意
+									<input type="button" value="查收" onclick="shouHuoBut()" id="chaShou01">！</p>
+								<div id="receiveTable">
+									<table class="table table-bordered">
+										<thead>
+											<tr class="success">
+												<td>快递单号</td>
+												<td>应收试管数</td>
+												<td>实收试管数</td>
+											</tr>
+										</thead>
+										<tbody id="receiveTbody"></tbody>
+									</table>
+									<button class="btn widget uib_w_13 d-margins btn-success" onclick="sureForSH()" data-uib="twitter%20bootstrap/button" data-ver="0" style="width:100%;height:20%">确认收货</button>
+								</div>
+
+								<div id="receiveMark">
+									<div class="grid grid-pad urow uib_row_5 row-height-5" data-uib="layout/row" data-ver="0">
+										<div class="col uib_col_5 col-0_12-12" data-uib="layout/col" data-ver="0">
+											<div class="widget-container content-area vertical-col">
+												<div class="table-thing widget uib_w_14 d-margins" data-uib="twitter%20bootstrap/text_area" data-ver="0">
+													<label class="narrow-control label-inline" style="color:blueish  ">备注信息:</label>
+													<textarea rows="2" class="wide-control form-control" wrap="soft" id="markId01"></textarea>
+												</div>
+												<span class="uib_shim"></span>
+											</div>
+										</div>
+										<span class="uib_shim"></span>
+									</div>
+								</div>
+							</div>
+							<div id="noNewOrder">
+								<p class="lead" style="color:orange">您还没有新的快递！</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="DemoTrak">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">结果查询</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" style="margin-top:50px;">
+				<input class="form-control" type="text" placeholder="请输入姓名搜索" id="resultInp">		
+				<div class="grid grid-pad urow uib_row_4 row-height-4" data-uib="layout/row" data-ver="0" id="bs-accordion-0">
+					<!-- 写入数据处 -->		
+				</div>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="yangxing">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">阳性样品</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" id="yangxingsub" style="margin-top:50px;">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>时间</th>
+							<th>姓名(代号)</th>
+							<th>状态</th>
+						</tr>
+					</thead>
+					<tbody id="tbd2"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="chongchouxie">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">重抽血样品</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" id="chongchouxiesub" style="margin-top:50px;">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>时间</th>
+							<th>姓名(代号)</th>
+							<th>状态</th>
+						</tr>
+					</thead>
+					<tbody id="tbd"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="upage hidden" id="pregnantWomanMSG">
+			<div class="uib-header header-bg" style="position: fixed;top:0px;" data-ver="0" data-uib="layout/header">
+				<h2 style="color: white;">孕妇信息</h2>
+				<div style="padding: 11px; color: white; font-size: 16px; position: relative;z-index: 11;"class="backToMainPage"> <i class="glyphicon glyphicon-chevron-left button-icon-left" style="margin-top: 3px; margin-right: 3px;" data-position="left"></i>
+					返回
+				</div>
+			</div>
+			<div class="upage-outer" style="margin-top:50px;">
+				<div class="grid grid-pad urow uib_row_10 row-height-10" data-uib="layout/row" data-ver="0">
+					<div class="col uib_col_12 col-0_12-12" data-uib="layout/col" data-ver="0">
+						<div class="widget-container content-area vertical-col">
+
+							<table class="table">
+								<tbody>
+									<tr>
+										<td>
+											<span style="font-weight: bold;">孕妇ID</span>
+										</td>
+										<td>
+											<span id="pregnantWomanID"></span>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<span style="font-weight: bold;">孕妇姓名</span>
+										</td>
+										<td>
+											<span id="pregnantWomanName"></span>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<span style="font-weight: bold;">采血孕周</span>
+										</td>
+										<td>
+											<span id="gestationalWeeks"></span>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<span style="font-weight: bold;">采血时间</span>
+										</td>
+										<td>
+											<span id="takeBloodTime"></span>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<span style="font-weight: bold;">状态</span>
+										</td>
+										<td>
+											<span id="state"></span>
+										</td>
+									</tr>
+									<tr onclick="copyToClipboard(this)">
+										<td>
+											<span style="font-weight: bold;">手机号</span>
+										</td>
+										<td>
+											<span class="number" id="phoneNumber"></span>
+										</td>
+									</tr>
+									<tr onclick="copyToClipboard(this)">
+										<td>
+											<span style="font-weight: bold;">紧急电话</span>
+										</td>
+										<td>
+											<span class="number" id="emergencyCall"></span>
+										</td>
+									</tr>
+									<tr id="reTakeBlood_tr">
+										<td>
+											<span style="font-weight: bold;">重采血ID</span>
+										</td>
+										<td>
+											<span id="reTakeBloodID"></span>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<span style="font-weight: bold;">报告</span>
+										</td>
+										<td>
+											<span id="report"></span>
+										</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="3">
+											<button class="btn btn-success btn-block notice" onclick="Notice(this)">已通知该孕妇</button>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+
+							<button class="btn btn-warning btn_pregnantWomanMSG">
+								<i class="glyphicon glyphicon-remove button-icon-left" data-position="left"></i>
+								关闭信息
+							</button>
+							<span class="uib_shim"></span>
+						</div>
+					</div>
+					<span class="uib_shim"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="sendConfrim">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">确认发货</h4>
+				</div>
+				<div class="modal-body">
+					<p class="text-success">
+						样品:
+						<span class="demoCount">0</span>
+						个
+					</p>
+					<p class="text-info">
+						破损:
+						<span class="breakCount">0</span>
+						个
+					</p>
+					<p class="text-danger">
+						合计:
+						<span class="allCount">0</span>
+						个
+					</p>
+					<p>确认提交数据?(一经提交不可修改)</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="upload()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="continueScan">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">x</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">提示:</h4>
+				</div>
+				<div class="modal-body">
+					<p>继续扫描吗?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="addDemo()">继续</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="relevance">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">×</span>
+						<span class="sr-only">Close</span>
+					</button>
+					<h4 class="modal-title">请选择关联对象</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-hover table-condensed">
+						<thead>
+							<tr>
+								<th>姓名(代号)</th>
+								<th>已关联样品</th>
+							</tr>
+						</thead>
+						<tbody id="relevance_bd"></tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
