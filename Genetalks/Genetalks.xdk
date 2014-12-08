@@ -6,7 +6,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "appDesigner",
       "projectGuid": "cbc24388-9eb8-46db-853f-9c0da346be18",
-      "lastModifiedDate": 1417967483872,
+      "lastModifiedDate": 1418022978728,
       "creationDate": 1415339221460
     },
     "XDK-app-designer": "true",
@@ -62,7 +62,32 @@
         "appName_": "Genetalks",
         "appID_": "xdk.intel.ad.project",
         "appAccess_": "*",
-        "icons_": [],
+        "icons_": [
+          {
+            "relPath": "ico36.png",
+            "density": "ldpi",
+            "height": 36,
+            "width": 36
+          },
+          {
+            "relPath": "ico48.png",
+            "density": "mdpi",
+            "height": 48,
+            "width": 48
+          },
+          {
+            "relPath": "ico72.png",
+            "density": "hdpi",
+            "height": 72,
+            "width": 72
+          },
+          {
+            "relPath": "ico96.png",
+            "density": "xhdpi",
+            "height": 96,
+            "width": 96
+          }
+        ],
         "splashes_": [],
         "iosProvs_": [],
         "addlPermissions_": "",
@@ -103,7 +128,9 @@
         "runtime_": "Cordova 3.x",
         "name_": "iOS",
         "preferences_": {
-          "ios-target": "5"
+          "ios-target": "6",
+          "Fullscreen": true,
+          "Orientation": "portrait"
         },
         "isActive_": true,
         "appName_": "Genetalks",
