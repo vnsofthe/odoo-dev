@@ -424,7 +424,7 @@ class WebClient(http.Controller):
                         except_obj = registry.get('sale.sampleone.exception')
                         expid = except_obj.search(cr,uid,[('name.name','=',id)])
                         if expid:
-                            except_obj.write(cr,SUPERUSER_ID,expid,{'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'notice'},context=self.CONTEXT)
+                            except_obj.write(cr,SUPERUSER_ID,expid,{'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'notice',"is_notice":True},context=self.CONTEXT)
                     data['statu'] = 200
                     cr.commit()
         else:
