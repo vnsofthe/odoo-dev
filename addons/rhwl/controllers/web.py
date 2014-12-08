@@ -385,8 +385,6 @@ class WebClient(http.Controller):
                 registry = RegistryManager.get(request.session.db)
                 with registry.cursor() as cr:
                     sampleone = registry.get('sale.sampleone')
-                    reuseid = registry.get('sale.sampleone.reuse').search(cr,uid,[('name','=',id)])
-
                     ids = sampleone.search(cr,uid,[('name','=',id)])
                     obj = sampleone.browse(cr,uid,ids)
                     data = {
@@ -397,9 +395,31 @@ class WebClient(http.Controller):
                         "state":rhwl_sale.rhwl_sale_state_select.get(obj.check_state),
                         "phoneNumber":obj.yftelno and obj.yftelno or "",
                         "emergencyCall":obj.yfjjlltel and obj.yfjjlltel or "",
-                        "reTakeBloodID":reuseid and registry.get('sale.sampleone.reuse').browse(cr,uid,reuseid).newname.name or "" ,
-                        "report":""
+                        "reTakeBloodID":"",
+                        "report":"",
+                        "btn":"None"
                     }
+                    if obj.check_state == "reuse":
+                        #需重采血
+                        reused_obj =registry.get('sale.sampleone.reuse')
+                        reuseid = reused_obj.search(cr,uid,[('name.name','=',id)])
+                        if reuseid:
+                            reused = reused_obj.browse(cr,uid,reuseid,context=self.CONTEXT)
+                            data['reTakeBloodID'] = reused.newname.name
+                            if reused.state=="draft":
+                                data['btn'] = "1"
+                            elif reused.state=="done":
+                                data["btn"] = "0"
+                    elif obj.check_state=="except":
+                        #阳性
+                        reused_obj =registry.get('sale.sampleone.exception')
+                        reuseid = reused_obj.search(cr,uid,[('name.name','=',id)])
+                        if reuseid:
+                            reused = reused_obj.browse(cr,uid,reuseid,context=self.CONTEXT)
+                            if reused.state=="draft":
+                                data['btn'] = "1"
+                            elif reused.state=="notice":
+                                data["btn"] = "0"
                     cr.commit()
         else:
             data = res
@@ -412,6 +432,7 @@ class WebClient(http.Controller):
         data = {}
         if res.get('statu')==200:
             id = res.get("params").get("id") #样品编码
+            btn = res.get("params").get("btn")
             uid = res.get("userid")
             if id:
                 registry = RegistryManager.get(request.session.db)
@@ -419,12 +440,20 @@ class WebClient(http.Controller):
                     reuse_obj = registry.get('sale.sampleone.reuse')
                     reuseid = reuse_obj.search(cr,uid,[('name.name','=',id)])
                     if reuseid:
-                        reuse_obj.write(cr,SUPERUSER_ID,reuseid,{'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'done'},context=self.CONTEXT)
+                        if btn=="1":
+                            vals = {'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'done'}
+                        else:
+                            vals = {'state':'draft'}
+                        reuse_obj.write(cr,SUPERUSER_ID,reuseid,vals,context=self.CONTEXT)
                     else:
                         except_obj = registry.get('sale.sampleone.exception')
                         expid = except_obj.search(cr,uid,[('name.name','=',id)])
+                        if btn=="1":
+                            vals = {'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'notice',"is_notice":True}
+                        else:
+                            vals = {'state':'draft',"is_notice":False}
                         if expid:
-                            except_obj.write(cr,SUPERUSER_ID,expid,{'notice_user':uid,'notice_date':datetime.datetime.now(),'state':'notice',"is_notice":True},context=self.CONTEXT)
+                            except_obj.write(cr,SUPERUSER_ID,expid,vals,context=self.CONTEXT)
                     data['statu'] = 200
                     cr.commit()
         else:
