@@ -25,7 +25,8 @@ CRM业务增加模块
              'security/ir.model.access.csv',
              'security/rhwl_security.xml',
              "rhwl_report.xml",
-             "view/report_sample_one.xml"
+             "views/report_sample_one.xml",
+             "views/rhwl.xml"
     ],
     "qweb":["static/src/xml/base.xml"],
     'demo': [],

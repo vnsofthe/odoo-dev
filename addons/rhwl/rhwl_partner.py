@@ -50,6 +50,7 @@ class rhwl_partner(osv.osv):
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
         "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
         "city_id": fields.many2one("res.country.state.city", string=u"城市"),
+        "area_id": fields.many2one("res.country.state.city.area",string=u"区/县"),
         'function_sel': fields.selection(
             [(u"主任", u"主任"), (u"副主任", u"副主任"), (u"主治", u"主治"), (u'住院', u'住院'), (u'护士长', u'护士长'), (u'护士', u'护士'),
              (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),
@@ -85,7 +86,8 @@ class rhwl_partner(osv.osv):
 
         res = {
             "value": {
-                "city": city_obj.name
+                "city": city_obj.name,
+                "area_id":False,
             }
         }
         if arg and not newid:
@@ -232,5 +234,12 @@ class rhwl_country_state_city(osv.osv):
         "state_id": fields.many2one("res.country.state", string="State"),
         "code": fields.char("Code", size=10),
         "name": fields.char("Name", size=20),
+    }
 
+class rhwl_country_state_city_area(osv.osv):
+    _name = "res.country.state.city.area"
+
+    _columns = {
+        "city_id":fields.many2one("res.country.state.city",string="City"),
+        "name": fields.char("Area",size=200)
     }

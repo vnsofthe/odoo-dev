@@ -25,7 +25,6 @@
                         <group attrs="{'invisible':[('customer','=',False)]}">
                             <field name="function_sel"
                                    attrs="{'invisible': [('is_company','=', True)]}"/>
-
                             <field name="eduction"
                                    attrs="{'invisible': ['|',('is_company','=', True),('customer','=',False)]}"/>
                             <field name="yjfx"
@@ -44,7 +43,6 @@
                                 <field name="jzdsother" placeholder="请输入其它说明"
                                        attrs="{'invisible': ['|','|',('is_company','!=', True),('customer','=',False),('jzds','!=','0')]}"/>
                             </div>
-
                             <field name="cust_type"
                                    attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"
                                    widget="radio"/>
@@ -58,7 +56,7 @@
                     <xpath expr="//group/div/field[@name='street2']" position="replace"/>
                     <xpath expr="//group/div/div[@class='address_format']" position="before">
                         <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}'
-                               attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                               attrs="{'invisible':1}"/>
                     </xpath>
                     <xpath expr="//group/div/div[@class='address_format']" position="after">
                         <field name="street" placeholder="Street..."
@@ -67,14 +65,17 @@
                     </xpath>
                     <xpath expr="//field[@name='state_id']" position="replace"/>
                     <xpath expr="//field[@name='city']" position="before">
-                        <field name="state_id" domain="[('country_id','=',country_id)]" class="oe_no_button"
-                               placeholder="State" style="width: 37%%" options='{"no_open": True}'
+                        <field name="state_id" class="oe_no_button"
+                               placeholder="State" style="width: 40%%" options='{"no_open": True}'
                                on_change="onchange_state(state_id)"
                                attrs="{'readonly': [('use_parent_address','=',True)]}"/>
                         <field name="city_id" domain="[('state_id','=',state_id)]" placeholder="City"
-                               style="width: 40%%" attrs="{'readonly': [('use_parent_address','=',True)]}"
+                               style="width: 50%%" attrs="{'readonly': [('use_parent_address','=',True)]}"
                                options='{"no_open": True}'
                                on_change="onchange_city_id(city_id,True,0)" required="True"/>
+                        <field name="area_id" domain="[('city_id','=',city_id)]" placeholder="Area"
+                               style="width: 70%%" attrs="{'readonly': [('use_parent_address','=',True)]}"
+                               options='{"no_open": True}'/>
                     </xpath>
                     <xpath expr="//field[@name='city']" position="attributes">
                         <attribute name="attrs">{'invisible':1}</attribute>
@@ -209,15 +210,18 @@
                     <xpath expr="//form[@string='Contact']/sheet/group/div[@name='div_address']" position="replace">
                         <div attrs="{'invisible': [('use_parent_address','=', True)]}" name="div_address">
                             <field name="country_id" placeholder="Country" class="oe_no_button"
-                                   options='{"no_open": True}'/>
+                                   options='{"no_open": True}' attrs="{'invisible':1}"/>
                             <div class="address_format">
-                                <field name="state_id" class="oe_no_button" placeholder="State" style="width: 37%%"
+                                <field name="state_id" class="oe_no_button" placeholder="State" style="width: 30%%"
                                        options='{"no_open": True}' domain="[('country_id','=',country_id)]"
                                        on_change="onchange_state(state_id)"/>
                                 <field name="city" placeholder="City" style="width: 40%%" attrs="{'invisible':1}"/>
                                 <field name="city_id" placeholder="City" style="width: 40%%" options='{"no_open": True}'
                                        on_change="onchange_city_id(city_id,False,0)"/>
-                                <field name="zip" placeholder="ZIP" style="width: 20%%"/>
+                                <field name="area_id" domain="[('city_id','=',city_id)]" placeholder="Area"
+                                   style="width: 20%%" attrs="{'readonly': [('use_parent_address','=',True)]}"
+                                   options='{"no_open": True}'/>
+                                <field name="zip" placeholder="ZIP" style="width: 10%%"/>
                             </div>
                             <field name="street" placeholder="Street..."/>
                             <field name="street2" attrs="{'invisible':1}"/>
@@ -330,5 +334,49 @@
         <menuitem action="action_country_state_city" id="menu_country_state_city_partner"
                   parent="base.menu_localisation" sequence="10" groups="base.group_no_one"/>
 
+        <record id="rhwl_view_country_state_city_area_tree" model="ir.ui.view">
+            <field name="name">rhwl.res.country.state.city.area.tree</field>
+            <field name="model">res.country.state.city.area</field>
+            <field name="arch" type="xml">
+                <tree string="Area">
+                    <field name="name"/>
+                    <field name="city_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="rhwl_view_country_state_city_area_form" model="ir.ui.view">
+            <field name="name">rhwl.res.country.state.city.area.form</field>
+            <field name="model">res.country.state.city.area</field>
+            <field name="arch" type="xml">
+                <form string="State">
+                    <group>
+                        <field name="name"/>
+                        <field name="city_id" options='{"no_open": True}'/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_country_state_city_area" model="ir.actions.act_window">
+            <field name="name">Area</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.country.state.city.area</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="rhwl_view_country_state_city_area_tree"/>
+            <field name="help">If you are working on the American market, you can manage the different federal states
+                you are working on from here. Each state is attached to one country.
+            </field>
+        </record>
+
+        <menuitem action="action_country_state_city_area" id="menu_country_state_city_area_partner"
+                  parent="base.menu_localisation" sequence="15" groups="base.group_no_one"/>
+
+        <record id="base.action_partner_form" model="ir.actions.act_window">
+            <field name="context">{'default_customer':1,'default_is_company':1, 'search_default_customer':1,'search_default_type_company':1}</field>
+        </record>
+        <record id="base.action_partner_supplier_form" model="ir.actions.act_window">
+            <field name="context">{'default_is_company':1,'search_default_supplier': 1,'default_customer': 0,'default_supplier':1 ,'search_default_type_company':1}</field>
+        </record>
     </data>
 </openerp>

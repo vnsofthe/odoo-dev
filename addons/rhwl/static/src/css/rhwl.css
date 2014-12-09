@@ -1,0 +1,5 @@
+.openerp .oe_form td.oe_form_group_cell_label label {
+    line-height: 18px;
+    display: block;
+    min-width: 40px; /* Remove this line */
+}
