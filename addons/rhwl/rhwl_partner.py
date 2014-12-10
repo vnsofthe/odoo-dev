@@ -49,8 +49,8 @@ class rhwl_partner(osv.osv):
         "yjfx": fields.char(u"研究方向", size=100),
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
         "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
-        "city_id": fields.many2one("res.country.state.city", string=u"城市"),
-        "area_id": fields.many2one("res.country.state.city.area",string=u"区/县"),
+        "city_id": fields.many2one("res.country.state.city", string=u"城市",domain="[('state_id','=',state_id]"),
+        "area_id": fields.many2one("res.country.state.city.area",string=u"区/县", domain="[('city_id','=',city_id)]"),
         'function_sel': fields.selection(
             [(u"主任", u"主任"), (u"副主任", u"副主任"), (u"主治", u"主治"), (u'住院', u'住院'), (u'护士长', u'护士长'), (u'护士', u'护士'),
              (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),
@@ -74,6 +74,8 @@ class rhwl_partner(osv.osv):
         city_obj = self.pool.get("res.country.state.city").browse(cr, SUPERUSER_ID, city, context=context)
         state_code = city_obj.state_id.code
         city_code = city_obj.code
+        if not state_code:state_code=""
+        if not city_code:city_code=""
         if arg and not newid:
             cr.execute("select max(partner_unid) from res_partner where partner_unid like '%s'" % (
             state_code + city_code + '%',))
