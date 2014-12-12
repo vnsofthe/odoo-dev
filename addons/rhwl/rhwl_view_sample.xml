@@ -80,11 +80,13 @@
                                 groups="base.group_user" class="oe_highlight"/>
                         <button name="action_cancel" states="draft" string="取消" type="object"
                                 groups="base.group_user"/>
-                        <button name="action_check_ok" states="done" string="检验结果正常" type="object"
+                        <button name="action_get_library" states="done" string="接收实验室结果" type="object"
                                 groups="base.group_user"/>
-                        <button name="action_check_reused" states="done" string="需重采血" type="object"
+                        <button name="action_check_ok" string="检验结果正常" type="object" attrs="{'invisible':[('check_state','not in',('library','pc'))]}"
+                                groups="base.group_user"/>
+                        <button name="action_check_reused"  string="需重采血" type="object" attrs="{'invisible':[('check_state','not in',('library','pc'))]}"
                                 groups="base.group_user" class="oe_highlight"/>
-                        <button name="action_check_except" states="done" string="检验结果阳性" type="object"
+                        <button name="action_check_except"  string="检验结果阳性" type="object" attrs="{'invisible':[('check_state','not in',('library','pc'))]}"
                                 groups="base.group_user" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>

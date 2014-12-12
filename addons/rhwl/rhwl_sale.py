@@ -6,6 +6,7 @@ from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 import datetime
 import rhwl_sms
+import requests
 
 rhwl_sale_state_select = {'draft':u'草稿',
                           'done': u'确认',
@@ -243,6 +244,17 @@ class rhwl_sample_info(osv.osv):
         return {
             "value": vals
         }
+
+    def action_get_library(self,cr,uid,ids,context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+        for i in obj:
+            json = requests.post("http://120.24.58.11:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email=admin@tony.com&password=123qwe")
+            json = json.json()
+            if json.get("haserror",False):
+                continue
+            if json["sample"]["status"]:
+                print "*"*40,json["sample"]["status"]
+                self.write(cr,uid,i.id,{"check_state":"library"},context=context)
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)

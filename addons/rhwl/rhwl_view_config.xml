@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <record id="rhwl_config_parameter_sms_url" model="ir.config_parameter">
+           <field name="key">rhwl.sms_url</field>
+            <field name="value">http://</field>
+        </record>
+        <record id="rhwl_config_parameter_sms_user" model="ir.config_parameter">
+           <field name="key">rhwl.sms_user</field>
+            <field name="value">vnsoft</field>
+        </record>
+        <record id="rhwl_config_parameter_sms_pwd" model="ir.config_parameter">
+           <field name="key">rhwl.sms_pwd</field>
+            <field name="value"></field>
+        </record>
+        <record id="rhwl_config_parameter_lib_url" model="ir.config_parameter">
+           <field name="key">rhwl.lib_url</field>
+            <field name="value">http://</field>
+        </record>
+        <record id="rhwl_config_parameter_lib_user" model="ir.config_parameter">
+           <field name="key">rhwl.lib_user</field>
+            <field name="value">http://</field>
+        </record>
+        <record id="rhwl_config_parameter_lib_pwd" model="ir.config_parameter">
+           <field name="key">rhwl.lib_pwd</field>
+            <field name="value"></field>
+        </record>
+    </data>
+</openerp>
