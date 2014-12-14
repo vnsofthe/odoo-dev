@@ -76,9 +76,9 @@
             <field name="arch" type="xml">
                 <form string="Sale Sample">
                     <header>
-                        <button name="action_done" states="draft" string="确认" type="object"
-                                groups="base.group_user" class="oe_highlight"/>
-                        <button name="action_cancel" states="draft" string="取消" type="object"
+                        <button name="action_done"  states="draft" string="确认" type="object"
+                                groups="base.group_user" class="oe_highlight oe_read_only"/>
+                        <button name="action_cancel" states="draft" string="取消" type="object" class="oe_read_only"
                                 groups="base.group_user"/>
                         <button name="action_get_library" states="done" string="接收实验室结果" type="object"
                                 groups="base.group_user"/>
