@@ -1,0 +1,550 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* oecn_account_print
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-12 11:19+0000\n"
+"PO-Revision-Date: 2012-08-12 11:19+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: oecn_account_print
+#: model:ir.model,name:oecn_account_print.model_detail_ledger
+msgid "detail.ledger"
+msgstr "明细账"
+
+#. module: oecn_account_print
+#: report:account.general_ledger:0
+msgid "月"
+msgstr "月"
+
+#. module: oecn_account_print
+#: report:account.general_ledger:0
+msgid "年初余额"
+msgstr "年初余额"
+
+#. module: oecn_account_print
+#: field:detail.ledger,period_from:0
+#: field:general.ledger,period_from:0
+msgid "Period From"
+msgstr "开始期间"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "记账凭证"
+msgstr "记账凭证"
+
+#. module: oecn_account_print
+#: field:detail.ledger,company_id:0
+#: field:general.ledger,company_id:0
+msgid "Company"
+msgstr "公司"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Cash informations"
+msgstr "Cash informations"
+
+#. module: oecn_account_print
+#: report:account.general_ledger:0
+#: report:account.move:0
+msgid "会计科目"
+msgstr "会计科目"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.move:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "贷方"
+msgstr "贷方"
+
+#. module: oecn_account_print
+#: report:account.currency_cash_journal:0
+msgid "外币日记账"
+msgstr "外币日记账"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Total Credit"
+msgstr "贷方合计"
+
+#. module: oecn_account_print
+#: field:detail.ledger,account_id:0
+#: field:general.ledger,account_ids:0
+#: model:ir.model,name:oecn_account_print.model_account_account
+msgid "Account"
+msgstr "科目"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "凭证字号"
+msgstr "凭证字号"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Account Entry Line"
+msgstr "Account Entry Line"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Total Debit"
+msgstr "借方合计"
+
+#. module: oecn_account_print
+#: report:account.stock_ledger:0
+msgid "单价"
+msgstr "单价"
+
+#. module: oecn_account_print
+#: model:ir.actions.report.xml,name:oecn_account_print.cash_journal
+msgid "Print Cash Journal"
+msgstr "打印现金账"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "对方科目"
+msgstr "对方科目"
+
+#. module: oecn_account_print
+#: field:account.move,write_uid:0
+msgid "审核"
+msgstr "审核"
+
+#. module: oecn_account_print
+#: constraint:account.account:0
+msgid "Error ! You can not create recursive accounts."
+msgstr "错误!您不能创建递归的科目"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "原始金额"
+msgstr "原始金额"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "币别"
+msgstr "币别"
+
+#. module: oecn_account_print
+#: field:detail.ledger,partner:0
+msgid "Partner"
+msgstr "业务伙伴"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "附件："
+msgstr "附件："
+
+#. module: oecn_account_print
+#: model:ir.actions.report.xml,name:oecn_account_print.currency_cash_journal
+msgid "Print Foreign Currency Cash Journal"
+msgstr "打印外币日志账"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "亿"
+msgstr "亿"
+
+#. module: oecn_account_print
+#: report:account.general_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "总分类账"
+msgstr "总分类账"
+
+#. module: oecn_account_print
+#: field:account.move,create_uid:0
+msgid "制单"
+msgstr "制单"
+
+#. module: oecn_account_print
+#: report:account.general_ledger:0
+msgid "日"
+msgstr "日"
+
+#. module: oecn_account_print
+#: sql_constraint:account.account:0
+msgid "The code of the account must be unique per company !"
+msgstr "该科目的代码，每家公司必须是唯一的！"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "角"
+msgstr "角"
+
+#. module: oecn_account_print
+#: model:ir.actions.report.xml,name:oecn_account_print.threecolumns_ledger
+msgid "Print Three Columns Ledger"
+msgstr "打印三栏账"
+
+#. module: oecn_account_print
+#: report:account.stock_ledger:0
+msgid "数量"
+msgstr "数量"
+
+#. module: oecn_account_print
+#: view:detail.ledger:0
+#: view:general.ledger:0
+msgid "Print"
+msgstr "打印"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "张"
+msgstr "张"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "十"
+msgstr "十"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "千"
+msgstr "千"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Cost information"
+msgstr "成本"
+
+#. module: oecn_account_print
+#: model:ir.actions.act_window,name:oecn_account_print.action_oecn_general_report
+#: model:ir.ui.menu,name:oecn_account_print.menu_general_ledger
+msgid "General Report"
+msgstr "总账报表"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "/"
+msgstr "/"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "凭证编号:"
+msgstr "凭证编号:"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+msgid "日记账"
+msgstr "日记账"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "万"
+msgstr "万"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "合计:"
+msgstr "合计:"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "元"
+msgstr "元"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "结束日期:"
+msgstr "结束日期:"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.move:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "摘要"
+msgstr "摘要"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "日期"
+msgstr "日期"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "科目:"
+msgstr "科目:"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "单位"
+msgstr "单位"
+
+#. module: oecn_account_print
+#: help:account.move,proof:0
+msgid "该记账凭证对应的原始凭证数量"
+msgstr "该记账凭证对应的原始凭证数量"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "期初余额"
+msgstr "期初余额"
+
+#. module: oecn_account_print
+#: view:detail.ledger:0
+msgid "Detail Ledger"
+msgstr "明细账"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "余额"
+msgstr "余额"
+
+#. module: oecn_account_print
+#: model:ir.actions.act_window,name:oecn_account_print.action_oecn_detail_report
+#: model:ir.ui.menu,name:oecn_account_print.menu_detail_ledger
+msgid "Detail Report"
+msgstr "明细账报表"
+
+#. module: oecn_account_print
+#: constraint:account.account:0
+msgid "Configuration Error! \n"
+"You can not define children to an account with internal type different of \"View\"! "
+msgstr "配置错误！ "
+
+#. module: oecn_account_print
+#: constraint:account.move:0
+msgid "You can not create more than one move per period on centralized journal"
+msgstr "余额凭证簿每个期间只能有一张会计凭证"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.move:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "借方"
+msgstr "借方"
+
+#. module: oecn_account_print
+#: model:ir.ui.menu,name:oecn_account_print.menu_china_account
+msgid "China Account"
+msgstr "中国会计"
+
+#. module: oecn_account_print
+#: view:general.ledger:0
+#: model:ir.model,name:oecn_account_print.model_general_ledger
+msgid "General Ledger"
+msgstr "总账报表"
+
+#. module: oecn_account_print
+#: model:ir.ui.menu,name:oecn_account_print.menu_oecn_account_print
+msgid "China Reports"
+msgstr "中国报表"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "本期合计"
+msgstr "本期合计"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Journal Items"
+msgstr "会计凭证行"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "开始日期:"
+msgstr "开始日期:"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Internal Note"
+msgstr "内部备注"
+
+#. module: oecn_account_print
+#: report:account.currency_cash_journal:0
+#: report:account.stock_ledger:0
+msgid "金额"
+msgstr "金额"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Post"
+msgstr "记账"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "General informations"
+msgstr "总账"
+
+#. module: oecn_account_print
+#: constraint:account.account:0
+msgid "Configuration Error! \n"
+"You can not select an account type with a deferral method different of \"Unreconciled\" for accounts with internal type \"Payable/Receivable\"! "
+msgstr "配置错误！\n"
+"对于内部类型是‘应收/应付’的会计科目，你需要选择结转方式是‘未核销’的科目类型。 "
+
+#. module: oecn_account_print
+#: model:ir.ui.menu,name:oecn_account_print.menu_china_account_move
+msgid "China Entries"
+msgstr "中国凭证"
+
+#. module: oecn_account_print
+#: model:ir.actions.report.xml,name:oecn_account_print.account_move
+msgid "Print Move"
+msgstr "凭证打印"
+
+#. module: oecn_account_print
+#: view:account.move:0
+#: view:detail.ledger:0
+#: view:general.ledger:0
+msgid "Cancel"
+msgstr "取消"
+
+#. module: oecn_account_print
+#: report:account.currency_cash_journal:0
+#: report:account.move:0
+msgid "汇率"
+msgstr "汇率"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "本年合计"
+msgstr "本年合计"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Account Move Line"
+msgstr "Account Move Line"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Journal Entries"
+msgstr "会计凭证"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "公司名称:"
+msgstr "公司名称:"
+
+#. module: oecn_account_print
+#: model:ir.actions.report.xml,name:oecn_account_print.stock_ledger
+msgid "Print Stock Ledger"
+msgstr "打印库存账"
+
+#. module: oecn_account_print
+#: field:detail.ledger,product:0
+msgid "Product"
+msgstr "产品"
+
+#. module: oecn_account_print
+#: report:account.currency_cash_journal:0
+msgid "外币"
+msgstr "外币"
+
+#. module: oecn_account_print
+#: model:ir.actions.act_window,name:oecn_account_print.action_china_move_journal_line
+msgid "China Journal Entries"
+msgstr "中国凭证"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "佰"
+msgstr "佰"
+
+#. module: oecn_account_print
+#: field:detail.ledger,period_to:0
+#: field:general.ledger,period_to:0
+msgid "Period To"
+msgstr "结束期间"
+
+#. module: oecn_account_print
+#: report:account.stock_ledger:0
+msgid "产品明细分类账"
+msgstr "产品明细分类账"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+#: report:account.general_ledger:0
+#: report:account.stock_ledger:0
+#: report:account.threecolumns_ledger:0
+msgid "方向"
+msgstr "方向"
+
+#. module: oecn_account_print
+#: model:ir.actions.report.xml,name:oecn_account_print.general_ledger
+msgid "Print General Ledger"
+msgstr "打印总账"
+
+#. module: oecn_account_print
+#: field:account.move,proof:0
+msgid "附件数"
+msgstr "附件数"
+
+#. module: oecn_account_print
+#: model:ir.model,name:oecn_account_print.model_account_move
+msgid "Account Entry"
+msgstr "凭证"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Partner informations"
+msgstr "往来"
+
+#. module: oecn_account_print
+#: report:account.cash_journal:0
+#: report:account.currency_cash_journal:0
+msgid "本日合计"
+msgstr "本日合计"
+
+#. module: oecn_account_print
+#: view:account.move:0
+msgid "Stock Informations"
+msgstr "库存"
+
+#. module: oecn_account_print
+#: report:account.move:0
+msgid "分"
+msgstr "分"
+

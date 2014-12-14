@@ -6,7 +6,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "appDesigner",
       "projectGuid": "cbc24388-9eb8-46db-853f-9c0da346be18",
-      "lastModifiedDate": 1418022978728,
+      "lastModifiedDate": 1418309745121,
       "creationDate": 1415339221460
     },
     "XDK-app-designer": "true",
@@ -130,10 +130,11 @@
         "preferences_": {
           "ios-target": "6",
           "Fullscreen": true,
-          "Orientation": "portrait"
+          "Orientation": "portrait",
+          "ios-configuration": "production"
         },
         "isActive_": true,
-        "appName_": "Genetalks",
+        "appName_": "genetalks",
         "appID_": "xdk.intel.ad.project",
         "appAccess_": "*",
         "icons_": [],
@@ -141,7 +142,7 @@
         "iosProvs_": [],
         "addlPermissions_": "",
         "excludedLibraries_": "",
-        "cordovaCLIVersion_": "3.5",
+        "cordovaCLIVersion_": "2.9",
         "crosswalkVersion_": "stable",
         "appVersion_": "1.0.4",
         "appDescription_": "app for genetalks",

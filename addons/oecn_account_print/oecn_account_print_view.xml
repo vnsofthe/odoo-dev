@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- __author__ = jeff@openerp.cn,joshua@openepr.cn  -->
+<openerp>
+  <data>
+        <record id="view_china_account_move_form" model="ir.ui.view">
+            <field name="name">china.account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Journal Entries" version="7.0">
+                  <header>
+                     <button name="button_cancel" class="oe_highlight" states="posted" string="Cancel" type="object"/>
+                     <button name="button_validate" class="oe_highlight" states="draft" string="Post" type="object"/>
+                     <field name="state" widget="statusbar"/>                   
+                  </header>
+                  <sheet>
+                    <group colspan="4" col="4">
+                        <field name="name" readonly="True"/>
+                        <field name="write_uid" states="posted"/>
+                        <newline/>
+                        <field name="date"/>
+                        <field name="period_id"/>
+                        <field name="proof" />
+                        <field name="create_uid"/>
+                        <field name="company_id" required="1" groups="base.group_multi_company"/>
+                        <field name="journal_id" invisible="True" />
+                    </group>
+                    <notebook colspan="4">
+                        <page string="凭证行">
+                            <field name="balance" invisible="1"/>
+                            <field colspan="4" name="line_id" nolabel="1" widget="one2many_list" 
+                                          default_get="{'lines':line_id ,'journal':journal_id }" >
+                            <form string="Account Move Line">
+                                <notebook colspan="4">
+                                <page string="总账">
+                                    <field name="name"/>
+                                    <newline/>
+                                    <field name="date"/>
+                                    <field name="account_id" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]"/>                 
+                                    <field name="debit" />
+                                    <field name="credit" />
+                                    <field name="date_created"/>
+                                    <field name="ref"/>
+                                    <field name="state"/>
+                                </page>
+                                <page string="往来">
+                                    <field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,date)"/>
+                                    <field name="invoice"/>
+                                    <field name="date_maturity"/>
+                                    <newline/>
+                                    <field name="reconcile_id"/>
+                                    <field name="reconcile_partial_id"/>
+                                </page>
+                                <page string="库存">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name= "product_uom_id"/>
+                              </page>
+                                <page string="现金">
+                                    <field name="amount_currency"/>
+                                    <field name="currency_id"/>
+                                    <field name="statement_id"/>
+                                 </page>
+                                <page string="成本">
+                                      <field colspan="6" name="analytic_lines" nolabel="1" context="{'default_general_account_id':account_id, 'default_name': name, 'default_date':date, 'amount': (debit or 0.0)-(credit or 0.0)}"/>
+                                 </page>
+                                </notebook>
+                           </form>
+                          <!-- Tree for fast edit --> 
+                         <tree>
+                                <field name="name" string="摘要"/>
+                                <field name="account_id" domain="[('journal_id','=',parent.journal_id)]"/>
+                                <field name="debit" sum="Total Debit"/>
+                                <field name="credit" sum="Total Credit"/>
+                                <field name="analytic_account_id"/>
+                                <field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,date)"/>
+                                
+                        </tree>
+                         </field>
+                        </page>
+                    </notebook>
+                  </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_account_periodly_tree" model="ir.ui.view">
+        <field name="name">account.periodly.tree</field>
+        <field name="model">account.periodly</field>
+        <field name="arch" type="xml">
+            <tree string="科目余额表" create="false">
+                <field name="date" invisible="1"/>
+                <field name="account_id"/>
+                <field name="period_id"/>
+                <field name="starting_balance"/>
+                <field name="debit"/>
+                <field name="credit"/>
+                <field name="ending_balance"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+           </tree>
+        </field>
+    </record>
+    <record id="view_account_periodly_search" model="ir.ui.view">
+        <field name="name">account.periodly.search</field>
+        <field name="model">account.periodly</field>
+        <field name="arch" type="xml">
+            <search string="科目余额表">
+                <field name="fiscalyear_id"/>
+                <field name="period_id"/>
+                <field name="account_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_account_periodly_all" model="ir.actions.act_window">
+        <field name="name">科目余额表</field>
+        <field name="res_model">account.periodly</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="view_account_periodly_search"/>
+        <field name="view_id" ref="view_account_periodly_tree"/>
+        <field name="context">{'group_by':[], 'group_by_no_leaf':0}</field>
+    </record>
+        
+        <record id="action_china_move_journal_line" model="ir.actions.act_window">
+            <field name="name">China Journal Entries</field>
+            <field name="res_model">account.move</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="account.view_account_move_filter"/>
+        </record>
+        <record id="action_china_move_journal_line_view1" model="ir.actions.act_window.view">
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="account.view_move_tree"/>
+            <field name="act_window_id" ref="action_china_move_journal_line"/>
+        </record>
+        <record id="action_china_move_journal_line_view2" model="ir.actions.act_window.view">
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_china_account_move_form"/>
+            <field name="act_window_id" ref="action_china_move_journal_line"/>
+        </record>
+    <!-- Add menu item under account/report menu -->
+    <menuitem name="China Account" id="menu_china_account" parent="account.menu_finance" sequence="1"/>
+    <menuitem name="China Entries" id="menu_china_account_move" parent="menu_china_account" sequence="1" action="action_china_move_journal_line"/>
+    <menuitem name="China Reports" id="menu_oecn_account_print" parent="menu_china_account" sequence="99"/>
+    <menuitem name="科目余额表" action="action_account_periodly_all" id="menu_action_account_periodly_all"
+        parent="menu_oecn_account_print"
+        sequence="1"/>
+    <menuitem icon="STOCK_PRINT" action="action_oecn_general_report" id="menu_general_ledger" parent="menu_oecn_account_print"  sequence="10"/>
+    <menuitem icon="STOCK_PRINT" action="action_oecn_detail_report" id="menu_detail_ledger"  parent="menu_oecn_account_print"  sequence="20"/>
+  </data>
+</openerp>
+
