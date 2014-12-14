@@ -45,7 +45,14 @@ for k,v in no1.get("list").items():
     for k2,v2 in no2.get("list").items():
         daima2 = v2.get("daima").decode("utf-8").encode("gbk")
 
-        req3 = requests.post("http://api.dangqian.com/apidiqu2/api.asp?format=json&id="+daima2+"&callback=dict")
+        while(True):
+            try:
+                req3 = requests.post("http://api.dangqian.com/apidiqu2/api.asp?format=json&id="+daima2+"&callback=dict")
+                exit
+            except:
+                print "error"
+                time.sleep(5)
+
         no3 = req3.content
         no3 = eval(no3)
         req3.close()

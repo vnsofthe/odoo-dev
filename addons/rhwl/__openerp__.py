@@ -27,7 +27,7 @@ CRM业务增加模块
              "rhwl_report.xml",
              "views/report_sample_one.xml",
              "views/rhwl.xml",
-             "rhwl_view_config.xml"
+
     ],
     "qweb":["static/src/xml/base.xml"],
     'demo': [],

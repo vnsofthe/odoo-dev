@@ -318,6 +318,8 @@ class rhwl_sample_info(osv.osv):
         else:
             pid = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True), ("active", "=", True)],
                                                              context=context)
+            if not pid:
+               raise osv.except_osv(_('Error'), u"请先建立一笔可销售的产品资料。")
             if isinstance(pid, (list, tuple)):
                 pid = pid[0]
         orderline = self.pool.get("sale.order.line")
@@ -352,7 +354,7 @@ class rhwl_reuse(osv.osv):
         return dict(res)
 
     _columns = {
-        "name": fields.many2one("sale.sampleone", u"样本单号"),
+        "name": fields.many2one("sale.sampleone", u"样本单号",ondelete="restrict"),
         "yfxm": fields.related('name', 'yfxm', type='char', string=u'孕妇姓名', readonly=1),
         "cx_date": fields.related('name', 'cx_date', type='char', string=u'采血日期', readonly=1),
         "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
@@ -392,7 +394,7 @@ class rhwl_exception(osv.osv):
     _description = "样本阳性跟踪"
 
     _columns = {
-        "name": fields.many2one("sale.sampleone", u"样本单号"),
+        "name": fields.many2one("sale.sampleone", u"样本单号",ondelete="restrict"),
         "yfxm": fields.related('name', 'yfxm', type='char', string=u'孕妇姓名', readonly=1),
         "cx_date": fields.related('name', 'cx_date', type='char', string=u'采血日期', readonly=1),
         "yfage": fields.related('name', 'yfage', type='integer', string=u'年龄(周岁)', readonly=1),
