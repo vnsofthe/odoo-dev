@@ -14,3 +14,4 @@ access_res_country_state_city_area,res_country_state_city_area,model_res_country
 access_account_invoice_report_all,account_invoice_report_all,account.model_account_invoice_report,,1,0,0,0
 access_rhwl_project,rhwl_project,model_rhwl_project,base.group_sale_manager,1,1,1,1
 access_rhwl_product_portal,product.product portal,stock.model_product_product,base.group_portal,1,0,0,0
+access_rhwl_sample_report,access_rhwl_sample_report,model_rhwl_sample_report,,1,0,0,0
