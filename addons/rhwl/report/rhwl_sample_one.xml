@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_rhwl_sample_graph" model="ir.ui.view">
+             <field name="name">sample.report.graph</field>
+             <field name="model">rhwl.sample.report</field>
+             <field name="arch" type="xml">
+                 <graph string="Sample Analysis" type="pivot" stacked="True">
+                     <field name="cxyy" type="row"/>
+                     <field name="cx_date" interval="month" type="col"/>
+                     <field name="amt" type="measure"/>
+                 </graph>
+             </field>
+        </record>
+
+        <record id="view_rhwl_sample_report_search" model="ir.ui.view">
+            <field name="name">rhwl.sample.report.search</field>
+            <field name="model">rhwl.sample.report</field>
+            <field name="arch" type="xml">
+                <search string="Sample Analysis">
+                    <separator/>
+                    <field name="cxyy"/>
+                    <field name="cxys"/>
+                    <separator/>
+                    <filter string="This Year" name="year" domain="[('cx_date','&lt;=', time.strftime('%%Y-12-31')),('cx_date','&gt;=',time.strftime('%%Y-01-01'))]"/>
+                    <filter string="This Month" name="month" domain="[('cx_date','&lt;=', time.strftime('%%Y-%%m-31')),('cx_date','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="采血日期" name="date" context="{'group_by':'cx_date:month'}"/>
+                        <filter string="采血医院" name="cxyy" context="{'group_by':'cxyy'}"/>
+                        <filter string="来源省" name="state" context="{'group_by':'state_id'}"/>
+                        <filter string="来源城市" name="city" context="{'group_by':'city_id'}"/>
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_sample_report_all" model="ir.actions.act_window">
+            <field name="name">Sample Analysis</field>
+            <field name="res_model">rhwl.sample.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph</field>
+            <field name="search_view_id" ref="view_rhwl_sample_report_search"/>
+            <field name="view_id" ref="view_rhwl_sample_graph"/>
+        </record>
+
+        <menuitem action="action_rhwl_sample_report_all" id="menu_rhwl_sample_report_all" parent="base.next_id_64" sequence="15"/>
+    </data>
+</openerp>

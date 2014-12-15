@@ -7,5 +7,5 @@ import rhwl_product
 import rhwl_project
 import rhwl_weixin
 import rhwl_import
-
+import report
 import controllers

@@ -29,3 +29,23 @@ msgstr "重采血"
 msgid "Excep Information"
 msgstr "阳性样本"
 
+#. module: rhwl
+#: model:ir.ui.menu,name:rhwl.menu_rhwl_sample_report_all
+#: model:ir.actions.act_window,name:rhwl.action_rhwl_sample_report_all
+msgid "Sample Analysis"
+msgstr "样品信息分析表"
+
+#. module: rhwl
+#: field:rhwl.sample.report,amt:0
+msgid "Amt"
+msgstr "金额"
+
+#. module: rhwl
+#: view:rhwl.sample.report:rhwl.view_rhwl_sample_report_search
+msgid "This Year"
+msgstr "今年"
+
+#. module: rhwl
+#: view:rhwl.sample.report:rhwl.view_rhwl_sample_report_search
+msgid "This Month"
+msgstr "本月"
