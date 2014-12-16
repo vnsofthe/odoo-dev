@@ -53,7 +53,7 @@ class rhwl_sample_info(osv.osv):
         "fzr": fields.many2one('res.users', string=u'负责人'),
         # "state": fields.selection([('draf','draf')], u'状态'),
         "is_reused": fields.selection([('0', u'首次采血'), ('1', u'重采血')], u'是否重采血', required=True),
-        "reuse_name": fields.many2one("sale.sampleone", u"重采血编号",domain="[('check_state','=','reuse')]"),
+        "reuse_name": fields.many2one("sale.sampleone", u"原采血编号",domain="[('check_state','=','reuse')]"),
         "reuse_type": fields.selection(SELECTION_TYPE, u"重采血类型"),
         "is_free": fields.selection([('1', u'是'), ('0', u'否')], u'是否免费', required=True),
         "yfxm": fields.char(u"孕妇姓名", size=20, required=True),
