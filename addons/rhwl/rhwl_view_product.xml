@@ -10,7 +10,34 @@
                     <xpath expr="//field[@name='list_price']" position="after">
                         <field name="brand" />
                     </xpath>
+                    <xpath expr="//field[@name='default_code']" position="before">
+                        <field name="product_no" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
+                    </xpath>
                  </data>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_product_product_tree_view">
+            <field name="name">rhwl.product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='default_code']" position="before">
+                        <field name="product_no"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_product_normal_form_view">
+            <field name="name">rhwl.product.product.form</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='default_code']" position="before">
+                        <field name="product_no"/>
+                    </xpath>
+                </data>
             </field>
         </record>
     </data>

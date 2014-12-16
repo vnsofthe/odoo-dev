@@ -105,7 +105,7 @@
                                 <field name="is_reused" on_change="onchange_reused(is_reused,sampletype)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="reuse_type"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')]}"/>
-                                <field name="reuse_name"
+                                <field name="reuse_name" on_change="onchange_reuse_name(reuse_name)"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')],'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="is_free" colspan='2' attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                             </group>

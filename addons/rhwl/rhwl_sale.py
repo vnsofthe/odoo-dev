@@ -239,10 +239,53 @@ class rhwl_sample_info(osv.osv):
                         vals['yfzjmc_no'] = se_obj.yfzjmc_no
                         vals['yftelno'] = se_obj.yftelno
                         vals['yfxm'] = se_obj.yfxm
+                        vals['yfjjlltel'] = se_obj.yfjjlltel
+                        vals['yflastyj'] = se_obj.yflastyj
+                        vals['yfyjzqtext'] = se_obj.yfyjzqtext
+                        vals['yfpostaddr'] = se_obj.yfpostaddr
+                        vals['yfpostno'] = se_obj.yfpostno
+                        vals['yfycount'] = se_obj.yfycount
+                        vals['yfzcount'] = se_obj.yfzcount
+                        vals['yfblycs'] = se_obj.yfblycs
+                        vals['yfblycstext'] = se_obj.yfblycstext
+                        vals["yfjzycb"] = se_obj.yfjzycb
+                        vals["yfjzycbtext"] = se_obj.yfjzycbtext
+                        vals["yffqsfrsthx"] = se_obj.yffqsfrsthx
+                        vals["yffqsfrsthxtext"] = se_obj.yffqsfrsthxtext
+                        vals["yfissgyr"] = se_obj.yfissgyr
                     break
 
         return {
             "value": vals
+        }
+
+    def onchange_reuse_name(self, cr, uid, ids, name, context=None):
+        seq_id = self.search(cr,uid,[('id','=',name)],context=context)
+
+        vals={}
+        if seq_id:
+            se_obj = self.browse(cr,uid,seq_id,context=context)
+            vals['yfzjmc'] = se_obj.yfzjmc
+            vals['yfzjmc_no'] = se_obj.yfzjmc_no
+            vals['yftelno'] = se_obj.yftelno
+            vals['yfxm'] = se_obj.yfxm
+            vals['yfjjlltel'] = se_obj.yfjjlltel
+            vals['yflastyj'] = se_obj.yflastyj
+            vals['yfyjzqtext'] = se_obj.yfyjzqtext
+            vals['yfpostaddr'] = se_obj.yfpostaddr
+            vals['yfpostno'] = se_obj.yfpostno
+            vals['yfycount'] = se_obj.yfycount
+            vals['yfzcount'] = se_obj.yfzcount
+            vals['yfblycs'] = se_obj.yfblycs
+            vals['yfblycstext'] = se_obj.yfblycstext
+            vals["yfjzycb"] = se_obj.yfjzycb
+            vals["yfjzycbtext"] = se_obj.yfjzycbtext
+            vals["yffqsfrsthx"] = se_obj.yffqsfrsthx
+            vals["yffqsfrsthxtext"] = se_obj.yffqsfrsthxtext
+            vals["yfissgyr"] = se_obj.yfissgyr
+
+        return {
+            "value":vals
         }
 
     def action_get_library(self,cr,uid,ids,context=None):
