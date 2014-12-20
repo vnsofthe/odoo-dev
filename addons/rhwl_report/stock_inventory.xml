@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Define 'ids' report -->	
+		<record id="rhwl_report_stock_inventory_ids" model="ir.actions.report.xml">
+			<field name="name">Export To Excel</field>
+			<field name="report_name">rhwl.report.stock.inventory.ids</field>
+			<field name="model">stock.inventory</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/> 
+			<field name="rml">rhwl_report/stock_inventory.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="base.model_res_partner"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">rhwl_report/stock_inventory.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
+
+	</data>
+</openerp>
