@@ -241,7 +241,7 @@
                         <field name="partner_unid"/>
                     </xpath>
                     <xpath expr="//field[@name='display_name']" position="after">
-                        <field name = "state_id"/>
+                        <field name = "state_id" class="oe_list_field_cell_nowrap"/>
                         <field name = "city_id"/>
                         <field name="dev_user_id"/>
                         <field name="user_id"/>

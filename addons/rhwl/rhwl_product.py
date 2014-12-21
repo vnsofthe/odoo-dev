@@ -10,7 +10,12 @@ import datetime
 class rhwl_product_product(osv.osv):
     _inherit = "product.product"
     _columns = {
-        "product_no":fields.char(u"物品编码",size=20)
+        "product_no":fields.char(u"物品编码",size=20),
+        "sample_count":fields.float(u"可做样品数",digits_compute=dp.get_precision('Product Price')),
+    }
+
+    _default = {
+        "sample_count":0
     }
 
 class rhwl_product_template(osv.osv):
@@ -18,7 +23,8 @@ class rhwl_product_template(osv.osv):
 
     _columns = {
         "brand":fields.char(u"品牌",size=20),
-        "product_no":fields.related("product_variant_ids","product_no",type="char",string=u"物品编码")
+        "product_no":fields.related("product_variant_ids","product_no",type="char",string=u"物品编码"),
+        "sample_count":fields.related("product_variant_ids","sample_count",string=u"可做样品数"),
     }
     def create(self, cr, uid, vals, context=None):
         ''' Store the initial standard price in order to be able to retrieve the cost of a product template for a given date'''
@@ -27,6 +33,8 @@ class rhwl_product_template(osv.osv):
         related_vals = {}
         if vals.get('product_no'):
             related_vals['product_no'] = vals['product_no']
+        if vals.get("sample_count"):
+            related_vals['sample_count'] = vals['sample_count']
 
         if related_vals:
             self.write(cr, uid, product_template_id, related_vals, context=context)

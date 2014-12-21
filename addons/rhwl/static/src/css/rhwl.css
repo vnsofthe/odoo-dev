@@ -3,3 +3,7 @@
     display: block;
     min-width: 40px; /* Remove this line */
 }
+
+.oe_list_field_cell_nowrap {
+  white-space: nowrap !important;
+}
