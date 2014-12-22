@@ -370,6 +370,7 @@
             <field name="arch" type="xml">
                 <search string="Sale Sample">
                     <field name="name"/>
+                    <field name="yfxm"/>
                     <field name="cxyy" filter_domain="[('cxyy', 'ilike', self)]" string="采血医院"/>
                     <seperaotr/>
                     <filter string="首次采血" name="type_reuse1" domain="[('is_reused','=','0')]"/>
