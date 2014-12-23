@@ -170,10 +170,10 @@
                                         </group>
 
                                         <group colspan="18">
-                                            <label for="yfyczk" string="孕娠状况"/>
+                                            <label for="yfyczk" string="B超结果"/>
                                             <div>
                                                 <field name="yfyczk" style="width:10%%"/>
-                                                <field name="yfyczktext"  style="width:40%%" placeholder="孕娠状况其它说明"
+                                                <field name="yfyczktext"  style="width:40%%" placeholder="其它说明"
                                                        attrs="{'invisible':[('yfyczk','!=','3')]}"/>
                                             </div>
                                             <label for="yfissgyr" string="妊娠方式"/>
@@ -227,19 +227,26 @@
                                             </div>
                                             <label for="yfynnytsx" string="既往史"/>
                                             <div>
-                                                <label for="yfynnytsx" string="输入异体血制品"/>
-                                                <field name="yfynnytsx" style="width: 20%"/>
-                                                <label for="yfzlfz" string="移植手术"/>
-                                                <field name="yfzlfz" style="width: 20%"/>
-                                                <label for="yfxbzl" string="干细胞治疗"/>
-                                                <field name="yfxbzl" style="width: 20%"/>
+                                                <div class="oe_inline">
+
+                                                        <label for="yfynnytsx" string="输入异体血制品"/>
+                                                         <field name="yfynnytsx" placeholder=" " style="width:20%%"/>
+
+                                                         <label for="yfzlfz" string="移植手术"/>
+                                                        <field name="yfzlfz" placeholder=" " style="width:20%%" />
+
+                                                         <label for="yfxbzl" string="干细胞治疗"/>
+                                                          <field name="yfxbzl" placeholder=" " style="width:20%%" />
+                                                </div>
+
                                                 <div>
                                                     <label string="日期"/>
                                                     <field name="yfjwsdate" style="width:20%"/>
                                                 </div>
                                             </div>
                                             <field name="yfynnytsxtext"/>
-                                            <label for="yffqsfrsthx" string="夫妻双方染色体核型"/>
+                                            <field name="yfjzycbtext"/>
+                                            <label for="yffqsfrsthx" string="夫妻双方染色体检查"/>
                                             <div>
                                                 <field name="yffqsfrsthx" style="width:20%"/>
                                                 <field name="yffqsfrsthxtext" placeholder="夫妻双方染色体核型说明"

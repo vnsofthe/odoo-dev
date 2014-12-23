@@ -81,7 +81,7 @@ class rhwl_sample_info(osv.osv):
         "yfblycstext": fields.char(u"不良孕产史说明", size=20),
         "yfjzycb": fields.selection([('0', u'无'), ('1', u'有')], u'家族遗传病', required=True),
         "yfjzycbtext": fields.char(u"家族遗传病史", size=20),
-        "yffqsfrsthx": fields.selection([('0', u'无'), ('1', u'有')], u'夫妻双方染色体核型', required=True),
+        "yffqsfrsthx": fields.selection([('0', u'未做'), ('1', u'有做')], u'夫妻双方染色体检查', required=True),
         "yffqsfrsthxtext": fields.char(u"夫妻双方染色体核型说明", size=20),
         "yfyczk": fields.selection([('1', u'单胎'), ('2', u'双胎'), ('3', u'其它')], u"B超结果"),
         "yfyczktext": fields.char(u'孕娠说明', size=20),
@@ -129,9 +129,7 @@ class rhwl_sample_info(osv.osv):
         "yfjzycb": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
-        "yfynnytsx":lambda obj, cr, uid, context: "0",
-        "yfzlfz":lambda obj, cr, uid, context: "0",
-         "yfxbzl":lambda obj, cr, uid, context: "0",
+
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
