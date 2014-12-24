@@ -17,5 +17,18 @@
             <field name="context">{'search_default_future': 1}</field>
             <field name="view_id" ref="stock.view_move_tree"/>
         </record>
+        <record id="rhwl_view_warehouse_orderpoint_form" model="ir.ui.view">
+            <field name="name">rhwl.view.warehouse.orderpoint.form</field>
+            <field name="model">stock.warehouse.orderpoint</field>
+            <field name="inherit_id" ref="stock.view_warehouse_orderpoint_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='product_min_qty']" position="before">
+                        <field name="min_work_days" on_change="onchange_min_work_days(min_work_days)"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
     </data>
 </openerp>

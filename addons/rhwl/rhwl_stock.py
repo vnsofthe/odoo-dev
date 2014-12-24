@@ -35,6 +35,39 @@ class rhwl_move(osv.osv):
     _columns={
         "express_no":fields.many2one("stock.picking.express",string=u"快递单"),
     }
+
+class rhwl_warehouse_orderpoint(osv.osv):
+    _inherit = "stock.warehouse.orderpoint"
+    _columns={
+        "min_work_days":fields.integer(u"安全用量天数"),
+    }
+
+    def onchange_min_work_days(self, cr, uid, ids, days, context=None):
+        comp = self.pool.get("res.company").browse(cr,uid,[1,],context=context)
+        if comp.sample_count and comp.sample_count>0:
+            obj = self.browse(cr,uid,ids,context)
+            if obj.product_id.sample_count and obj.product_id.sample_count>0:
+                vals={
+                    "product_min_qty": round(comp.sample_count/22.0 * days / obj.product_id.sample_count),
+                    "product_max_qty": round(comp.sample_count/22.0 * days / obj.product_id.sample_count)*2
+                }
+                return {"value":vals}
+            else:
+                return {
+                    "warning":{
+                        "title":u"提示",
+                        "message":u"产品未设置每单位可做样品数量，不能计算最小安全数量。"
+                    }
+                }
+        else:
+            return {
+                'warning': {
+                     'title': u'提示',
+                     'message': u"公司别基本资料中未设置每月预估样品数，不能计算最小安全数量。"
+                }
+            }
+        return {"value":{}}
+
 class rhwl_order(osv.osv):
     _inherit = "procurement.order"
 
