@@ -9,8 +9,8 @@ BODY="""
               express_type='1'
               j_company='人和未来生物科技(长沙)有限公司'
               j_contact='发货组'
-              j_tel='025-10106699'
-              j_mobile='13800138000'
+              j_tel='0731-89703873'
+              j_mobile='18657130579'
               j_province='湖南省'
               j_city='长沙市'
               j_county='岳麓区'
@@ -35,9 +35,10 @@ BODY="""
 </Request>
 """
 url = 'http://bsp-oisp.test.sf-express.com:6080/bsp-oisp/ws/expressService?wsdl'
-client = suds.client.Client(url)
-service = client.service
-print client
-sum_result = service.sfexpressService(BODY.decode('utf-8'))
-print sum_result
-print client.last_received()
+
+def get_e_express(vals):
+    client = suds.client.Client(url)
+    service = client.service
+    sum_result = service.sfexpressService(BODY.decode('utf-8'))
+    client.last_received()
+    return sum_result

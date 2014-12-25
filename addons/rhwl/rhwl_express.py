@@ -5,7 +5,7 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 import datetime
 import re
-
+import rhwl_sf
 
 class rhwl_express(osv.osv):
     _inherit = "stock.picking.express"
@@ -234,6 +234,24 @@ class rhwl_express(osv.osv):
             ids = [ids,]
         move_ids = move_obj.search(cr,SUPERUSER_ID,[('move_dest_id','=',False),('state','not in',['done','cancel']),('express_no','in',ids)],context=context)
         if move_ids:move_obj.action_done(cr, SUPERUSER_ID, move_ids, context=None)
+
+    def action_sf(self,cr,uid,ids,context=None):
+        rec = self.browse(cr,uid,ids,context=context)
+        vals=[]
+        for i in rec:
+            vals.append(i.receiv_partner.name)
+            vals.append(i.receiv_user.name)
+            vals.append(i.receiv_partner.phone)
+            vals.append(i.receiv_user.partner_id.mobile)
+            vals.append(i.receiv_partner.state_id.name)
+            vals.append(i.receiv_partner.city_id.name)
+            vals.append(i.receiv_partner.area_id.name)
+            vals.append(i.receiv_addr)
+            vals.append(i.product_qty)
+            vals.append(i.weight)
+            vals.append(i.product_id.name)
+            rhwl_sf.get_e_express(vals)
+
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
