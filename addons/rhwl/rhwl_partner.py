@@ -222,12 +222,12 @@ class rhwl_partner(osv.osv):
     def get_detail_address(self,cr,uid,id,context=None):
         partner = self.browse(cr, uid, id, context=context)
         if partner.parent_id and partner.use_parent_address:
-            res = [partner.parent_id.state_id.name, partner.parent_id.city_id.name,
+            res = [partner.parent_id.state_id.name, partner.parent_id.city_id.name,partner.parent_id.area_id.name,
                    partner.parent_id.street, partner.parent_id.street2]
         else:
-            res = [partner.state_id.name, partner.city_id.name, partner.street,
+            res = [partner.state_id.name, partner.city_id.name, partner.area_id.name,partner.street,
                    partner.street2]
-        return ','.join([x for x in res if x])
+        return ''.join([x for x in res if x])
 
 class rhwl_country_state_city(osv.osv):
     _name = "res.country.state.city"

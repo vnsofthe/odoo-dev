@@ -6,7 +6,7 @@ import openerp.addons.decimal_precision as dp
 import datetime
 import re
 import rhwl_sf
-
+from lxml import etree
 class rhwl_express(osv.osv):
     _inherit = "stock.picking.express"
     _rec_name = "num_express"
@@ -169,6 +169,15 @@ class rhwl_express(osv.osv):
                         result.append((k.id, userid.partner_id.parent_id.id == curr_company))
         return dict(result)
 
+    def get_express_list(self, cr, uid, ids, context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'get_sf_express_list',
+            'target': 'new',
+            'params':{'num_express':obj.num_express},
+        }
+
     _columns = {
         "deliver_user": fields.many2one('res.users', string=u'发货人员'),
         "deliver_addr": fields.char(size=120, string=u"发货地址",required=True),
@@ -247,10 +256,18 @@ class rhwl_express(osv.osv):
             vals.append(i.receiv_partner.city_id.name)
             vals.append(i.receiv_partner.area_id.name)
             vals.append(i.receiv_addr)
-            vals.append(i.product_qty)
             vals.append(i.weight)
+            vals.append(str(i.id).zfill(12))
             vals.append(i.product_id.name)
-            rhwl_sf.get_e_express(vals)
+
+            xmlstr= rhwl_sf.get_e_express(vals)
+            print xmlstr
+            xml = etree.fromstring(xmlstr.encode('utf-8'))#进行XML解析
+            if xml.find("Head").text=="ERR":
+                raise osv.except_osv("生成电子运单出错：",xml.find("ERROR").text)
+            elif xml.find("Head").text=="OK":
+                body = xml.find("Body").getchildren()[0]
+                self.write(cr,uid,ids,{"num_express":body.get("mailno"),"destcode":body.get("destcode"),"origincode":body.get("origincode")},context=context)
 
 
     def action_cancel(self, cr, uid, ids, context=None):

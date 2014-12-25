@@ -31,8 +31,16 @@
                     <xpath expr="//field[@name='deliver_id']" position="replace">
                         <field name="deliver_id" attrs="{'readonly':[('state','!=','draft')]}"/>
                     </xpath>
-                    <xpath expr="//field[@name='num_express']" position="attributes">
-                        <attribute name="attrs">{'readonly':[('state','!=','draft')]}</attribute>
+                    <xpath expr="//field[@name='num_express']" position="replace">
+
+                            <label for="num_express" string="物流单号"/>
+                            <div class="oe_inline">
+                                <field name="num_express" attrs="{'readonly':[('state','!=','draft')]}" style="width:50%"/>
+                                <button name="get_express_list" string="查看物流"  type="object" class="oe_link"/>
+                            </div>
+
+
+
                     </xpath>
                     <xpath expr="//field[@name='partner_id']" position="replace"/>
                     <xpath expr="//field[@name='date']" position="replace">
