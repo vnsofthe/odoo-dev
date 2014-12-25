@@ -91,6 +91,41 @@ class rhwl_express(osv.osv):
             product_id = product_id[0]
         return product_id
 
+    def _fun_get_weight(self,cr,uid,ids,prop,arg,context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return {}
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        res=[]
+        for i in self.browse(cr,uid,ids,context=context):
+            res.append((i.id,round(i.product_qty * i.product_id.weight,2)))
+        return dict(res)
+
+    def _fun_get_deliver_addr(self,cr,uid,ids,prop,arg,context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return {}
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        res=[]
+        for i in self.browse(cr,uid,ids,context=context):
+            if prop=="deliver_addr1":
+                res.append((i.id,i.deliver_addr[:25]))
+            else:
+                res.append((i.id,i.deliver_addr[25:]))
+        return dict(res)
+    def _fun_get_receiv_addr(self,cr,uid,ids,prop,arg,context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return {}
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        res=[]
+        for i in self.browse(cr,uid,ids,context=context):
+            if prop=="receiv_addr1":
+                res.append((i.id,i.receiv_addr[:25]))
+            else:
+                res.append((i.id,i.receiv_addr[25:]))
+        return dict(res)
+
     def _fun_is_company(self, cr, uid, ids, prop, arg, context=None):
         if isinstance(ids, (list, tuple)) and not len(ids):
             return {}
@@ -136,11 +171,11 @@ class rhwl_express(osv.osv):
 
     _columns = {
         "deliver_user": fields.many2one('res.users', string=u'发货人员'),
-        "deliver_addr": fields.char(size=120, string=u"发货地址"),
+        "deliver_addr": fields.char(size=120, string=u"发货地址",required=True),
         "deliver_partner":fields.many2one("res.partner",string=u"发货医院",domain=[('is_company','=',True),('customer','=',True)]),
         "receiv_user": fields.many2one('res.users', string=u'收货人员'),
         "receiv_date": fields.datetime('Date Receiv', required=True),
-        "receiv_addr": fields.char(size=120, string=u"收货地址"),
+        "receiv_addr": fields.char(size=120, string=u"收货地址",required=True),
         "receiv_partner":fields.many2one("res.partner",string=u"收货医院",domain=[('is_company','=',True),('customer','=',True)]),
         "product_id": fields.many2one('product.product', 'Product',
                                       domain=[('sale_ok', '=', True), ("active", "=", True)], required=True,
@@ -156,6 +191,11 @@ class rhwl_express(osv.osv):
         "detail_ids": fields.one2many("stock.picking.express.detail", "parent_id",readonly=True,states={'draft':[('readonly',False)]},string=u"收货明细"),
         "destcode":fields.char("destcode"),
         "origincode": fields.char("origincode"),
+        "weight":fields.function(_fun_get_weight,type="float",string="Weight"),
+        "deliver_addr1":fields.function(_fun_get_deliver_addr,type="char",string="deliver_addr1"),
+        "deliver_addr2":fields.function(_fun_get_deliver_addr,type="char",string="deliver_addr2"),
+        "receiv_addr1":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr1"),
+        "receiv_addr2":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr2"),
     }
 
     _defaults = {

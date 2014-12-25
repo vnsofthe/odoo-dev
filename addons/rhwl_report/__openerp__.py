@@ -12,6 +12,7 @@
 """,
     'data': [
         'stock_inventory.xml',
+        'express.xml',
     ],
     "demo": [],
     "test": [],

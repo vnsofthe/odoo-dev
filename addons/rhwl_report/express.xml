@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Define 'ids' report -->
+		<record id="rhwl_report_sf_express" model="ir.actions.report.xml">
+			<field name="name">Print Express</field>
+			<field name="report_name">rhwl.report.sf.express</field>
+			<field name="model">stock.picking.express</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+			<field name="rml">rhwl_report/sf_express.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="base.model_res_partner"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">rhwl_report/sf_express.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
+
+	</data>
+</openerp>
