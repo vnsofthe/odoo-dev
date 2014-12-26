@@ -318,7 +318,7 @@ class rhwl_sample_info(osv.osv):
         obj = self.browse(cr,uid,ids,context=context)
         for i in obj:
             if i.yftelno:
-                str = u"%s您好，您在我公司进行的无创检测样品(编号%s)，经检测，结果为阴性，详细说明请与送检医院联系。谢谢!" % (i.yfxm,i.name)
+                str = u"尊敬的%s女士，您好!您的无创产前基因检测(编号为%s)，检测结果为阴性(正常)。谢谢您的耐心等待，祝您好孕！（检测结果仅供参考，孕期产检请遵医嘱）" % (i.yfxm,i.name)
                 rhwl_sms.send_sms(i.yftelno,str )
 
     def action_check_reused(self, cr, uid, ids, context=None):
@@ -328,6 +328,11 @@ class rhwl_sample_info(osv.osv):
 
     def action_check_except(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': "except"}, context=context)
+        obj = self.browse(cr,uid,ids,context=context)
+        for j in obj:
+            if j.yftelno:
+                str=u"尊敬的%s女士，您好!您的无创产前基因检测(编号为%s)，检测结果提示为高危，请咨询临床医生，获得详细咨询。谢谢您的耐心等待，祝您好孕！（检测结果仅供参考，孕期产检请遵医嘱）" % (j.yfxm,j.name)
+                rhwl_sms.send_sms(j.yftelno,str)
         for i in ids:
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
