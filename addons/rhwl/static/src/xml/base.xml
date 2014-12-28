@@ -26,4 +26,30 @@
 
         </t>
     </t>
+
+    <t t-name="GetExpressRoute">
+        <div style="width:100%">
+            <table align="center" style="width:100%">
+                <thead>
+                    <tr>
+                        <th class="oe_form_group_cell oe_form_group_cell_label"><label class="oe_form_label" style="width:10%">时间</label></th>
+                        <th class="oe_form_group_cell oe_form_group_cell_label"><label class="oe_form_label" style="width:90%">说明</label></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="reoutelist" t-as="route">
+                        <tr>
+                            <td class="oe_form_field">
+                                <t t-esc="route.accept_time"/>
+                            </td>
+                            <td class="oe_form_field">
+                                <t t-esc="route.remark"/>
+                            </td>
+                        </tr>
+
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
 </templates>

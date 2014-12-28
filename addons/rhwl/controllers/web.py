@@ -13,6 +13,9 @@ import datetime
 import logging
 from openerp.tools.translate import _
 from .. import rhwl_sale,rhwl_sms
+from .. import rhwl_sf
+from lxml import etree
+
 STATE = {
     'done':u"完成",
     'progress':u"待确认",
@@ -460,3 +463,29 @@ class WebClient(http.Controller):
             data = res
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
+
+    @http.route("/web/express/route/",type="json",auth="none")
+    def express_route(self,no):
+        if not no:
+            return []
+        xmlstr= rhwl_sf.get_route(no)
+
+        xml = etree.fromstring(xmlstr.encode('utf-8'))#进行XML解析
+        print xmlstr
+        if xml.find("Body").getchildren().__len__()==0:
+            return [{'accept_time':'','remark':u"无物流查询结果"}]
+        body = xml.find("Body").getchildren()[0]
+        data=[]
+        for i in body:
+            data.append({'accept_time':i.get("accept_time"),"remark":i.get("remark")})
+
+        return data
+
+"""<?xml version='1.0' encoding='UTF-8'?>
+<Response service="RouteService">
+<Head>OK</Head><Body><RouteResponse mailno="106119552844">
+<Route remark="已收件" accept_time="2014-09-28 00:06:34" opcode="50"/>
+<Route remark="由于与客户约定更改派送时间, 派件不成功" accept_time="2014-09-28 00:06:35" accept_address="深圳&#x9;" opcode="70"/>
+<Route remark="由于与客户约定更改派送时间, 派件不成功" accept_time="2014-09-28 00:07:58" accept_address="深圳&#x9;" opcode="70"/>
+<Route remark="已签收,感谢使用顺丰,期待再次为您服务" accept_time="2014-09-28 00:34:41" accept_address="深圳&#x9;" opcode="80"/>
+</RouteResponse></Body></Response>"""

@@ -33,11 +33,26 @@ BODY="""
 </Body>
 </Request>
 """
+
+ROUTE="""<Request service='RouteService' lang='zh-CN'>
+<Head>RHWLSW,iuGAN2Ib44IHkk8R</Head>
+<Body>
+<RouteRequest tracking_type='1'  method_type='1' tracking_number='%s' />
+</Body>
+</Request>"""
+
 url = 'http://bsp-oisp.test.sf-express.com:6080/bsp-oisp/ws/expressService?wsdl'
 
 def get_e_express(vals):
-    print vals
     body = BODY.decode("utf-8") % (vals[0],vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],str(vals[8]),vals[9],vals[10])
+    client = suds.client.Client(url)
+    service = client.service
+    sum_result = service.sfexpressService(body)
+    client.last_received()
+    return sum_result
+
+def get_route(no):
+    body = ROUTE.decode("utf-8") % (no,)
     client = suds.client.Client(url)
     service = client.service
     sum_result = service.sfexpressService(body)

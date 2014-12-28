@@ -261,7 +261,6 @@ class rhwl_express(osv.osv):
             vals.append(i.product_id.name)
 
             xmlstr= rhwl_sf.get_e_express(vals)
-            print xmlstr
             xml = etree.fromstring(xmlstr.encode('utf-8'))#进行XML解析
             if xml.find("Head").text=="ERR":
                 raise osv.except_osv("生成电子运单出错：",xml.find("ERROR").text)

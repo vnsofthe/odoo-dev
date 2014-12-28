@@ -4,15 +4,18 @@ openerp.rhwl = function(instance) {
     var QWeb = instance.web.qweb;
 
     instance.rhwl.getexpresslist = instance.web.Widget.extend({
-        template: "ChangePassword",
         init: function(parent,action){
             this._super(parent, action);
             this.action = action;
         },
         start: function () {
             var self = this;
+            this.getParent().dialog_title = "物流单["+this.action.params.num_express+"]追踪：";
             this._super.apply(this, arguments);
-            console.log(this.action)
+            self.rpc("/web/express/route/",{no:this.action.params.num_express}).done(function(result) {
+
+                self.$el.append($(QWeb.render("GetExpressRoute",{reoutelist: result})));
+             });
         }
     });
 
