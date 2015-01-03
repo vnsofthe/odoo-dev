@@ -202,6 +202,7 @@ class Report:
         return tools.config['db_user'] or self.pool['ir.config_parameter'].get_param(self.cr, self.uid, 'db_user') or self.systemUserName()
 
     def password(self):
+        
         return tools.config['db_password'] or self.pool['ir.config_parameter'].get_param(self.cr, self.uid, 'db_password') or ''
 
     def executeReport(self, dataFile, outputFile, subreportDataFiles):

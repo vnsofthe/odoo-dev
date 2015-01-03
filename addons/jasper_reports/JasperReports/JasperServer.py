@@ -83,7 +83,6 @@ class JasperServer:
         command = ['java', '-Djava.awt.headless=true', 'com.nantic.jasperreports.JasperServer', unicode(self.port)]
         process = subprocess.Popen(command, env=env, cwd=cwd)
         if self.pidfile:
-            print "*"*40,self.pidfile
             f = open( self.pidfile, 'w')
             try:
                 f.write( str( process.pid ) )

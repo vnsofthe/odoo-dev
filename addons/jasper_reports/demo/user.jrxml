@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ab3b13ed-c798-48e6-aaef-2510650e1f2b">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="48"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -47,8 +47,8 @@
 			<style backcolor="#EFF7FF"/>
 		</conditionalStyle>
 	</style>
-	<subDataset name="Table Dataset 1" uuid="ae15dbff-2f7c-4a1c-b4ef-bcdf463e7ded"/>
-	<subDataset name="Table Dataset 2" uuid="a7caf3b3-7ff2-42cd-95c7-38d876b1aaa1"/>
+	<subDataset name="Table Dataset 1" />
+	<subDataset name="Table Dataset 2" />
 	<queryString>
 		<![CDATA[select p.name, u.login from res_partner p, res_users u where p.id= u.partner_id]]>
 	</queryString>
@@ -60,7 +60,7 @@
 	<title>
 		<band height="79" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="555" height="79" uuid="8e03dac8-87bf-4672-b022-f852a056fe01"/>
+				<reportElement x="0" y="0" width="555" height="79" />
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="30" isBold="true"/>
 				</textElement>
@@ -74,14 +74,14 @@
 	<columnHeader>
 		<band height="41" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="372" height="41" uuid="cb6aa97a-154d-43e0-9dc8-1e76f4b90508"/>
+				<reportElement x="0" y="0" width="372" height="41" />
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="26" isBold="true"/>
 				</textElement>
 				<text><![CDATA[User Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="372" y="0" width="183" height="41" uuid="e0401a30-8700-4786-9279-a4cb8fde4e08"/>
+				<reportElement x="372" y="0" width="183" height="41" />
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="24" isBold="true"/>
 				</textElement>
@@ -92,14 +92,14 @@
 	<detail>
 		<band height="27" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="372" height="25" uuid="bc64e8f4-2f5c-4e3c-865c-204db67c3bd6"/>
+				<reportElement x="0" y="0" width="372" height="25" />
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="15"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="372" y="0" width="183" height="25" uuid="b5067f2a-d2af-4ca0-8d1e-ebdc3a4d5bfe"/>
+				<reportElement x="372" y="0" width="183" height="25" />
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="15"/>
 				</textElement>
