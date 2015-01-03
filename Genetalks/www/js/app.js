@@ -19,6 +19,38 @@ var result = null; //结果查询
 var isLogin = false; //用户是否登陆
 var relevanceData; //重抽血样品信息
 
+//登陆函数
+function login() {
+  username = $("#userName").val().trim();
+  pwd = $("#pwd").val().trim();
+  $.post("http://" + server_ip + ":" + port + "/web/crmapp/login", {
+      Username: username,
+      Pwd: pwd
+    },
+    function(data) {
+      if (data.statu == 200) {
+        hospitalName = data.hospitalName;
+        $("#hospitalName").html(data.hospitalName);
+        all_count = data.AllCount;
+        $("#leftAllCount").html(data.AllCount);
+        loadHislog();
+        var checking = document.getElementById("remeber");
+        //如果记住密码被选中
+        if (checking.checked) {
+          addCookie("password", pwd, 30);
+        } else {
+          addCookie("password", "", 0);
+        }
+        isLogin = true;
+        //登陆成功将用户名保存至Cookie,时间为一个月
+        addCookie("userName", username, 30);
+        activate_page("#mainpage");
+      } else {
+        alert("您输入的密码有误！请重新输入！");
+      }
+    });
+}
+
 //结果查询函数
 function loadResult() {
   $.post("http://" + server_ip + ":" + port + "/web/crmapp/result", {
@@ -37,7 +69,7 @@ function showResult() {
   $("#bs-accordion-0").html("<div style='color:green;margin-bottom:15px;'>特殊样品数：<span onclick='showSpecialDemo()' class='label label-danger'>" + result[0].exception + "</span></div>");
   //先清空一次,防止二次刷新的时候数据累加
   for (var i = 1; i < result.length; i++) { //外循环写入下拉列表,由于第一个为异常，下标从1开始     
-    var info = '<div class="panel widget panel-warning" style="margin-bottom: 10px;"><div class="panel-heading"><h4 class="panel-title" data-toggle="collapse" href="#bs-accordion-group-' + i + '" data-parent="#bs-accordion-0">' + result[i].time + '</h4></div><div id="bs-accordion-group-' + i + '" class="panel-collapse collapse"><div class="panel-body"><table class="hovertable"><thead><tr><th style="width: 30%;">姓名</th><th style="width: 20%;">代号</th><th style="width: 50%;">状态</th></tr></thead><tbody id="tab' + i + '"></tbody></table></div></div></div>';
+    var info = '<div class="panel widget panel-warning" style="margin-bottom: 10px;"><div class="panel-heading"><h4 class="panel-title" data-toggle="collapse" href="#bs-accordion-group-' + i + '" data-parent="#bs-accordion-0">' + result[i].time + '</h4></div><div id="bs-accordion-group-' + i + '" class="panel-collapse collapse"><div class="panel-body"><table class="hovertable"><thead><tr><th style="width: 30%;">姓名</th><th style="width: 20%;">ID号</th><th style="width: 50%;">状态</th></tr></thead><tbody id="tab' + i + '"></tbody></table></div></div></div>';
     $("#bs-accordion-0").append(info);
     for (var j = 0; j < result[i].datas.length; j++) { //内循环写入具体table数据
       var obj = result[i].datas[j];
@@ -183,22 +215,8 @@ document.addEventListener("intel.xdk.device.barcode.scan", function(evt) {
       } else if (options == "wuliu") {
         $("#scanner").val(url);
       } else if (options == "recieve") {
-        //扫描时判断是否为快递单号
-        for (var i = 0; i < receiveNew.length; i++) {
-          if (url == (receiveNew[i][0])) {
-            //向服务器发送快递单号，获得应收试管数
-            $.post("http://" + server_ip + ":" + port + "/web/crmapp/goodsnum", {
-              Username: username,
-              Pwd: pwd,
-              goodsID: url
-            }, function(data) {
-              shownewOderItems(url, data.goodsNum);
-            });
-          } else {
-            alert("您的未收货信息中不包含该包裹，请重新扫描！");
-            return;
-          }
-        }
+        $("#receiveScanner").val(url);
+        showReceiveOderItems();
       } else {
         cancel = true;
         if (options == "addDemo" || options == "wuliu") {
@@ -290,7 +308,7 @@ function showDemo() {
         $("#tbody_y").append("<tr><td>" + (i + 1) + "</td><td id='t" + demo[i].code + "'onclick='changeDemoCode(this)'>" + demo[i].code + "</td><td><div class='btn-group'><input id=" + demo[i].code + " type='button' class='btn btn-primary btn-xs' onclick='relevance(this)' value='重关联'/><input type='button' onclick='delFromDemo(this)' class='btn btn-danger btn-xs' value='删除'></div></td></tr>");
         for (var j = 0; j < relevanceData.length; j++) {
           if (demo[i].preCode == relevanceData[j].id) {
-            $("#tbody_y").append("<tr><td colspan='2' style='color:blue'>"+relevanceData[j].name+"<span class='label label-info'>" + relevanceData[j].id+ "</span></td><td><button id='r" + demo[i].preCode + "' class='btn btn-warning btn-xs' onclick='delRelevance(this)'>取消关联</button></td></tr>");
+            $("#tbody_y").append("<tr><td colspan='2' style='color:blue'>" + relevanceData[j].name + "<span class='label label-info'>" + relevanceData[j].id + "</span></td><td><button id='r" + demo[i].preCode + "' class='btn btn-warning btn-xs' onclick='delRelevance(this)'>取消关联</button></td></tr>");
           }
         }
       } else {
@@ -433,7 +451,7 @@ function upload() {
 }
 
 //扫描收货快递单号
-function shouHuoBut() {
+function shouHuo() {
   options = "recieve";
   intel.xdk.device.scanBarcode();
 }
@@ -450,47 +468,94 @@ function getTimes() {
 
 //收货页面显示时触发
 function loadReceive() {
-  $("#tube").val = all_count;
   if (receiveNew.length > 0) {
+    $("#hasNewOrder").show();
+    $("#receiveConfirm").hide();
     $("#noNewOrder").hide();
-    $("#showTake").show();
     $("#receiveMark").hide();
-    $("#receiveTable").hide();
+    var shtbody = $("#receiveTbody");
+    shtbody.html("");
+    for (var i in receiveNew) {
+      var newtr = $("<tr/>").appendTo(shtbody);
+      var newtd1 = $("<td/>").appendTo(newtr);
+      newtd1.html(receiveNew[i].time); //时间
+      var newtd2 = $("<td/>").appendTo(newtr);
+      newtd2.html(receiveNew[i].logIdCompany[0]); //快递单号
+      var newtd3 = $("<td/>").appendTo(newtr);
+      newtd3.html(receiveNew[i].state); //状态
+    }
   } else {
     $("#hasNewOrder").hide();
     $("#noNewOrder").show();
   }
 }
 
+//收货页面的侧边按钮，切换手动输入和扫码输入功能
+function receiveWriteBySelf() {
+  if (options != "receiveWrite") {
+    $("#receiveScanner").removeAttr("onclick");
+    $("#receiveScanner").attr({
+      "placeholder": "请输入订单号码..."
+    });
+    $("#receiveScannerLogo").removeAttr("class");
+    $("#receiveScannerLogo").addClass("glyphicon glyphicon-barcode");
+    options = "receiveWrite";
+  } else {
+    $("#receiveScanner").attr({
+      "onclick": "shouHuo()"
+    });
+    $("#receiveScanner").attr({
+      "placeholder": "请扫码或点击右侧输入单号"
+    });
+    $("#receiveScannerLogo").removeAttr("class");
+    $("#receiveScannerLogo").addClass("glyphicon glyphicon-pencil");
+  }
+}
+
 //展示新快递里的试管数
-function shownewOderItems(orderId, nums) {
-  $("#receiveTable").show();
-  //    alert("hello"+orderId+"---nums="+nums);
-  var shtbody = $("#receiveTbody");
+function showReceiveOderItems() {
+  var orderId = $("#receiveScanner").val();
+  console.log(orderId);
+  var shtbody = $("#receiveConfirmTbody");
   shtbody.html("");
-  //for(var keyo in items){
-  var newtr = $("<tr/>").appendTo($("#shTb02"));
-  var newtd1 = $("<td/>").appendTo(newtr);
-  newtd1.html(orderId); //快递单号
-  var newtd2 = $("<td/>").appendTo(newtr);
-  newtd2.html(nums); //应收试管数
-  numforYingShou = nums;
-  var newtd3 = $("<td/>").appendTo(newtr);
-  $("<input type='text' id='secvalue'/>").css("width", "50px").appendTo(newtd3);
-  //}
+  for (var i = 0; i < receiveNew.length; i++) {
+    if (orderId == (receiveNew[i].logIdCompany[0])) {
+      //向服务器发送快递单号，获得应收试管数
+      $.post("http://" + server_ip + ":" + port + "/web/crmapp/goodsnum", {
+        Username: username,
+        Pwd: pwd,
+        goodsID: orderId
+      }, function(data) {
+        $("#receiveConfirm").show();
+        var newtr = $("<tr/>").appendTo(shtbody);
+        var newtd1 = $("<td/>").appendTo(newtr);
+        newtd1.html(orderId); //快递单号
+        var newtd2 = $("<td id='numforYingShou'/>").appendTo(newtr);
+        newtd2.html(data.goodsNum); //应收试管数
+        var newtd3 = $("<td/>").appendTo(newtr);
+        $("<input type='text' class='form-control input-sm' id='secvalue'/>").appendTo(newtd3);
+      });
+    }else{
+      $("#receiveConfirm").hide();
+    } 
+  }
 }
 
 //确认收货按钮：确认应收试管和实收试管数
 function sureForSH() {
-  if (numforYingShou != secvalue) { //不匹配时显示备注信息
+  var num=$("#numforYingShou").text();
+  var secvalue = $('#secvalue').val();
+  var marksValue ="";
+  if (num!= secvalue) { //不匹配时显示备注信息
     $("#receiveMark").show();
-    var marksValue = $("#markId01").val();
+    marksValue = $("#markId01").val();
     if (marksValue.trim() == "") {
       alert("请填写原因");
       return;
     }
+  }else{
+    $("#receiveMark").hide();
   }
-  var secvalue = $('#secvalue').val();
   $.post("http://" + server_ip + ":" + port + "/web/crmapp/receive", {
     Username: username,
     Pwd: pwd,
@@ -499,6 +564,8 @@ function sureForSH() {
     hospitalName: hospitalName
   }, function(data) {
     alert("提交成功！");
+    $("#receiveScanner").val("");
+    loadHislog();
     loadReceive();
   });
 }
@@ -543,7 +610,8 @@ function loadHislog() {
     receiveNew = [];
     for (var i in data) {
       if (data[i].is_receiv && data[i].state == "待确认") {
-        receiveNew.push(data[i].logIdCompany);
+        receiveNew.push(data[i]);
+        console.log(data[i]);
       }
     }
     showLittleSpan();
@@ -591,10 +659,7 @@ function showSGWL(data) {
 }
 
 //重抽血页面
-var ccx = function() {
-  /*设置表格中字体的位置居中*/
-  $("table").css("text-align", "center");
-  $("table thead tr th").css("text-align", "center");
+function ccx() {
   $.post("http://" + server_ip + ":" + port + "/web/crmapp/reuse", {
       Username: username,
       Pwd: pwd,
@@ -602,15 +667,12 @@ var ccx = function() {
     },
     function(data) {
       var tbody = $("#tbd");
-      showYxCcx(tbody, data);
+      showYxCcx(tbody, data, 1);
     });
 }
 
 //阳性样品页面
-var yx = function() {
-  /*设置表格中字体的位置居中*/
-  $("table").css("text-align", "center");
-  $("table thead tr th").css("text-align", "center");
+function yx() {
   $.post("http://" + server_ip + ":" + port + "/web/crmapp/except", {
       Username: username,
       Pwd: pwd,
@@ -618,10 +680,11 @@ var yx = function() {
     },
     function(data) {
       var tbody = $("#tbd2");
-      showYxCcx(tbody, data);
+      showYxCcx(tbody, data, 0);
     });
 }
 
+//阳性重抽血的页面展示函数
 function showYxCcx(tbody, data) {
   tbody.html("");
   for (var i in data) {
@@ -645,38 +708,14 @@ function showYxCcx(tbody, data) {
   }
 }
 
-//登陆函数
-function login() {
-  username=$("#userName").val().trim();
-  pwd=$("#pwd").val().trim(); 
-  $.post("http://" + server_ip + ":" + port + "/web/crmapp/login", {
-      Username: username,
-      Pwd: pwd
-    },
-    function(data) {
-      if (data.statu == 200) {
-        hospitalName = data.hospitalName;
-        $("#hospitalName").html(data.hospitalName);
-        all_count = data.AllCount;
-        $("#leftAllCount").html(data.AllCount);
-        loadHislog();
-        isLogin = true;
-        //登陆成功将用户名保存至Cookie,时间为一个月
-        addCookie("userName", username, 30);
-        activate_page("#mainpage");
-      } else {
-        alert("您输入的密码有误！请重新输入！");
-      }
-    });
-}
-
 //跳转到孕妇详细页面函数
-function goto(obj) { //当选中一个tr点击的时候 查看详情的跳转函数 携带一个序列号跳到张鹏页面
+function goto(obj, from) { //当选中一个tr点击的时候 查看详情的跳转函数 携带一个序列号跳到张鹏页面
   $.post("http://" + server_ip + ":" + port + "/web/crmapp/woman", {
     Username: username,
     Pwd: pwd,
     pregnantWomanID: obj.id
   }, function(data) {
+    console.log(data);
     options = "pregnantWomanMSG";
     activate_page("#pregnantWomanMSG");
     $("#pregnantWomanID").html(obj.id);
@@ -684,23 +723,53 @@ function goto(obj) { //当选中一个tr点击的时候 查看详情的跳转函
     $("#gestationalWeeks").text(data.gestationalWeeks);
     $("#takeBloodTime").text(data.takeBloodTime);
     $("#state").text(data.state);
-    $("#phoneNumber").text(data.phoneNumber);
-    $("#emergencyCall").text(data.emergencyCall);
+    $("#phoneNumber").attr("href", "tel:" + data.phoneNumber);
+    $("#phoneNumber").html(data.phoneNumber);
+    $("#emergencyCall").attr("href", "tel:" + data.emergencyCall);
+    $("#emergencyCall").html(data.emergencyCall);
     $("#reTakeBloodID").text(data.reTakeBloodID);
     $("#report").text(data.report);
-    $(".notice").attr("id","p"+obj.id);
+    $(".notice").attr("id", "p" + obj.id);
+    if (data.btn == "1") {
+      $("#notice").show();
+      $("#noticeCancel").hide();
+      $("#Inform").text("未通知该孕妇");
+    } else if (data.btn == "0") {
+      $("#notice").hide();
+      $("#noticeCancel").show();
+      $("#Inform").text("已通知该孕妇");
+    } else {
+      $("#notice").hide();
+      $("#noticeCancel").hide();
+      $("#Inform").text("已通知该孕妇");
+    }
   });
 }
 
-function Notice(obj){
+//通知和取消通知函数
+function Notice(obj, btn) {
   var id = obj.id;
   id = id.substring(1, id.length);
   $.post("http://" + server_ip + ":" + port + "/web/crmapp/notice/", {
     Username: username,
     Pwd: pwd,
-    id: id
+    id: id,
+    btn: btn
   }, function(data) {
-    alert("修改成功！");
+    if (data.statu == "200") {
+      if ($("#notice").is(':visible')) {
+        $("#notice").hide();
+        $("#noticeCancel").show();
+      } else {
+        $("#notice").show();
+        $("#noticeCancel").hide();
+      }
+      yx();
+      ccx();
+      alert("修改成功！");
+    } else {
+      alert("修改失败，请重试");
+    }
   });
 };
 
@@ -736,10 +805,3 @@ function showLittleSpan() {
     $("#receive_tip_num").hide();
   }
 }
-
-//复制到剪贴板
-function copyToClipboard(obj){
-  var number=$(obj).find(".number").text();
-  intel.xdk.device.copyToClipboard(number);
-  alert("该孕妇号码："+number+"已复制到剪贴板！");
-}  

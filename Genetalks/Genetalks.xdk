@@ -6,7 +6,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "appDesigner",
       "projectGuid": "cbc24388-9eb8-46db-853f-9c0da346be18",
-      "lastModifiedDate": 1418309745121,
+      "lastModifiedDate": 1418235770870,
       "creationDate": 1415339221460
     },
     "XDK-app-designer": "true",
@@ -59,30 +59,30 @@
           "Fullscreen": true
         },
         "isActive_": true,
-        "appName_": "Genetalks",
+        "appName_": "人和未来客户端",
         "appID_": "xdk.intel.ad.project",
         "appAccess_": "*",
         "icons_": [
           {
-            "relPath": "ico36.png",
+            "relPath": "icon/ldpi.png",
             "density": "ldpi",
             "height": 36,
             "width": 36
           },
           {
-            "relPath": "ico48.png",
+            "relPath": "icon/mdpi.png",
             "density": "mdpi",
             "height": 48,
             "width": 48
           },
           {
-            "relPath": "ico72.png",
+            "relPath": "icon/sldpi.png",
             "density": "hdpi",
             "height": 72,
             "width": 72
           },
           {
-            "relPath": "ico96.png",
+            "relPath": "icon/xhdpi.png",
             "density": "xhdpi",
             "height": 96,
             "width": 96
@@ -128,13 +128,10 @@
         "runtime_": "Cordova 3.x",
         "name_": "iOS",
         "preferences_": {
-          "ios-target": "6",
-          "Fullscreen": true,
-          "Orientation": "portrait",
-          "ios-configuration": "production"
+          "ios-target": "5"
         },
         "isActive_": true,
-        "appName_": "genetalks",
+        "appName_": "Genetalks",
         "appID_": "xdk.intel.ad.project",
         "appAccess_": "*",
         "icons_": [],
@@ -142,7 +139,7 @@
         "iosProvs_": [],
         "addlPermissions_": "",
         "excludedLibraries_": "",
-        "cordovaCLIVersion_": "2.9",
+        "cordovaCLIVersion_": "3.5",
         "crosswalkVersion_": "stable",
         "appVersion_": "1.0.4",
         "appDescription_": "app for genetalks",

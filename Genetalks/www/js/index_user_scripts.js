@@ -1,8 +1,10 @@
 (function() {
     "use strict";
     function register_event_handlers() {
+        $(".firstPage_btn").css("hieght","200px;");
         //记住用户名的功能
         $("#userName").val(getCookie("userName"));
+        $("#pwd").val(getCookie("password"));
 
         //两个搜索框的监听事件
         $("#searchlog").bind("input propertychange", function() {
@@ -11,6 +13,9 @@
 
         $("#resultInp").bind("input propertychange", function() {
             resultSearch();
+        });
+        $("#receiveScanner").bind("input propertychange", function() {
+            showReceiveOderItems();
         });
 
         //导航栏返回按钮
