@@ -31,7 +31,7 @@ def imp(arg1,arg2,arg3):
     if not ids3:
         s_sock.execute(s_dbname, s_uid, s_pwd, 'res.country.state.city.area', 'create', {'name':arg3,"city_id":ids2})
 
-req = requests.post("http://api.dangqian.com/apidiqu2/api.asp?format=json&id=000000000000&callback=dict")
+req = requests.post("http://api.dangqian.com/apidiqu2/api.asp?format=json&id=430000000000&callback=dict")
 no1 = req.content
 no1 = eval(no1)
 req.close()

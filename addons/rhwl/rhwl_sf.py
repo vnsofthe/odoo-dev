@@ -5,15 +5,15 @@ import suds
 BODY="""
 <Request service='OrderService' lang='zh-CN'>
 <Head>RHWLSW,iuGAN2Ib44IHkk8R</Head><Body>
-<Order        express_type='1'
-              j_company='人和未来生物科技(长沙)有限公司'
-              j_contact='发货组'
-              j_tel='0731-89703873'
-              j_mobile='18657130579'
-              j_province='湖南省'
-              j_city='长沙市'
-              j_county='岳麓区'
-              j_address='麓谷企业广场C2栋1101'
+<Order        express_type='%s'
+              j_company='%s'
+              j_contact='%s'
+              j_tel='%s'
+              j_mobile='%s'
+              j_province='%s'
+              j_city='%s'
+              j_county='%s'
+              j_address='%s'
               d_company='%s'
               d_contact='%s'
               d_tel='%s'
@@ -28,7 +28,7 @@ BODY="""
               cargo_total_weight='%s'
               remark=''
               orderid='%s'>
-       <Cargo name='%s'></Cargo>
+       <Cargo name='%s' count='%s'></Cargo>
 </Order>
 </Body>
 </Request>
@@ -43,8 +43,10 @@ ROUTE="""<Request service='RouteService' lang='zh-CN'>
 
 url = 'http://bsp-oisp.test.sf-express.com:6080/bsp-oisp/ws/expressService?wsdl'
 
-def get_e_express(vals):
-    body = BODY.decode("utf-8") % (vals[0],vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],str(vals[8]),vals[9],vals[10])
+def get_e_express(vals,devals):
+    body = BODY.decode("utf-8") % (vals[0],devals[0],devals[1],devals[2],devals[3],devals[4],devals[5],devals[6],devals[7],vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8],str(vals[9]),vals[10],vals[11],vals[12])
+    if vals[0]=="12":
+        body = body.replace("remark=''","remark='' temp_range='1' ")
     client = suds.client.Client(url)
     service = client.service
     sum_result = service.sfexpressService(body)

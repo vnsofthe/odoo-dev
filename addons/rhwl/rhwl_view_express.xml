@@ -39,7 +39,7 @@
                                 <button name="get_express_list" string="查看物流"  type="object" class="oe_link"/>
                             </div>
 
-
+                            <field name="express_type" attrs="{'readonly':[('state','!=','draft')]}"/>
 
                     </xpath>
                     <xpath expr="//field[@name='partner_id']" position="replace"/>

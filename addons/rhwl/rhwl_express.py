@@ -205,6 +205,7 @@ class rhwl_express(osv.osv):
         "deliver_addr2":fields.function(_fun_get_deliver_addr,type="char",string="deliver_addr2"),
         "receiv_addr1":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr1"),
         "receiv_addr2":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr2"),
+        "express_type":fields.selection([("1",u"标准快递"),("11",u"医药常温"),("12",u"医药温控")],string=u"快递类型",required=True),
     }
 
     _defaults = {
@@ -214,7 +215,8 @@ class rhwl_express(osv.osv):
         "deliver_addr": _get_addr,
         "deliver_id": _get_first_deliver,
         "product_id": _get_product_id,
-        "num_express": lambda obj,cr, uid,context: "0000000000"
+        "num_express": lambda obj,cr, uid,context: "0000000000",
+        "express_type":lambda obj,cr,uid,context:"11"
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -247,7 +249,9 @@ class rhwl_express(osv.osv):
     def action_sf(self,cr,uid,ids,context=None):
         rec = self.browse(cr,uid,ids,context=context)
         vals=[]
+        devals=[]
         for i in rec:
+            vals.append(i.express_type)
             vals.append(i.receiv_partner.name)
             vals.append(i.receiv_user.name)
             vals.append(i.receiv_partner.phone)
@@ -259,8 +263,18 @@ class rhwl_express(osv.osv):
             vals.append(i.weight)
             vals.append(str(i.id).zfill(12))
             vals.append(i.product_id.name)
+            vals.append(str(i.product_qty))
 
-            xmlstr= rhwl_sf.get_e_express(vals)
+            devals.append(i.deliver_partner.name)
+            devals.append(i.deliver_user.name)
+            devals.append(i.deliver_partner.phone)
+            devals.append(i.deliver_user.partner_id.mobile)
+            devals.append(i.deliver_partner.state_id.name)
+            devals.append(i.deliver_partner.city_id.name)
+            devals.append(i.deliver_partner.area_id.name)
+            devals.append(i.deliver_addr)
+
+            xmlstr= rhwl_sf.get_e_express(vals,devals)
             xml = etree.fromstring(xmlstr.encode('utf-8'))#进行XML解析
             if xml.find("Head").text=="ERR":
                 raise osv.except_osv("生成电子运单出错：",xml.find("ERROR").text)
