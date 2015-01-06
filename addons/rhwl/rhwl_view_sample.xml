@@ -8,18 +8,19 @@
                 <tree string="Sample Information">
                     <field name="name"/>
                     <field name="yfxm"/>
+                    <field name="yfage"/>
+                    <field name="yflastyj"/>
                     <field name="yfyzweek"/>
-                    <field name="sampletype"/>
+                    <field name="yfzjmc_no"/>
                     <field name="cx_date"/>
-                    <field name="receiv_user"/>
-                    <field name="is_reused"/>
-                    <field name="is_free"/>
                     <field name="check_state"/>
                     <field name="state_id"/>
                     <field name="city_id"/>
-
                     <field name="cxyy"/>
                     <field name="cxys"/>
+                    <field name="is_reused"/>
+                    <field name="is_free"/>
+
                 </tree>
             </field>
         </record>
