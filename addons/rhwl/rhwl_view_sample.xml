@@ -8,18 +8,23 @@
                 <tree string="Sample Information">
                     <field name="name"/>
                     <field name="yfxm"/>
+                    <field name="yfage"/>
+                    <field name="yflastyj"/>
                     <field name="yfyzweek"/>
-                    <field name="sampletype"/>
+                    <field name="yfzjmc_no"/>
                     <field name="cx_date"/>
-                    <field name="receiv_user"/>
-                    <field name="is_reused"/>
-                    <field name="is_free"/>
                     <field name="check_state"/>
                     <field name="state_id"/>
                     <field name="city_id"/>
-
                     <field name="cxyy"/>
                     <field name="cxys"/>
+                    <field name="is_reused"/>
+                    <field name="is_free"/>
+                    <field name="state"/>
+                    <button name="action_done"  states="draft" string="确认" type="object"
+                                groups="base.group_sale_salesman_all_leads" icon="gtk-apply" />
+                    <button name="action_cancel" states="draft" string="取消" type="object"
+                            groups="base.group_sale_salesman_all_leads" icon="gtk-cancel"/>
                 </tree>
             </field>
         </record>
@@ -78,16 +83,18 @@
                 <form string="Sale Sample">
                     <header>
                         <button name="action_done"  states="draft" string="确认" type="object"
-                                groups="base.group_user" class="oe_highlight oe_read_only"/>
+                                groups="base.group_sale_salesman_all_leads" class="oe_highlight oe_read_only"/>
                         <button name="action_cancel" states="draft" string="取消" type="object" class="oe_read_only"
-                                groups="base.group_user"/>
+                                groups="base.group_sale_salesman_all_leads"/>
+                        <button name="action_cancel2draft" states="cancel" string="重新转为草稿" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
                         <button name="action_get_library" states="done" string="接收实验室结果" type="object"
                                 groups="base.group_user"/>
-                        <button name="action_check_ok" string="检验结果正常" type="object" attrs="{'invisible':[('check_state','not in',('library','pc','get'))]}"
+                        <button name="action_check_ok" string="检验结果正常" type="object" attrs="{'invisible':[('check_state','not in',('library','pc'))]}"
                                 groups="base.group_user"/>
-                        <button name="action_check_reused"  string="需重采血" type="object" attrs="{'invisible':[('check_state','not in',('library','pc','get'))]}"
+                        <button name="action_check_reused"  string="需重采血" type="object" attrs="{'invisible':[('check_state','not in',('library','pc'))]}"
                                 groups="base.group_user" class="oe_highlight"/>
-                        <button name="action_check_except"  string="检验结果阳性" type="object" attrs="{'invisible':[('check_state','not in',('library','pc','get'))]}"
+                        <button name="action_check_except"  string="检验结果阳性" type="object" attrs="{'invisible':[('check_state','not in',('library','pc'))]}"
                                 groups="base.group_user" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
@@ -263,6 +270,10 @@
                         </notebook>
 
                     </sheet>
+                     <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
                     <footer>
                         <field name="check_state" widget="statusbar"
                                statusbar_colors='{"需重采血":"red","检验结果阳性":"red","检验结果正常":"blue"}' readonly="1"/>
@@ -309,6 +320,7 @@
 
                         </notebook>
                     </sheet>
+
                 </form>
             </field>
         </record>
@@ -485,5 +497,18 @@
                   action='action_sale_sample_reuse' />
         <menuitem id="menu_sale_sample_exception_portal" parent="portal.portal_orders" name="Excep Information" sequence="7"
                   action='action_sale_sample_exception'/>
+
+        <record id="mt_sample_cancel" model="mail.message.subtype">
+            <field name="name">Sample Create</field>
+            <field name="res_model">sale.sampleone</field>
+            <field name="default" eval="False"/>
+            <field name="description">Sample is Create</field>
+        </record>
+        <record id="mt_sample_done" model="mail.message.subtype">
+            <field name="name">Sample Done</field>
+            <field name="res_model">sale.sampleone</field>
+            <field name="default" eval="False"/>
+            <field name="description">样品确认</field>
+        </record>
     </data>
 </openerp>

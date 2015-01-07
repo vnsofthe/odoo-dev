@@ -23,7 +23,15 @@ class rhwl_sample_info(osv.osv):
     _name = "sale.sampleone"
     _description = "样品信息表"
     # _inherit = "sale.order"
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
     _order = "cx_date desc"
+    _track = {
+        'state': {
+            'rhwl.mt_sample_cancel': lambda self, cr, uid, obj, ctx=None: obj.state in ['cancel'],
+            'rhwl.mt_sample_done': lambda self, cr, uid, obj, ctx=None: obj.state in ['done'],
+        },
+    }
+
     SELECTION_TYPE = [
         (u'全血', u'全血'),
         (u'血浆', u'血浆'),
@@ -312,6 +320,9 @@ class rhwl_sample_info(osv.osv):
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+
+    def action_cancel2draft(self,cr,uid,ids,context=None):
+        self.write(cr,uid,ids,{'state':'draft'},context=context)
 
     def action_check_ok(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok"}, context=context)
