@@ -6,7 +6,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "appDesigner",
       "projectGuid": "cbc24388-9eb8-46db-853f-9c0da346be18",
-      "lastModifiedDate": 1418235770870,
+      "lastModifiedDate": 1420638739173,
       "creationDate": 1415339221460
     },
     "XDK-app-designer": "true",
@@ -94,9 +94,9 @@
         "excludedLibraries_": "",
         "cordovaCLIVersion_": "3.5",
         "crosswalkVersion_": "stable",
-        "appVersion_": "1.0.4",
+        "appVersion_": "1.0.8",
         "appDescription_": "app for genetalks",
-        "appAuthor_": "hwp",
+        "appAuthor_": "vnsoft",
         "appVersionCode_": "1"
       },
       "Android-Crosswalk": {
@@ -185,6 +185,9 @@
         "crosswalkVersion_": "stable",
         "appVersion_": "0.0.0.1"
       }
-    }
+    },
+    "gameAssetDirectory": "asset",
+    "gameMetadata": {},
+    "projectTags": []
   }
 }
