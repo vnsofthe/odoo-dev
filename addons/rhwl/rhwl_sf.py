@@ -4,7 +4,7 @@ import suds
 
 BODY="""
 <Request service='OrderService' lang='zh-CN'>
-<Head>RHWLSW,iuGAN2Ib44IHkk8R</Head><Body>
+<Head>rhwlswkj,N7rU89emENtDzJeUJKnk2QJ3nYT6I27E</Head><Body>
 <Order        express_type='%s'
               j_company='%s'
               j_contact='%s'
@@ -35,14 +35,14 @@ BODY="""
 """
 
 ROUTE="""<Request service='RouteService' lang='zh-CN'>
-<Head>RHWLSW,iuGAN2Ib44IHkk8R</Head>
+<Head>rhwlswkj,N7rU89emENtDzJeUJKnk2QJ3nYT6I27E</Head>
 <Body>
 <RouteRequest tracking_type='1'  method_type='1' tracking_number='%s' />
 </Body>
 </Request>"""
 
-url = 'http://bsp-oisp.test.sf-express.com:6080/bsp-oisp/ws/expressService?wsdl'
-
+#url = 'http://bsp-oisp.test.sf-express.com:6080/bsp-oisp/ws/expressService?wsdl'
+url = "http://bsp-oisp.sf-express.com/bsp-oisp/ws/expressService?wsdl"
 def get_e_express(vals,devals):
     body = BODY.decode("utf-8") % (vals[0],devals[0],devals[1],devals[2],devals[3],devals[4],devals[5],devals[6],devals[7],vals[1],vals[2],vals[3],vals[4],vals[5],vals[6],vals[7],vals[8],str(vals[9]),vals[10],vals[11],vals[12])
     if vals[0]=="12":
