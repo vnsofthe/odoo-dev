@@ -1,5 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_sale_sample,sale.sample,model_sale_sampleone,base.group_sale_salesman,1,1,1,1
+access_sale_sample,sale.sample,model_sale_sampleone,base.group_sale_salesman,1,1,1,0
 access_sale_sample_portal,sale_sample_portal,model_sale_sampleone,base.group_portal,1,0,0,0
 access_stock_picking_express,stock_picking_express,model_stock_picking_express,stock.group_stock_user,1,1,1,1
 access_stock_picking_express_detail,stock_picking_express_detail,model_stock_picking_express_detail,stock.group_stock_user,1,1,1,1
@@ -15,3 +15,4 @@ access_account_invoice_report_all,account_invoice_report_all,account.model_accou
 access_rhwl_project,rhwl_project,model_rhwl_project,base.group_sale_manager,1,1,1,1
 access_rhwl_product_portal,product.product portal,stock.model_product_product,base.group_portal,1,0,0,0
 access_rhwl_sample_report,access_rhwl_sample_report,model_rhwl_sample_report,,1,0,0,0
+access_sale_sampleone_lims,access_sale_sampleone_lims,model_sale_sampleone_lims,,1,1,1,1

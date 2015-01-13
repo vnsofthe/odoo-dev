@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from openerp import SUPERUSER_ID
+from openerp import SUPERUSER_ID,api
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 import datetime
 import rhwl_sms
 import requests
-
+import openerp.tools as tools
 rhwl_sale_state_select = {'draft':u'草稿',
                           'done': u'确认',
                           'checkok':u'检验完成',
@@ -123,6 +123,9 @@ class rhwl_sample_info(osv.osv):
         "check_state": fields.selection(
             [('get', u'已接收'), ('library', u'已进实验室'), ('pc', u'已上机'), ('reuse', u'需重采血'), ('ok', u'检验结果正常'),
              ('except', u'检验结果阳性')], u'检验状态'),
+        "urgency":fields.selection([("0",u"正常"),("1",u"加急")],u"紧急程度"),
+        "lims":fields.one2many("sale.sampleone.lims","name",readonly=True),
+        "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True)
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -137,11 +140,29 @@ class rhwl_sample_info(osv.osv):
         "yfjzycb": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
+        "urgency":lambda obj,cr,uid,context:"0"
 
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
+        ('sample_hospital_uniq_seq','unique(hospital_seq)',u"医院流水号不能重复。")
     ]
+
+    def init(self, cr):
+        cr.execute("update sale_sampleone set hospital_seq=id where hospital_seq is null")
+
+    def create(self, cr, uid, vals, context=None):
+        cxyy_obj = self.pool.get("res.partner").browse(cr,uid,vals.get("cxyy"),context)
+        cr.execute("select max(hospital_seq) from sale_sampleone where hospital_seq like '%s'" % (cxyy_obj.partner_unid + '-%',))
+        for unid in cr.fetchall():
+            max_id = unid[0]
+        if max_id:
+            max_id = max_id.split('-')[0]+'-'+str(int(max_id.split('-')[1])+1)
+        else:
+            max_id = cxyy_obj.partner_unid+'-1'
+        vals["hospital_seq"]=max_id
+
+        return super(rhwl_sample_info,self).create(cr,uid,vals,context)
 
     def _check_zjno(self, cr, uid, ids, context=None):
         obj = self.browse(cr, uid, ids[0], context=context)
@@ -160,6 +181,7 @@ class rhwl_sample_info(osv.osv):
                 "value": {
                     "reuse_type": arg,
                     "is_free": "1",
+                    "urgency": "1",
                 }
             }
         else:
@@ -307,6 +329,11 @@ class rhwl_sample_info(osv.osv):
             "value":vals
         }
 
+    @api.onchange('yfyzweek')
+    def _onchange_yfyzweek(self):
+        if self.yfyzweek and self.yfyzweek>=20:
+            self.urgency = "1"
+
     def action_get_library(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
         for i in obj:
@@ -315,8 +342,16 @@ class rhwl_sample_info(osv.osv):
             if json.get("haserror",False):
                 continue
             if json["sample"]["status"]:
-                print "*"*40,json["sample"]["status"]
-                self.write(cr,uid,i.id,{"check_state":"library"},context=context)
+                note = json["sample"]["note"]
+                stat = json["sample"]["status"]
+                timestr = json["sample"]["timeGenStr"]
+                lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timestr)])
+                if not lims_id:
+                    lims_id = self.pool.get("sale.sampleone.lims").create(cr,uid,{"name":i.id,"timestr":timestr,"stat":stat,"note":note})
+                    self.write(cr,uid,i.id,{"check_state":"library","lims":[[4,lims_id]]},context=context)
+    def get_all_library(self, cr, user, context=None):
+        ids = self.search(cr,user,[("state","=","done")])
+        self.action_get_library(cr,user,ids,context=context)
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
@@ -400,6 +435,16 @@ class rhwl_sample_info(osv.osv):
         move_obj = self.pool.get("stock.move")
         move_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('origin','=',self.pool.get("sale.order").browse(cr,SUPERUSER_ID,order_id,context=context).name)],context=context)
         move_obj.action_done(cr,SUPERUSER_ID,move_id,context=context)
+
+class rhwl_sample_lims(osv.osv):
+    _name = "sale.sampleone.lims"
+    _description = "样品实验记录"
+    _columns = {
+        "name":fields.many2one("sale.sampleone", u"样本单号",ondelete="restrict"),
+        "timestr":fields.char(u"处理时间",size=20),
+        "stat":fields.char(u"状态",size=20),
+        "note":fields.char(u"备注",size=100),
+    }
 
 class rhwl_reuse(osv.osv):
     _name = "sale.sampleone.reuse"

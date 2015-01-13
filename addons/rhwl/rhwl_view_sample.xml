@@ -22,9 +22,9 @@
                     <field name="is_free"/>
                     <field name="state"/>
                     <button name="action_done"  states="draft" string="确认" type="object"
-                                groups="base.group_sale_salesman_all_leads" icon="gtk-apply" />
+                                groups="rhwl.rhwl_manager_sample" icon="gtk-apply" />
                     <button name="action_cancel" states="draft" string="取消" type="object"
-                            groups="base.group_sale_salesman_all_leads" icon="gtk-cancel"/>
+                            groups="rhwl.rhwl_manager_sample" icon="gtk-cancel"/>
                 </tree>
             </field>
         </record>
@@ -83,9 +83,9 @@
                 <form string="Sale Sample">
                     <header>
                         <button name="action_done"  states="draft" string="确认" type="object"
-                                groups="base.group_sale_salesman_all_leads" class="oe_highlight oe_read_only"/>
+                                groups="rhwl.rhwl_manager_sample" class="oe_highlight oe_read_only"/>
                         <button name="action_cancel" states="draft" string="取消" type="object" class="oe_read_only"
-                                groups="base.group_sale_salesman_all_leads"/>
+                                groups="rhwl.rhwl_manager_sample"/>
                         <button name="action_cancel2draft" states="cancel" string="重新转为草稿" type="object"
                                 groups="base.group_user" class="oe_highlight"/>
                         <button name="action_get_library" states="done" string="接收实验室结果" type="object"
@@ -116,6 +116,7 @@
                                 <field name="reuse_name" on_change="onchange_reuse_name(reuse_name)"
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')],'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="is_free" colspan='2' attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
+                                <field name="urgency"/>
                             </group>
                             <group>
                                 <field name="receiv_user"/>
@@ -126,6 +127,7 @@
                                 <field name="cxyy" on_change="onchange_cxyy(lyyy,cxyy)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="cxys" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="fzr"/>
+                                <field name="hospital_seq"/>
                             </group>
                         </group>
 
@@ -263,7 +265,15 @@
                                         </group>
                                 </group>
                             </page>
-
+                            <page string="实验历程">
+                                <field name="lims">
+                                    <tree>
+                                        <field name="timestr"/>
+                                        <field name="stat"/>
+                                        <field name="note"/>
+                                    </tree>
+                                 </field>
+                            </page>
                             <page string="备注">
                                 <field name="note"/>
                             </page>
