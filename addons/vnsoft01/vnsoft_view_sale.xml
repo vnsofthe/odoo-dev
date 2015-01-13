@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="vnsoft01_sale_order_form_view">
+            <field name="name">vnsoft01.sale.order.form.view</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='partner_id']" position="after">
+                        <field name="research_group" />
+                         <field name="order_user" />
+                    </xpath>
+                 </data>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="vnsoft01_sale_order_tree_view">
+            <field name="name">vnsoft01.sale.order.tree.view</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='partner_id']" position="after">
+                        <field name="research_group" />
+                         <field name="order_user" />
+                    </xpath>
+                 </data>
+            </field>
+        </record>
+        <record id="vnsoft01_view_sales_order_filter" model="ir.ui.view">
+            <field name="name">vnsoft01.sale.order.list.select</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//group/filter[@string='Customer']" position="after">
+                        <filter string="Research Group" domain="[]" context="{'group_by':'research_group'}"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
+    </data>
+</openerp>
