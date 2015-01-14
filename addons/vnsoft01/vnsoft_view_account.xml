@@ -9,7 +9,6 @@
                 <data>
                     <xpath expr="//field[@name='partner_id']" position="after">
                         <field name="research_group" />
-                         <field name="order_user" />
                     </xpath>
                  </data>
             </field>
@@ -22,7 +21,6 @@
                 <data>
                     <xpath expr="//field[@name='partner_id']" position="after">
                         <field name="research_group" />
-                         <field name="order_user" />
                     </xpath>
                  </data>
             </field>
