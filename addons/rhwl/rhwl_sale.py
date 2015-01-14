@@ -400,6 +400,7 @@ class rhwl_sample_info(osv.osv):
             w_id = w_id[0]
         vals = {
             "partner_id": cxys.cxys.id,
+            "partner_invoice_id":cxys.cxys.parent_id,
             "client_order_ref": cxys.name,
             "warehouse_id": w_id,
             "pricelist_id": 1,
