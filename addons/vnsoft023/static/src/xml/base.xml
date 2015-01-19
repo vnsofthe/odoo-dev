@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <!-- UserMenu -->
+    <t t-extend="UserMenu">
+        <t t-jquery="ul.dropdown-menu" t-operation="replace">
+
+            <ul class="dropdown-menu">
+                <li><a href="#" data-menu="settings">Preferences</a></li>
+                <li><a href="#" data-menu="about">About Odoo</a></li>
+                <li><a href="#" data-menu="logout">Log out</a></li>
+            </ul>
+        </t>
+    </t>
+    <!-- disable ?debug in url -->
+    <t t-extend="ViewManagerAction">
+        <t t-jquery="select.oe_debug_view" t-operation="replace">
+            <select t-if="widget.session.uid === 1 and widget.session.debug" class="oe_debug_view"/>
+        </t>
+    </t>
+
+    <t t-extend="UserMenu.about">
+        <t t-jquery="div.user-body" t-operation="after">
+           <div class="user-heading">
+            <p>本系统由<a class='btn btn-link' href='mailto:vnsoft.he@gmail.com'>vnsoft.he@gmail.com</a>提供技术服务.</p>
+           </div>
+
+        </t>
+    </t>
+</templates>

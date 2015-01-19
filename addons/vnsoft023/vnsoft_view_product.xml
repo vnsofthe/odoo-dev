@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_product_product_template_only_form_view">
+            <field name="name">rhwl.product.product.template.only.form.view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='list_price']" position="after">
+                        <field name="brand" />
+                        <field name="name2"/>
+                    </xpath>
+                 </data>
+            </field>
+        </record>
+
+        <record id="vnsoft023_product_search_form_view" model="ir.ui.view">
+            <field name="name">vnsoft023.product.product.search</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                   <field name="brand" string="品牌" filter_domain="[('brand','ilike',self)]"/>
+                   <field name="name2" string="名称" filter_domain="[('name2','ilike',self)]"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="vnsoft023_product_template_tree_view" model="ir.ui.view">
+            <field name="name">vnsoft023.product.template_tree_view</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                   <field name="brand" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="vnsoft023_view_order_form" model="ir.ui.view">
+            <field name="name">vnsoft023.view.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="before">
+                   <field name="brand" />
+                </xpath>
+                <xpath expr="//field[@name='picking_policy']" position="after">
+                    <field name="vn_delay"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="vnsoft023_purchase_order_form" model="ir.ui.view">
+            <field name="name">vnsoft023.purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="before">
+                   <field name="brand" />
+                </xpath>
+            </field>
+        </record>
+        <record id="vnsoft023_view_stock_move_tree" model="ir.ui.view">
+            <field name="name">vnsoft023.view.stock.move.tree</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                   <field name="brand" />
+                </xpath>
+            </field>
+        </record>
+        <record id="vnsoft023_view_stock_move_form" model="ir.ui.view">
+            <field name="name">vnsoft023.view.stock.move.form</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                   <field name="brand" />
+                </xpath>
+            </field>
+        </record>
+
+        <record id="vnsoft023_view_partner_form" model="ir.ui.view">
+            <field name="name">vnsoft023.view.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='debit']" position="after">
+                   <field name="tax_no" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
