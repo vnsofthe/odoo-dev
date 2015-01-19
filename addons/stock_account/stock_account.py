@@ -287,7 +287,7 @@ class stock_move(osv.osv):
             if (move.location_id.usage == 'supplier') and (move.product_id.cost_method == 'average'):
                 product = move.product_id
                 prod_tmpl_id = move.product_id.product_tmpl_id.id
-                qty_available = move.product_id.product_tmpl_id.qty_available
+                qty_available = move.product_id.product_tmpl_id.qty_available #取得现有的产品数量
                 if tmpl_dict.get(prod_tmpl_id):
                     product_avail = qty_available + tmpl_dict[prod_tmpl_id]
                 else:

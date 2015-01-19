@@ -1,3 +1,5 @@
 import vnsoft_product
 import vnsoft_sale
 import vnsoft_account
+import vnsoft_stock
+import vnsoft_auth_crypt

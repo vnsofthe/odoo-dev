@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="stock_change_tree">
+            <field name="name">stock.change.tree</field>
+            <field name="model">stock.change</field>
+            <field name="arch" type="xml">
+                <tree string="Sample Information">
+                    <field name="product_from"/>
+                    <field name="from_qty"/>
+                    <field name="product_to"/>
+                    <field name="to_qty"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="stock_change_form">
+            <field name="name">stock.change.form</field>
+            <field name="model">stock.change</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet >
+                        <group>
+                            <group>
+                                <field name="date"/>
+                                <field name="product_from"/>
+                                <field name="from_qty"/>
+                                <field name="product_to"/>
+                                <field name="to_qty"/>
+                                <field name="user_id"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="stock_change_search">
+            <field name="name">stock.change.search</field>
+            <field name="model">stock.change</field>
+            <field name="arch" type="xml">
+                <search string="Stock Change">
+
+                </search>
+            </field>
+        </record>
+
+        <record id="action_stock_change" model="ir.actions.act_window">
+            <field name="name">Stock Change</field>
+            <field name="res_model">stock.change</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        
+        <menuitem id="menu_stock_change" parent="stock.menu_stock_inventory_control" name="Stock Change" sequence="10"
+                  action='action_stock_change' />
+
+    </data>
+</openerp>
