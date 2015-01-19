@@ -5,4 +5,5 @@ class vnsoft_auth_crypt(osv.osv):
     _inherit = "res.users"
 
     def set_pwd(self, cr, uid, id, name, value):
-        self.set_pw(cr,uid,id,name,value,None,None)
+        self._set_password(cr, uid, id, value, context=None)
+        return True
