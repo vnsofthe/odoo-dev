@@ -6,10 +6,11 @@
             <field name="model">stock.change</field>
             <field name="arch" type="xml">
                 <tree string="Sample Information">
+                     <field name="name"/>
+                     <field name="date"/>
                     <field name="product_from"/>
                     <field name="from_qty"/>
-                    <field name="product_to"/>
-                    <field name="to_qty"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -20,23 +21,42 @@
             <field name="arch" type="xml">
                 <form string="Sale Sample">
                     <header>
+                        <button name="action_done" string="Done" states="draft" type="object" class="oe_highlight"
+                                groups="stock.group_stock_user"/>
+                        <button name="action_cancel" string="Cancel" states="draft" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet >
                         <group>
                             <group>
+                                <field name="name"/>
                                 <field name="date"/>
-                                <field name="product_from"/>
-                                <field name="from_qty"/>
-                                <field name="product_to"/>
-                                <field name="to_qty"/>
                                 <field name="user_id"/>
+
+
+                                    <field name="product_from"/>
+                                    <field name="location_from"/>
+                                    <field name="from_qty"/>
+
+
+
                             </group>
                             <group>
 
                             </group>
                         </group>
+                        <notebook>
+                            <page string="子产品明细">
+                                <field name="line">
+                                    <tree editable="bottom">
+                                        <field name="product_to"/>
+                                        <field name="location_to"/>
+                                        <field name="rate"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -47,7 +67,12 @@
             <field name="model">stock.change</field>
             <field name="arch" type="xml">
                 <search string="Stock Change">
-
+                    <field name="name"/>
+                    <field name="product_from"/>
+                    <seperaotr/>
+                    <filter string="草稿" name="draft" domain="[('state','=','draft')]"/>
+                    <filter string="已完成" name="done" domain="[('state','=','done')]"/>
+                    <filter string="已取消" name="cancel" domain="[('state','=','cancel')]"/>
                 </search>
             </field>
         </record>
