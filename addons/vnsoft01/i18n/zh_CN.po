@@ -10,3 +10,14 @@ msgstr "课题组"
 #: field:account.invoice,order_user:0
 msgid "Order User"
 msgstr "下单人员"
+
+#. module: vnsoft01
+#: model:ir.ui.menu,name:vnsoft01.menu_stock_change
+#: model:ir.actions.act_window,name:vnsoft01.action_stock_change
+msgid "Stock Change"
+msgstr "库存产品拆分"
+
+#. module: vnsoft01
+#: field:stock.change,name:0
+msgid "name"
+msgstr "单据号"
