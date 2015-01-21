@@ -125,7 +125,8 @@ class rhwl_sample_info(osv.osv):
              ('except', u'检验结果阳性')], u'检验状态'),
         "urgency":fields.selection([("0",u"正常"),("1",u"加急")],u"紧急程度"),
         "lims":fields.one2many("sale.sampleone.lims","name",readonly=True),
-        "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True)
+        "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True),
+        "library_date":fields.date(u"实验结果时间"),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -359,26 +360,29 @@ class rhwl_sample_info(osv.osv):
     def action_cancel2draft(self,cr,uid,ids,context=None):
         self.write(cr,uid,ids,{'state':'draft'},context=context)
 
-    def action_check_ok(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok"}, context=context)
-        obj = self.browse(cr,uid,ids,context=context)
-        for i in obj:
-            if i.yftelno:
+    def action_sms(self,cr,uid,ids,context=None):
+        for i in self.browse(cr,uid,ids,context=context):
+            if i.check_state=="ok":
                 str = u"尊敬的%s女士，您好! 您的无创产前基因检测(编号为%s)，检测结果为阴性(正常)。谢谢您的耐心等待，祝您好孕！（检测结果仅供参考，孕期产检请遵医嘱）" % (i.yfxm,i.name)
-                rhwl_sms.send_sms(i.yftelno,str )
+            elif i.check_state=="except":
+                str=u"尊敬的%s女士，您好! 您的无创产前基因检测(编号为%s)，检测结果提示为高危，请咨询临床医生，获得详细咨询。谢谢您的耐心等待，祝您好孕！（检测结果仅供参考，孕期产检请遵医嘱）" % (i.yfxm,i.name)
+            else:
+                str=None
+            if i.yftelno and str:
+                res = rhwl_sms.send_sms(i.yftelno,str )
+                if res.split('/')[0]!="000":
+                    raise osv.except_osv(u"错误",u"短信发送错误，"+res)
+
+    def action_check_ok(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok","library_date":fields.date.today()}, context=context)
 
     def action_check_reused(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse'}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse',"library_date":fields.date.today()}, context=context)
         for i in ids:
             self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
     def action_check_except(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except"}, context=context)
-        obj = self.browse(cr,uid,ids,context=context)
-        for j in obj:
-            if j.yftelno:
-                str=u"尊敬的%s女士，您好! 您的无创产前基因检测(编号为%s)，检测结果提示为高危，请咨询临床医生，获得详细咨询。谢谢您的耐心等待，祝您好孕！（检测结果仅供参考，孕期产检请遵医嘱）" % (j.yfxm,j.name)
-                rhwl_sms.send_sms(j.yftelno,str)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today()}, context=context)
         for i in ids:
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
