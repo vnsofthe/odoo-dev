@@ -30,9 +30,49 @@ class rhwl_product_template(osv.osv):
 
 class vnsoft_sale_order(osv.osv):
     _inherit = "sale.order"
+    def _chn_amt(self, cr, uid, ids, prop, arg, context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return {}
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        res = {}
+        for i in self.browse(cr,uid,ids,context=context):
+            res[i.id] = self.num2chn(i.amount_total)
+        return res
+
     _columns={
         "vn_delay":fields.char(u"货期",size=100),
+        "chn_amount_total":fields.function(_chn_amt,type="char",string="chn amount total"),
     }
+
+
+
+    def IIf(self, b, s1, s2):
+       if b:
+            return s1
+       else:
+            return s2
+
+    def num2chn(self,nin=None):
+        cs =('零','壹','贰','叁','肆','伍','陆','柒','捌','玖','◇','分','角','圆','拾','佰','仟',
+                '万','拾','佰','仟','亿','拾','佰','仟','万')
+        st = ''; st1=''
+        s = '%0.2f' % (nin)
+        sln =len(s)
+        if sln >15: return None
+        fg = (nin<1)
+        for i in range(0, sln-3):
+            ns = ord(s[sln-i-4]) - ord('0')
+            st=self.IIf((ns==0) and (fg or (i==8) or (i==4) or (i==0)), '', cs[ns])+ self.IIf((ns==0)and((i<>8) and (i<>4) and (i<>0) or fg  and(i==0)),'', cs[i+13])+ st
+            fg = (ns==0)
+        fg = False
+        for i in [1,2]:
+            ns = ord(s[sln-i]) - ord('0')
+            st1=self.IIf(ns==0 and (i==1 or i==2 and (fg or (nin<1))), '', cs[ns]) + self.IIf((ns>0), cs[i+10], self.IIf((i==2) or fg, '', '整')) + st1
+            fg = (ns==0)
+        st.replace('亿万','万')
+        return self.IIf( nin==0, '零', st + st1)
+
 
 class vnsoft_saleorderline(osv.osv):
      _inherit = "sale.order.line"

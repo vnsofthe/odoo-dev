@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 #QQ:3085969661
 {
-    'name': 'vnsoft023',
+    'name': 'vnsoft base',
     'version': '0.1',
-    'category': 'product',
-    'sequence': 15,
-    'summary': '产品基本资料',
+    'category': 'tools',
+    'sequence': 99,
+    'summary': 'Vnsoft Developer Base Model',
     'description': """
-Odoo 二次开发
+Odoo 二次开发基础工具包
 ==================================
-1.产品资料增加品牌属性
     """,
     'author': 'VnSoft',
     'website': 'http://blog.csdn.net/vnsoft',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
-    'depends': ['base','vnsoft_base', 'product','web','sale','purchase','stock'],
-    'data': ["vnsoft_view_product.xml" ],
-    "qweb":[],
+    'depends': ['base', 'web'],
+    'data': [],
+    "qweb":["static/src/xml/base.xml"],
     'demo': [],
     'test': [],
     'installable': True,
