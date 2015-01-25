@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #    Web PDF Report Preview & Print
-#    Copyright 2012 wangbuke <wangbuke@gmail.com>
+#    Copyright 2014 wangbuke <wangbuke@gmail.com>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -34,15 +34,24 @@ Test passed on Windows.
 
 If your brower prevented pop-up window, you should allow it.
 
+功能：PDF 报表预览
+
+如果您觉得好用，请进入下面的网址，付费支持作者 ~
+
+http://me.alipay.com/wangbuke
+
+谢谢！
+
     """,
     'author': 'wangbuke@gmail.com',
-    'website': 'http://my.oschina.net/wangbuke',
+    'website': 'http://buke.github.io',
     'license': 'AGPL-3',
     'depends': ['web'],
-    'data': ["views/web_pdf_preview.xml",],
+    'data': [
+        'views/web_pdf_preview.xml',
+    ],
     'auto_install': False,
     'web_preload': True,
-
 }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
