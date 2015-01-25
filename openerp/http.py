@@ -207,6 +207,7 @@ class WebRequest(object):
 
     @lazy_property
     def lang(self):
+        self.session._fix_lang(self.context)
         return self.context["lang"]
 
     @lazy_property
@@ -802,7 +803,9 @@ def routing_map(modules, nodb_only, converters=None):
                                 if url.endswith("/") and len(url) > 1:
                                     url = url[: -1]
 
-                            routing_map.add(werkzeug.routing.Rule(url, endpoint=endpoint, methods=routing['methods']))
+                            xtra_keys = 'defaults subdomain build_only strict_slashes redirect_to alias host'.split()
+                            kw = {k: routing[k] for k in xtra_keys if k in routing}
+                            routing_map.add(werkzeug.routing.Rule(url, endpoint=endpoint, methods=routing['methods'], **kw))
     return routing_map
 
 #----------------------------------------------------------
@@ -957,7 +960,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
 
         :param dict context: context to fix
         """
-        lang = context['lang']
+        lang = context.get('lang')
 
         # inane OpenERP locale
         if lang == 'ar_AR':
@@ -1332,7 +1335,7 @@ class Root(object):
         #   (the one using the cookie). That is a special feature of the Session Javascript class.
         # - It could allow session fixation attacks.
         if not explicit_session and hasattr(response, 'set_cookie'):
-            response.set_cookie('session_id', httprequest.session.sid)#, max_age=90 * 24 * 60 * 60)
+            response.set_cookie('session_id', httprequest.session.sid, max_age=90 * 24 * 60 * 60)
 
         return response
 

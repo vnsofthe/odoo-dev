@@ -10929,11 +10929,6 @@ msgid "Lunch Orders"
 msgstr "午餐订单管理"
 
 #. module: base
-#: model:ir.module.module,shortdesc:base.module_rhwl
-msgid "rhwl"
-msgstr "人和未来生物科技"
-
-#. module: base
 #: model:res.country,name:base.lu
 msgid "Luxembourg"
 msgstr "卢森堡"
