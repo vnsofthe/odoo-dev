@@ -613,6 +613,11 @@ label:empty {
     background-attachment: scroll;
   }
 }
+@media all {
+  .LoginFootText p {
+    color: #7b7bca;
+  }
+}
 .uib_row_9:not(.cright) > .col {
   padding-right: 20px;
 }

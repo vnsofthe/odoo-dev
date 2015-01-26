@@ -1,4 +1,4 @@
-var server_ip = '120.24.58.11'; //服务器地址
+var server_ip = '222.240.161.196'; //服务器地址
 var port = '8069'; //端口号
 var DBname = 'dev'; //数据库名
 var options = "";
@@ -45,8 +45,10 @@ function login() {
         //登陆成功将用户名保存至Cookie,时间为一个月
         addCookie("userName", username, 30);
         activate_page("#mainpage");
-      } else {
-        alert("您输入的密码有误！请重新输入！");
+      } else if(data.statu==500) {
+        alertMsg("提示",data.errtext);
+      }else{
+        alertMsg("提示","Sorry，登陆出现异常，请稍后再试。。。");
       }
     });
 }
@@ -210,7 +212,7 @@ document.addEventListener("intel.xdk.device.barcode.scan", function(evt) {
           showDemo();
           $('#continueScan').modal('show');
         } else {
-          alert("该样品已经扫描");
+          alertMsg("提示","该样品已经扫描");
         }
       } else if (options == "wuliu") {
         $("#scanner").val(url);
@@ -443,9 +445,9 @@ function upload() {
       $("#body-one").hide();
       $("#confrimOut").hide();
       $("#sendConfrim").modal("hide");
-      alert("提交成功！");
+      alertMsg("提示","提交成功！");
     } else {
-      alert("提交失败，请重试！");
+      alertMsg("提示","提交失败，请重试！");
     }
   });
 }
@@ -479,7 +481,7 @@ function loadReceive() {
       var newtr = $("<tr/>").appendTo(shtbody);
       var newtd1 = $("<td/>").appendTo(newtr);
       newtd1.html(receiveNew[i].time); //时间
-      var newtd2 = $("<td/>").appendTo(newtr);
+      var newtd2 = $("<td id='receivedGoodsId'/>").appendTo(newtr);
       newtd2.html(receiveNew[i].logIdCompany[0]); //快递单号
       var newtd3 = $("<td/>").appendTo(newtr);
       newtd3.html(receiveNew[i].state); //状态
@@ -544,13 +546,14 @@ function showReceiveOderItems() {
 //确认收货按钮：确认应收试管和实收试管数
 function sureForSH() {
   var num=$("#numforYingShou").text();
+  var goodsId=$("#receivedGoodsId").text();
   var secvalue = $('#secvalue').val();
   var marksValue ="";
   if (num!= secvalue) { //不匹配时显示备注信息
     $("#receiveMark").show();
     marksValue = $("#markId01").val();
     if (marksValue.trim() == "") {
-      alert("请填写原因");
+      alertMsg("提示","请填写原因");
       return;
     }
   }else{
@@ -561,9 +564,10 @@ function sureForSH() {
     Pwd: pwd,
     actualNumber: secvalue,
     marks: marksValue,
-    hospitalName: hospitalName
+    hospitalName: hospitalName,
+    goodsId:goodsId
   }, function(data) {
-    alert("提交成功！");
+    alertMsg("提示","提交成功！");
     $("#receiveScanner").val("");
     loadHislog();
     loadReceive();
@@ -766,9 +770,9 @@ function Notice(obj, btn) {
       }
       yx();
       ccx();
-      alert("修改成功！");
+      alertMsg("提示","修改成功！");
     } else {
-      alert("修改失败，请重试");
+      alertMsg("提示","修改失败，请重试");
     }
   });
 };
@@ -804,4 +808,10 @@ function showLittleSpan() {
   } else {
     $("#receive_tip_num").hide();
   }
+}
+
+function alertMsg(title,msg){
+  $("#alertTitle").html(title);
+  $("#alertContent").html(msg);
+  $('#alert').modal('show');
 }
