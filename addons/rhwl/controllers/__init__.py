@@ -1,2 +1,1 @@
 import web
-import weixin

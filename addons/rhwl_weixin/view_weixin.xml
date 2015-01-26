@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_weixin_base_tree">
+            <field name="name">rhwl.weixin.base.tree</field>
+            <field name="model">rhwl.weixin.base</field>
+            <field name="arch" type="xml">
+                <tree string="WeiXin">
+                    <field name="appid"/>
+                    <field name="appsecret"/>
+                    <field name="user_menu"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_weixin_base_form">
+            <field name="name">rhwl.weixin.base.form</field>
+            <field name="model">rhwl.weixin.base</field>
+            <field name="arch" type="xml">
+                <form string="WeiXin">
+                    <header>
+                        <button name="action_token" string="获取Token" type="object"/>
+                        <button name="action_usermenu" string="创建自定义菜单" type="object"/>
+                    </header>
+                    <sheet>
+                        <group colspan="8">
+                            <group col="8">
+                                <group >
+                                    <field name="appid"/>
+                                    <field name="appsecret"/>
+                                </group>
+                                <group >
+                                    <field name="token"/>
+                                    <label string="Create"/>
+                                    <div>
+                                        <field name="token_create" style="width:50%%"/>
+                                        <field name="expires_in" style="width:50%%"/>
+                                    </div>
+
+                                </group>
+                            </group>
+                        </group>
+                            <group >
+                                 <field name="user_menu"/>
+                            </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_weixin_base_search">
+            <field name="name">rhwl.weixin.base.search</field>
+            <field name="model">rhwl.weixin.base</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                </search>
+            </field>
+        </record>
+        <record id="action_rhwl_weixin_base" model="ir.actions.act_window">
+            <field name="name">WeiXin</field>
+            <field name="res_model">rhwl.weixin.base</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_weixin_root" name="微信管理" sequence="20"/>
+        <menuitem id="menu_weixin_first" name="微信" parent="menu_weixin_root" sequence="10"/>
+        <menuitem id="menu_rhwl_weixin" parent="menu_weixin_first" name="微信" sequence="10"
+                  action='action_rhwl_weixin_base' />
+
+    </data>
+</openerp>

@@ -9,7 +9,7 @@ from openerp import SUPERUSER_ID
 import time
 import random
 import datetime
-from .. import rhwl_sms,rhwl_sale
+from openerp.addons.rhwl import rhwl_sms,rhwl_sale
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -62,6 +62,12 @@ class weixin(http.Controller):
                     user.create(cr,SUPERUSER_ID,{'openid':fromUser,'active':True,'state':'draft'},context=self.CONTEXT)
                 cr.commit()
             return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(长沙)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
+        elif Event=="CLICK":
+            key = xmlstr.find("EventKey").text
+            if key=="ONLINE_QUERY":
+                return self.replyWeiXin(fromUser,toUser,u"请您输入送检编号！")
+            else:
+                return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
         else:
              registry = RegistryManager.get(request.session.db)
              with registry.cursor() as cr:
@@ -81,6 +87,8 @@ class weixin(http.Controller):
         registry = RegistryManager.get(request.session.db)
         sample = registry.get("sale.sampleone")
         user = registry.get('rhwl.weixin')
+        if content=="openid":
+            return self.replyWeiXin(fromUser,toUser,fromUser)
         if content.isalnum() and len(content)==6:
             with registry.cursor() as cr:
                 id = user.search(cr,SUPERUSER_ID,[("active",'=',True),("state","=","process"),("checkNum","=",content)])
