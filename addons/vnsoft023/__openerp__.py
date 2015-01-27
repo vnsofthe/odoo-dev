@@ -15,7 +15,7 @@ Odoo 二次开发
     'website': 'http://blog.csdn.net/vnsoft',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
     'depends': ['base','vnsoft_base', 'product','web','sale','purchase','stock'],
-    'data': ["vnsoft_view_product.xml" ],
+    'data': ["vnsoft_view_product.xml","view_vnsoft_account.xml" ],
     "qweb":[],
     'demo': [],
     'test': [],
