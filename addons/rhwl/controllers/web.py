@@ -345,6 +345,7 @@ class WebClient(http.Controller):
                     }
                     express.write(cr,uid,ids,data,context=self.CONTEXT)
                     express.action_ok(cr,uid,ids,context=self.CONTEXT)
+                    data={}
                     data['statu'] = 200
 
                     cr.commit()
