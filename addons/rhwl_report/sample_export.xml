@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Define 'ids' report -->	
+		<record id="rhwl_export_sampleone_ids" model="ir.actions.report.xml">
+			<field name="name">导出到Excel</field>
+			<field name="report_name">rhwl.export.sampleone.ids</field>
+			<field name="model">sale.sampleone</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/> 
+			<field name="rml">sample_export.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="base.model_res_partner"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">sample_export.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
+
+	</data>
+</openerp>
