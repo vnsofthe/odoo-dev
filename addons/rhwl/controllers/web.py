@@ -42,14 +42,25 @@ class WebClient(http.Controller):
             if kw:
                 data.update(kw)
                 #data = json.JSONEncoder.encode(json.loads(kw))
-            if not (data.get('Username') and data.get('Pwd')):
+            if data.get("openid",'0')=='0' and not (data.get('Username') and data.get('Pwd')):
                 res={
                     "statu":500,
                     "errtext":u"参数中无登录帐号和密码信息。"
                 }
             else:
-                DBNAME = self.get_dbname()
-                uid = request.session.authenticate(DBNAME,data.get('Username'),data.get('Pwd'))
+                if data.get("Username"):
+                    DBNAME = self.get_dbname()
+                    uid = request.session.authenticate(DBNAME,data.get('Username'),data.get('Pwd'))
+                elif data.get("openid"):
+                    registry = RegistryManager.get(request.session.db)
+                    weixin = registry.get("rhwl.weixin")
+
+                    with registry.cursor() as cr:
+                        id = weixin.search(cr,SUPERUSER_ID,[('openid','=',data.get("openid"))],context=self.CONTEXT)
+                        if id:
+                            obj= weixin.browse(cr,SUPERUSER_ID,id,context=self.CONTEXT)
+                            uid = obj.user_id.id
+
                 if uid:
                     res={"statu":200,"userid":uid,"params":data}
                 else:

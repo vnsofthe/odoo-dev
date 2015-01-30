@@ -15,6 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class weixin(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
+    HOSTNAME="http://120.24.58.11"
 
     def checkSignature(self,signature,timestamp,nonce):
         """检查是否微信官方通信请求。"""
@@ -66,6 +67,54 @@ class weixin(http.Controller):
             key = xmlstr.find("EventKey").text
             if key=="ONLINE_QUERY":
                 return self.replyWeiXin(fromUser,toUser,u"请您输入送检编号！")
+            elif key=="ONLINE_HELPER":#销售助手
+                if not self._get_userid(fromUser):
+                    return self.replyWeiXin(fromUser,toUser,"内部功能需进行授权，请与管理员联系!")
+                articles=[
+                    {
+                        "Title":"驻院助手",
+                        "Description":"用于驻院人员日常工作在线服务",
+                        "PicUrl":"/rhwl_weixin/static/img/logo.png",
+
+                    },
+                    {
+                        "Title":"结果查询",
+                        "Description":"查询医院送检样品的检验结果",
+                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
+                        "Url":"/rhwl_weixin/static/listsample.html"
+                    },
+                    {
+                        "Title":"阳性结果",
+                        "Description":"查询医院送检样品的检验结果",
+                        "PicUrl":"/rhwl_weixin/static/img/weixin-2.jpg",
+                        "Url":"/"
+                    },
+                    {
+                        "Title":"重采血",
+                        "Description":"查询医院送检样品的检验结果",
+                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
+                        "Url":"/"
+                    },
+                    {
+                        "Title":"采血包签收",
+                        "Description":"查询医院送检样品的检验结果",
+                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
+                        "Url":"/"
+                    },
+                    {
+                        "Title":"样品发送",
+                        "Description":"查询医院送检样品的检验结果",
+                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
+                        "Url":"/"
+                    },
+                    {
+                        "Title":"物流查询",
+                        "Description":"查询医院送检样品的检验结果",
+                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
+                        "Url":"/"
+                    }
+                ]
+                return self.send_photo_text(fromUser,toUser,articles)
             else:
                 return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
         else:
@@ -124,10 +173,39 @@ class weixin(http.Controller):
                     return self.replyWeiXin(fromUser,toUser,u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!")
             cr.commit()
 
+    def send_photo_text(self,toUser,fromUser,articles):
+        #发送图文消息
+        articlesxml=""
+        for i in articles:
+            itemxml=""
+            for k,v in i.items():
+                if k=="Url" or k=="PicUrl":
+                    if not v.startswith("http"): v = self.HOSTNAME+v
+                    if k=='Url':v = v+"?openid="+toUser
+
+                itemxml +="<%s><![CDATA[%s]]></%s>" %(k,v,k)
+            itemxml="<item>%s</item>" % (itemxml,)
+            articlesxml += itemxml
+
+        temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[news]]></MsgType><ArticleCount>%s</ArticleCount><Articles>%s</Articles></xml> "
+        return temp % (toUser,fromUser,time.time().__trunc__().__str__(),str(articles.__len__()),articlesxml)
+
     def replyWeiXin(self,toUser,fromUser,text):
         """微信号统一回复方法"""
         temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>"
         return temp % (toUser,fromUser,time.time().__trunc__().__str__(),text)
+
+    def _get_userid(self,openid):
+        registry = RegistryManager.get(request.session.db)
+        weixin = registry.get("rhwl.weixin")
+
+        with registry.cursor() as cr:
+            id = weixin.search(cr,SUPERUSER_ID,[('openid','=',openid)],context=self.CONTEXT)
+            if id:
+                obj= weixin.browse(cr,SUPERUSER_ID,id,context=self.CONTEXT)
+                return obj.user_id.id
+        return None
+
 
     @http.route("/web/weixin/",type="http",auth="none")
     def rhwl_weixin(self,**kw):

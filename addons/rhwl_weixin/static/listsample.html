@@ -7,73 +7,88 @@
   <meta name="keywords" content="">
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Hello Amaze UI</title>
+  <title>结果查询</title>
 
   <!-- Set render engine for 360 browser -->
   <meta name="renderer" content="webkit">
-
   <!-- No Baidu Siteapp-->
   <meta http-equiv="Cache-Control" content="no-siteapp"/>
-
   <link rel="icon" type="image/png" href="assets/i/favicon.png">
-
   <!-- Add to homescreen for Chrome on Android -->
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
-
   <!-- Add to homescreen for Safari on iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
   <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
-
   <!-- Tile icon for Win8 (144x144 + tile color) -->
   <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
   <meta name="msapplication-TileColor" content="#0e90d2">
-
   <link rel="stylesheet" href="assets/css/amazeui.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-<table id="tab" class="am-table am-table-bordered am-table-striped am-table-hover">
-    <thead>
-        <tr>
-            <th>网站名称</th>
-            <th>网址</th>
-            <th>创建时间</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr class="am-active">
-            <td>Amaze UI(Active)</td>
-            <td>http://amazeui.org</td>
-            <td>2012-10-01</td>
-        </tr>
-    </tbody>
-</table>
+<div class="am-panel-group" id="accordion">
 
+</div>
 <!--在这里编写你的代码-->
-
 <!--[if (gte IE 9)|!(IE)]><!-->
 <script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
 <!--<![endif]-->
 <!--[if lte IE 8 ]>
 <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
 <![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
 <script>
   $(function() {
-    $('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/api/hospital/",
+		  url: "/web/crmapp/result/?openid="+$.getUrlVar('openid'),
 		  data: {},
 		  success: function(data){
               $.each(data,function(k,v){
-                  console.log(typeof k);
-                  console.log(typeof v);
+                  if(k>0){
+
+                          $('#accordion').append(
+                          '<div class="am-panel am-panel-default">' +
+                          ' <div class="am-panel-hd">'+
+                                '<h4 class="am-panel-title" data-am-collapse="{parent: \'#accordion\', target: \'#'+ v.time+'\'}">采血时间：'+
+                                  v.time +
+                                '</h4>'+
+                            '</div>' +
+                            '<div id="'+ v.time+'" class="am-panel-collapse am-collapse">'+
+                                '<div class="am-panel-bd">'+
+                                     '<table id="'+ v.time+'-tab" class="am-table am-table-bordered am-table-striped am-table-hover">'+
+                                        '<thead>'+
+                                            '<tr>'+
+                                                '<th>样品编码</th>'+
+                                                '<th>姓名</th>'+
+                                                '<th>目前状态</th>'+
+                                            '</tr>'+
+                                        '</thead>'+
+                                        '<tbody>'+
+                                        '</tbody>'+
+                                    '</table>'+
+                                 '</div>'+
+                              '</div>'+
+                           '</div>'
+                          );
+
+                      $.each(v.datas,function(t,s){
+                            var classstr="";
+                            if(s.status=="检验结果阳性" || s.status=="需重采血"){
+                                classstr="class='am-danger'";
+                            }
+                           $('#'+ v.time+'-tab').find('tbody').append('<tr '+classstr+'><td>'+ s.code+'</td><td>'+ s.name+'</td><td>'+ s.status+'</td></tr>');
+                      });
+                  }
               });
-		  },
+		  }
 		});
+     $('#accordion').collapse("close");
   });
 </script>
 </body>
