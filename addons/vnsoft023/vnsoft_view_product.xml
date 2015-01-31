@@ -58,6 +58,10 @@
                 <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="before">
                    <field name="brand" />
                 </xpath>
+                <xpath expr="//field[@name='minimum_planned_date']" position="after">
+                    <field name="vn_delay"/>
+                </xpath>
+
             </field>
         </record>
         <record id="vnsoft023_view_stock_move_tree" model="ir.ui.view">

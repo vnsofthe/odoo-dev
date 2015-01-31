@@ -30,7 +30,14 @@
 </head>
 <body>
 <div class="am-panel-group" id="accordion">
+    <div class="am-input-group">
 
+      <input type="text" class="am-form-field am-close" placeholder="请输入姓名或ID查询"/>
+         <span class="am-input-group-btn">
+        <button class="am-btn am-btn-default" type="button"><span class="am-icon-search"></span> </button>
+      </span>
+    </div>
+    <hr data-am-widget="divider" style="" class="am-divider am-divider-default"/>
 </div>
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -51,12 +58,11 @@
 		  success: function(data){
               $.each(data,function(k,v){
                   if(k>0){
-
                           $('#accordion').append(
                           '<div class="am-panel am-panel-default">' +
                           ' <div class="am-panel-hd">'+
                                 '<h4 class="am-panel-title" data-am-collapse="{parent: \'#accordion\', target: \'#'+ v.time+'\'}">采血时间：'+
-                                  v.time +
+                                  v.time +' <span id="round_'+ v.time + '" class="am-badge am-badge-danger am-round"></span>'+
                                 '</h4>'+
                             '</div>' +
                             '<div id="'+ v.time+'" class="am-panel-collapse am-collapse">'+
@@ -76,14 +82,18 @@
                               '</div>'+
                            '</div>'
                           );
-
+                       var round_count=0;
                       $.each(v.datas,function(t,s){
                             var classstr="";
                             if(s.status=="检验结果阳性" || s.status=="需重采血"){
-                                classstr="class='am-danger'";
+                                classstr='class="am-danger"';
+                                round_count++;
                             }
                            $('#'+ v.time+'-tab').find('tbody').append('<tr '+classstr+'><td>'+ s.code+'</td><td>'+ s.name+'</td><td>'+ s.status+'</td></tr>');
                       });
+                      $('#round_'+ v.time).text(round_count);
+                  }else{
+                      $('#accordion').append('<div>异常样品数：<span class="am-badge am-badge-danger am-round">'+v.exception+'</span></div>');
                   }
               });
 		  }

@@ -16,5 +16,18 @@
 			<field name="pentaho_load_file" eval="True"/>
 		</record>
 
+        <record id="vnsoft023_purchase_order_ids" model="ir.actions.report.xml">
+			<field name="name">打印采购合同</field>
+			<field name="report_name">vnsoft023.purchase.order.ids</field>
+			<field name="model">purchase.order</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+            <field name="report_type">pentaho</field>
+			<field name="rml">vnsoft023/report/purchase_order.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="purchase.model_purchase_order"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">vnsoft023/report/purchase_order.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
 	</data>
 </openerp>
