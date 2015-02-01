@@ -32,12 +32,50 @@
 <div class="am-panel-group" id="accordion">
     <div class="am-input-group">
 
-      <input type="text" class="am-form-field am-close" placeholder="请输入姓名或ID查询"/>
+      <input type="text" class="am-form-field am-close" placeholder="请输入姓名或ID查询" id="search-text"/>
          <span class="am-input-group-btn">
-        <button class="am-btn am-btn-default" type="button"><span class="am-icon-search"></span> </button>
+        <button class="am-btn am-btn-default" id="query" type="button"><span class="am-icon-search"></span> </button>
       </span>
     </div>
     <hr data-am-widget="divider" style="" class="am-divider am-divider-default"/>
+</div>
+<div class="am-modal am-modal-no-btn am-animation-slide-right" tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd am-topbar-inverse">样品详细信息
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+    </div>
+
+    <div class="am-modal-bd">
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right" >姓名:</div>
+          <div id="pregnantWomanName" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">样品编号:</div>
+          <div id="pregnantWomanID" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">采血日期:</div>
+          <div id="takeBloodTime" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">孕周:</div>
+          <div id="gestationalWeeks" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">手机号码:</div>
+          <div id="phoneNumber" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">紧急联系人:</div>
+          <div id="emergencyCall" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">样品状态:</div>
+          <div id="state" class="am-u-sm-6 am-text-left"></div>
+        </div>
+     </div>
+  </div>
 </div>
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -91,14 +129,99 @@
                             }
                            $('#'+ v.time+'-tab').find('tbody').append('<tr '+classstr+'><td>'+ s.code+'</td><td>'+ s.name+'</td><td>'+ s.status+'</td></tr>');
                       });
-                      $('#round_'+ v.time).text(round_count);
+                      $("#"+ v.time+'-tab tbody tr').bind("click",function(e){
+                               $.ajax({
+                                      type: 'POST',
+                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
+                                      data: {},
+                                      success: function(data){
+                                          $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget":data});
+                                      }
+                                    });
+                               //window.open("/rhwl_weixin/static/woman.html?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent);
+                               //location="/rhwl_weixin/static/woman.html?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent;
+                           });
+                      if(round_count>0){$('#round_'+ v.time).text(round_count);}
                   }else{
                       $('#accordion').append('<div>异常样品数：<span class="am-badge am-badge-danger am-round">'+v.exception+'</span></div>');
                   }
               });
 		  }
 		});
+      $('#doc-modal-1').bind('open.modal.amui',
+                                function(e){
+                                    $.each(e.relatedTarget,
+                                            function(k,v){
+                                                $("#"+k).text(v);
+                                            });
+                                });
+
      $('#accordion').collapse("close");
+
+    $('#query').bind("click",function(){
+         var val = $('#search-text').val();
+         if(val.trim()==""){
+             alert("请输入查询条件");
+             return false;
+         }else{
+             var accordion = $("#accordion");
+            accordion.find(".am-panel").remove();
+            accordion.find(".am-round").parent().remove();
+            $.ajax({
+                  type: 'POST',
+                  url: "/web/crmapp/result/?openid="+$.getUrlVar('openid')+"&name="+val,
+                  data: {},
+                  success: function(data){
+                       $('#accordion').append(
+                          '<div class="am-panel am-panel-default">' +
+                          ' <div class="am-panel-hd">'+
+                                '<h4 class="am-panel-title" data-am-collapse="{parent: \'#accordion\', target: \'#query_result\'}">查询结果'+
+                                '</h4>'+
+                            '</div>' +
+                            '<div id="query_result" class="am-panel-collapse am-collapse am-in">'+
+                                '<div class="am-panel-bd">'+
+                                     '<table id="query-tab" class="am-table am-table-bordered am-table-striped am-table-hover">'+
+                                        '<thead>'+
+                                            '<tr>'+
+                                                '<th>样品编码</th>'+
+                                                '<th>姓名</th>'+
+                                                '<th>目前状态</th>'+
+                                                '<th>采血时间</th>'+
+                                            '</tr>'+
+                                        '</thead>'+
+                                        '<tbody>'+
+                                        '</tbody>'+
+                                    '</table>'+
+                                 '</div>'+
+                              '</div>'+
+                           '</div>'
+                          );
+
+                      $.each(data,function(t,s){
+                            var classstr="";
+                            if(s.status=="检验结果阳性" || s.status=="需重采血"){
+                                classstr='class="am-danger"';
+                            }
+                          console.log(s);
+                           $('#query-tab').find('tbody').append('<tr '+classstr+'><td>'+ s.code+'</td><td>'+ s.name+'</td><td>'+ s.status+'</td><td>'+ s.time+'</td></tr>');
+                      });
+                      $("#query-tab tbody tr").bind("click",function(e){
+                               $.ajax({
+                                      type: 'POST',
+                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
+                                      data: {},
+                                      success: function(data){
+                                          $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget":data});
+                                      }
+                                    });
+                               //window.open("/rhwl_weixin/static/woman.html?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent);
+                               //location="/rhwl_weixin/static/woman.html?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent;
+                           });
+                      $('#accordion').collapse("open");
+                  }
+            });
+
+         }});
   });
 </script>
 </body>

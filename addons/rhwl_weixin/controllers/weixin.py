@@ -56,7 +56,7 @@ class weixin(http.Controller):
             registry = RegistryManager.get(request.session.db)
             with registry.cursor() as cr:
                 user = registry.get('rhwl.weixin')
-                id = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser)],context=self.CONTEXT)
+                id = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser),('active','=',False)],context=self.CONTEXT)
                 if id:
                     user.write(cr,SUPERUSER_ID,id,{"active":True},context=self.CONTEXT)
                 else:

@@ -1,0 +1,90 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>样品信息</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div id="accordion">
+    <div class="am-g">
+      <div class="am-u-sm-4">姓名</div>
+      <div id="pregnantWomanName" class="am-u-sm-8"></div>
+    </div>
+    <div class="am-g">
+      <div class="am-u-sm-4">样品编号</div>
+      <div id="pregnantWomanID" class="am-u-sm-8"></div>
+    </div>
+    <div class="am-g">
+      <div class="am-u-sm-4">采血日期</div>
+      <div id="takeBloodTime" class="am-u-sm-8"></div>
+    </div>
+    <div class="am-g">
+      <div class="am-u-sm-4">孕周</div>
+      <div id="gestationalWeeks" class="am-u-sm-8"></div>
+    </div>
+    <div class="am-g">
+      <div class="am-u-sm-4">手机号码</div>
+      <div id="phoneNumber" class="am-u-sm-8"></div>
+    </div>
+    <div class="am-g">
+      <div class="am-u-sm-4">紧急联系人</div>
+      <div id="emergencyCall" class="am-u-sm-8"></div>
+    </div>
+    <div class="am-g">
+      <div class="am-u-sm-4">样品状态</div>
+      <div id="state" class="am-u-sm-8"></div>
+    </div>
+</div>
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+	$.ajax({
+		  type: 'POST',
+		  url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ $.getUrlVar('pregnantWomanID'),
+		  data: {},
+		  success: function(data){
+              console.log(data);
+              $.each(data,function(k,v){
+                console.log(k);
+                  $("#"+k).text(v);
+              });
+		  }
+		});
+     $('#accordion').collapse("close");
+  });
+</script>
+</body>
+</html>
