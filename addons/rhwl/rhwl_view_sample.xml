@@ -268,13 +268,19 @@
                                 </group>
                             </page>
                             <page string="实验历程">
-                                <field name="lims">
-                                    <tree>
-                                        <field name="timestr"/>
-                                        <field name="stat"/>
-                                        <field name="note"/>
-                                    </tree>
-                                 </field>
+                                <group>
+                                    <field name="lib_t13"/>
+                                    <field name="lib_t18"/>
+                                    <field name="lib_t21"/>
+                                    <field name="lims">
+                                        <tree>
+                                            <field name="timestr"/>
+                                            <field name="stat"/>
+                                            <field name="note"/>
+                                        </tree>
+                                     </field>
+                                </group>
+
                             </page>
                             <page string="备注">
                                 <field name="note"/>

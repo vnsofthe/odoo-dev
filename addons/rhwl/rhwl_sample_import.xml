@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_sale_sampleone_import_wizard" model="ir.ui.view">
+            <field name="name">UpLoad Report</field>
+            <field name="model">sale.sampleone.import.report</field>
+            <field name="arch" type="xml">
+                <form string="Parameters">
+                    <group>
+                        <field name="file_bin"/>
+                    </group>
+                    <footer>
+                        <button name="import_report" string="导入" type="object"  class="oe_highlight"  />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sale_sampleone_import_report" model="ir.actions.act_window">
+            <field name="name">Import Sample Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.sampleone.import.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem action="action_sale_sampleone_import_report" id="menu_sampleone_import" parent="base.menu_sales" groups="base.group_no_one"/>
+    </data>
+</openerp>

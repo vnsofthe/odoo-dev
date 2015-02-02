@@ -127,6 +127,9 @@ class rhwl_sample_info(osv.osv):
         "lims":fields.one2many("sale.sampleone.lims","name",readonly=True),
         "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True),
         "library_date":fields.date(u"实验结果时间"),
+        "lib_t13":fields.float("T13",digits=(9,4),readonly=True),
+        "lib_t18":fields.float("T18",digits=(9,4),readonly=True),
+        "lib_t21":fields.float("T21",digits=(9,4),readonly=True),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",

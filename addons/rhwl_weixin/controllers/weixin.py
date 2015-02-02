@@ -117,7 +117,7 @@ class weixin(http.Controller):
                 return self.send_photo_text(fromUser,toUser,articles)
             else:
                 return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
-        else:
+        elif Event=="unsubscribe":
              registry = RegistryManager.get(request.session.db)
              with registry.cursor() as cr:
                 user = registry.get('rhwl.weixin')
