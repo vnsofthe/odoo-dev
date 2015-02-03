@@ -17,7 +17,8 @@
     'depends': ['rhwl','vnsoft_base'],
     'data': [
         "view_weixin.xml",
-        "view_weixin_base.xml"
+        "view_weixin_base.xml",
+        "view_weixin_menu.xml"
     ],
     "qweb":[],
     'demo': [],

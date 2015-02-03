@@ -33,14 +33,9 @@
                                 <field name="name"/>
                                 <field name="date"/>
                                 <field name="user_id"/>
-
-
                                     <field name="product_from"/>
                                     <field name="location_from"/>
                                     <field name="from_qty"/>
-
-
-
                             </group>
                             <group>
 

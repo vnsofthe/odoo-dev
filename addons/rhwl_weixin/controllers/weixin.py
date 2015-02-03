@@ -8,14 +8,14 @@ from openerp.modules.registry import RegistryManager
 from openerp import SUPERUSER_ID
 import time
 import random
-import datetime
+import datetime,json
 from openerp.addons.rhwl import rhwl_sms,rhwl_sale
 import logging
 _logger = logging.getLogger(__name__)
 
 class weixin(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
-    HOSTNAME="http://120.24.58.11"
+    HOSTNAME="http://www.vnsoft.cn"
 
     def checkSignature(self,signature,timestamp,nonce):
         """检查是否微信官方通信请求。"""
@@ -217,3 +217,31 @@ class weixin(http.Controller):
                 return 'Signature Error.'
 
         return self.msgProcess(request.httprequest.data)
+
+    @http.route("/web/weixin/jsapi/",type="http",auth="public")
+    def rhwl_weixin_jsapi(self,**kw):
+        para={}
+        if request.httprequest.data:
+            para = eval(request.httprequest.data)
+        if kw:
+            para.update(kw)
+        url=para.get("url","").encode('utf-8')
+
+        s='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        noncestr=''.join([s[random.randrange(0,s.__len__()-1)] for i in range(1,21)])
+        timestamp=time.time().__trunc__().__str__()
+
+        registry = RegistryManager.get(request.session.db)
+        with registry.cursor() as cr:
+            b = registry.get('rhwl.weixin.base')
+            jsapi_ticket= b._get_ticket(cr,SUPERUSER_ID,self.CONTEXT)
+        str = "jsapi_ticket="+jsapi_ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url
+        sha = hashlib.sha1(str)
+        s = sha.hexdigest()
+        data={
+            "noncestr":noncestr,
+            "timestamp":timestamp,
+            "signature":s
+        }
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
