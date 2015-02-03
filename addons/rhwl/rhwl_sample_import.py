@@ -50,19 +50,18 @@ class rhwl_import(osv.osv_memory):
             b=this.file_bin.decode('base64')
             f.write(b)
             f.close()
-            print xlsname+".xls"
-            bk = xlrd.open_workbook(xlsname+".xls")
+
             try:
+                bk = xlrd.open_workbook(xlsname+".xls")
                 sh = bk.sheet_by_index(0)
             except:
-                print "no sheet in Sheet1"
-                return None
+               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
             nrows = sh.nrows
             ncols = sh.ncols
             for i in range(2,nrows+1):
-                ids = self.pool.get("sale.sampleone").search(cr,uid,[("name","=",sh.cell_value(i-1,0))])
+                ids = self.pool.get("sale.sampleone").search(cr,uid,[("name","=",sh.cell_value(i-1,0)),("state","=","done")])
                 if not ids:
-                    raise osv.except_osv(u"接收检测结果出错",u"样品编号[%s]在系统中不存在。" %(sh.cell_value(i-1,0),))
+                    raise osv.except_osv(u"接收检测结果出错",u"样品编号[%s]在系统中不是待检状态或不存在。" %(sh.cell_value(i-1,0),))
                 t13 = sh.cell_value(i-1,1)
                 t18 = sh.cell_value(i-1,2)
                 t21 = sh.cell_value(i-1,3)
@@ -73,6 +72,6 @@ class rhwl_import(osv.osv_memory):
                     self.pool.get("sale.sampleone").action_check_except(cr,uid,ids,context=context)
 
         finally:
-            fileobj.close()
             f.close()
+            os.remove(xlsname+'.xls')
         return True

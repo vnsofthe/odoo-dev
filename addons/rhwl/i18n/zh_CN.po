@@ -49,3 +49,9 @@ msgstr "今年"
 #: view:rhwl.sample.report:rhwl.view_rhwl_sample_report_search
 msgid "This Month"
 msgstr "本月"
+
+#. module: rhwl
+#: model:ir.ui.menu,name:rhwl.menu_sampleone_import
+#: model:ir.actions.act_window,name:rhwl.action_sale_sampleone_import_report
+msgid "Import Sample Report"
+msgstr "接收实验报告"
