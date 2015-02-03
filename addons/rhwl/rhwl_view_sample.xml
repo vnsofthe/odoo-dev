@@ -90,11 +90,11 @@
                                 groups="base.group_user" class="oe_highlight"/>
                         <button name="action_get_library" states="done" string="接收实验室结果" type="object"
                                 groups="base.group_user"/>
-                        <button name="action_check_ok" string="检验结果正常" type="object" attrs="{'invisible':[('check_state','not in',('library','pc','get'))]}"
+                        <button name="action_check_ok" string="检验结果正常" type="object" attrs="{'invisible':[('state','!=','done')]}"
                                 groups="base.group_user"/>
-                        <button name="action_check_reused"  string="需重采血" type="object" attrs="{'invisible':[('check_state','not in',('library','pc','get'))]}"
+                        <button name="action_check_reused"  string="需重采血" type="object" attrs="{'invisible':[('state','!=','done')]}"
                                 groups="base.group_user" class="oe_highlight"/>
-                        <button name="action_check_except"  string="检验结果阳性" type="object" attrs="{'invisible':[('check_state','not in',('library','pc','get'))]}"
+                        <button name="action_check_except"  string="检验结果阳性" type="object" attrs="{'invisible':[('state','!=','done')]}"
                                 groups="base.group_user" class="oe_highlight"/>
                         <button name="action_sms" string="短信通知" type="object" attrs="{'invisible':[('check_state','not in',('ok','reuse','except'))]}"
                                 groups="base.group_user"/>
@@ -124,10 +124,10 @@
                                 <field name="receiv_user"/>
                                 <field name="state_id"/>
                                 <field name="city_id"/>
-                                <field name="lyyy" on_change="onchange_lyyy()"/>
-                                <field name="lyys" on_change="onchange_ys(lyyy,cxyy,lyys,'cxys')"/>
-                                <field name="cxyy" on_change="onchange_cxyy(lyyy,cxyy)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
-                                <field name="cxys" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
+                                <field name="lyyy" options="{'no_open': True, 'no_create': True}" on_change="onchange_lyyy()"/>
+                                <field name="lyys" options="{'no_open': True, 'no_create': True}" on_change="onchange_ys(lyyy,cxyy,lyys,'cxys')"/>
+                                <field name="cxyy" options="{'no_open': True, 'no_create': True}" on_change="onchange_cxyy(lyyy,cxyy)" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
+                                <field name="cxys" options="{'no_open': True, 'no_create': True}" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="fzr"/>
                                 <field name="hospital_seq"/>
                             </group>
