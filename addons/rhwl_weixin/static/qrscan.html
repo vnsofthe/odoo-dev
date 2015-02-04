@@ -7,7 +7,7 @@
   <meta name="keywords" content="">
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>扫描测试</title>
+  <title>样品发货</title>
 
   <!-- Set render engine for 360 browser -->
   <meta name="renderer" content="webkit">
@@ -29,8 +29,18 @@
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-<input id="scantext" type="text"/>
-<button id="scanbtn">Scan</button>
+<div>
+    <div class="am-input-group">
+        <input id="scantext" type="text" placeholder="快递单号" />
+        <button id="scanbtn" class="am-btn am-btn-primary am-round am-btn-xs">扫描</button>
+    </div>
+    <div>
+
+    </div>
+        <button id="btn_add" class="am-btn am-btn-warning am-round">添加样品</button>
+        <button id="btn_submit" class="am-btn  am-btn-success am-round">上传快递单</button>
+    </div>
+
 <div id="lists">
 
 </div>
@@ -55,28 +65,31 @@
 		  data: {"url":location.href.split('#')[0]},
 		  success: function(data){
               wx.config({
-                    debug: true,
+                    debug: false,
                     appId: 'wx4c30a421cfb8be51',
                     timestamp: data.timestamp,
                     nonceStr: data.noncestr,
                     signature: data.signature,
                     jsApiList: ['scanQRCode']
                 });
-               console.log(data);
 		  }
 		});
-    $("#scanbtn").bind("click",function(e){ scan(); });
+    $("#scanbtn").bind("click",function(e){
+        var t=scan();
+        if (t!=undefined){
+            $("#scantext").val(t.split(",")[1]);
+        }
+    });
     function scan(){
             wx.scanQRCode({
                 needResult: 1,
-                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                scanType: ["barCode"], // 可以指定扫二维码还是一维码，默认二者都有
                 success: function (res) {
                             var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
                             if(result==undefined){
                                 return;
                             }else{
-                                $("#lists").append("<h3>"+result+"</h3>");
-                                scan();
+                                return result;
                             }
                          },
                 fail:function(res){

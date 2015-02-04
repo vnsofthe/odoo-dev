@@ -62,7 +62,7 @@ class weixin(http.Controller):
                 else:
                     user.create(cr,SUPERUSER_ID,{'openid':fromUser,'active':True,'state':'draft'},context=self.CONTEXT)
                 cr.commit()
-            return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(长沙)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
+            return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(北京)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
         elif Event=="CLICK":
             key = xmlstr.find("EventKey").text
             if key=="ONLINE_QUERY":
