@@ -150,7 +150,9 @@ class rhwl_usermenu(osv.osv):
         "key":fields.char("Key"),
         "url":fields.char("URL"),
         "details":fields.one2many("rhwl.weixin.usermenu2","parent","Detail"),
+        "seq":fields.integer("Seq"),
     }
+    _order = "seq asc"
 
 class rhwl_usermenu2(osv.osv):
     _name = "rhwl.weixin.usermenu2"
@@ -159,7 +161,23 @@ class rhwl_usermenu2(osv.osv):
         "name":fields.char("Name"),
         "key":fields.char("Key"),
         "url":fields.char("URL"),
+        "need_user":fields.boolean("Need UserID"),
         "parent":fields.many2one("rhwl.weixin.usermenu","Parent"),
+        "htmlmsg":fields.one2many("rhwl.weixin.htmlmsg","menu","HtmlMsg"),
+        "seq":fields.integer("Seq"),
     }
+    _order = "seq asc"
+
+class rhwl_htmlmsg(osv.osv):
+    _name = "rhwl.weixin.htmlmsg"
+    _columns={
+        "menu":fields.many2one("rhwl.weixin.usermenu2","Menu"),
+        "title":fields.char("Title"),
+        "description":fields.char("Description"),
+        "picurl":fields.char("PicUrl"),
+        "url":fields.char("Url"),
+        "seq":fields.integer("Seq"),
+    }
+    _order = "menu,seq asc"
 #AppID(应用ID)wx4c30a421cfb8be51
 #AppSecret(应用密钥)d33521e37f782bfcda0373faf0ae2ba8 隐藏 重置

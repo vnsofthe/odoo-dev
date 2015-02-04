@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_weixin_htmlmsg_tree">
+            <field name="name">rhwl.weixin.htmlmsg.tree</field>
+            <field name="model">rhwl.weixin.htmlmsg</field>
+            <field name="arch" type="xml">
+                <tree string="WeiXin">
+                    <field name="menu"/>
+                     <field name="seq"/>
+                    <field name="title"/>
+                    <field name="description"/>
+                    <field name="picurl"/>
+                    <field name="url"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_weixin_htmlmsg_form">
+            <field name="name">rhwl.weixin.htmlmsg.form</field>
+            <field name="model">rhwl.weixin.htmlmsg</field>
+            <field name="arch" type="xml">
+                <form string="WeiXin">
+                    <sheet>
+                        <group colspan="8">
+                                <field name="menu"/>
+                             <field name="seq"/>
+                            <field name="title"/>
+                            <field name="description"/>
+                            <field name="picurl"/>
+                            <field name="url"/>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_weixin_htmlmsg_search">
+            <field name="name">rhwl.weixin.htmlmsg.search</field>
+            <field name="model">rhwl.weixin.htmlmsg</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+
+                </search>
+            </field>
+        </record>
+        <record id="action_rhwl_weixin_htmlmsg" model="ir.actions.act_window">
+            <field name="name">微信图文消息菜单</field>
+            <field name="res_model">rhwl.weixin.htmlmsg</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_weixin_htmlmsg" parent="menu_weixin_first" name="图文消息菜单" sequence="25"
+                  action='action_rhwl_weixin_htmlmsg' />
+    </data>
+</openerp>

@@ -67,56 +67,15 @@ class weixin(http.Controller):
             key = xmlstr.find("EventKey").text
             if key=="ONLINE_QUERY":
                 return self.replyWeiXin(fromUser,toUser,u"请您输入送检编号！")
-            elif key=="ONLINE_HELPER":#销售助手
-                if not self._get_userid(fromUser):
-                    return self.replyWeiXin(fromUser,toUser,"内部功能需进行授权，请与管理员联系!")
-                articles=[
-                    {
-                        "Title":"驻院助手",
-                        "Description":"用于驻院人员日常工作在线服务",
-                        "PicUrl":"/rhwl_weixin/static/img/logo.png",
-
-                    },
-                    {
-                        "Title":"结果查询",
-                        "Description":"查询医院送检样品的检验结果",
-                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
-                        "Url":"/rhwl_weixin/static/listsample.html"
-                    },
-                    {
-                        "Title":"阳性结果",
-                        "Description":"查询医院送检样品的检验结果",
-                        "PicUrl":"/rhwl_weixin/static/img/weixin-2.jpg",
-                        "Url":"/"
-                    },
-                    {
-                        "Title":"重采血",
-                        "Description":"查询医院送检样品的检验结果",
-                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
-                        "Url":"/"
-                    },
-                    {
-                        "Title":"采血包签收",
-                        "Description":"查询医院送检样品的检验结果",
-                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
-                        "Url":"/"
-                    },
-                    {
-                        "Title":"样品发送",
-                        "Description":"查询医院送检样品的检验结果",
-                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
-                        "Url":"/"
-                    },
-                    {
-                        "Title":"物流查询",
-                        "Description":"查询医院送检样品的检验结果",
-                        "PicUrl":"/rhwl_weixin/static/img/weixin-1.jpg",
-                        "Url":"/"
-                    }
-                ]
-                return self.send_photo_text(fromUser,toUser,articles)
             else:
-                return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
+                articles=self._get_htmlmsg(key)
+                if articles[0]:
+                    if not self._get_userid(fromUser):
+                        return self.replyWeiXin(fromUser,toUser,"内部功能需进行授权，请与管理员联系!")
+                if articles[1]:
+                    return self.send_photo_text(fromUser,toUser,articles[1])
+                else:
+                    return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
         elif Event=="unsubscribe":
              registry = RegistryManager.get(request.session.db)
              with registry.cursor() as cr:
@@ -206,6 +165,32 @@ class weixin(http.Controller):
                 return obj.user_id.id
         return None
 
+    def _get_htmlmsg(self,key):
+        registry = RegistryManager.get(request.session.db)
+        msg = registry.get("rhwl.weixin.usermenu2")
+        with registry.cursor() as cr:
+            id = msg.search(cr,SUPERUSER_ID,[("key","=",key)])
+            if not id:
+                return (False,None)
+            obj = msg.browse(cr,SUPERUSER_ID,id)
+            if not obj.htmlmsg:
+                return (obj.need_user,None)
+            articles=[]
+            for j in obj.htmlmsg:
+                if j.url:
+                    articles.append({
+                        "Title":j.title.encode("utf-8"),
+                        "Description":j.description.encode("utf-8"),
+                        "PicUrl":j.picurl.encode("utf-8"),
+                        "Url":j.url and j.url.encode("utf-8") or ""
+                    })
+                else:
+                    articles.append({
+                        "Title":j.title.encode("utf-8"),
+                        "Description":j.description.encode("utf-8"),
+                        "PicUrl":j.picurl.encode("utf-8"),
+                    })
+            return (obj.need_user,articles)
 
     @http.route("/web/weixin/",type="http",auth="none")
     def rhwl_weixin(self,**kw):
