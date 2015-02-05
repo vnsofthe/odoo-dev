@@ -29,6 +29,7 @@ from openerp.osv import osv,fields
 import base64
 from tempfile import NamedTemporaryFile
 import xlrd,os
+import datetime
 
 class rhwl_import(osv.osv_memory):
     _name = 'sale.sampleone.import.report'
@@ -59,13 +60,16 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             for i in range(2,nrows+1):
+                if not sh.cell_value(i-1,0):continue
                 ids = self.pool.get("sale.sampleone").search(cr,uid,[("name","=",sh.cell_value(i-1,0)),("state","=","done")])
                 if not ids:
                     raise osv.except_osv(u"接收检测结果出错",u"样品编号[%s]在系统中不是待检状态或不存在。" %(sh.cell_value(i-1,0),))
+                lims_id = self.pool.get("sale.sampleone.lims").create(cr,uid,{"name":ids[0],"timestr":fields.datetime.now()+datetime.timedelta(hours=8),"stat":u"接收结果","note":""},context=context)
+
                 t13 = sh.cell_value(i-1,1)
                 t18 = sh.cell_value(i-1,2)
                 t21 = sh.cell_value(i-1,3)
-                self.pool.get("sale.sampleone").write(cr,uid,ids,{"lib_t13":t13,"lib_t18":t18,"lib_t21":t21})
+                self.pool.get("sale.sampleone").write(cr,uid,ids,{"lib_t13":t13,"lib_t18":t18,"lib_t21":t21,"lims":[[4,lims_id]]},context=context)
                 if t13<3 and t13>-3 and t18<3 and t18>-3 and t21<3 and t21>-3:
                     self.pool.get("sale.sampleone").action_check_ok(cr,uid,ids,context=context)
                 else:

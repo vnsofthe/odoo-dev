@@ -219,6 +219,8 @@ class weixin(http.Controller):
         registry = RegistryManager.get(request.session.db)
         with registry.cursor() as cr:
             b = registry.get('rhwl.weixin.base')
+            ids =b.search(cr,SUPERUSER_ID,[],limit=1)
+            appid = b.browse(cr,SUPERUSER_ID,ids).appid
             jsapi_ticket= b._get_ticket(cr,SUPERUSER_ID,self.CONTEXT)
         str = "jsapi_ticket="+jsapi_ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url
         sha = hashlib.sha1(str)
@@ -226,7 +228,8 @@ class weixin(http.Controller):
         data={
             "noncestr":noncestr,
             "timestamp":timestamp,
-            "signature":s
+            "signature":s,
+            "appid":appid
         }
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
