@@ -35,7 +35,7 @@
         <button id="scanbtn" class="am-btn am-btn-primary am-round am-btn-xs">扫描快递单号</button>
     </div>
     <div class="am-form-field">
-        <table id="lists" class="am-table">
+        <table id="lists" class="am-table am-table-striped am-table-hover">
             <thead>
                 <tr>
                     <td>新样品代号</td>
@@ -44,7 +44,7 @@
                 </tr>
             </thead>
             <tbody>
-
+                <tr><td>5432543</td><td>fdsfs<td><button type="button" class="am-close">&times;</button></td></tr>
             </tbody>
         </table>
     </div>
@@ -85,6 +85,10 @@
                 });
 		  }
 		});
+    $("#lists tbody tr td button").bind("click",function(e){
+        console.log(e);
+        e.target.parentElement.parentElement.remove();
+    });
     $("#scanbtn").bind("click",function(e){
         scan(set_text,false);
     });
@@ -99,7 +103,7 @@
         if(lst==undefined){
             lst=new Array();
         }
-        console.log(lst);
+
         lst = lst.concat(new Array({first:t.split(",")[1],second:""}));
         store.set('lists',lst);
         $("#lists tbody").append("<tr><td>"+ t.split(",")[1]+"</td><td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
@@ -109,7 +113,7 @@
         if(lst==undefined){
             lst=new Array();
         }
-        alert(lst);
+
         for(i=0;i<lst.length;i++){
             $("#lists tbody").append("<tr><td>"+ lst[i].first+"</td><td>"+lst[i].second+"</td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
         }
