@@ -44,7 +44,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>5432543</td><td>fdsfs<td><button type="button" class="am-close">&times;</button></td></tr>
+
             </tbody>
         </table>
     </div>
@@ -52,9 +52,29 @@
         <button id="btn_add" class="am-btn am-btn-warning am-round">添加样品</button>
         <button id="btn_submit" class="am-btn  am-btn-success am-round">提交快递单</button>
     </div>
-
  </div>
+<div class="am-modal am-modal-no-btn am-animation-slide-right" tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd am-topbar-inverse">需重采血样品
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close><h3 style="font-size:200%">&times;</h3></a>
+    </div>
 
+    <div class="am-modal-bd">
+        <table id="reuse" class="am-table am-table-striped am-table-hover">
+            <thead>
+                <tr>
+                    <td>样品编码</td>
+                    <td>姓名</td>
+                    <td>采血时间</td>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+     </div>
+  </div>
+</div>
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
 <script src="assets/js/jquery.min.js"></script>
@@ -85,19 +105,49 @@
                 });
 		  }
 		});
-    $("#lists tbody tr td button").bind("click",function(e){
-        console.log(e);
-        e.target.parentElement.parentElement.remove();
+    $("#lists tbody").on("click","tr",function(e){
+        if(e.target.className=="am-close"&& (e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") ){
+            $(e.currentTarget).remove();
+        }else if((e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") && e.target.innerText=="关联"){
+            $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget": e.target.parentElement});
+        }else if((e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") && e.target.innerText=="删除"){
+            e.target.parentElement.innerHTML="<buton type=\"button\" class=\"am-btn-link am-btn-xs\">关联</buton>"
+        }
+        //
+    });
+    $('#doc-modal-1').bind('open.modal.amui',
+        function(e){
+            this.relatedTarget = e.relatedTarget;
+            $("#reuse tbody tr").remove();
+           $.ajax({
+              type: 'POST',
+              url: "/web/crmapp/reuse/?openid="+$.getUrlVar('openid'),
+              data: "",
+              success: function(data){
+                  $.each(data,function(k,v){
+                      $("#reuse tbody").append("<tr><td>"+ v.id+"</td><td>"+ v.name+"</td><td>"+ v.time+"</td></td></tr>");
+                  });
+              }
+            });
+        }
+    );
+    $("#reuse tbody").on("click","tr",function(e){
+        var val = e.currentTarget.children[0].textContent;
+        e.currentTarget.parentElement.parentElement.parentElement.parentElement.parentElement.relatedTarget.innerHTML=val+" <buton type=\"button\" class=\"am-btn-link am-btn-xs\">删除</buton>";
+        $('#doc-modal-1').modal("close");
     });
     $("#scanbtn").bind("click",function(e){
         scan(set_text,false);
     });
     $("#btn_add").bind("click",function(e){
         scan(set_lists,true);
+
     })
+    //设置快递单扫码结果
     function set_text(t){
         $("#scantext").val(t.split(",")[1]);
     }
+    //设置样品扫码结果
     function set_lists(t){
         var lst = store.get('lists');
         if(lst==undefined){
@@ -106,8 +156,9 @@
 
         lst = lst.concat(new Array({first:t.split(",")[1],second:""}));
         store.set('lists',lst);
-        $("#lists tbody").append("<tr><td>"+ t.split(",")[1]+"</td><td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
+        $("#lists tbody").append("<tr><td>"+ t.split(",")[1]+"</td><td><buton type=\"button\" class=\"am-btn-link am-btn-xs\">关联</buton><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
     }
+    //根据本地存储初始化列表内容
     function init_lists(){
          lst = store.get('lists');
         if(lst==undefined){
@@ -115,14 +166,18 @@
         }
 
         for(i=0;i<lst.length;i++){
-            $("#lists tbody").append("<tr><td>"+ lst[i].first+"</td><td>"+lst[i].second+"</td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
+            if (lst[i].second==undefined){
+                $("#lists tbody").append("<tr><td>"+ lst[i].first+"</td><td><buton type=\"button\" class=\"am-btn-link am-btn-xs\">关联</buton></td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
+            }else{
+                $("#lists tbody").append("<tr><td>"+ lst[i].first+"</td><td>"+lst[i].second+" <buton type=\"button\" class=\"am-btn-link am-btn-xs\">删除</buton></td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
+            }
         }
     }
 
     function scan(f,is_continue){
             wx.scanQRCode({
                 needResult: 1,
-                scanType: ["barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                scanType: ["barCode"], // 可以指定扫二维码还是一维码
                 success: function (res) {
                             var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
                             if(result==undefined){
