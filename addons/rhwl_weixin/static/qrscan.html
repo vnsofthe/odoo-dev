@@ -142,7 +142,48 @@
     $("#btn_add").bind("click",function(e){
         scan(set_lists,true);
 
-    })
+    });
+    $("#btn_submit").bind("click",function(e){
+       //快递单提交处理
+        var no = $("#scantext").val();
+        var lists=$("#lists tbody").children();
+        if($.trim(no)==""){
+            alert("快递单号码不能为空。");
+            return false;
+        }
+        if(lists.length==0){
+            alert("发送样品个数不为空。");
+            return false;
+        }
+        var demo={
+            packageID:no,
+            demo:new Array()
+        }
+        $("#lists tbody tr").each(function(i){
+            var tmp={code:"",preCode:""};
+            $(this).children("td").each(function(i){
+                if(i==0){
+                    tmp.code=$(this).text();
+                }else if(i==1&&$(this).text().indexOf(" ")>0){
+                    tmp.preCode=$(this).text().split(" ")[0];
+                }
+            });
+            demo.demo[i]=tmp;
+        });
+        //alert(JSON.stringify(demos));
+        $.ajax({
+              type: 'POST',
+              url: "/web/crmapp/deliver/?openid="+$.getUrlVar('openid'),
+              data: {packageID:demo.packageID,demos:JSON.stringify(demo.demo)},
+              success: function(data){
+                  alert("单据提交成功。");
+                  location.reload();
+              },
+              fail:function(res){
+                  alert("单据提交失败。");
+              }
+            });
+    });
     //设置快递单扫码结果
     function set_text(t){
         $("#scantext").val(t.split(",")[1]);
@@ -194,7 +235,7 @@
                     }
             });
     }
-    init_lists();
+    //init_lists();
   });
 </script>
 </body>
