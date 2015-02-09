@@ -150,7 +150,12 @@
         scan(set_text,false);
     });
     $("#btn_add").bind("click",function(e){
-        scan(set_lists,true);
+        while(1>0){
+            var r=scan(set_lists,true);
+            if(!r || r==undefined){
+                break;
+            };
+        }
     });
     $("#btn_submit").bind("click",function(e){
        //快递单提交处理
@@ -235,7 +240,7 @@
                                 return false;
                             }else{
                                 f(result);
-                                $("#btn_add").trigger("click");
+                                return is_continue;
                             }
                          },
                 fail:function(res){
