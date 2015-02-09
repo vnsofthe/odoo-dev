@@ -32,7 +32,7 @@
 <div class="am-u-sm-centered am-u-md-centered am-u-lg-centered">
     <div class="am-input-group am-form-field" >
         <input id="scantext" type="text" class="am-input-lg " placeholder="快递单号" />
-        <button id="scanbtn" class="am-btn am-btn-primary am-round am-btn-xs">扫描快递单号</button>
+        <button id="scanbtn" class="am-btn am-btn-primary am-round am-btn-xs am-disabled">扫描快递单号</button>
     </div>
     <div class="am-form-field">
         <table id="lists" class="am-table am-table-striped am-table-hover">
@@ -49,8 +49,8 @@
         </table>
     </div>
     <div class="am-form-field am-u-sm-centered am-u-md-centered am-u-lg-centered">
-        <button id="btn_add" class="am-btn am-btn-warning am-round">添加样品</button>
-        <button id="btn_submit" class="am-btn  am-btn-success am-round">提交快递单</button>
+        <button id="btn_add" class="am-btn am-btn-warning am-round am-disabled">添加样品</button>
+        <button id="btn_submit" class="am-btn  am-btn-success am-round ">提交快递单</button>
     </div>
  </div>
 <div class="am-modal am-modal-no-btn am-animation-slide-right" tabindex="-1" id="doc-modal-1">
@@ -89,21 +89,31 @@
      var store = $.AMUI.store;
   $(function() {
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
-
+    wx.ready(function(){
+        $("#scanbtn").removeClass("am-disabled");
+        $("#btn_add").removeClass("am-disabled");
+    });
+    wx.error(function(res){
+        alert("配置扫码接口失败");
+    });
 	$.ajax({
 		  type: 'POST',
 		  url: "/web/weixin/jsapi/",
 		  data: {"url":location.href.split('#')[0]},
 		  success: function(data){
               wx.config({
-                    debug: true,
+                    debug: false,
                     appId: data.appid,
                     timestamp: data.timestamp,
                     nonceStr: data.noncestr,
                     signature: data.signature,
                     jsApiList: ['scanQRCode']
                 });
-		  }
+
+		  },
+          fail:function(res){
+              alert("配置JSAPI失败");
+          }
 		});
     $("#lists tbody").on("click","tr",function(e){
         if(e.target.className=="am-close"&& (e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") ){
@@ -141,7 +151,6 @@
     });
     $("#btn_add").bind("click",function(e){
         scan(set_lists,true);
-
     });
     $("#btn_submit").bind("click",function(e){
        //快递单提交处理
@@ -216,22 +225,21 @@
     }
 
     function scan(f,is_continue){
+
             wx.scanQRCode({
-                needResult: 1,
+                needResult:1,
                 scanType: ["barCode"], // 可以指定扫二维码还是一维码
                 success: function (res) {
                             var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
                             if(result==undefined){
-                                return;
+                                return false;
                             }else{
                                 f(result);
-                                if(is_continue){
-                                    scan(f,is_continue);
-                                }
+                                $("#btn_add").trigger("click");
                             }
                          },
                 fail:function(res){
-                    return;
+                    return false;
                     }
             });
     }

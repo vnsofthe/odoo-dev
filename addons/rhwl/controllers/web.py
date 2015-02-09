@@ -483,7 +483,7 @@ class WebClient(http.Controller):
         xmlstr= rhwl_sf.get_route(no)
 
         xml = etree.fromstring(xmlstr.encode('utf-8'))#进行XML解析
-        print xmlstr
+        #print xmlstr
         if xml.find("Body").getchildren().__len__()==0:
             return [{'accept_time':'','remark':u"无物流查询结果"}]
         body = xml.find("Body").getchildren()[0]

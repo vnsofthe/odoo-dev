@@ -1,0 +1,182 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>重采血</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="am-panel-group" id="accordion">
+    <div class="am-panel am-panel-default">
+        <div class="am-panel-hd">
+            <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#query_result'}">重采血样品</h4>
+        </div>
+        <div id="query_result" class="am-panel-collapse am-collapse am-in">
+            <div class="am-panel-bd">
+                <table id="query-tab" class="am-table am-table-bordered am-table-striped am-table-hover" style="font-size:90%">
+                     <thead>
+                          <tr>
+                              <th>样品编码</th>
+                              <th>姓名</th>
+                              <th>目前状态</th>
+                              <th>采血时间</th>
+                          </tr>
+                     </thead>
+                     <tbody>
+                     </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="am-modal am-modal-no-btn am-animation-slide-right" tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd am-topbar-inverse">样品详细信息
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close><h3 style="font-size:200%">&times;</h3></a>
+    </div>
+
+    <div class="am-modal-bd">
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right" >姓名:</div>
+          <div id="pregnantWomanName" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">样品编号:</div>
+          <div id="pregnantWomanID" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">采血日期:</div>
+          <div id="takeBloodTime" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">孕周:</div>
+          <div id="gestationalWeeks" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">手机号码:</div>
+          <div id="phoneNumber" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">紧急联系人:</div>
+          <div id="emergencyCall" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">样品状态:</div>
+          <div id="state" class="am-u-sm-6 am-text-left"></div>
+        </div>
+        <div class="am-g">
+          <div class="am-u-sm-6 am-text-right">通知标识:</div>
+          <div id="btn" class="am-u-sm-6 am-text-left"></div>
+        </div>
+     </div>
+     <div>
+         <button id="notice_btn" class="am-btn am-btn-success am-btn-active">标记为已通知</button>
+         <hr>
+     </div>
+  </div>
+</div>
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+    $.ajax({
+		  type: 'POST',
+		  url: "/web/crmapp/reuse/?openid="+$.getUrlVar('openid'),
+		  data: {},
+		  success: function(data){
+                      $.each(data,function(t,s){
+                            var classstr="";
+                            if(s.status=="未通知"){
+                                classstr='class="am-danger"';
+                            }
+                            $('#query-tab').find('tbody').append('<tr '+classstr+'><td>'+ s.id+'</td><td>'+ s.name+'</td><td>'+ s.status+'</td><td>'+ s.time+'</td></tr>');
+                      });
+                      $("#query-tab tbody tr").bind("click",function(e){
+                               $.ajax({
+                                      type: 'POST',
+                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
+                                      data: {},
+                                      success: function(data){
+                                          $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget":data});
+                                      }
+                                    });
+                           });
+                      $('#accordion').collapse("open");
+        		  }
+		  });
+    $('#doc-modal-1').bind('open.modal.amui',
+                                function(e){
+                                    var btn_text="";
+                                    $.each(e.relatedTarget,
+                                            function(k,v){
+                                                if(k=="btn"){
+                                                    if(v=="0"){
+                                                        v="已通知";
+                                                        btn_text="取消通知标识";
+                                                    }else if(v=="1"){
+                                                        v="未通知";
+                                                        btn_text="标识为已通知";
+                                                    }else{
+                                                        v="";
+                                                    }
+                                                }
+                                                $("#"+k).text(v);
+                                            });
+                                    if(btn_text!=""){
+                                        $("#notice_btn").text(btn_text);
+                                    }else{
+                                        $("#notice_btn").remove();
+                                    }
+                                });
+    $("#notice_btn").bind("click",function(e){
+        var no=$("#pregnantWomanID").text();
+        var btntext=$("#btn").text();
+        if(btntext=="已通知"){
+            btntext="0";
+        }else if(btntext=="未通知"){
+            btntext="1";
+        }
+        $.ajax({
+		  type: 'POST',
+		  url: "/web/crmapp/notice/?openid="+$.getUrlVar('openid')+"&id="+no+"&btn="+btntext,
+		  data: {},
+		  success: function(data){
+                      $('#doc-modal-1').modal("close");
+                      location.reload();
+                   }
+        });
+    });
+  });
+</script>
+</body>
+</html>
