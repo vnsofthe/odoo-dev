@@ -34,6 +34,10 @@
         <input id="scantext" type="text" class="am-input-lg " placeholder="快递单号" />
         <button id="scanbtn" class="am-btn am-btn-primary am-round am-btn-xs am-disabled">扫描快递单号</button>
     </div>
+    <div class="am-form-field am-u-sm-centered am-u-md-centered am-u-lg-centered">
+        <button id="btn_add" class="am-btn am-btn-warning am-round am-disabled">添加样品</button>
+        <button id="btn_submit" class="am-btn  am-btn-success am-round ">提交快递单</button>
+    </div>
     <div class="am-form-field">
         <table id="lists" class="am-table am-table-striped am-table-hover">
             <thead>
@@ -48,10 +52,7 @@
             </tbody>
         </table>
     </div>
-    <div class="am-form-field am-u-sm-centered am-u-md-centered am-u-lg-centered">
-        <button id="btn_add" class="am-btn am-btn-warning am-round am-disabled">添加样品</button>
-        <button id="btn_submit" class="am-btn  am-btn-success am-round ">提交快递单</button>
-    </div>
+
  </div>
 <div class="am-modal am-modal-no-btn am-animation-slide-right" tabindex="-1" id="doc-modal-1">
   <div class="am-modal-dialog">
@@ -150,13 +151,7 @@
         scan(set_text,false);
     });
     $("#btn_add").bind("click",function(e){
-        var r;
-        while(1>0){
-            r==scan(set_lists,true);
-            if(!r || r==undefined){
-                break;
-            };
-        }
+        scan(set_lists,true);
     });
     $("#btn_submit").bind("click",function(e){
        //快递单提交处理
@@ -231,22 +226,23 @@
     }
 
     function scan(f,is_continue){
-
             wx.scanQRCode({
                 needResult:1,
                 scanType: ["barCode"], // 可以指定扫二维码还是一维码
                 success: function (res) {
                             var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
                             if(result==undefined){
-                                return false;
+
                             }else{
                                 f(result);
-                                return is_continue;
                             }
                          },
-                fail:function(res){
-                    return false;
-                    }
+                complete:function(res){
+                    //scan(f,is_continue);
+                },
+                cancel:function(res){
+                    //
+                }
             });
     }
     //init_lists();
