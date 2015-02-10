@@ -1,0 +1,167 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>物流查询</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="am-tabs" data-am-tabs>
+  <ul class="am-tabs-nav am-nav am-nav-tabs">
+    <li class="am-active"><a href="#tab1">我收货的</a></li>
+    <li><a href="#tab2">我发出的</a></li>
+  </ul>
+
+  <div class="am-tabs-bd">
+    <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+        <table id="query-tab1" class="am-table am-table-bordered am-table-striped am-table-hover" >
+             <thead>
+                  <tr>
+                      <th>发货日期</th>
+                      <th>快递单号</th>
+                      <th>目前状态</th>
+                  </tr>
+             </thead>
+             <tbody>
+             </tbody>
+        </table>
+    </div>
+
+    <div class="am-tab-panel am-fade" id="tab2">
+        <table id="query-tab2" class="am-table am-table-bordered am-table-striped am-table-hover" >
+             <thead>
+                  <tr>
+                      <th>发货日期</th>
+                      <th>快递单号</th>
+                      <th>目前状态</th>
+                  </tr>
+             </thead>
+             <tbody>
+             </tbody>
+        </table>
+    </div>
+
+  </div>
+</div>
+<div class="am-modal am-modal-no-btn am-animation-slide-right" tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd am-topbar-inverse">实际采血包数量
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close><h3 style="font-size:200%">&times;</h3></a>
+    </div>
+
+    <div class="am-modal-bd">
+        <hr>
+          <input id="express_no" value="" class="am-hide"/>
+        <div class="am-g">
+           <div class="am-u-sm-6">
+              <input id="real_qty" class="am-form-field" value="0"/>
+           </div>
+           <div class="am-u-sm-3 am-u-end">
+             <button id="submit_btn" class="am-btn am-btn-success">确认</button>
+          </div>
+        </div>
+  </div>
+</div>
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+	$.ajax({
+		  type: 'POST',
+		  url: "/web/crmapp/express/?openid="+$.getUrlVar('openid'),
+		  data: {},
+		  success: function(data){
+              $.each(data,function(k,v){
+                    var btn="";
+                    if(v.is_receiv==true){
+                        if(v.state=="待确认"){btn=" <button class=\"am-btn am-btn-danger am-round am-btn-xs\">确认收货</button>"}
+                        $("#query-tab1 tbody").append("<tr><td>"+ v.time+"</td><td>"+ v.logIdCompany+"</td><td>"+ v.state+btn+"</td></tr>");
+                    }
+                    if(v.is_deliver==true){
+                        $("#query-tab2 tbody").append("<tr><td>"+ v.time+"</td><td>"+ v.logIdCompany+"</td><td>"+ v.state+"</td></tr>");
+                    }
+              });
+              $("#query-tab1 tbody tr td button").bind("click",function(e){
+                       $("#express_no").val(e.currentTarget.parentElement.parentElement.children[1].textContent);
+                       $("#doc-modal-1").modal({"closeViaDimmer": 0});
+              });
+              $("#qty_add").bind("click",function(e){
+                  var q;
+                  q=$("#real_qty").val();
+                  if(q.trim()==""){q=0;}
+                  $("#real_qty").val(parseInt(q)+1);
+              });
+              $("#qty_minu").bind("click",function(e){
+                  var q;
+                  q=$("#real_qty").val();
+                  if(q.trim()==""){q="0";}
+                  q=parseInt(q)-1
+                  if(q<0){q=0;}
+                  $("#real_qty").val(q);
+              });
+              $("#qty_5").bind("click",function(e){$("#real_qty").val(5);});
+              $("#qty_10").bind("click",function(e){$("#real_qty").val(10);});
+              $("#qty_15").bind("click",function(e){$("#real_qty").val(15);});
+              $("#qty_20").bind("click",function(e){$("#real_qty").val(20);});
+              $("#qty_25").bind("click",function(e){$("#real_qty").val(25);});
+              $("#qty_30").bind("click",function(e){$("#real_qty").val(30);});
+              $("#submit_btn").bind("click",function(e){
+                      var q;
+                      q=$("#real_qty").val();
+                      if(q.trim()==""){q="0";}
+                      q=parseInt(q);
+                      if(q<=0){
+                          alert("实际数量必须大于0");
+                          return false;
+                      }else{
+                          $.ajax({
+                              type: 'POST',
+                              url: "/web/crmapp/receive/?openid=" + $.getUrlVar('openid'),
+                              data: {goodsId: $("#express_no").val().split(",")[0], actualNumber: q},
+                              success: function (data) {
+                                  location.reload();
+                              },
+                              fail:function(res){
+                                  alert("确认收货失改。");
+                                  return false;
+                              }
+                          });
+                      }
+              });
+		  }
+		});
+  });
+</script>
+</body>
+</html>
