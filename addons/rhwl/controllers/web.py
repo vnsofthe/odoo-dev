@@ -316,11 +316,13 @@ class WebClient(http.Controller):
             startTime = res.get("params").get("startTime")
             endTime = res.get("params").get("endTime")
             uid =  res.get("userid")
+            if not startTime:startTime=(datetime.datetime.today() - datetime.timedelta(100)).strftime("%Y-%m-%d")
+            if not endTime:endTime=(datetime.datetime.today() + datetime.timedelta(1)).strftime("%Y-%m-%d")
             if startTime and endTime:
                 registry = RegistryManager.get(request.session.db)
                 with registry.cursor() as cr:
                     express = registry.get('stock.picking.express')
-                    ids = express.search(cr,uid,[('date','>=',startTime),('date','<=',endTime)],order="date desc")
+                    ids = express.search(cr,uid,[('date','>=',startTime),('date','<=',endTime)],order="date desc",context=self.CONTEXT)
                     data=[]
                     for i in express.browse(cr,uid,ids,self.CONTEXT):
                         data.append({
@@ -348,7 +350,7 @@ class WebClient(http.Controller):
                 registry = RegistryManager.get(request.session.db)
                 with registry.cursor() as cr:
                     express = registry.get('stock.picking.express')
-                    ids = express.search(cr,uid,[('num_express','=',id)])
+                    ids = express.search(cr,uid,[('num_express','=',id),('state','not in',['done','cancel'])],context=self.CONTEXT)
                     data = {
                         "receiv_real_qty":res.get("params").get("actualNumber"),
                         "receiv_real_user": uid,
@@ -358,7 +360,6 @@ class WebClient(http.Controller):
                     express.action_ok(cr,uid,ids,context=self.CONTEXT)
                     data={}
                     data['statu'] = 200
-
                     cr.commit()
         else:
             data = res
