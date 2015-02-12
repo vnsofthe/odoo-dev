@@ -7,6 +7,7 @@ import openerp.addons.decimal_precision as dp
 import datetime
 import rhwl_sms
 import requests
+import logging
 import openerp.tools as tools
 rhwl_sale_state_select = {'draft':u'草稿',
                           'done': u'确认',
@@ -18,7 +19,7 @@ rhwl_sale_state_select = {'draft':u'草稿',
                           'reuse': u'需重采血',
                           'ok': u'检验结果正常',
                         'except': u'检验结果阳性'}
-
+_logger = logging.getLogger(__name__)
 class rhwl_sample_info(osv.osv):
     _name = "sale.sampleone"
     _description = "样品信息表"
@@ -341,7 +342,7 @@ class rhwl_sample_info(osv.osv):
     def action_get_library(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
         for i in obj:
-            json = requests.post("http://120.24.58.11:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email=admin@tony.com&password=123qwe")
+            json = requests.post("http://10.0.0.2:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email=admin@tony.com&password=123qwe")
             json = json.json()
             if json.get("haserror",False):
                 continue
@@ -407,13 +408,14 @@ class rhwl_sample_info(osv.osv):
             w_id = w_id[0]
         vals = {
             "partner_id": cxys.cxys.id,
-            "partner_invoice_id":cxys.cxys.parent_id,
+            "partner_invoice_id":cxys.cxys.parent_id.id,
             "client_order_ref": cxys.name,
             "warehouse_id": w_id,
             "pricelist_id": 1,
             "date_order": cxys.cx_date,
             "user_id":cxys.cxyy.user_id.id
         }
+        _logger.info(vals);
         order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
         if cxys.is_free == '0':
             partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)

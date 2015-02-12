@@ -64,6 +64,20 @@ class rhwl_partner(osv.osv):
         "user_id":lambda obj, cr, uid, context: uid,
     }
 
+    def init(self, cr):
+        ids = self.search(cr,SUPERUSER_ID,[("is_company","=",True),("parent_id","!=",False)])
+        self.write(cr,SUPERUSER_ID,ids,{"parent_id":False})
+        ids = self.search(cr,SUPERUSER_ID,[("is_company","=",False),("parent_id","!=",False),("partner_unid","=",False)])
+        for i in ids:
+            self.write(cr,SUPERUSER_ID,i,{"partner_unid":str(i)})
+        cr.execute("""update res_partner
+                    set partner_unid = partner_unid||'-'||id
+                    where partner_unid in (select partner_unid from res_partner group by partner_unid having count(*)>1)""")
+        #cr.execute("ALTER TABLE res_partner DROP constraint res_partner_partner_unid_uniq")
+        cr.commit()
+
+
+
     def onchange_city_id(self, cr, uid, ids, city, arg, newid, context=None):
         if not city:
             return {
@@ -159,7 +173,7 @@ class rhwl_partner(osv.osv):
                 else:
                     max_id = state_code + city_code + '0001'
                 vals['partner_unid'] = max_id
-        if not (vals.get("customer") or vals.get("supplier")):
+        if (not (vals.get("customer") or vals.get("supplier"))) and (not vals.get("is_company")):
             if not vals.get('parent_id'):
                vals['parent_id'] = 1
 
