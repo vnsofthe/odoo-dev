@@ -8,16 +8,14 @@ import datetime
 import logging
 import json
 from . import web
-class WebClient(http.Controller):
-    CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
-
+class WebClient(web.WebClient):
 
     @http.route("/web/charts/sale/",type="http",auth="public")
     def charts_sale(self,**kw):
-        res = web.WebClient.check_userinfo(kw)
-        if res.statu!=200:
+        res =self.check_userinfo(kw)
+        if res.get("statu")!=200:
             return self.json_return(res)
-        uid=res.userid
+        uid=res.get("userid")
         registry = RegistryManager.get(request.session.db)
         with registry.cursor() as cr:
             obj = registry.get("res.partner")
@@ -27,9 +25,8 @@ class WebClient(http.Controller):
                 from sale_sampleone a
                 left join res_partner b on a.cxyy=b.id
                 where b.id in %s
-                group by b.name""" %(partner_ids,))
-
-        return self.json_return(cr.fetchall())
+                group by b.name""" %(tuple(partner_ids),))
+            return self.json_return(cr.fetchall())
 
 
     def json_return(self,data):
