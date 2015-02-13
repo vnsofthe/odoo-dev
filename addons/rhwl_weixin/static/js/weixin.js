@@ -14,6 +14,31 @@ $.extend({
     }
 });
 
+function charts_sale(idname,opt){
+    // 路径配置
+        require.config({
+            paths: {
+                echarts: 'http://echarts.baidu.com/build/dist'
+            }
+        });
+
+        // 使用
+        require(
+            [
+                'echarts',
+                'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById(idname));
+
+                var option = opt;
+
+                // 为echarts对象加载数据
+                myChart.setOption(option);
+            }
+        );
+}
 //获取参数对象
 //alert($.getUrlVars());
 //获取参数a的值

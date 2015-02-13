@@ -1,0 +1,116 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>销售分析</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<header data-am-widget="header" class="am-header am-header-default">
+  <div class="am-header-left am-header-nav">
+
+  </div>
+  <h1 class="am-header-title">
+    <a href="#title-link" class="">销售分析</a>
+  </h1>
+  <div class="am-header-right am-header-nav">
+    <a href="#doc-oc-demo1" class="" data-am-offcanvas>
+      <i class="am-header-icon am-icon-bars"></i>
+    </a>
+  </div>
+</header>
+
+<!-- 侧边栏内容 -->
+<div id="doc-oc-demo1" class="am-offcanvas">
+  <div class="am-offcanvas-bar">
+    <div class="am-btn-group-stacked">
+      <ul class="am-menu-nav am-avg-sm-1">
+            <li class="">
+              <a href="##" class="">销售总量</a>
+            </li>
+            <li class="">
+              <a href="##" class="">异常比率</a>
+            </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width:100%;height:400px"></div>
+    <!-- ECharts单文件引入 -->
+
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        $.ajax({
+            type: "POST",
+            url: "/web/charts/sale/?openid=" + $.getUrlVar("openid"),
+            data: {},
+            sucess: function (data) {
+                console.log(data);
+            }
+        });
+        var option = {
+            tooltip: {
+                show: true
+            },
+            legend: {
+                data: ['销量']
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    "name": "销量",
+                    "type": "bar",
+                    "data": [5, 20, 40, 10, 10, 20]
+                }
+            ]
+        };
+    });
+    </script>
+</body>
+</html>

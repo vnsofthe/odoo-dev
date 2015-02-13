@@ -9,7 +9,10 @@ from openerp import SUPERUSER_ID
 import time
 import random
 import datetime,json
-from openerp.addons.rhwl import rhwl_sms,rhwl_sale
+from openerp.addons.rhwl import rhwl_sale,rhwl_sms
+
+
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -71,7 +74,13 @@ class weixin(http.Controller):
                 articles=self._get_htmlmsg(key)
                 if articles[0]:
                     if not self._get_userid(fromUser):
-                        return self.replyWeiXin(fromUser,toUser,"内部功能需进行授权，请与管理员联系!")
+                        articles={
+                            "Title":"内部ERP帐号绑定",
+                            "Description":"您查阅的功能需要授权，请先进行内部ERP帐号绑定",
+                            "PicUrl":"/rhwl_weixin/static/img/logo.png",
+                            "Url":"/rhwl_weixin/static/weixinbind.html"
+                            }
+                        return self.send_photo_text(fromUser,toUser,[articles,])
                 if articles[1]:
                     return self.send_photo_text(fromUser,toUser,articles[1])
                 else:
@@ -202,6 +211,25 @@ class weixin(http.Controller):
                 return 'Signature Error.'
 
         return self.msgProcess(request.httprequest.data)
+
+    @http.route("/web/weixin/bind/",type="http",auth="public")
+    def rhwl_weixin_bind(self,**kw):
+        para={}
+        if request.httprequest.data:
+            para = eval(request.httprequest.data)
+        if kw:
+            para.update(kw)
+        if para.get("openid") and para.get("uid"):
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                obj = registry.get("rhwl.weixin")
+                id=obj.search(cr,SUPERUSER_ID,[("openid","=",para.get("openid"))])
+                obj.write(cr,SUPERUSER_ID,id,{"user_id":para.get("uid")})
+                cr.commit()
+                response = request.make_response(json.dumps({"statu":200},ensure_ascii=False), [('Content-Type', 'application/json')])
+        else:
+            response = request.make_response(json.dumps({"statu":500},ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
 
     @http.route("/web/weixin/jsapi/",type="http",auth="public")
     def rhwl_weixin_jsapi(self,**kw):

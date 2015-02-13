@@ -1,0 +1,93 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>帐号绑定</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<form class="am-form">
+  <fieldset>
+    <legend>请输入您的ERP帐号信息进行绑定</legend>
+
+    <div class="am-form-group">
+      <label for="doc-ipt-email-1">邮件</label>
+      <input type="text" class="" id="doc-ipt-email-1" placeholder="登录电子邮件">
+    </div>
+
+    <div class="am-form-group">
+      <label for="doc-ipt-pwd-1">密码</label>
+      <input type="password" class="" id="doc-ipt-pwd-1" placeholder="密码是什么?">
+    </div>
+
+    <p><button id="form-submit" type="submit" class="am-btn am-btn-primary">提交</button></p>
+  </fieldset>
+</form>
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+
+      $("#form-submit").bind("click",function(e){
+          $.ajax({
+              type: 'POST',
+              url: "/web/crmapp/login/?Username=" + $("#doc-ipt-email-1").val()+"&Pwd="+$("#doc-ipt-pwd-1").val(),
+              data: {},
+              success: function (data) {
+
+                  if(data.statu==200){
+                      $.ajax({
+                          type:"POST",
+                          url:"/web/weixin/bind/?openid="+$.getUrlVar('openid')+"&uid="+data.userid,
+                          data:{},
+                          success:function(data){
+                              alert("帐号绑定成功，请关闭此网页后，在微信菜单中重新点击进入。");
+                              $("fieldset").prop('disabled', true);
+                              window.close();
+                          }
+                      });
+                  }else{
+                      alert(data.errtext);
+                  }
+              },
+              fail:function(res){
+                  alert("登录错误，请确认输入是否正确？");
+              }
+          });
+          return false;
+      });
+
+  });
+</script>
+</body>
+</html>
