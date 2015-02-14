@@ -49,10 +49,16 @@
     <div class="am-btn-group-stacked">
       <ul class="am-menu-nav am-avg-sm-1">
             <li class="">
-              <a href="##" class="">销售总量</a>
+                <a href="##" class="" style="padding:.2rem 0">销售目标达成率</a>
             </li>
             <li class="">
-              <a href="##" class="">异常比率</a>
+              <a href="##" class="" id="report1" style="padding:.2rem 0">样品销售量时间段总计</a>
+            </li>
+            <li class="">
+              <a href="##" class="" id="report2" style="padding:.2rem 0">样品检测异常比率</a>
+            </li>
+            <li class="">
+              <a href="##" class="" style="padding:.2rem 0">年度新增医院统计</a>
             </li>
       </ul>
     </div>
@@ -76,43 +82,13 @@
 
 <script type="text/javascript">
     $(function() {
-        $.ajax({
-            type: "POST",
-            url: "/web/charts/sale/?openid=" + $.getUrlVar("openid"),
-            data: {},
-            success: function (data) {
-                //console.log(data);
-                var option = {
-                    tooltip: {show: true},
-                    legend: {data: ['总销量']},
-                    xAxis: [
-                        {
-                            type: 'category',
-                            data: [],
-                            axisLabel : {
-                                show: true,
-                                interval: 'auto',    // {number}
-                                margin: 3
-                            }
-                        }
-                    ],
-                    yAxis: [ {type: 'value'}],
-                    series: [
-                        {
-                            "name": "总销量",
-                            "type": "bar",
-                            "data": []
-                        }
-                    ]
-                };
-                $.each(data,function(i,v){
-                   option.xAxis[0].data[i]=v[0];
-                   option.series[0].data[i]=v[1];
-                });
-                charts_sale("main",option);
+        $("#doc-oc-demo1 a").bind("click",function(e){
+            if(e.target.id=="report1"){
+                sale_report1();
+            }else if(e.target.id=="report2"){
+                sale_report2();
             }
         });
-
     });
     </script>
 </body>

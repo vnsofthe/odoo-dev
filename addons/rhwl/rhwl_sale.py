@@ -53,7 +53,7 @@ class rhwl_sample_info(osv.osv):
         "lyyy": fields.many2one('res.partner', string=u'来源医院',
                                 domain="[('is_company', '=', True), ('customer', '=', True)]"),
         "cxyy": fields.many2one('res.partner', string=u'采血医院',
-                                domain="[('is_company', '=', True), ('customer', '=', True),('sjjysj','!=',False)]", required=True,help=u"实际有进院的医院才可以作为采血医院。"),
+                                domain="[('is_company', '=', True), ('customer', '=', True),('sjjysj','!=',False)]", required=True,select=True,help=u"实际有进院的医院才可以作为采血医院。"),
         "lyys": fields.many2one('res.partner', string=u'来源医生',
                                 domain="[('is_company', '=', False), ('customer', '=', True),('parent_id','=',lyyy)]"),
         "cxys": fields.many2one('res.partner', string=u'采血医生',

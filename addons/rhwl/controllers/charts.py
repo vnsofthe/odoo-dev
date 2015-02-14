@@ -21,13 +21,46 @@ class WebClient(web.WebClient):
             obj = registry.get("res.partner")
             partner_ids = obj.search(cr,uid,[("sjjysj","!=",False)])
             cr.execute("""
-                select b.name,count(*)
-                from sale_sampleone a
-                left join res_partner b on a.cxyy=b.id
-                where b.id in %s
-                group by b.name""" %(tuple(partner_ids),))
+                with t as (
+                select b.id,b.name,a.cx_date,count(*) as c
+                                from sale_sampleone a
+                                left join res_partner b on a.cxyy=b.id
+                                where b.id in %s
+                                group by b.id,b.name,a.cx_date)
+                select	id
+                    ,name
+                    ,sum(c)
+                    ,(select COALESCE(sum(c),0) from t where date_trunc('month',cx_date)::date = date_trunc('month',now())::date and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '3 month')::date and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '6 month')::date and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '12 month')::date and t.id=tt.id)
+                     from t tt group by id,name""" % (tuple(partner_ids),))
             return self.json_return(cr.fetchall())
 
+    @http.route("/web/charts/sale2/",type="http",auth="public")
+    def charts_sale2(self,**kw):
+        res =self.check_userinfo(kw)
+        if res.get("statu")!=200:
+            return self.json_return(res)
+        uid=res.get("userid")
+        registry = RegistryManager.get(request.session.db)
+        with registry.cursor() as cr:
+            obj = registry.get("res.partner")
+            partner_ids = obj.search(cr,uid,[("sjjysj","!=",False)])
+            cr.execute("""
+                with t as (
+                select b.id,b.name,a.state,count(*) as c
+                                from sale_sampleone a
+                                left join res_partner b on a.cxyy=b.id
+                                where b.id in %s
+                                group by b.id,b.name,a.state)
+                select	id
+                    ,name
+                    ,sum(c)
+                    ,(select COALESCE(sum(c),0) from t where state='reuse' and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where state='except' and t.id=tt.id)
+                     from t tt group by id,name""" % (tuple(partner_ids),))
+            return self.json_return(cr.fetchall())
 
     def json_return(self,data):
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
