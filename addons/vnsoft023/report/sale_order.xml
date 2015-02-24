@@ -29,5 +29,19 @@
 			<field name="pentaho_filename">vnsoft023/report/purchase_order.prpt</field>
 			<field name="pentaho_load_file" eval="True"/>
 		</record>
+
+        <record id="vnsoft023_stock_picking_ids" model="ir.actions.report.xml">
+			<field name="name">打印装箱单</field>
+			<field name="report_name">vnsoft023.stock.picking.ids</field>
+			<field name="model">stock.picking</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+            <field name="report_type">pentaho</field>
+			<field name="rml">vnsoft023/report/stock_pick.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="stock.model_stock_picking"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">vnsoft023/report/stock_pick.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
 	</data>
 </openerp>

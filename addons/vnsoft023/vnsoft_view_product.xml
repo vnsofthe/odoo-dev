@@ -48,6 +48,10 @@
                 <xpath expr="//field[@name='picking_policy']" position="after">
                     <field name="vn_delay"/>
                 </xpath>
+                <xpath expr="//field[@name='incoterm']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='fiscal_position']" position="replace">
+                </xpath>
             </field>
         </record>
         <record id="vnsoft023_purchase_order_form" model="ir.ui.view">
