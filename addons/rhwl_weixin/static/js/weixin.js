@@ -102,32 +102,6 @@ function sale_report2(){
                                 show: true,
                                 interval: 'auto'
                             }
-                },
-                {
-                    type : 'category',
-                    axisLine: {show:false},
-                    axisTick: {show:false},
-                    axisLabel: {show:false},
-                    splitArea: {show:false},
-                    splitLine: {show:false},
-                    data : [],
-                    axisLabel : {
-                                show: true,
-                                interval: 'auto'
-                            }
-                },
-                {
-                    type : 'category',
-                    axisLine: {show:false},
-                    axisTick: {show:false},
-                    axisLabel: {show:false},
-                    splitArea: {show:false},
-                    splitLine: {show:false},
-                    data : [],
-                    axisLabel : {
-                                show: true,
-                                interval: 'auto'
-                            }
                 }
             ],
             yAxis : [ {type : 'value'} ],
@@ -135,21 +109,19 @@ function sale_report2(){
                 {
                     name:'正常',
                     type:'bar',
-                    itemStyle: {normal: {color:'rgba(181,195,52,1)', label:{show:true,textStyle:{color:'#27727B'}}}},
+                    stack: '状态',
                     data:[]
                 },
                 {
                     name:'重采血',
                     type:'bar',
-                    itemStyle: {normal: {color:'rgba(252,206,16,1)', label:{show:true,textStyle:{color:'#27727B'}}}},
-                    xAxisIndex:1,
+                    stack: '状态',
                     data:[]
                 },
                 {
                     name:'阳性',
                     type:'bar',
-                    itemStyle: {normal: {color:'rgba(193,35,43,1)', label:{show:true,textStyle:{color:'#27727B'}}}},
-                    xAxisIndex:2,
+                    stack: '状态',
                     data:[]
                 }
             ]
@@ -164,9 +136,7 @@ function sale_report2(){
             console.log(data);
             $.each(data,function(i,v){
                 option.xAxis[0].data[i] = v[1];
-                option.xAxis[1].data[i] = v[1];
-                option.xAxis[2].data[i] = v[1];
-                option.series[0].data[i]=v[2];
+                option.series[0].data[i]=v[2]-v[3]-v[4];
                 option.series[1].data[i]=v[3];
                 option.series[2].data[i]=v[4];
             });

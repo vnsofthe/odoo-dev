@@ -49,16 +49,16 @@ class WebClient(web.WebClient):
             partner_ids = obj.search(cr,uid,[("sjjysj","!=",False)])
             cr.execute("""
                 with t as (
-                select b.id,b.name,a.state,count(*) as c
+                select b.id,b.name,a.check_state,count(*) as c
                                 from sale_sampleone a
                                 left join res_partner b on a.cxyy=b.id
                                 where b.id in %s
-                                group by b.id,b.name,a.state)
+                                group by b.id,b.name,a.check_state)
                 select	id
                     ,name
                     ,sum(c)
-                    ,(select COALESCE(sum(c),0) from t where state='reuse' and t.id=tt.id)
-                    ,(select COALESCE(sum(c),0) from t where state='except' and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where check_state='reuse' and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where check_state='except' and t.id=tt.id)
                      from t tt group by id,name""" % (tuple(partner_ids),))
             return self.json_return(cr.fetchall())
 
