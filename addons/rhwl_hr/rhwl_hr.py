@@ -18,3 +18,11 @@ class rhwl_hr(osv.osv):
         ('work_number_uniq', 'unique(work_number)', u'工号必须唯一!'),
     ]
 
+    def onchange_user(self, cr, uid, ids, user_id, context=None):
+        work_email = False
+        name = False
+        if user_id:
+            obj=self.pool.get('res.users').browse(cr, uid, user_id, context=context)
+            work_email = obj.email
+            name = obj.name
+        return {'value': {'work_email': work_email,'name':name}}

@@ -1,26 +1,21 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name': 'rhwl_weixin',
+    'name': 'rhwl_hr',
     'version': '0.1',
-    'category': 'CRM',
+    'category': 'HR',
     'sequence': 16,
-    'summary': '人和未来微信管理',
+    'summary': '人和未来人力资源管理',
     'description': """
 人和未来生物科技(长沙)有限公司
 ==================================
-微信管理模块
+人力资源管理增强模块
     """,
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
-    'depends': ['rhwl','rhwl_hr','vnsoft_base'],
-    'data': [
-        "view_weixin.xml",
-        "view_weixin_base.xml",
-        "view_weixin_menu.xml",
-        "view_weixin_htmlmsg.xml"
-    ],
+    'depends': ['hr', 'hr_holidays','vnsoft_base'],
+    'data': [  "rhwl_view_hr.xml", ],
     "qweb":[],
     'demo': [],
     'test': [],

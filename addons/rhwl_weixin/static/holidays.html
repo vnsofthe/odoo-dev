@@ -1,0 +1,173 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>请假单</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<form class="am-form">
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <label>请假时间起迄</label>
+        </div>
+    </div>
+    <div class="am-g">
+        <div class="am-u-sm-6">
+            <input id="date_from" type="text" class="am-form-field" placeholder="开始日期" data-am-datepicker readonly/>
+        </div>
+        <div class="am-u-sm-4 am-u-end">
+            <select id="time_from" >
+              <option value="08:30">08:30</option>
+              <option value="09:00">09:00</option>
+              <option value="09:30">09:30</option>
+              <option value="10:00">10:00</option>
+              <option value="10:30">10:30</option>
+              <option value="11:00">11:00</option>
+              <option value="11:30">11:30</option>
+              <option value="13:00">13:00</option>
+              <option value="13:30">13:30</option>
+              <option value="14:00">14:00</option>
+              <option value="14:30">14:30</option>
+              <option value="15:00">15:00</option>
+              <option value="15:30">15:30</option>
+              <option value="16:00">16:00</option>
+              <option value="16:30">16:30</option>
+              <option value="17:00">17:00</option>
+            </select>
+        </div>
+    </div>
+    <div class="am-g">
+        <div class="am-u-sm-6">
+             <input id="date_to" type="text" class="am-form-field" placeholder="结束日期" data-am-datepicker readonly/>
+        </div>
+        <div class="am-u-sm-4 am-u-end">
+            <select id="time_to" >
+              <option value="09:00">09:00</option>
+              <option value="09:30">09:30</option>
+              <option value="10:00">10:00</option>
+              <option value="10:30">10:30</option>
+              <option value="11:00">11:00</option>
+              <option value="11:30">11:30</option>
+              <option value="11:30">12:00</option>
+              <option value="13:30">13:30</option>
+              <option value="14:00">14:00</option>
+              <option value="14:30">14:30</option>
+              <option value="15:00">15:00</option>
+              <option value="15:30">15:30</option>
+              <option value="16:00">16:00</option>
+              <option value="16:30">16:30</option>
+              <option value="17:00">17:00</option>
+              <option value="17:30" selected>17:30</option>
+            </select>
+        </div>
+    </div>
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <label>请假类别</label>
+        </div>
+    </div>
+    <div class="am-g">
+        <div class="am-u-sm-6">
+            <select id="holidays_status" >
+
+            </select>
+        </div>
+    </div>
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <label>请假事由</label>
+        </div>
+    </div>
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <input id="remark" type="text" class="am-form-field"/>
+        </div>
+    </div>
+    <br>
+    <div class="am-g">
+        <div class="am-u-sm-12">
+            <button id="sub_btn" type="button" class="am-btn am-btn-primary">提交</button>
+         </div>
+    </div>
+</form>
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+        $.ajax({
+		  type: 'POST',
+		  url: "/web/api/hr_holidays_status/?openid="+$.getUrlVar('openid'),
+		  data: {},
+		  success: function(data){
+              $.each(data,function(k,v){
+
+                  $("#holidays_status").append('<option value="'+v[0]+'">'+v[1]+'</option>');
+              });
+		  }
+		});
+        $("#sub_btn").bind("click",function(e){
+            var date_from=$("#date_from").val();
+            var date_to=$("#date_to").val();
+            var time_from=$("#time_from").val();
+            var time_to=$("#time_to").val();
+            var sel_type=$("#holidays_status").val();
+            var note=$("#remark").val();
+
+            if(date_from=="" || date_to==""){
+                alert("请假日期不能为空。");
+                return false;
+            }
+            if(date_from+' '+time_from >= date_to+' '+time_to){
+                alert("请假起始时间必须小于终止时间。");
+                return false;
+            }
+            $.ajax({
+                type:'POST',
+                url:"/web/api/hr_holidays/?openid="+$.getUrlVar('openid'),
+                data:{note:note,sel_type:sel_type,date_from:date_from+' '+time_from,date_to:date_to+' '+time_to},
+                success:function(data){
+                    console.log(data);
+                    if(data.statu==200){
+                        alert("提交成功！");
+                        location.reload();
+                    }else{
+                        alert("提交申请失败。"+data.errtext);
+                    };
+                }
+            });;
+        });
+  });
+</script>
+</body>
+</html>
