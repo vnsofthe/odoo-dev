@@ -161,6 +161,7 @@ function sale_report2(){
         url: "/web/charts/sale2/?openid=" + $.getUrlVar("openid"),
         data: {},
         success: function (data) {
+            console.log(data);
             $.each(data,function(i,v){
                 option.xAxis[0].data[i] = v[1];
                 option.xAxis[1].data[i] = v[1];
