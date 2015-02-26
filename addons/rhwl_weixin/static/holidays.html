@@ -91,7 +91,7 @@
         </div>
     </div>
     <div class="am-g">
-        <div class="am-u-sm-6">
+        <div class="am-u-sm-10">
             <select id="holidays_status" >
 
             </select>
@@ -160,7 +160,8 @@
                     console.log(data);
                     if(data.statu==200){
                         alert("提交成功！");
-                        location.reload();
+                        window.history.back();
+
                     }else{
                         alert("提交申请失败。"+data.errtext);
                     };

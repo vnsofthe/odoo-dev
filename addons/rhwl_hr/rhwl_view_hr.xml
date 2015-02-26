@@ -35,7 +35,7 @@
         <record id="holidays_approve_email" model="email.template">
             <field name="name">approve holidays</field>
             <field name="model_id" ref="hr_holidays.model_hr_holidays"/>
-            <field name="email_from"><![CDATA[${object.company_id.name} <${(object.company_id.email or user.email)|safe}>]]></field>
+            <field name="email_from"><![CDATA[${object.employee_id.name} <${(object.employee_id.work_email or user.email)|safe}>]]></field>
             <field name="email_to">${(object.employee_id.parent_id.work_email or object.department_id.manager_id.work_email)|safe}</field>
             <field name="subject">请假单审核</field>
             <field name="body_html"><![CDATA[
