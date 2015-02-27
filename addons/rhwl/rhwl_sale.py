@@ -443,7 +443,11 @@ class rhwl_sample_info(osv.osv):
         self.pool.get("sale.order").write(cr, uid, order_id, {'order_line': [(6, 0, [orderline_id])]})
         self.pool.get("sale.order").action_button_confirm(cr, SUPERUSER_ID, (order_id,))
         move_obj = self.pool.get("stock.move")
-        move_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('origin','=',self.pool.get("sale.order").browse(cr,SUPERUSER_ID,order_id,context=context).name)],context=context)
+        ori_name=self.pool.get("sale.order").browse(cr,SUPERUSER_ID,order_id,context=context).name
+        move_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('origin','=',ori_name)],context=context)
+        move_dest_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('move_dest_id','=',move_id)],context=context)
+        if move_dest_id:
+            move_obj.action_done(cr,SUPERUSER_ID,move_dest_id,context=context)
         move_obj.action_done(cr,SUPERUSER_ID,move_id,context=context)
 
 class rhwl_sample_lims(osv.osv):
