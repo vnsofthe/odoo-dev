@@ -3,7 +3,7 @@
 	<data noupdate="1">  <!-- 'noupdate' means existing data is *not* overwritten when module is updated -->
 		<record id="pentaho_server_url" model="ir.config_parameter">
 			<field name="key">pentaho.server.url</field>
-			<field name="value">http://localhost:8090/pentaho</field>
+			<field name="value">http://localhost:8080/pentaho-reports-for-openerp</field>
 		</record>
 
 		<record id="pentaho_openerp_xml_interface" model="ir.config_parameter">
@@ -28,12 +28,12 @@
 
 		<record id="pentaho_postgres_login" model="ir.config_parameter">
 			<field name="key">pentaho.postgres.login</field>
-			<field name="value">odoo</field>
+			<field name="value">openerp</field>
 		</record>
 
 		<record id="pentaho_postgres_password" model="ir.config_parameter">
 			<field name="key">pentaho.postgres.password</field>
-			<field name="value">postgres</field>
+			<field name="value">openerp</field>
 		</record>
 	</data>
 </openerp>
