@@ -279,6 +279,9 @@ instance.web_kanban.KanbanView = instance.web.View.extend({
                 var def = $.when([]);
                 var dataset = new instance.web.DataSetSearch(self, self.dataset.model,
                     new instance.web.CompoundContext(self.dataset.get_context(), group.model.context()), group.model.domain());
+                if (self.dataset._sort) {
+                    dataset.set_sort(self.dataset._sort);
+                }
                 if (group.attributes.length >= 1) {
                     def = dataset.read_slice(self.fields_keys.concat(['__last_update']), { 'limit': self.limit });
                 }
@@ -1297,8 +1300,14 @@ instance.web_kanban.Priority = instance.web_kanban.AbstractField.extend({
         var self = this;
         this.record_id = self.parent.id;
         this.priorities = self.prepare_priority();
+        var readonly = this.field && this.field.readonly;
+        if (readonly){
+            this.set('readonly', true);
+        }
         this.$el = $(QWeb.render("Priority", {'widget': this}));
-        this.$el.find('li').click(self.do_action.bind(self));
+        if (!readonly){
+            this.$el.find('li').click(self.do_action.bind(self));
+        }
     },
     do_action: function(e) {
         var self = this;
