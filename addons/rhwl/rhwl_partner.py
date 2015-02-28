@@ -54,7 +54,8 @@ class rhwl_partner(osv.osv):
         'function_sel': fields.selection(
             [(u"主任", u"主任"), (u"副主任", u"副主任"), (u"主治", u"主治"), (u'住院', u'住院'), (u'护士长', u'护士长'), (u'护士', u'护士'),
              (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),
-
+        "product_cost":fields.float(u'试管成本收费', required=True, digits_compute=dp.get_precision('Product Price')),
+        "proxy_partner":fields.many2one("res.partner",u"上级代理",domain="[('is_company', '=', True),('customer','=',True)]"),
     }
 
     _defaults = {

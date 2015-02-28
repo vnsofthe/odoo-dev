@@ -408,7 +408,7 @@ class rhwl_sample_info(osv.osv):
             w_id = w_id[0]
         vals = {
             "partner_id": cxys.cxys.id,
-            "partner_invoice_id":cxys.cxys.parent_id.id,
+            "partner_invoice_id":cxys.cxys.parent_id.proxy_partner.id and cxys.cxys.parent_id.proxy_partner.id or cxys.cxys.parent_id.id,
             "client_order_ref": cxys.name,
             "warehouse_id": w_id,
             "pricelist_id": 1,
@@ -420,6 +420,8 @@ class rhwl_sample_info(osv.osv):
         if cxys.is_free == '0':
             partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
             amt = partner.amt
+            if amt<=0:
+                raise osv.except_osv(_('Error'),u"此样品为收费项目，但采血医院未设置收费金额。")
         else:
             amt = 0
 
@@ -431,10 +433,10 @@ class rhwl_sample_info(osv.osv):
                 express = express[0]
             pid = express.product_id.id
         else:
-            pid = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True), ("active", "=", True)],
+            pid = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True),("default_code", "=", 'P001')],
                                                              context=context)
             if not pid:
-               raise osv.except_osv(_('Error'), u"请先建立一笔可销售的产品资料。")
+                raise osv.except_osv(_('Error'), u"请先建立一笔可销售的产品资料。")
             if isinstance(pid, (list, tuple)):
                 pid = pid[0]
         orderline = self.pool.get("sale.order.line")

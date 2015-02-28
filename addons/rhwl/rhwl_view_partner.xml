@@ -48,6 +48,7 @@
                                    widget="radio"/>
                             <field name="zydb"
                                    attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                            <field name="proxy_partner"  attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}" options='{"no_open": True,"no_create":True}'/>
                         </group>
                     </xpath>
 
@@ -131,6 +132,8 @@
                     </xpath>
                     <xpath expr="//field[@name='last_reconciliation_date']" position="before">
                         <field name="amt"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="product_cost"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <xpath expr="//field[@name='property_account_position']" position="before">
