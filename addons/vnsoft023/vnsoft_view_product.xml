@@ -50,7 +50,8 @@
                 </xpath>
                 <xpath expr="//field[@name='incoterm']" position="replace">
                 </xpath>
-                <xpath expr="//field[@name='fiscal_position']" position="replace">
+                <xpath expr="//field[@name='fiscal_position']" position="attributes">
+                    <attribute name="attrs">{'invisible':True}</attribute>
                 </xpath>
             </field>
         </record>

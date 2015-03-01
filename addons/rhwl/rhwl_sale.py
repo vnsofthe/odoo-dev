@@ -390,16 +390,8 @@ class rhwl_sample_info(osv.osv):
         for i in ids:
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
-    def action_done(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+    def create_sale_order(self,cr,uid,ids,context=None):
         cxys = self.browse(cr, uid, ids, context=context)
-
-        #如果样品是重采血，则将原来的重采血样品状态改为已重采血
-        if cxys.reuse_name:
-            reuse = self.pool.get("sale.sampleone.reuse").search(cr,uid,[('name','=',cxys.reuse_name.id)],context=context)
-            if reuse:
-                self.pool.get("sale.sampleone.reuse").write(cr,SUPERUSER_ID,reuse,{'state':'reuse'})
-
         warehouse = self.pool.get("stock.warehouse")
         w_id = warehouse.search(cr, uid, [("partner_id", "=", cxys.cxyy.id)], context=context)
         if not w_id:
@@ -415,7 +407,7 @@ class rhwl_sample_info(osv.osv):
             "date_order": cxys.cx_date,
             "user_id":cxys.cxyy.user_id.id
         }
-        _logger.info(vals);
+
         order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
         if cxys.is_free == '0':
             partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
@@ -451,6 +443,18 @@ class rhwl_sample_info(osv.osv):
         if move_dest_id:
             move_obj.action_done(cr,SUPERUSER_ID,move_dest_id,context=context)
         move_obj.action_done(cr,SUPERUSER_ID,move_id,context=context)
+
+    def action_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        cxys = self.browse(cr, uid, ids, context=context)
+
+        #如果样品是重采血，则将原来的重采血样品状态改为已重采血
+        if cxys.reuse_name:
+            reuse = self.pool.get("sale.sampleone.reuse").search(cr,uid,[('name','=',cxys.reuse_name.id)],context=context)
+            if reuse:
+                self.pool.get("sale.sampleone.reuse").write(cr,SUPERUSER_ID,reuse,{'state':'reuse'})
+        self.create_sale_order(cr,uid,ids,context) #建立销售订单
+
 
 class rhwl_sample_lims(osv.osv):
     _name = "sale.sampleone.lims"
