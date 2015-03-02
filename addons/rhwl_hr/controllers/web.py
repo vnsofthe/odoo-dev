@@ -20,6 +20,7 @@ class WebClient(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
 
     def dateTimeTZ(self,dateStr,delta):
+        if not isinstance(dateStr,(str,)):return dateStr
         return (datetime.datetime.strptime(dateStr,"%Y-%m-%d %H:%M:%S") + datetime.timedelta(hours=delta)).strftime("%Y-%m-%d %H:%M:%S")
 
     @http.route('/web/api/hr_holidays_status/', type='http', auth="none")
@@ -101,7 +102,7 @@ class WebClient(http.Controller):
                         res['statu']=500
                         res['errtext']=u"当前用户没有关联员工信息。"
                     else:
-                        ids = hr_holidays.search(cr,uid,[('employee_id','=',emp_id)],order="id desc")
+                        ids = hr_holidays.search(cr,uid,[('employee_id','in',emp_id),('type','=', 'remove')],order="id desc")
                         sel_state = hr_holidays.get_select_state(cr,uid,self.CONTEXT)
                         for i in hr_holidays.browse(cr,uid,ids,context=self.CONTEXT):
                             df = self.dateTimeTZ(i.date_from,8)
@@ -109,5 +110,54 @@ class WebClient(http.Controller):
                             res['data'].append((i.id,df,dt,i.holiday_status_id.name,i.name,sel_state.get(i.state)))
                 except:
                     res['statu']=500
+        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/holidays/approve/",type='http',auth="none")
+    def approve_holidays(self,**kw):
+        res = wb.WebClient().check_userinfo(kw)
+        registry = RegistryManager.get(request.session.db)
+        if res['statu']==200:
+            uid = res['userid']
+            res['data']=[]
+            with registry.cursor() as cr:
+                try:
+                    hr_holidays = registry.get("hr.holidays")
+                    emp_obj = registry.get("hr.employee")
+                    emp_id = emp_obj.search(cr,SUPERUSER_ID,[('user_id','=',uid)])
+                    if not emp_id:
+                        res['statu']=500
+                        res['errtext']=u"当前用户没有关联员工信息。"
+                    else:
+                        ids = hr_holidays.search(cr,uid,['|','&',('employee_id.department_id.manager_id.id','in',emp_id),('employee_id.parent_id','=',False),'&',('employee_id.parent_id.id','in',emp_id),('employee_id.parent_id','!=',False),('type','=', 'remove')],order="id desc")
+                        sel_state = hr_holidays.get_select_state(cr,uid,self.CONTEXT)
+                        for i in hr_holidays.browse(cr,uid,ids,context=self.CONTEXT):
+                            df = self.dateTimeTZ(i.date_from,8)
+                            dt = self.dateTimeTZ(i.date_to,8)
+                            res['data'].append((i.id,df,dt,i.holiday_status_id.name,i.name,sel_state.get(i.state),i.state,i.employee_id.name))
+                except Exception,e:
+                    res['statu']=500
+                    res['errtext']=e.message
+        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/holidays/approve/<id>/<state>/",type='http',auth='none')
+    def approve_holidays_submit(self,id,state,**kw):
+        res = wb.WebClient().check_userinfo(kw)
+        registry = RegistryManager.get(request.session.db)
+        if res['statu']==200:
+            uid = res['userid']
+            res['data']=[]
+            with registry.cursor() as cr:
+                try:
+                    hr_holidays = registry.get("hr.holidays")
+                    if state=="success":
+                        hr_holidays.signal_workflow(cr,uid,[int(id),],'validate')
+                    elif state=="danger":
+                        hr_holidays.signal_workflow(cr,uid,[int(id),], 'refuse')
+
+                except Exception,e:
+                    res['statu']=500
+                    res['errtext']=e.message
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)

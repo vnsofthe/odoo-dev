@@ -1,0 +1,123 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>请假批准</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="am-tabs" data-am-tabs>
+  <ul class="am-tabs-nav am-nav am-nav-tabs">
+    <li class="am-active"><a href="#tab1">待审批的请假单</a></li>
+    <li><a href="#tab2">已审批的请假单</a></li>
+  </ul>
+
+  <div class="am-tabs-bd">
+    <div class="am-tab-panel am-fade am-in am-active" id="tab1">
+        <div class="am-panel-group" id="accordion1">
+        </div>
+    </div>
+
+    <div class="am-tab-panel am-fade" id="tab2">
+        <div class="am-panel-group" id="accordion2">
+        </div>
+    </div>
+  </div>
+</div>
+
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+	$.ajax({
+		  type: 'POST',
+		  url: "/web/api/holidays/approve/?openid="+$.getUrlVar('openid'),
+		  data: {},
+		  success: function(data){
+              $.each(data.data,function(k,v) {
+
+                  var idname;
+                  if(v[6]=='confirm'){
+                      idname="#accordion1"
+                  }else{
+                      idname="#accordion2"
+                  }
+                  $(idname).append('\
+                  <div class="am-panel am-panel-default" id="hd-' + v[0] + '">\
+                    <div class="am-panel-hd" >\
+                      <h6 class="am-panel-title" data-am-collapse="{parent: \'#accordion\', target: \'#do-not-say-' + v[0] + '\'}">' +
+                          v[7]+
+                          '</h6>\
+                    </div>\
+                    <div id="do-not-say-' + v[0] + '" class="am-panel-collapse am-collapse">\
+                      <div class="am-panel-bd">' +
+                          '起止时间：'+ v[1]+'-'+v[2] +'<br>' +
+                          '请假类别：' + v[3] + '<br>' +
+                          '请假事由：' + v[4] + '<br>' +
+                          '状态：' + v[5] +
+                          '</div>\
+                    </div>\
+                  </div>');
+                  if(v[6]=='confirm'){
+                      $("#do-not-say-"+v[0]+" div").append('\
+                      <div><button id="btn_success_'+v[0]+'" type="button" class="am-btn am-btn-success">同意</button><span> </span><button id="btn_danger_'+v[0]+'" type="button" class="am-btn am-btn-danger">拒绝</button></div>');
+                  }
+                  if(v[6]=="refuse"){
+                      $("#hd-"+v[0]).removeClass("am-panel-default").addClass("am-panel-danger");
+                  }
+
+              });
+              $("#accordion1 .am-btn").bind("click",function(e){
+                  var s = e.target.id.split('_');
+
+                  $.ajax({
+                      type: 'POST',
+                      url: "/web/api/holidays/approve/" + s[2] + "/" + s[1] + "/?openid=" + $.getUrlVar('openid'),
+                      data: {},
+                      success: function (data) {
+                          if(data.statu==200){
+                              console.log(data);
+                          }else{
+                              alert("处理失败");
+                          }
+
+                      }
+                  });
+              });
+		  }
+		});
+  });
+</script>
+</body>
+</html>
