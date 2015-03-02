@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="vnsoft023_partner_bank_form" model="ir.ui.view">
+            <field name="name">vnsoft023.partner.bank.form</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="base.view_partner_bank_form"/>
+            <field name="arch" type="xml">
+                <data>
+                <xpath expr="//field[@name='country_id']" position="attributes">
+                    <attribute name="attrs">{'invisible':True}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='state_id']" position="attributes">
+                    <attribute name="attrs">{'invisible':True}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='city']" position="attributes">
+                    <attribute name="attrs">{'invisible':True}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='zip']" position="attributes">
+                    <attribute name="attrs">{'invisible':True}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='bank']" position="attributes">
+                    <attribute name="attrs">{'invisible':True}</attribute>
+                </xpath>
+                </data>
+            </field>
+        </record>
+        <record id="vnsoft023_view_partner_form" model="ir.ui.view">
+            <field name="name">vnsoft023.view.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                    <xpath expr="//form[@string='Contact']/sheet/group/field[@name='phone']" position="after">
+                        <field name="fax"/>
+                    </xpath>
+                    <xpath expr="//page[@name='sales_purchases']/group/group/field[@name='user_id']" position="attributes">
+                        <attribute name="attrs">{'required':[("is_company","=",True)]}</attribute>
+                    </xpath>
+            </field>
+        </record>
+
+
+        <record id="vnsoft023_view_order_form" model="ir.ui.view">
+            <field name="name">vnsoft023.view.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                    <xpath expr="//field[@name='partner_id']" position="attributes">
+                        <attribute name="domain">[('customer','=',True),('is_company','=',False)]</attribute>
+                    </xpath>
+            </field>
+        </record>
+
+        <record id="vnsoft023_view_purchase_order_form" model="ir.ui.view">
+            <field name="name">vnsoft023.purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                    <xpath expr="//field[@name='partner_id']" position="attributes">
+                        <attribute name="domain">[('supplier','=',True),('is_company','=',False)]</attribute>
+                    </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
