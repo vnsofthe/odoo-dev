@@ -60,16 +60,25 @@
 <script>
   $(function() {
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+        $(document).ajaxStart(function(){
+            $("<div id=\"wait_ajax\">数据加载中，请稍候......</div>").prependTo($(".am-tabs"));
+            });
+        $(document).ajaxStop(function(){
+            $("#wait_ajax").remove();
+            });
 	$.ajax({
 		  type: 'POST',
 		  url: "/web/api/holidays/approve/?openid="+$.getUrlVar('openid'),
 		  data: {},
 		  success: function(data){
+              var count1=0;
+
               $.each(data.data,function(k,v) {
 
                   var idname;
                   if(v[6]=='confirm'){
                       idname="#accordion1"
+                      count1 +=1;
                   }else{
                       idname="#accordion2"
                   }
@@ -85,7 +94,7 @@
                           '起止时间：'+ v[1]+'-'+v[2] +'<br>' +
                           '请假类别：' + v[3] + '<br>' +
                           '请假事由：' + v[4] + '<br>' +
-                          '状态：' + v[5] +
+                          '状态：' + '<span >'+v[5] +'</span>'+
                           '</div>\
                     </div>\
                   </div>');
@@ -96,22 +105,26 @@
                   if(v[6]=="refuse"){
                       $("#hd-"+v[0]).removeClass("am-panel-default").addClass("am-panel-danger");
                   }
-
               });
+              if(count1==0){
+                  $("#tab1").append("暂无待审批单据！");
+              }
               $("#accordion1 .am-btn").bind("click",function(e){
                   var s = e.target.id.split('_');
-
                   $.ajax({
                       type: 'POST',
                       url: "/web/api/holidays/approve/" + s[2] + "/" + s[1] + "/?openid=" + $.getUrlVar('openid'),
                       data: {},
                       success: function (data) {
                           if(data.statu==200){
-                              console.log(data);
+
+                              $("#hd-"+s[2]).appendTo("#accordion2");
+                              $("#hd-"+s[2]+" .am-btn").parent().remove();
+                              $("#do-not-say-" + s[2]+" div span").text(s[1]=="success"?"已批准":"已拒绝")
+                                      //.setParent($("accordion2"));
                           }else{
                               alert("处理失败");
                           }
-
                       }
                   });
               });
