@@ -21,3 +21,43 @@ msgstr "库存产品拆分"
 #: field:stock.change,name:0
 msgid "name"
 msgstr "单据号"
+
+#. module: vnsoft01
+#: field:stock.change,product_from:0
+msgid "Product From"
+msgstr "来源产品"
+
+#. module: vnsoft01
+#: field:stock.change,location_from:0
+msgid "From Location"
+msgstr "来源库位"
+
+#. module: vnsoft01
+#: field:stock.change,from_qty:0
+msgid "Qty of From"
+msgstr "产品数量"
+
+#. module: vnsoft01
+#: field:stock.change,date:0
+msgid "Date"
+msgstr "日期"
+
+#. module: vnsoft01
+#: field:stock.change,date:0
+msgid "Date"
+msgstr "日期"
+
+#. module: vnsoft01
+#: field:stock.change.line,product_to:0
+msgid "Product To"
+msgstr "拆分新产品"
+
+#. module: vnsoft01
+#: field:stock.change.line,location_to:0
+msgid "To Location"
+msgstr "新产品库位"
+
+#. module: vnsoft01
+#: field:stock.change.line,rate:0
+msgid "Rate"
+msgstr "拆分比率"
