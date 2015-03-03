@@ -391,33 +391,39 @@ class rhwl_sample_info(osv.osv):
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
 
     def create_sale_order(self,cr,uid,ids,context=None):
-        cxys = self.browse(cr, uid, ids, context=context)
+        obj = self.browse(cr, uid, ids, context=context) #取得记录对象
+        if obj.cxyy.payment_kind=="proxy":
+            if not obj.cxys.parent_id.proxy_partner.id:
+                raise osv.except_osv(_("Error"),u"采血医院的收费方式为代理收费，但没有设置该医院的代理商。")
+            inv_id = obj.cxys.parent_id.proxy_partner.id
+        else:
+            inv_id = obj.cxys.parent_id.id
         warehouse = self.pool.get("stock.warehouse")
-        w_id = warehouse.search(cr, uid, [("partner_id", "=", cxys.cxyy.id)], context=context)
+        w_id = warehouse.search(cr, uid, [("partner_id", "=", obj.cxyy.id)], context=context)#取采血医院的仓库
         if not w_id:
             raise osv.except_osv(_("Error"), u"采血医院无关联的仓库信息，不能做确认。")
         if isinstance(w_id, (list, tuple)):
             w_id = w_id[0]
         vals = {
-            "partner_id": cxys.cxys.id,
-            "partner_invoice_id":cxys.cxys.parent_id.proxy_partner.id and cxys.cxys.parent_id.proxy_partner.id or cxys.cxys.parent_id.id,
-            "client_order_ref": cxys.name,
+            "partner_id": obj.cxys.id,
+            "partner_invoice_id":inv_id,
+            "client_order_ref": obj.name,
             "warehouse_id": w_id,
             "pricelist_id": 1,
-            "date_order": cxys.cx_date,
-            "user_id":cxys.cxyy.user_id.id
+            "date_order": obj.cx_date,
+            "user_id":obj.cxyy.user_id.id
         }
 
         order_id = self.pool.get("sale.order").create(cr, uid, vals, context=context)
-        if cxys.is_free == '0':
-            partner = self.pool.get("res.partner").browse(cr, uid, cxys.cxyy.id, context=context)
+        if obj.is_free == '0':
+            partner = self.pool.get("res.partner").browse(cr, uid, obj.cxyy.id, context=context)
             amt = partner.amt
             if amt<=0:
                 raise osv.except_osv(_('Error'),u"此样品为收费项目，但采血医院未设置收费金额。")
         else:
             amt = 0
 
-        express = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", cxys.name)],
+        express = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", obj.name)],
                                                                 context=context)
         if express:
             express = self.pool.get("stock.picking.express").browse(cr, uid, express, context=context)

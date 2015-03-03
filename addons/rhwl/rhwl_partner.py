@@ -56,6 +56,7 @@ class rhwl_partner(osv.osv):
              (u'销售助理', u'销售助理'), (u'销售', u'销售')], u'职位'),
         "product_cost":fields.float(u'试管成本收费', required=True, digits_compute=dp.get_precision('Product Price')),
         "proxy_partner":fields.many2one("res.partner",u"上级代理",domain="[('is_company', '=', True),('customer','=',True)]"),
+        "payment_kind":fields.selection([('hospital',u"医院代收"),('proxy',u'经销商代收'),('pos',u'POS机收费'),('cash',u'现金')],string=u"收费方式", required=True),
     }
 
     _defaults = {
@@ -63,6 +64,7 @@ class rhwl_partner(osv.osv):
         "amt": 0,
         "dev_user_id": lambda obj, cr, uid, context: uid,
         "user_id":lambda obj, cr, uid, context: uid,
+        "payment_kind":lambda obj,cr,uid,context:"hospital",
     }
 
     def init(self, cr):
