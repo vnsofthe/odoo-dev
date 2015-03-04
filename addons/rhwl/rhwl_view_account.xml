@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_account_invoice_tree_view">
+            <field name="name">rhwl.account.invoice.tree.view</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='origin']" position="after">
+                        <field name="page_inv_no" />
+                    </xpath>
+                 </data>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_account_invoice_tree_form">
+            <field name="name">rhwl.account.invoice.tree.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='fiscal_position']" position="after">
+                        <field name="page_inv_no" />
+                    </xpath>
+                 </data>
+            </field>
+        </record>
+    </data>
+</openerp>
