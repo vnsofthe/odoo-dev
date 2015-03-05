@@ -8,7 +8,8 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='minimum_planned_date']" position="before">
-
+                        <field name="order_kind" />
+                        <field name="tariff" />
                     </xpath>
                  </data>
             </field>

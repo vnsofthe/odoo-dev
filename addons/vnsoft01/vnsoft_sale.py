@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from openerp import SUPERUSER_ID
-from openerp.osv import fields, osv
+from openerp import models, fields, api, _
 import openerp.addons.decimal_precision as dp
 import datetime
 
-class vnsoft_sale(osv.osv):
+class vnsoft_sale(models.Model):
     _inherit = "sale.order"
+    _name = "sale.order"
 
-    _columns={
-        "research_group":fields.char("Research Group",size=50),
-        "order_user":fields.many2one("res.partner",string="Order User"),
-        "order_kind":fields.selection([("internal",u"国内"),("export",u"出口"),("export_approve",u"出口审批")],"Order Kind"),
-        "tariff":fields.float('Tariff', digits_compute=dp.get_precision('Product Price')),
-    }
+    research_group = fields.Char("Research Group",size=50)
+    order_user = fields.Many2one("res.partner",string="Order User")
+    order_kind = fields.Selection([("internal",u"国内"),("export",u"进口"),("export_approve",u"进口审批")],"Order Kind")
+    tariff = fields.Float('Tariff', digits_compute=dp.get_precision('Product Price'))
 
+    @api.one
     def action_invoice_create(self, cr, uid, ids, grouped=False, states=None, date_invoice = False, context=None):
         order_group={}
         for i in self.browse(cr,uid,ids,context=context):

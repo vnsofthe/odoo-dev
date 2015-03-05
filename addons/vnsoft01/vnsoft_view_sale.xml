@@ -12,7 +12,8 @@
                          <field name="order_user" />
                     </xpath>
                     <xpath expr="//group[@name='sales_person']/field[@name='origin']" position="after">
-
+                        <field name="order_kind" />
+                        <field name="tariff" />
                     </xpath>
                  </data>
             </field>

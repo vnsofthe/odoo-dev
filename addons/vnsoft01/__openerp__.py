@@ -16,7 +16,7 @@ Odoo 二次开发
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
-    'depends': ['base', 'vnsoft_base','product','web','sale','purchase','account',"auth_crypt"],
+    'depends': ['base', 'vnsoft_base','sale','purchase','account',"auth_crypt"],
     'data': ["vnsoft_view_product.xml",
                 "vnsoft_view_sale.xml",
                 "vnsoft_view_account.xml",

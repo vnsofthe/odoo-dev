@@ -67,3 +67,9 @@ msgstr "拆分比率"
 #: field:purchase.order,tariff:0
 msgid "Tariff"
 msgstr "关税"
+
+#. module: vnsoft01
+#: field:sale.order,order_kind:0
+#: field:purchase.order,order_kind:0
+msgid "Order Kind"
+msgstr "订单类型"
