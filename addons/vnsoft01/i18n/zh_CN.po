@@ -61,3 +61,9 @@ msgstr "新产品库位"
 #: field:stock.change.line,rate:0
 msgid "Rate"
 msgstr "拆分比率"
+
+#. module: vnsoft01
+#: field:sale.order,tariff:0
+#: field:purchase.order,tariff:0
+msgid "Tariff"
+msgstr "关税"

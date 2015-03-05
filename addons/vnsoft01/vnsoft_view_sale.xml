@@ -11,6 +11,9 @@
                         <field name="research_group" />
                          <field name="order_user" />
                     </xpath>
+                    <xpath expr="//group[@name='sales_person']/field[@name='origin']" position="after">
+
+                    </xpath>
                  </data>
             </field>
         </record>

@@ -10,7 +10,9 @@ class vnsoft_sale(osv.osv):
 
     _columns={
         "research_group":fields.char("Research Group",size=50),
-        "order_user":fields.many2one("res.partner",string="Order User")
+        "order_user":fields.many2one("res.partner",string="Order User"),
+        "order_kind":fields.selection([("internal",u"国内"),("export",u"出口"),("export_approve",u"出口审批")],"Order Kind"),
+        "tariff":fields.float('Tariff', digits_compute=dp.get_precision('Product Price')),
     }
 
     def action_invoice_create(self, cr, uid, ids, grouped=False, states=None, date_invoice = False, context=None):
