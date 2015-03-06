@@ -36,30 +36,41 @@
                     <xpath expr="//page[@name='sales_purchases']/group/group/field[@name='user_id']" position="attributes">
                         <attribute name="attrs">{'required':[("is_company","=",True)]}</attribute>
                     </xpath>
+                <xpath expr="//field[@name='debit']" position="after">
+                   <field name="tax_no" />
+                </xpath>
             </field>
         </record>
 
-
-        <record id="vnsoft023_view_order_form" model="ir.ui.view">
-            <field name="name">vnsoft023.view.order.form</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
+        <record model="ir.ui.view" id="vnsoft023_view_sale_purchase">
+            <field name="name">vnsoft023.view.sale.purchase</field>
+            <field name="model">sale.order.purchase</field>
             <field name="arch" type="xml">
-                    <xpath expr="//field[@name='partner_id']" position="attributes">
-                        <attribute name="domain">[('customer','=',True),('is_company','=',False)]</attribute>
-                    </xpath>
+                <form>
+                    <group>
+                        <field name="name" attrs="{'readonly':True}"/>
+
+                    </group>
+                    <notebook>
+                        <page string="订单明细">
+                        <field name="line">
+                            <tree editable="bottom">
+                                <field name="product_id" attrs="{'readonly':True,'required':True}"/>
+                                <field name="brand"/>
+                                <field name="product_qty" attrs="{'readonly':True}"/>
+                                <field name="partner_id" attrs="{'required':True}"/>
+                            </tree>
+                        </field>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button name="do_create" string="确认" type="object"  class="oe_highlight"  />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
             </field>
         </record>
 
-        <record id="vnsoft023_view_purchase_order_form" model="ir.ui.view">
-            <field name="name">vnsoft023.purchase.order.form</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_form"/>
-            <field name="arch" type="xml">
-                    <xpath expr="//field[@name='partner_id']" position="attributes">
-                        <attribute name="domain">[('supplier','=',True),('is_company','=',False)]</attribute>
-                    </xpath>
-            </field>
-        </record>
     </data>
 </openerp>
