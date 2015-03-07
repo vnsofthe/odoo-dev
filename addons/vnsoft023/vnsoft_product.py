@@ -52,7 +52,12 @@ class vnsoft_sale_order(osv.osv):
     def do_create_purchase(self,cr,uid,ids,context=None):
         res=self.browse(cr,uid,ids,context=context)
         res_id=[]
-        _logger.info(dir(self.pool))
+        detail_id = self.pool.get("purchase.order").search(cr,uid,[('origin','=',res.name)],context=context)
+        if detail_id:
+            result = self.pool.get("product.template")._get_act_window_dict(cr, uid, 'purchase.purchase_rfq', context=context)
+            result['domain'] = "[('id','in',[" + ','.join(map(str, detail_id)) + "])]"
+            return result
+
         #for i in res.order_line:
             #res_id.append(self.pool.get("sale.order.purchase").create(cr,uid,{"name":res.id,"product_id":i.product_id.id},context=context))
         return {'type': 'ir.actions.act_window',
@@ -113,6 +118,7 @@ class vnsoft_purchase(osv.osv_memory):
         d={}
         res_id=[]
         obj=self.browse(cr,uid,ids)
+
         for i in obj.line:
             if d.has_key(i.partner_id.id):
                d[i.partner_id.id].append([i.product_id.id,i.product_qty])
@@ -141,12 +147,8 @@ class vnsoft_purchase(osv.osv_memory):
 
             res_id.append(self.pool.get("purchase.order").create(cr,uid,val,context=context))
 
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
-
-        result = mod_obj.get_object_reference(cr, uid, 'purchase', 'purchase_rfq')
-        id = result and result[1] or False
-        result = act_obj.read(cr, uid, [id], context=context)
+        result = self.pool.get("product.template")._get_act_window_dict(cr, uid, 'purchase.purchase_rfq', context=context)
+        result['domain'] = "[('id','in',[" + ','.join(map(str, res_id)) + "])]"
         return result
 
 class vnsoft_purchase_line(osv.osv_memory):
@@ -157,7 +159,7 @@ class vnsoft_purchase_line(osv.osv_memory):
          "brand":fields.related('product_id', 'brand', type='char', string=u'品牌', readonly=1),
          "product_qty": fields.float(u'数量', digits_compute=dp.get_precision('Product Unit of Measure'),
                                     required=True),
-        "partner_id":fields.many2one("res.partner",u"供应商")
+        "partner_id":fields.many2one("res.partner",u"供应商",domain="[('is_company','=',False)]")
     }
 
 class vnsoft_purchase_order(osv.osv):
