@@ -18,7 +18,7 @@ _logger = logging.getLogger(__name__)
 
 class weixin(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
-    HOSTNAME="http://www.vnsoft.cn"
+    HOSTNAME="http://erp.genetalks.com"
 
     def checkSignature(self,signature,timestamp,nonce):
         """检查是否微信官方通信请求。"""
