@@ -494,6 +494,23 @@ class WebClient(http.Controller):
 
         return data
 
+    @http.route("/web/api/hr/address_list/",type="http",auth="public")
+    def address_list(self,**kw):
+        res = self.check_userinfo(kw)
+        data = []
+        if res.get('statu')==200:
+            uid = res.get("userid")
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                obj = registry.get("hr.employee")
+                ids = obj.search(cr,uid,[("department_id","!=",False)],context=self.CONTEXT)
+                for i in obj.browse(cr,uid,ids,context=self.CONTEXT):
+                    data.append((i.department_id.id,i.department_id.name,i.name,i.user_id.mobile and i.user_id.mobile or i.mobile_phone))
+        else:
+            data = res
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
 """<?xml version='1.0' encoding='UTF-8'?>
 <Response service="RouteService">
 <Head>OK</Head><Body><RouteResponse mailno="106119552844">
