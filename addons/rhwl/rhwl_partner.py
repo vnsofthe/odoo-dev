@@ -65,6 +65,7 @@ class rhwl_partner(osv.osv):
         "dev_user_id": lambda obj, cr, uid, context: uid,
         "user_id":lambda obj, cr, uid, context: uid,
         "payment_kind":lambda obj,cr,uid,context:"hospital",
+        "product_cost":0
     }
 
     def init(self, cr):
