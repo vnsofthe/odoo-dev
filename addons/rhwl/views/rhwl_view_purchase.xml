@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="purchase_apply_view_tree">
+            <field name="name">purchase.apply.view.tree</field>
+            <field name="model">purchase.order.apply</field>
+            <field name="arch" type="xml">
+                <tree string="Purchase Apply" >
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="dept"/>
+                    <field name="user_id"/>
+                    <field name="need_date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="purchase_apply_view_form">
+            <field name="name">purchase.apply.view.form</field>
+            <field name="model">purchase.order.apply</field>
+            <field name="arch" type="xml">
+                <form string="Purchase Apply">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,refuse"
+                               statusbar_colors='{"refuse":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet >
+                        <group>
+                            <group>
+                                 <field name="name"/>
+                                <field name="user_id"/>
+                                <field name="dept"/>
+                                <field name="reason"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="need_date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="申请物料明细">
+                                <field name="line">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="qty"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="备注">
+                                <field name="note"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="purchase_apply_search">
+            <field name="name">purchase.apply.search</field>
+            <field name="model">purchase.order.apply</field>
+            <field name="arch" type="xml">
+                <search string="Purchase Apply">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="部门" icon="terp-partner" domain="[]" context="{'group_by':'dept'}"/>
+                        <filter string="申请日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_purchase_order_apply" model="ir.actions.act_window">
+            <field name="name">采购申请</field>
+            <field name="res_model">purchase.order.apply</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_purchase_order_apply" parent="purchase.menu_procurement_management" name="采购申请" sequence="1"
+                  action='action_purchase_order_apply'/>
+    </data>
+</openerp>

@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+
+from openerp import SUPERUSER_ID
+from openerp.osv import fields, osv
+from openerp.tools.translate import _
+import openerp.addons.decimal_precision as dp
+from openerp import tools, api
+import datetime
+
+class purchase_apply(osv.osv):
+    _name = "purchase.order.apply"
+    _describe = "Purchase Apply"
+
+    def _get_dept(self,cr,uid,context=None):
+        id = self.pool.get("hr.employee").search(cr,uid,[('user_id.id','=',uid)],context=context)
+        if not id:
+            return False
+        obj=self.pool.get("hr.employee").browse(cr,uid,id,context=context)
+        return obj.department_id.id
+
+    _columns = {
+        "name":fields.char(u"申请单号",size=20,readonly=True),
+        "date":fields.date(u"申请日期",required=True,),
+        "dept":fields.many2one("hr.department",u"部门",required=True),
+        "user_id":fields.many2one("res.users",u"申请人",required=True,readonly=True),
+        "need_date":fields.date(u"需求日期"),
+        "reason":fields.char(u"申请事由"),
+        "state":fields.selection([("darft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成"),("dept",u"部门批准"),("inspector",u"总监批准"),("account",u"财务核准"),("chief",u"总裁批准")],u"状态"),
+        "note":fields.text(u"备注"),
+        "line":fields.one2many("purchase.order.apply.line","name","Detail"),
+    }
+    _defaults={
+        "date":fields.date.today,
+        "user_id":lambda obj,cr,uid,context:uid,
+        "dept":_get_dept,
+        "state":"darft"
+    }
+
+    def create(self, cr, uid, vals, context=None):
+        if context is None:
+            context = {}
+        if vals.get('name', '/') == '/':
+            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'purchase.apply') or '/'
+        return super(purchase_apply,self).create(cr,uid,vals,context)
+
+class purchase_apply_line(osv.osv):
+    _name = "purchase.order.apply.line"
+    _columns={
+        "name":fields.many2one("purchase.order.apply",u"申请单号"),
+        "product_id":fields.many2one("product.product",u"产品",required=True,domain=[('purchase_ok','=',True)]),
+        "qty":fields.float(u"数量",digits_compute=dp.get_precision('Product Unit of Measure'),required=True),
+        "price":fields.float(u"单价",digits_compute=dp.get_precision('Product Price')),
+        "partner_id":fields.many2one("res.partner",u"供应商"),
+        "note":fields.char(u"备注")
+    }

@@ -29,7 +29,9 @@ CRM业务增加模块
              "report/rhwl_sample_one.xml",
              "rhwl_view_company.xml",
              "rhwl_sample_import.xml",
-             "rhwl_view_account.xml"
+             "rhwl_view_account.xml",
+             "views/purchase_apply_sequence.xml",
+             "views/rhwl_view_purchase.xml"
     ],
     "qweb":["static/src/xml/base.xml"],
     'demo': [],
