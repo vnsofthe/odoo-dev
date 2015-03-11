@@ -8,8 +8,9 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='partner_id']" position="after">
+                        <field name="orderuser" />
                         <field name="research_group" />
-                         <field name="order_user" />
+
                     </xpath>
                     <xpath expr="//group[@name='sales_person']/field[@name='origin']" position="after">
                         <field name="order_kind" />
@@ -26,7 +27,7 @@
                 <data>
                     <xpath expr="//field[@name='partner_id']" position="after">
                         <field name="research_group" />
-                         <field name="order_user" />
+                         <field name="orderuser" />
                     </xpath>
                  </data>
             </field>

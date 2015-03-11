@@ -10,7 +10,7 @@ class vnsoft_sale(models.Model):
     _name = "sale.order"
 
     research_group = fields.Char("Research Group",size=50)
-    order_user = fields.Many2one("res.partner",string="Order User")
+    orderuser = fields.Char("Order User",size=20)
     order_kind = fields.Selection([("internal",u"国内"),("export",u"进口"),("export_approve",u"进口审批")],"Order Kind")
     tariff = fields.Float('Tariff', digits_compute=dp.get_precision('Product Price'))
 

@@ -13,3 +13,10 @@ class vnsoft_purchase(osv.osv):
         "tariff":fields.float('Tariff', digits_compute=dp.get_precision('Product Price')),
     }
 
+    def get_columns_values(self,cr,uid,partner_id,context=None):
+        pick = self.pool.get("purchase.order")._get_picking_in(cr,uid)
+        local = self.pool.get("purchase.order").onchange_picking_type_id(cr,uid,0,pick,context=context)
+        val = self.pool.get("purchase.order").onchange_partner_id(cr,uid,0,partner_id,context=context).get("value")
+        val.update(local.get('value'))
+        val.update({'picking_type_id':pick,'partner_id':partner_id})
+        return val

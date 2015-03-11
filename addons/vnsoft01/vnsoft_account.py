@@ -10,5 +10,5 @@ class vnsoft_account(osv.osv):
 
     _columns={
         "research_group":fields.char("Research Group",size=50),
-        "order_user":fields.many2one("res.partner",string="Order User")
+        "orderuser":fields.char("Order User",size=20)
     }

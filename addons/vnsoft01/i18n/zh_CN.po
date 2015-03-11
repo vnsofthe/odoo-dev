@@ -6,8 +6,8 @@ msgid "Research Group"
 msgstr "课题组"
 
 #. module: vnsoft01
-#: field:sale.order,order_user:0
-#: field:account.invoice,order_user:0
+#: field:sale.order,orderuser:0
+#: field:account.invoice,orderuser:0
 msgid "Order User"
 msgstr "下单人员"
 
