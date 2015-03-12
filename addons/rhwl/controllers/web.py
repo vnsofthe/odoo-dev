@@ -268,7 +268,7 @@ class WebClient(http.Controller):
     def app_deliver(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
-        _logger.exception(res)
+
         if res.get('statu')==200:
             id = res.get("params").get("packageID")
             detail = eval(res.get("params").get("demos"))

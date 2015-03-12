@@ -6,7 +6,7 @@ from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 from openerp import tools, api
 import datetime
-
+import logging
 
 class rhwl_stock_warehouse(osv.osv):
     _inherit = "stock.warehouse"
@@ -15,7 +15,7 @@ class rhwl_stock_warehouse(osv.osv):
         print vals
         return super(rhwl_stock_warehouse, self).write(cr, uid, ids, vals, context=context)
 
-
+_logger = logging.getLogger(__name__)
 class rhwl_partner(osv.osv):
     _name = "res.partner"
     _description = "Partner"
