@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="vnsoft020_view_order_form" model="ir.ui.view">
+            <field name="name">vnsoft020.view.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                    <xpath expr="//form/sheet/h1/field[@name='name']" position="after">
+                        <div class="oe_right oe_button_box" name="button_box" attrs="{'invisible':[('state','not in',['progress','manual'])]}">
+                            <button name="do_create_purchase" string="生成采购单" type="object"/>
+                        </div>
+                    </xpath>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="vnsoft020_view_sale_purchase">
+            <field name="name">vnsoft020.view.sale.purchase</field>
+            <field name="model">sale.order.purchase</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name" readonly="context.get('id',False)"/>
+                    </group>
+                    <notebook>
+                        <page string="订单明细">
+                        <field name="line">
+                            <tree editable="bottom">
+                                <field name="product_id" attrs="{'readonly':True,'required':True}"/>
+                                <field name="product_qty" attrs="{'readonly':True}"/>
+                                <field name="partner_id" attrs="{'required':True}"/>
+                            </tree>
+                        </field>
+                        </page>
+                    </notebook>
+                    <footer>
+                        <button name="do_create" string="确认" type="object"  class="oe_highlight"  />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_sale_order_purchase" model="ir.actions.act_window">
+            <field name="name">Purchase Order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order.purchase</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem action="action_sale_order_purchase" id="menu_sale_order_purchase" name="销售明细询价" parent="purchase.menu_procurement_management" sequence="0" groups="purchase.group_purchase_user"/>
+    </data>
+</openerp>

@@ -159,7 +159,7 @@ class vnsoft_purchase_line(osv.osv_memory):
          "brand":fields.related('product_id', 'brand', type='char', string=u'品牌', readonly=1),
          "product_qty": fields.float(u'数量', digits_compute=dp.get_precision('Product Unit of Measure'),
                                     required=True),
-        "partner_id":fields.many2one("res.partner",u"供应商",domain="[('is_company','=',False)]")
+        "partner_id":fields.many2one("res.partner",u"供应商",domain="[('is_company','=',False),('supplier','=',True]")
     }
 
 class vnsoft_purchase_order(osv.osv):
