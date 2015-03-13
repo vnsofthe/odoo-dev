@@ -48,8 +48,20 @@ class purchase_apply_line(osv.osv):
     _columns={
         "name":fields.many2one("purchase.order.apply",u"申请单号"),
         "product_id":fields.many2one("product.product",u"产品",required=True,domain=[('purchase_ok','=',True)]),
+        "brand":fields.related("product_id","brand",type="char",string=u"品牌",readonly=True),
+        "default_code":fields.related("product_id","default_code",type="char",string=u"货号",readonly=True),
+        "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
         "qty":fields.float(u"数量",digits_compute=dp.get_precision('Product Unit of Measure'),required=True),
         "price":fields.float(u"单价",digits_compute=dp.get_precision('Product Price')),
         "partner_id":fields.many2one("res.partner",u"供应商"),
         "note":fields.char(u"备注")
     }
+
+    @api.onchange("product_id")
+    def _onchange_product(self):
+        if self.product_id:
+            obj = self.env["product.product"].browse(self.product_id.id)
+            self.brand = obj.brand
+            self.default_code = obj.default_code
+            self.attribute = obj.attribute_value_ids
+

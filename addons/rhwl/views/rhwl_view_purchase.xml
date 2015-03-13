@@ -42,6 +42,9 @@
                                 <field name="line">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
+                                        <field name="brand"/>
+                                        <field name="default_code"/>
+                                        <field name="attribute" widget="many2many_tags"/>
                                         <field name="qty"/>
                                         <field name="note"/>
                                     </tree>

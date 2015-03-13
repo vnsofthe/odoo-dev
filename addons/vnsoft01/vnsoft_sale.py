@@ -13,6 +13,7 @@ class vnsoft_sale(models.Model):
     orderuser = fields.Char("Order User",size=20)
     order_kind = fields.Selection([("internal",u"国内"),("export",u"进口"),("export_approve",u"进口审批")],"Order Kind")
     tariff = fields.Float('Tariff', digits_compute=dp.get_precision('Product Price'))
+    web_id = fields.Integer('Web ID')
 
     @api.one
     def action_invoice_create(self, cr, uid, ids, grouped=False, states=None, date_invoice = False, context=None):
@@ -25,3 +26,7 @@ class vnsoft_sale(models.Model):
                 inv_ids=[v.id for v in o.invoice_ids]
                 self.pool.get("account.invoice").write(cr,uid,inv_ids,{"research_group":o.research_group},context)
         return res
+
+class vnsoft_order_line(models.Model):
+    _inherit = "sale.order.line"
+    web_id = fields.Integer('Web ID')

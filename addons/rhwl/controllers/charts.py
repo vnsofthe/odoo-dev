@@ -8,6 +8,7 @@ import datetime
 import logging
 import json
 from . import web
+_logger = logging.getLogger(__name__)
 class WebClient(web.WebClient):
 
     @http.route("/web/charts/sale/",type="http",auth="public")
@@ -20,6 +21,7 @@ class WebClient(web.WebClient):
         with registry.cursor() as cr:
             obj = registry.get("res.partner")
             partner_ids = obj.search(cr,uid,[("sjjysj","!=",False)])
+            _logger.info(partner_ids)
             cr.execute("""
                 with t as (
                 select b.id,b.name,a.cx_date,count(*) as c
@@ -34,7 +36,7 @@ class WebClient(web.WebClient):
                     ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '3 month')::date and t.id=tt.id)
                     ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '6 month')::date and t.id=tt.id)
                     ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '12 month')::date and t.id=tt.id)
-                     from t tt group by id,name""" % (tuple(partner_ids),))
+                     from t tt group by id,name""" % (str(partner_ids).replace('[','(').replace(']',')'),))
             return self.json_return(cr.fetchall())
 
     @http.route("/web/charts/sale2/",type="http",auth="public")
@@ -59,7 +61,7 @@ class WebClient(web.WebClient):
                     ,sum(c)
                     ,(select COALESCE(sum(c),0) from t where check_state='reuse' and t.id=tt.id)
                     ,(select COALESCE(sum(c),0) from t where check_state='except' and t.id=tt.id)
-                     from t tt group by id,name""" % (tuple(partner_ids),))
+                     from t tt group by id,name""" % (str(partner_ids).replace('[','(').replace(']',')'),))
             return self.json_return(cr.fetchall())
 
     def json_return(self,data):
