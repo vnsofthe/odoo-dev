@@ -25,7 +25,7 @@ class WebClient(http.Controller):
             res=[]
             #打印所有数据
             for i in content:
-                i.pop('_id')
+                i['_id']=str(i.get('_id'))
                 res.append(i)
         else:
             db.test.insert(kw)

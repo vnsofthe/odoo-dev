@@ -33,6 +33,7 @@
         <thead>
             <th>姓名</th>
             <th>年龄</th>
+            <th>ID</th>
         </thead>
         <tbody>
 
@@ -52,7 +53,7 @@
                       success: function(data){
                           $.each(data,function(k,v){
 
-                              $("table tbody").append("<tr><td>"+ v.name+"</td><td>"+ v.age+"</td></tr>");
+                              $("table tbody").append("<tr><td>"+ v.name+"</td><td>"+ v.age+"</td><td>"+ v._id+"</td></tr>");
                           })
                       }
                 }
@@ -60,6 +61,10 @@
         $("#submit").bind("click",function(e){
             var name=$("#exampleInputName2").val();
             var age=$("#exampleInputEmail2").val();
+            if(name==""||age==""){
+                alert("Name and Age has not value.");
+                return false;
+            }
             $.ajax(
                 {
                     type: 'POST',
@@ -67,7 +72,7 @@
                       data: {},
                       success: function(data){
                           $.each(data,function(k,v){
-                              $("table tbody").append("<tr><td>"+ v.name+"</td><td>"+ v.age+"</td></tr>");
+                              $("table tbody").append("<tr><td>"+ v.name+"</td><td>"+ v.age+"</td><td>New Id</td></tr>");
                           })
                       }
                 }
