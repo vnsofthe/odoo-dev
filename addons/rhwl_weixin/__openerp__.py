@@ -16,8 +16,8 @@
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
     'depends': ['rhwl','rhwl_hr','vnsoft_base'],
     'data': [
-        "view_weixin.xml",
         "view_weixin_base.xml",
+        "view_weixin.xml",
         "view_weixin_menu.xml",
         "view_weixin_htmlmsg.xml"
     ],

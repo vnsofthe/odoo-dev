@@ -25,7 +25,7 @@ class purchase_apply(osv.osv):
         "user_id":fields.many2one("res.users",u"申请人",required=True,readonly=True),
         "need_date":fields.date(u"需求日期"),
         "reason":fields.char(u"申请事由"),
-        "state":fields.selection([("darft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成"),("dept",u"部门批准"),("inspector",u"总监批准"),("account",u"财务核准"),("chief",u"总裁批准")],u"状态"),
+        "state":fields.selection([("draft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成"),("dept",u"部门批准"),("inspector",u"总监批准"),("purchase",u"询价确认"),("account",u"财务核准"),("chief",u"总裁批准")],u"状态"),
         "note":fields.text(u"备注"),
         "line":fields.one2many("purchase.order.apply.line","name","Detail"),
     }
@@ -33,7 +33,7 @@ class purchase_apply(osv.osv):
         "date":fields.date.today,
         "user_id":lambda obj,cr,uid,context:uid,
         "dept":_get_dept,
-        "state":"darft"
+        "state":"draft"
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -42,6 +42,29 @@ class purchase_apply(osv.osv):
         if vals.get('name', '/') == '/':
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'purchase.apply') or '/'
         return super(purchase_apply,self).create(cr,uid,vals,context)
+
+
+    def action_confirm(self, cr, uid, ids, context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+        if not obj.line:
+            raise osv.except_osv("错误","申请单明细不能为空。")
+        for i in obj.line:
+            if i.qty<=0:
+                raise osv.except_osv("错误",u"产品[%s]的申请数量必须大于0"%(i.product_id.name,))
+        self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
+
+    def action_dept(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'dept'}, context=context)
+    def action_inspector(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'inspector'}, context=context)
+    def action_account(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'account'}, context=context)
+    def action_chief(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'chief'}, context=context)
+    def action_refuse(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'refuse'}, context=context)
+    def action_reset(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'draft'}, context=context)
 
 class purchase_apply_line(osv.osv):
     _name = "purchase.order.apply.line"
