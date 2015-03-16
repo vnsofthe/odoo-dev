@@ -18,15 +18,15 @@ class WebClient(http.Controller):
     @http.route('/web/api/mongo/get/', type='http', auth="public",website=True)
     def login(self,**kw):
         conn = pymongo.Connection("10.0.0.8",27017)
-        db = conn.test #连接库
+        db = conn.disease #连接库
         #db.authenticate("tage","123")
         if not kw:
-            content = db.test.find()
+            content = db.disease.find()
             res=[]
             #打印所有数据
             for i in content:
-                i['_id']=str(i.get('_id'))
-                res.append(i)
+                res.append([i.get('_id'),i.get('CN') and i.get('CN').get("title","") or "",i.get('EN') and i.get('EN').get("title") or ""])
+            res.sort()
         else:
             db.test.insert(kw)
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])

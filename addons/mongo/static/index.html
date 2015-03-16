@@ -20,20 +20,25 @@
         <br>
       <form class="form-inline">
           <div class="form-group">
-            <label for="exampleInputName2">Name</label>
-            <input type="text" class="form-control" id="exampleInputName2" placeholder="Jane Doe">
+            <label for="InputID">ID</label>
+            <input type="text" class="form-control" id="InputID" placeholder="Breast Cancer">
           </div>
           <div class="form-group">
-            <label for="exampleInputEmail2">Age</label>
-            <input type="text" class="form-control" id="exampleInputEmail2" placeholder="0">
+            <label for="InputCnName">中文名</label>
+            <input type="text" class="form-control" id="InputCnName" placeholder="乳腺癌">
+          </div>
+          <div class="form-group">
+            <label for="InputEnName">英文名</label>
+            <input type="text" class="form-control" id="InputEnName" placeholder="breast cancer">
           </div>
           <button id="submit" class="btn btn-default">Submit</button>
       </form>
     <table class="table table-striped">
         <thead>
-            <th>姓名</th>
-            <th>年龄</th>
             <th>ID</th>
+            <th>中文名</th>
+            <th>英文名</th>
+            <th> </th>
         </thead>
         <tbody>
 
@@ -52,8 +57,7 @@
                       data: {},
                       success: function(data){
                           $.each(data,function(k,v){
-
-                              $("table tbody").append("<tr><td>"+ v.name+"</td><td>"+ v.age+"</td><td>"+ v._id+"</td></tr>");
+                              $("table tbody").append("<tr><td>"+ v[0]+"</td><td>"+ v[1]+"</td><td>"+ v[2]+"</td><td><a href=\"#\">编辑</a></td></tr>");
                           })
                       }
                 }
