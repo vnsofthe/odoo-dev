@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MongoDB Edit</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <ul class="nav nav-tabs" role="tablist" id="myTab">
+      <li role="presentation" class="active"><a href="#cn" aria-controls="cn" role="tab" data-toggle="tab">中文</a></li>
+      <li role="presentation"><a href="#en" aria-controls="profile" role="tab" data-toggle="tab">English</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="cn">
+          <br>
+          <div class="container-fluid">
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_title" class="control-label">疾病名称</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="cn_title">
+              </div>
+              <hr/>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>疾病简介</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="desc_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="desc_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="desc_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="desc_description" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label class="control-label">图片</label>
+              </div>
+              <div class="col-lg-1 col-md-1">
+                  <img id="cn_pic" width="100%" height="100%" src=""/>
+              </div>
+              <div class="col-lg-10 col-md-9">
+                  <form id="pic_form" enctype="multipart/form-data" action="/web/api/mongo/pic/post/" method="POST">
+                        <input type="text" name="cn_data_id" id="cn_data_id" style="display:none"/>
+                        <input type="file" name="choosefile" id="choosefile" />
+                  </form>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>遗传因素</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="genetic_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="genetic_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="genetic_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="genetic_description" rows="4"></textarea>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>非遗传因素</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="ngenetic_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="ngenetic_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="ngenetic_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="ngenetic_description" rows="4"></textarea>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>临床特征</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="clinical_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="clinical_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="clinical_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="clinical_description" rows="4"></textarea>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>筛查与诊断</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="diagnose_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="diagnose_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="diagnose_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="diagnose_description" rows="4"></textarea>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>报告结论</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="report_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="report_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="report_0" class="control-label">弱</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="report_0" rows="1"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="report_1" class="control-label">较弱</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="report_1" rows="1"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="report_2" class="control-label">平均水平</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="report_2" rows="1"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="report_3" class="control-label">较强</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="report_3" rows="1"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="report_4" class="control-label">强</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="report_4" rows="1"></textarea>
+              </div>
+
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>预防建议</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="suggestion_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="suggestion_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="suggestion_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="suggestion_description" rows="4"></textarea>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>营养保健</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="nutrition_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="nutrition_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="nutrition_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="nutrition_description" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label  class="control-label">饮食</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <table class="table">
+                      <thead>
+                        <th>名称</th>
+                        <th>功能</th>
+                        <th> </th>
+                      </thead>
+                      <tbody>
+
+                      </tbody>
+                  </table>
+                  <button class="btn btn-link">新增</button>
+              </div>
+          </div>
+          <div>
+              <button id="cn_submit" type="button" class="btn btn-primary text-center">提交中文修改</button>
+          </div>
+          <br>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="en">...</div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script>
+        function getUrlParameter(sParam)
+        {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam)
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+    </script>
+    <script>
+        function detail1(){
+            this.CN={title:$("#cn_title").val(),}
+            return this;
+        }
+        $("#cn_data_id").val(decodeURIComponent(getUrlParameter("id")));
+        $("#pic_form").ajaxForm();
+        $("#cn_submit").bind("click",function(e){
+            if($("#choosefile").val().length>0){$("#pic_form").ajaxSubmit();}
+            console.log(detail1);
+            $.ajax({
+                type:"POST",
+                url:"/web/api/mongo/detail/post/?id="+decodeURIComponent(getUrlParameter("id")),
+                data:{W:JSON.stringify(detail)},
+                dataType: "json",
+
+                success:function(data){}
+            })
+        })
+        $.ajax(
+                {
+                    type: 'POST',
+                      url: "/web/api/mongo/detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
+                      data: {},
+                      success: function(data){
+                              console.log(data);
+                              $("#cn_pic").prop("src","data:"+data.CN.pic.mimetype+";base64,"+data.CN.pic.base64);
+                              $("#cn_title").val(data.CN.title);
+                      }
+                }
+        );
+
+    </script>
+  </body>
+</html>
