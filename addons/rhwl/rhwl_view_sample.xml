@@ -293,7 +293,7 @@
                     </div>
                     <footer>
                         <field name="check_state" widget="statusbar"
-                               statusbar_colors='{"需重采血":"red","检验结果阳性":"red","检验结果正常":"blue"}' readonly="1"/>
+                               statusbar_colors='{"需重采血":"red","检验结果阳性":"red","检验结果正常":"blue"}' clickable="True" attrs="{'readonly':[('check_state','not in',['get','library','pc'])]}"/>
                     </footer>
                 </form>
             </field>

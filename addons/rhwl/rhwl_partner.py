@@ -35,6 +35,8 @@ class rhwl_partner(osv.osv):
         "amt": fields.float(u'收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
         "sfdw": fields.many2one('res.partner', string=u'收费单位', domain=[('is_company', '=', True)]),
         "sncjrs": fields.integer(u'上年产检人数'),
+        "njfml":fields.integer(u'年均分娩人数'),
+        "njtsrs":fields.integer(u'年均唐筛人数'),
         "snwcrs": fields.integer(u'上年无创人数'),
         "jnmbrs": fields.integer(u'今年目标人数'),
         "jnsjrs": fields.integer(u'今年实际人数', readonly=True),

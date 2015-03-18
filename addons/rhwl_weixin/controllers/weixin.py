@@ -104,6 +104,16 @@ class weixin(http.Controller):
         registry = RegistryManager.get(request.session.db)
         sample = registry.get("sale.sampleone")
         user = registry.get('rhwl.weixin')
+        ori_no={
+                '14a0260':'RHWL15000047',
+                '14a0264':'RHWL15000046',
+                '14a0263':'RHWL15000044',
+                '14a0257':'RHWL15000045',
+                'RHWL15000047':'14a0260',
+                'RHWL15000046':'14a0264',
+                'RHWL15000044':'14a0263',
+                'RHWL15000045':'14a0257'
+            }
         if content=="openid":
             return self.replyWeiXin(fromUser,toUser,fromUser)
         if content.isalnum() and len(content)==6:
@@ -121,8 +131,9 @@ class weixin(http.Controller):
                         sample_obj = sample.browse(cr,SUPERUSER_ID,id)
                         user.write(cr,SUPERUSER_ID,obj.id,{"state":"pass"})
                         cr.commit()
-                        return self.replyWeiXin(fromUser,toUser,u"您的样品编码"+obj.sampleno+u"检查结果为【"+rhwl_sale.rhwl_sale_state_select.get(sample_obj.check_state)+u"】,详细的检测报告请与检测医院索取。" )
+                        return self.replyWeiXin(fromUser,toUser,u"您的样品编码"+ori_no.get(obj.sampleno,obj.sampleno)+u"目前进度为【"+rhwl_sale.rhwl_sale_state_select.get(sample_obj.check_state)+u"】,完成后详细的检测报告请与检测医院索取。" )
         else:
+            if ori_no.has_key(content):content=ori_no[content]
             with registry.cursor() as cr:
                 id = sample.search(cr,SUPERUSER_ID,[('name','=',content)])
                 if id:
