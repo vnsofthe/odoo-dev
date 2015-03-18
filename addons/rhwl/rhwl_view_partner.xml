@@ -178,6 +178,10 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="snwcrs"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="njfml"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="njtsrs"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="jnmbrs"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="jnsjrs"
@@ -294,6 +298,10 @@
                         <separator/>
                         <filter string="年度目标" name="sjmb" domain="[('jnsjrs','>',0),('mbjysj','!=',False)]" />
                         <filter string="未设目标" name="notsjmb" domain="['|',('jnsjrs','=',0),('mbjysj','=',False)]" />
+                    </xpath>
+                    <xpath expr="//filter[@string='Country']" position="after">
+                        <filter string="省份" context="{'group_by': 'state_id'}"/>
+                        <filter string="城市" context="{'group_by': 'city_id'}"/>
                     </xpath>
                 </data>
              </field>
