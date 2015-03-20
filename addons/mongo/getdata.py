@@ -55,7 +55,7 @@ class WebClient(http.Controller):
         conn = pymongo.Connection(self.DBIP,27017)
         db = conn.disease #连接库
         res=db.disease.find_one({"_id":id})
-        res[key]={"pic":{"mimetype":mimetype,"base64":fs}}
+        res[key]['pic']={"mimetype":mimetype,"base64":fs}
         db.disease.update({"_id":id},res)
         return 'OK'
 

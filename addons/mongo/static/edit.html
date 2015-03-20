@@ -441,6 +441,12 @@
         }
     </script>
     <script>
+        $(document).ajaxStart(function(){
+            $("<div id=\"wait_ajax\">数据加载中，请稍候......</div>").prependTo($("body"));
+            });
+        $(document).ajaxStop(function(){
+            $("#wait_ajax").remove();
+            });
         $("#cn_data_id").val(decodeURIComponent(getUrlParameter("id")));
         $("#cn_pic_form").ajaxForm();
         $("#cn_submit").bind("click",function(e){
@@ -519,34 +525,52 @@
                       url: "/web/api/mongo/detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
                       data: {},
                       success: function(data){
-                              console.log(data);
+                              //console.log(data);
                               $("#cn_title").val(data.CN.title);
-                              $("#cn_desc_header").val(data.CN.desc.header);
-                              $("#cn_desc_description").val(data.CN.desc.description);
-                              $("#cn_genetic_header").val(data.CN.genetic.header);
-                              $("#cn_genetic_description").val(data.CN.genetic.description);
-                              $("#cn_ngenetic_header").val(data.CN.ngenetic.header);
-                              $("#cn_ngenetic_description").val(data.CN.ngenetic.description);
-                              $("#cn_clinical_header").val(data.CN.clinical.header);
-                              $("#cn_clinical_description").val(data.CN.clinical.description);
-                              $("#cn_diagnose_header").val(data.CN.diagnose.header);
-                              $("#cn_diagnose_description").val(data.CN.diagnose.description);
-                              $("#cn_report_header").val(data.CN.report.header);
-                              $("#cn_report_0").val(data.CN.report.level0);
-                              $("#cn_report_1").val(data.CN.report.level1);
-                              $("#cn_report_2").val(data.CN.report.level2);
-                              $("#cn_report_3").val(data.CN.report.level3);
-                              $("#cn_report_4").val(data.CN.report.level4);
-                              $("#cn_suggestion_header").val(data.CN.suggestion.header);
-                              $("#cn_suggestion_description").val(data.CN.suggestion.description);
-                              $("#cn_nutrition_header").val(data.CN.nutrition.header);
-                              $("#cn_nutrition_description").val(data.CN.nutrition.description);
-                                console.log(data.CN.nutrition.compound)
-                              $.each(data.CN.nutrition.compound,function(k,v){
-                                  $("#cn_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
-                              })
+                              if(data.CN.desc!=undefined){
+                                  $("#cn_desc_header").val(data.CN.desc.header);
+                                  $("#cn_desc_description").val(data.CN.desc.description);
+                              }
+                              if(data.CN.genetic!=undefined) {
+                                  $("#cn_genetic_header").val(data.CN.genetic.header);
+                                  $("#cn_genetic_description").val(data.CN.genetic.description);
+                              }
+                              if(data.CN.ngenetic!=undefined) {
+                                  $("#cn_ngenetic_header").val(data.CN.ngenetic.header);
+                                  $("#cn_ngenetic_description").val(data.CN.ngenetic.description);
+                              }
+                              if(data.CN.clinical!=undefined) {
+                                  $("#cn_clinical_header").val(data.CN.clinical.header);
+                                  $("#cn_clinical_description").val(data.CN.clinical.description);
+                              }
+                              if(data.CN.diagnose!=undefined) {
+                                  $("#cn_diagnose_header").val(data.CN.diagnose.header);
+                                  $("#cn_diagnose_description").val(data.CN.diagnose.description);
+                              }
+                              if(data.CN.report!=undefined) {
+                                  $("#cn_report_header").val(data.CN.report.header);
+                                  $("#cn_report_0").val(data.CN.report.level0);
+                                  $("#cn_report_1").val(data.CN.report.level1);
+                                  $("#cn_report_2").val(data.CN.report.level2);
+                                  $("#cn_report_3").val(data.CN.report.level3);
+                                  $("#cn_report_4").val(data.CN.report.level4);
+                              }
+                              if(data.CN.suggestion!=undefined) {
+                                  $("#cn_suggestion_header").val(data.CN.suggestion.header);
+                                  $("#cn_suggestion_description").val(data.CN.suggestion.description);
+                              }
+                              if(data.CN.nutrition!=undefined) {
+                                  $("#cn_nutrition_header").val(data.CN.nutrition.header);
+                                  $("#cn_nutrition_description").val(data.CN.nutrition.description);
+                                  $.each(data.CN.nutrition.compound,function(k,v){
+                                      $("#cn_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
+                                  });
+                              }
+                                //console.log(data.CN.nutrition.compound)
 
-                              $("#cn_pic").prop("src","data:"+data.CN.pic.mimetype+";base64,"+data.CN.pic.base64);
+                              if(data.CN.pic!=undefined) {
+                                  $("#cn_pic").prop("src", "data:" + data.CN.pic.mimetype + ";base64," + data.CN.pic.base64);
+                              }
 
                       }
                 }
@@ -632,34 +656,52 @@
                       url: "/web/api/mongo/detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
                       data: {},
                       success: function(data){
-                              console.log(data);
+                              //console.log(data);
                               $("#en_title").val(data.EN.title);
-                              $("#en_desc_header").val(data.EN.desc.header);
-                              $("#en_desc_description").val(data.EN.desc.description);
-                              $("#en_genetic_header").val(data.EN.genetic.header);
-                              $("#en_genetic_description").val(data.EN.genetic.description);
-                              $("#en_ngenetic_header").val(data.EN.ngenetic.header);
-                              $("#en_ngenetic_description").val(data.EN.ngenetic.description);
-                              $("#en_clinical_header").val(data.EN.clinical.header);
-                              $("#en_clinical_description").val(data.EN.clinical.description);
-                              $("#en_diagnose_header").val(data.EN.diagnose.header);
-                              $("#en_diagnose_description").val(data.EN.diagnose.description);
-                              $("#en_report_header").val(data.EN.report.header);
-                              $("#en_report_0").val(data.EN.report.level0);
-                              $("#en_report_1").val(data.EN.report.level1);
-                              $("#en_report_2").val(data.EN.report.level2);
-                              $("#en_report_3").val(data.EN.report.level3);
-                              $("#en_report_4").val(data.EN.report.level4);
-                              $("#en_suggestion_header").val(data.EN.suggestion.header);
-                              $("#en_suggestion_description").val(data.EN.suggestion.description);
-                              $("#en_nutrition_header").val(data.EN.nutrition.header);
-                              $("#en_nutrition_description").val(data.EN.nutrition.description);
-                                console.log(data.EN.nutrition.compound)
-                              $.each(data.EN.nutrition.compound,function(k,v){
-                                  $("#en_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
-                              })
+                              if(data.EN.desc!=undefined) {
+                                  $("#en_desc_header").val(data.EN.desc.header);
+                                  $("#en_desc_description").val(data.EN.desc.description);
+                              }
+                              if(data.EN.genetic!=undefined) {
+                                  $("#en_genetic_header").val(data.EN.genetic.header);
+                                  $("#en_genetic_description").val(data.EN.genetic.description);
+                              }
+                              if(data.EN.ngenetic!=undefined) {
+                                  $("#en_ngenetic_header").val(data.EN.ngenetic.header);
+                                  $("#en_ngenetic_description").val(data.EN.ngenetic.description);
+                              }
+                              if(data.EN.clinical!=undefined) {
+                                  $("#en_clinical_header").val(data.EN.clinical.header);
+                                  $("#en_clinical_description").val(data.EN.clinical.description);
+                              }
+                              if(data.EN.diagnose!=undefined) {
+                                  $("#en_diagnose_header").val(data.EN.diagnose.header);
+                                  $("#en_diagnose_description").val(data.EN.diagnose.description);
+                              }
+                              if(data.EN.report!=undefined) {
+                                  $("#en_report_header").val(data.EN.report.header);
+                                  $("#en_report_0").val(data.EN.report.level0);
+                                  $("#en_report_1").val(data.EN.report.level1);
+                                  $("#en_report_2").val(data.EN.report.level2);
+                                  $("#en_report_3").val(data.EN.report.level3);
+                                  $("#en_report_4").val(data.EN.report.level4);
+                              }
+                              if(data.EN.suggestion!=undefined) {
+                                  $("#en_suggestion_header").val(data.EN.suggestion.header);
+                                  $("#en_suggestion_description").val(data.EN.suggestion.description);
+                              }
+                              if(data.EN.nutrition!=undefined) {
+                                  $("#en_nutrition_header").val(data.EN.nutrition.header);
+                                  $("#en_nutrition_description").val(data.EN.nutrition.description);
+                                  $.each(data.EN.nutrition.compound,function(k,v){
+                                      $("#en_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
+                                  })
+                              }
+                                //console.log(data.EN.nutrition.compound)
 
-                              $("#en_pic").prop("src","data:"+data.EN.pic.mimetype+";base64,"+data.EN.pic.base64);
+                              if(data.EN.pic!=undefined) {
+                                  $("#en_pic").prop("src", "data:" + data.EN.pic.mimetype + ";base64," + data.EN.pic.base64);
+                              }
 
                       }
                 }
