@@ -1,0 +1,36 @@
+{
+	"fields" : [{
+			"field" : "year",
+			"order" : 0,
+			"stacked" : true,
+            "ordinal_values": [{"value": 1, "label": "13-14", "order": 2},{"value": "12-13", "order": 1}, {"value": "14-15", "order": 3}]
+		}
+	],
+	"values" : [{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}
+			],
+			"value" : 28,
+			"value2" : 20
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : 1
+				}
+			],
+			"value" : 12,
+			"value2" : 15
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}
+			],
+			"value" : 15,
+			"value2" : 12
+		}
+	]
+}
+

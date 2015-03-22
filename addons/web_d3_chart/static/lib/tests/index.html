@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="../d3_chart.css" />
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script type="text/javascript" src="../d3.min.js"></script>
+        <script type="text/javascript" src="../d3_chart.js"></script>
+        <script type="text/javascript" language="javascript">
+            function loadChart(){
+                d3.json(
+                'data/data.5.json'
+                , 
+                function(data) {
+                    nv.addGraph(function() {
+                        //var chart = nv.models.multiBarChart()
+                        var chart = nv.models.multiBarAndStackChart()
+                            .margin({top: 30, right: 20, bottom: 75, left: 75})
+                            .showControls(true) //to display  or hide chart displayed options (grouped / expanded / stacked
+							.stacked(false) // false: to display as grouped / true: to display stacked
+							.expanded(false) // requied stacked = true; true to display as proportionnel 
+                            .tooltips(true)  //used to display values insie popup
+                            .showValues(true)  //used to display values on the graph
+                            .expandedFormat(d3.format('.2%'))
+                            .showLegend(true);//display or hide legend       
+                        //chart.xAxis
+                        //    .tickFormat(d3.format(',f'));
+
+                        chart.yAxis
+                            .tickFormat(d3.format(',.2f'))
+                            .axisLabel("Exemple label axe y");
+                            
+                        d3.select('#chart5 svg')
+                            .datum(data)
+                            .transition().duration(500)
+                            .call(chart);
+
+                        nv.utils.windowResize(chart.update);
+
+                        return chart;
+                    });
+                
+                });
+                d3.json(
+                'data/data.4.json'
+                , 
+                function(data) {
+                    nv.addGraph(function() {
+                        //var chart = nv.models.multiBarChart()
+                        var chart = nv.models.multiBarAndStackChart()
+                            .margin({top: 30, right: 20, bottom: 75, left: 75})
+                            .showControls(true) //to display  or hide chart displayed options (grouped / expanded / stacked
+                            .rotateLabels(90) //to rotate bottom labels
+							.stacked(true) // false: to display as grouped / true: to display stacked
+							.expanded(true) // requied stacked = true; true to display as proportionnel 
+							.state({disabled:{"Documentaliste": true}}) //used to display or hide default values (values with alphabetic ordered 
+                            .showControlHideNull(true)
+                            .tooltips(true)  //used to display values insie popup
+                            .showValues(true)  //used to display values on the graph
+                            .expandedFormat(d3.format('.2%'))
+                            .showLegend(true);//display or hide legend       
+                        //chart.xAxis
+                        //    .tickFormat(d3.format(',f'));
+
+                        chart.yAxis
+                            .tickFormat(d3.format(',.1f'))
+                            .axisLabel("Exemple label axe y");
+                            
+                        chart.y2Axis
+                            .tickFormat(d3.format(',.1f'))
+                            .axisLabel("Exemple label axe y 2");
+                            
+                        d3.select('#chart4 svg')
+                            .datum(data)
+                            .transition().duration(500)
+                            .call(chart);
+
+                        nv.utils.windowResize(chart.update);
+
+                        return chart;
+                    });
+                
+                });
+                
+                d3.json(
+                'data/data.3.json'
+                , 
+                function(data) {
+                    nv.addGraph(function() {
+                        //var chart = nv.models.multiBarChart()
+                        var chart = nv.models.multiBarAndStackChart()
+                            .margin({top: 30, right: 20, bottom: 75, left: 75})
+                            .showControls(true)
+                            .rotateLabels(70)
+							.showXAxis(true)
+							.stacked(true)
+							.expanded(false)
+                            .tooltips(true);
+                                        
+                        //chart.xAxis
+                        //    .tickFormat(d3.format(',f'));
+
+                        chart.yAxis
+                            .tickFormat(d3.format(',.1f'));
+                            
+                        d3.select('#chart3 svg')
+                            .datum(data)
+                            .transition().duration(500)
+                            .call(chart);
+
+                        nv.utils.windowResize(chart.update);
+
+                        return chart;
+                    });
+                
+                });
+                d3.json(
+                'data/data.2.json'
+                , 
+                function(data) {
+                    nv.addGraph(function() {
+                        //var chart = nv.models.multiBarChart()
+                        var chart = nv.models.multiBarAndStackChart()
+                            .margin({top: 30, right: 20, bottom: 75, left: 75})
+                            .showControls(true)
+                            .rotateLabels(0)
+                            .stacked(false)
+                            .expanded(false)
+                            .tooltips(true);
+                                        
+                        //chart.xAxis
+                        //    .tickFormat(d3.format(',f'));
+
+                        chart.yAxis
+                            .tickFormat(d3.format(',.1f'));
+                            
+                        d3.select('#chart2 svg')
+                            .datum(data)
+                            .transition().duration(500)
+                            .call(chart);
+
+                        nv.utils.windowResize(chart.update);
+
+                        return chart;
+                    });
+                
+                });
+				
+              d3.json(
+                'data/data.1.json'
+                , 
+                function(data) {
+                    nv.addGraph(function() {
+                        //var chart = nv.models.multiBarChart()
+                        var chart = nv.models.multiBarAndStackChart()
+                            .margin({top: 30, right: 20, bottom: 75, left: 75})
+                            .showControls(true)
+                            .showValues(true)
+                            .rotateLabels(0)
+							.stacked(false)
+							.expanded(false)
+                            .tooltips(true);
+                                        
+                        //chart.xAxis
+                        //    .tickFormat(d3.format(',f'));
+
+                        chart.yAxis
+                            .tickFormat(d3.format(',.1f'));
+                            
+                        d3.select('#chart svg')
+                            .datum(data)
+                            .transition().duration(500)
+                            .call(chart);
+
+                        nv.utils.windowResize(chart.update);
+
+                        return chart;
+                    });
+                
+                });
+            }
+        </script>
+    </head>
+    <body  onload="loadChart()">
+        <h1>Test graphiques 3 axes</h1>
+        <div id="chart5">
+          <h2>Test: data.5.json</h2>
+          <svg></svg>
+        </div>
+        <div id="chart4">
+          <h2>Test: data.4.json</h2>
+          <svg></svg>
+        </div>
+        <div id="chart3">
+          <h2>Test: data.3.json</h2>
+          <svg></svg>
+        </div>
+        <div id="chart2">
+          <h2>Test: data.2.json</h2>
+          <svg></svg>
+        </div>
+        <div id="chart">
+          <h2>Test: data.1.json</h2>
+          <svg></svg>
+        </div>
+    </body>
+</html>

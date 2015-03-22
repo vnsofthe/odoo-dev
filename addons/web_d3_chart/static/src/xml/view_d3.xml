@@ -1,0 +1,55 @@
+<template>
+    <div t-name="Chart-d3" t-att-id="widget.element_id" class="oe_chart_d3">
+        <div class="graph_header">
+            <div class="group graph_mode_selection">
+                <img class="multiBarAndStack invisible"
+                     data-mode="multiBarAndStack"
+                     title="Bar Chart"
+                     src='/web_d3_chart/static/lib/Koloria-Icon-Set/Chart_Bar_Big.png'/>
+                <img class="line invisible"
+                     data-mode="line"
+                     title="Line Chart"
+                     src='/web_d3_chart/static/lib/Koloria-Icon-Set/Chart_Graph.png'/>
+                <img class="pie invisible"
+                     data-mode="pie"
+                     title="Pie Chart"
+                     src='/web_d3_chart/static/lib/Koloria-Icon-Set/Chart_Pie.png'/>
+            </div>
+            <div class="oe_chart_d3_field_axis">
+                <nav class="oe_chart_d3_field_axis">
+                    <ul>
+                        <li class="multiBarAndStack"><img class="y-axis invisible"
+                             title="Bar Chart"
+                             src='/web_d3_chart/static/lib/Koloria-Icon-Set/Chart_Bar_Files_nb.png'/>
+                        </li>
+                        
+                        <li class="pie"><img class="y-axis invisible"
+                             title="Bar Chart"
+                             src='/web_d3_chart/static/lib/Koloria-Icon-Set/Chart_Pie_nb.png'/>
+                        </li>
+                        <li class="y-axis invisible"><a class="label"/><ul/></li>
+                        
+                        <li><img class="y2-axis invisible"
+                             title="Bar Chart"
+                             src='/web_d3_chart/static/lib/Koloria-Icon-Set/Chart_Graph_nb.png'/>
+                        </li>
+                        <li class="y2-axis invisible"><a class="label"/><ul/></li>
+                        <li><img 
+                             title="Bar Chart"
+                             src='/web_d3_chart/static/src/img/save.png'/>
+                        </li>
+                        <li class="printing"><a>Save As</a>
+                            <ul>
+                                <li class="svg"><a>SVG</a></li>
+                                <li class="png"><a>PNG</a></li>
+                                <li class="jpeg"><a>JPEG</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <svg class="graph_main_content"/>
+        <canvas t-att-id="'canvas_' + widget.element_id" class="invisible"/>
+    </div>
+</template>

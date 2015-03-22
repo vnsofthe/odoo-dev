@@ -1,0 +1,100 @@
+{
+    "fields": [{
+        "field": "period_id",
+        "ordinal_values": [{
+            "order": 0,
+            "value": 2,
+            "label": "2013-2014"
+        }],
+        "label": "Année scolaire"
+    },
+    {
+        "field": "cycle_id",
+        "ordinal_values": [{
+                "order": 0,
+                "value": 1,
+                "label": "Pre-Élémentaire"
+            },
+            {
+                "order": 1,
+                "value": 2,
+                "label": "Élémentaire"
+            },
+            {
+                "order": 2,
+                "value": 3,
+                "label": "Collège"
+            },
+            {
+                "order": 3,
+                "value": 4,
+                "label": "Lycée"
+            },
+            {
+                "order": 4,
+                "value": false,
+                "label": "Without value"
+        }],
+        "label": "Cycle"
+    }],
+    "values": [{
+        "keys": [{
+            "value": 2,
+            "key": "period_id"
+        },
+        {
+            "value": 2,
+            "key": "cycle_id"
+        }],
+        "value": "45365.30456354546359400276971255960",
+        "value2": 8.2
+    },
+    {
+        "keys": [{
+            "value": 2,
+            "key": "period_id"
+        },
+        {
+            "value": 3,
+            "key": "cycle_id"
+        }],
+        "value": "79007.75986996197266186914109824",
+        "value2": 5.54
+    },
+    {
+        "keys": [{
+            "value": 2,
+            "key": "period_id"
+        },
+        {
+            "value": 4,
+            "key": "cycle_id"
+        }],
+        "value": "74883.55206119807495254728743258",
+        "value2": 10.654
+    },
+    {
+        "keys": [{
+            "value": 2,
+            "key": "period_id"
+        },
+        {
+            "value": 1,
+            "key": "cycle_id"
+        }],
+        "value": "37300.68657763871819616789103162",
+        "value2": 11.35
+    },
+    {
+        "keys": [{
+            "value": 2,
+            "key": "period_id"
+        },
+        {
+            "value": false,
+            "key": "cycle_id"
+        }],
+        "value": "6842.79099644542858015541867640",
+        "value2": 6.651
+    }]
+}

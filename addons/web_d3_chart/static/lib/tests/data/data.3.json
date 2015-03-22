@@ -1,0 +1,118 @@
+{
+	"fields" : [ {
+			"field" : "year",
+			"stacked" : false,
+            "ordinal_values": [{"value": "13-14"},{"value": "12-13"}, {"value": "14-15"}]
+		},{
+			"field" : "type",
+			"stacked" : false,
+            "ordinal_values": [{"value": "prev"}, {"value": "reel"}]
+		}, {
+			"field" : "genre",
+			"label" : "H/F",
+            "ordinal_values": [{"value": "H", "color": "#2e6cc6", "label": "Hommes"}, {"value": "F", "color": "#cf3393", "label": "Femmes"}]
+		}
+	],
+	"values" : [{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "H"
+				}
+			],
+			"value" : 28.125415,
+			"value2" : 25.2
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "F"
+				}
+			],
+			"value" : 12.12445,
+			"value2" : 12.25
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "H"
+				}
+			],
+			"value" : 15.864315984,
+			"value2" : 1.1
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "F"
+				}
+			],
+			"value" : 14.864315984,
+			"value2" : 11
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "F"
+				}
+			],
+			"value" : 17,
+			"value2" : 13.5
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "F"
+				}
+			],
+			"value" : 16.65421684,
+			"value2" : 19
+
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "F"
+				}
+			],
+			"value" : 17.684315,
+			"value2" : 8.2
+		}
+	]
+}
+

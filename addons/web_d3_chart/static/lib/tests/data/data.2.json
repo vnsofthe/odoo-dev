@@ -1,0 +1,82 @@
+{
+	"fields" : [ {
+			"field" : "type",
+			"order" : 1,
+			"stacked" : true,
+            "ordinal_values": [{"value": "prev", "color": "#646b84"}, {"value": "reel", "color": "#2c4ebc"}]
+		},{
+			"field" : "year",
+			"order" : 0,
+			"stacked" : false,
+            "ordinal_values": [{"value": "13-14", "order": "13-14"}, {"value": "12-13", "order": "12-13"},{"value": "14-15", "order": "14-15"}]
+		}
+	],
+	"values" : [{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}
+			],
+			"value" : 28,
+			"value2" : 32
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}
+			],
+			"value" : 15,
+			"value2" : 22
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}
+			],
+			"value" : 12
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}
+			],
+			"value2" : 12
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}
+			],
+			"value" : 28,
+			"value2" : 12
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}
+			],
+			"value" : 18,
+			"value2" : 9
+
+		}
+	]
+}
+

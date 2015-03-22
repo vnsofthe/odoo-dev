@@ -1,0 +1,146 @@
+div.oe_view_manager_view_chart-d3 {
+    height: 400px;
+}
+div.oe_chart_d3 {
+    padding:10px;
+}
+div.oe_chart_d3.oe_view {
+    height: 100%;
+}
+
+.openerp .oe_view_manager .oe_view_manager_switch .oe_vm_switch_chart-d3:after {
+    font-family: "mnmliconsRegular" !important;
+    font-size: 21px;
+    font-weight: 300 !important;
+    content: "}";
+    top: -2px;
+    position: relative;
+}
+.graph_header {
+    left: 10%;
+    position: relative;
+}
+
+.graph_header .group.graph_mode_selection {
+    float: left;
+    padding-right: 10%;
+}
+.graph_main_content td {
+    font-size: 12px;
+    margin: 45px;
+    border-collapse: collapse;
+    vertical-align: middle;
+    border-bottom: 1px solid #ccc;
+    padding: 6px 8px;
+    text-align: right;
+    color: black;
+}
+
+.graph_main_content td:first-child {
+    background-color: rgb(240, 238, 238);
+}
+
+.graph_main_content table {
+    margin-top: 10px;
+}
+
+.graph_main_content th {
+    font-size: 13px;
+    font-weight: normal;
+    padding: 10px 8px;
+    vertical-align: top;
+    color: black;
+}
+
+.graph_main_content tbody td{
+    border: 1px solid #b8b8b8;
+}
+
+.graph_main_content tbody {
+    border-top: 1px solid black;
+}
+
+.graph_main_content thead {
+    background-color: rgb(240, 238, 238);
+    border: 1px solid #b8b8b8;
+}
+
+.graph_main_content thead th {
+    border-left: 1px solid #b8b8b8;
+}
+
+.graph_main_content table:not(.heatmap) tr:hover td:not(:first-child)
+{
+    background-color: rgb(245, 245, 245);
+}
+
+.oe_dashboard div.oe_chart_d3 {
+    padding:0;
+}
+
+nav.oe_chart_d3_field_axis ul ul {
+     display: none;
+     position: absolute; 
+     top: 100%;
+}
+
+nav.oe_chart_d3_field_axis ul li:hover > ul {
+    display: block;
+}
+
+nav.oe_chart_d3_field_axis ul li:hover > ul li:hover {
+    background: #bfbfbf; 
+}
+
+nav.oe_chart_d3_field_axis ul {
+    background: #efefef; 
+    background: linear-gradient(top, #efefef 0%, #bbbbbb 100%);  
+    background: -moz-linear-gradient(top, #efefef 0%, #bbbbbb 100%); 
+    background: -webkit-linear-gradient(top, #efefef 0%,#bbbbbb 100%); 
+    padding: 0 10px;
+    margin: 0px;
+    border-radius: 5px;
+    list-style: none;
+    position: relative;
+    display: inline-table;
+}
+
+nav.oe_chart_d3_field_axis ul li {
+    float: left;
+}
+
+.openerp .oe_application nav.oe_chart_d3_field_axis ul li a {
+    display: block; 
+    padding: 7px 15px 10px 2px;
+    color: #555555; 
+    text-decoration: none;
+}
+
+
+.openerp .oe_application nav.oe_chart_d3_field_axis ul li img {
+    padding-top: 5px;
+    height: 22px;
+    width: 22px;
+    margin: 1px;
+}
+
+nav.oe_chart_d3_field_axis ul ul li {
+    float: none; 
+    position: relative;
+}
+
+.invisible {
+    display: none;
+}
+
+.invisible_case_2 {
+    display: none;
+}
+
+.graph_mode_selection img {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+.graph_mode_selection img.active {
+    background: none repeat scroll 0 0 #AAAAAA;
+}

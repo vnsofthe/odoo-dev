@@ -1,0 +1,504 @@
+{
+	"fields" : [ {
+			"field" : "type",
+			"order" : 10,
+			"stacked" : false,
+            "ordinal_values": [{"order" : 50, "value": "prev"}, {"order" : 30, "value": "reel"}]
+		},{
+			"field" : "year",
+			"label" : "année",
+			"order" : 0,
+			"stacked" : false,
+            "ordinal_values": [{"order" : "13-14", "value": "13-14"},{"order" : "16-17", "value": "16-17"} ,{"order" : "12-13", "value": "12-13"}, {"order" : "14-15", "value": "14-15"}]
+		}, {
+			"field" : "genre",
+			"order" : 20,
+			"stacked" : false,
+            "ordinal_values": [{"value": "Hommes", "order" : 50,"color": "#2e6cc6"}, {"value": "Femmes","order" : 30, "color": "#cf3393"}]
+		}, {
+			"field" : "Emploi",
+			"label": "Les emplois",
+			"order" : 30,
+			"stacked" : true,
+            "ordinal_values": [{"value": "Documentaliste", "label": "Doc.","order" : 30}, {"value": "Administratif", "label": "Admin.", "order" : 20}, {"value": "Enseignants", "label": "Ens.", "order" : 15}, {"value": "Orientation", "label": "Ori.", "order" : 10}]
+		}
+	],
+	"values" : [{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value" : 3,
+			"value2" : 5
+		},{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Documentaliste"
+				}
+			],
+			"value" : 35,
+			"value2" : 10
+		},{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 28,
+			"value2" : 12
+		},{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Orientation"
+				}
+			],
+			"value" : 1,
+			"value2" : 14
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value" : 1,
+			"value2" : 14
+		},{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Documentaliste"
+				}
+			],
+			"value" : 2,
+			"value2" : 16
+		},{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 5,
+			"value2" : 18
+		},{
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Orientation"
+				}
+			],
+			"value" : 2,
+			"value2" : 25
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 15,
+			"value2" : 24
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Orientation"
+				}
+			],
+			"value2" : 16,
+			"value" : 17
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 14,
+			"value2" : 15
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Orientation"
+				}
+			],
+			"value" : 3,
+			"value2" : 13
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Documentaliste"
+				}
+			],
+			"value" : 7,
+			"value2" : 5
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "12-13"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value2" : 11
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value" : 3,
+			"value2" : 1
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 5
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Documentaliste"
+				}
+			],
+			"value" : 1,
+			"value2" : 1
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 17,
+			"value2" : 5
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value" : 17,
+			"value2" : 12
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 19,
+			"value2" : 2
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value" : 3,
+			"value2" : 22
+
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "13-14"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 16,
+			"value2" : 18
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 18,
+			"value2" : 8
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Documentaliste"
+				}
+			],
+			"value" : 17,
+			"value2" : 24
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "prev"
+				}, {
+					"key" : "genre",
+					"value" : "Femmes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 17,
+			"value2" : 11
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Enseignants"
+				}
+			],
+			"value" : 5,
+			"value2" : 7
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Orientation"
+				}
+			],
+			"value" : 8,
+			"value2" : 8
+		}, {
+			"keys" : [{
+					"key" : "year",
+					"value" : "14-15"
+				}, {
+					"key" : "type",
+					"value" : "reel"
+				}, {
+					"key" : "genre",
+					"value" : "Hommes"
+				}, {
+					"key" : "Emploi",
+					"value" : "Administratif"
+				}
+			],
+			"value" : 8,
+			"value2" : 8
+		}
+	]
+}
+
