@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+<openerp>
+    <data>
+        <template id="assets_backend" name="web_d3_chart assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/web_d3_chart/static/lib/d3_chart.css"/>
+                <link rel="stylesheet" href="/web_d3_chart/static/src/css/view_d3.css"/>
+
+                <script type="text/javascript" src="/web_d3_chart/static/lib/canvg/rgbcolor.js"></script>
+                <script type="text/javascript" src="/web_d3_chart/static/lib/canvg/StackBlur.js"></script>
+                <script type="text/javascript" src="/web_d3_chart/static/lib/canvg/canvg.js"></script>
+                <script type="text/javascript" src="/web_d3_chart/static/lib/d3.min.js"></script>
+                <script type="text/javascript" src="/web_d3_chart/static/lib/d3_chart.js"></script>
+                <script type="text/javascript" src="/web_d3_chart/static/src/js/view_d3.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>

@@ -24,7 +24,7 @@
                         <button name="action_confirm" states="draft" string="确认" type="object" groups="base.group_user"/>
                         <button name="action_dept" states="confirm" string="部门批准" type="object" groups="base.group_user"/>
                         <button name="action_quotation" states="dept" string="询价确认" type="object" groups="base.group_user"/>
-                        <button name="action_create_quotation" states="dept" string="生成询价单" type="object" groups="base.group_user"/>
+                        <button name="action_create_quotation" states="dept" string="生成招标/询价单" type="object" groups="base.group_user"/>
                         <button name="action_inspector" states="quotation" string="总监批准" type="object" groups="base.group_user"/>
                         <button name="action_account" states="inspector" string="财务核准" type="object" groups="base.group_user"/>
                         <button name="action_chief" states="account" string="总裁批准" type="object" groups="base.group_user"/>

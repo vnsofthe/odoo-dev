@@ -61,16 +61,31 @@ class purchase_apply(osv.osv):
         sup={}
         for i in obj.line:
             for j in i.product_id.seller_ids:
+                if j.min_qty>i.qty:continue
                 if sup.has_key(j.name.id):
-                    sup[j.name.id].append(i.product_id.id)
+                    sup[j.name.id].append((i.product_id.id,i.qty,i.uom_po_id.id))
                 else:
-                    sup[j.name.id]=[i.product_id.id]
+                    sup[j.name.id]=[(i.product_id.id,i.qty,i.uom_po_id.id)]
             val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_po_id.id}
             line.append(self.pool.get("purchase.requisition.line").create(cr,uid,val,context=context))
-        self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
+        req_id = self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
         if sup:
+            line=[]
             for k,v in sup.items():
-                self.pool.get("purchase.order.line").create
+                pline=[]
+                pick = self.pool.get("purchase.order")._get_picking_in(cr,uid)
+                local = self.pool.get("purchase.order").onchange_picking_type_id(cr,uid,0,pick,context=context)
+                val = self.pool.get("purchase.order").onchange_partner_id(cr,uid,0,k,context=context).get("value")
+                val.update(local.get('value'))
+                val.update({'picking_type_id':pick,'partner_id':k,'origin':obj.name})
+                for j in v:
+                    detail_val = self.pool.get("purchase.order.line").onchange_product_id(cr, uid, 0, val.get("pricelist_id"),j[0], j[1], False, k,val.get("date_order"),val.get("fiscal_position"),val.get("date_planned"),False,False,'draft',context=context).get("value")
+                    detail_val.update({'product_id':j[0],'product_qty':j[1],'product_uom':j[2]})
+                    pline.append([0,0,detail_val])
+
+                val.update({'company_id':1,'order_line':pline})
+                line.append(self.pool.get("purchase.order").create(cr,uid,val,context=context))
+            self.pool.get("purchase.requisition").write(cr,uid,req_id,{'purchase_ids':[[6,False,line]]})
 
     def action_quotation(self, cr, uid, ids, context=None):
         pass
