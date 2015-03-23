@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+<t t-name="webcam_temp">
+
+<span class="oe_form_field oe_form_field_image" t-att-style="widget.node.attrs.style">
+        <div class="oe_form_field_image_controls oe_edit_only">
+            <t t-call="HiddenInputFile">
+                <t t-set="fileupload_id" t-value="widget.fileupload_id"/>
+               		Edit
+            </t>
+            <div class="oe_form_binary_progress" style="display: none">
+                <img t-att-src='_s + "/web/static/src/img/throbber.gif"' width="16" height="16"/>
+                <b>Uploading ...</b>
+            </div>
+        </div>
+        
+        <div class="oe_form_field_image_controls_upload oe_edit_only" id="camera_oe_edit_only_div">
+            <span id="snap">Click here</span>
+        </div>
+</span>
+<button id="change_snap" disabled="disabled"><b>Change Image</b></button>
+<div class="oe_form_binary_file_save_data" id="save_as">
+    <button class="oe_button oe_form_binary_file_save" id="save_button" type="button" title="Save As">
+        <img t-att-src='_s + "/web/static/src/img/icons/gtk-save.png"'/>
+        <span>Save</span>
+    </button>
+</div>
+<video id="video" style="margin-top:20px"></video>
+<canvas id="canvas"></canvas>
+
+</t>
+<t t-name="FieldBinaryImage-camimg">
+    <img t-att-src='url'/>
+</t>
+</templates>

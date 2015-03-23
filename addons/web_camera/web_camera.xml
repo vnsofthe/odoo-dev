@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- vim:fdn=3:
+-->
+<openerp>
+    <data>
+        <template id="assets_backend" name="web_camera assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/web_camera/static/src/css/base.css"/>
+
+                <script type="text/javascript" src="/web_camera/static/src/js/view.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>
