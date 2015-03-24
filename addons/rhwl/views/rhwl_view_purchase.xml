@@ -28,7 +28,7 @@
                         <button name="action_inspector" states="quotation" string="总监批准" type="object" groups="base.group_user"/>
                         <button name="action_account" states="inspector" string="财务核准" type="object" groups="base.group_user"/>
                         <button name="action_chief" states="account" string="总裁批准" type="object" groups="base.group_user"/>
-                        <button name="action_refuse" states="confirm,dept,inspector,account" string="退回" type="object" groups="base.group_user"/>
+                        <button name="action_refuse" states="confirm,dept,quotation,inspector,account" string="退回" type="object" groups="base.group_user"/>
                         <button name="action_reset" states="refuse" string="重置草稿" type="object" groups="base.group_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,refuse"
                                statusbar_colors='{"refuse":"red","done":"blue"}' readonly="1"/>
