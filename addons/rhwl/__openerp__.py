@@ -14,7 +14,7 @@ CRM业务增加模块
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
-    'depends': ['vnsoft_base','sale', 'stock', 'purchase','l10n_cn_express_track','hr'],
+    'depends': ['vnsoft_base','sale', 'stock', 'purchase','l10n_cn_express_track','hr','purchase_requisition'],
     'data': ['security/rhwl_security.xml',
              'security/ir.model.access.csv',
              "rhwl_view_partner.xml",

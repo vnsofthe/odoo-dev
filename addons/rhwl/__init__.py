@@ -13,3 +13,4 @@ import controllers
 import rhwl_sms
 import rhwl_account
 import rhwl_purchase
+import rhwl_purchase_requisition

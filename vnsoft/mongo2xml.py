@@ -9,91 +9,21 @@ except ImportError:
 import os
 import base64
 
-testdb={ "_id" : "test", 
-	"EN" : { 
-		"diagnose" : { 
-			"header" : "", 
-			"description" : "" }, 
-	"nutrition" : { 
-		"header" : "", 
-		"description" : "", 
-		"compound" : [ ] }, 
-	"ngenetic" : { 
-		"header" : "", 
-		"description" : "" }, 
-	"title" : "Name", 
-	"pic" : { "mimetype" : "image/png", "base64" : ""}, 
-	"genetic" : { 
-		"header" : "", 
-		"description" : "" }, 
-	"clinical" : { 
-		"header" : "", 
-		"description" : "" }, 
-	"suggestion" : { 
-		"header" : "", 
-		"description" : "" }, 
-	"report" : { 
-		"level1" : "", 
-		"level0" : "", 
-		"header" : "", 
-		"level2" : "", 
-		"level3" : "", 
-		"level4" : "" }, 
-	"desc" : { 
-		"header" : "", 
-		"description" : "" } 
-	}, 
-	"CN" : { 
-		"diagnose" : { 
-			"header" : "", 
-			"description" : "" }, 
-		"nutrition" : { 
-			"header" : "", 
-			"description" : "", 
-			"compound" : [ ] }, 
-		"pic" : { 
-			"mimetype" : "image/jpeg", 
-			"base64" : ""}, 
-		"title" : "疾病名称", 
-		"ngenetic" : { 
-			"header" : "", 
-			"description" : "" }, 
-		"genetic" : { 
-			"header" : "", 
-			"description" : "" }, 
-		"clinical" : { 
-			"header" : "", 
-			"description" : "" }, 
-		"suggestion" : { 
-			"header" : "", 
-			"description" : "" }, 
-		"report" : { 
-			"header" : "", 
-			"level0" : "", 
-			"level1" : "", 
-			"level2" : "", 
-			"level3" : "", 
-			"level4" : "" }, 
-		"desc" : { 
-			"header" : "", 
-			"description" : "" } 
-	} 
-}
-
 def str2trans(s):
 	return s and s.replace("%","{\%}").replace("\n","\n\n") or ""
 	
 def lang2file(name,d):
 	lang = etree.Element(name)
+
 	diagnose=etree.SubElement(lang,"diagnose")
 	etree.SubElement(diagnose,"header").text=str2trans(d.get("diagnose",{}).get("header"))
 	etree.SubElement(diagnose,"description").text=str2trans(d.get("diagnose",{}).get("description"))
-	
+
 	nutrition=etree.SubElement(lang,"nutrition")
 	etree.SubElement(nutrition,"header").text=str2trans(d.get("nutrition",{}).get("header"))
 	etree.SubElement(nutrition,"description").text=str2trans(d.get("nutrition",{}).get("description"))
 	for i in d.get("nutrition",{}).get("compound",[]):
-		
+
 		compound=etree.SubElement(nutrition,"compound")
 		etree.SubElement(compound,"header").text=str2trans(i.get("name"))
 		etree.SubElement(compound,"function").text=str2trans(i.get("function"))
@@ -133,13 +63,22 @@ def lang2file(name,d):
 	etree.SubElement(desc,"description").text=str2trans(d.get("desc",{}).get("description"))
 	
 	return lang
-	
+
+def xml_clear(x):
+    for i in  x.getchildren():
+        if i.getchildren():
+            i=xml_clear(i)
+        if not (i.text and i.getchildren()):
+            x.getchildren().remove(i)
+    return x
+
 def dict2file(d):
 	if not d.has_key("_id"):return
 	opt = etree.Element("opt")
 	id = etree.SubElement(opt, "id").text=d.get("_id")
 	
 	for l in ["CN","EN"]:
+		if not d.get(l,{}):continue
 		lang=lang2file(l,d.get(l,{}))
 		pic=lang.findall("pic")
 		if pic[0].text:
@@ -151,8 +90,9 @@ def dict2file(d):
 			fimg.close()
 			pic[0].text=imgname.split('/')[2]
 		opt.insert(0,lang)
+
 		f=open(l+"/section/section_"+d.get("_id").replace(" ","")+".xml","w")
-		f.write(etree.tostring(opt, encoding="utf-8", method="xml"))
+		f.write(etree.tostring(xml_clear(opt), encoding="utf-8", method="xml"))
 		f.close()
 		opt.remove(lang)
 	

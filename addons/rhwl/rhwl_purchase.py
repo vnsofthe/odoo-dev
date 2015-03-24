@@ -57,6 +57,9 @@ class purchase_apply(osv.osv):
 
     def action_create_quotation(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
+        req_id = self.pool.get("purchase.requisition").search(cr,uid,[('origin','=',obj.name),('state','!=','cancel')],context=context)
+        if req_id:
+            raise osv.except_osv("错误","该申请单已经有生成招标询价单，不能重复生成。")
         line=[]
         sup={}
         for i in obj.line:
@@ -69,6 +72,7 @@ class purchase_apply(osv.osv):
             val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_po_id.id}
             line.append(self.pool.get("purchase.requisition.line").create(cr,uid,val,context=context))
         req_id = self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
+        req_obj = self.pool.get("purchase.requisition").browse(cr,uid,req_id,context=context)
         if sup:
             line=[]
             for k,v in sup.items():
@@ -77,7 +81,7 @@ class purchase_apply(osv.osv):
                 local = self.pool.get("purchase.order").onchange_picking_type_id(cr,uid,0,pick,context=context)
                 val = self.pool.get("purchase.order").onchange_partner_id(cr,uid,0,k,context=context).get("value")
                 val.update(local.get('value'))
-                val.update({'picking_type_id':pick,'partner_id':k,'origin':obj.name})
+                val.update({'picking_type_id':pick,'partner_id':k,'origin':req_obj.name})
                 for j in v:
                     detail_val = self.pool.get("purchase.order.line").onchange_product_id(cr, uid, 0, val.get("pricelist_id"),j[0], j[1], False, k,val.get("date_order"),val.get("fiscal_position"),val.get("date_planned"),False,False,'draft',context=context).get("value")
                     detail_val.update({'product_id':j[0],'product_qty':j[1],'product_uom':j[2]})
@@ -88,7 +92,12 @@ class purchase_apply(osv.osv):
             self.pool.get("purchase.requisition").write(cr,uid,req_id,{'purchase_ids':[[6,False,line]]})
 
     def action_quotation(self, cr, uid, ids, context=None):
-        pass
+        obj = self.browse(cr,uid,ids,context=context)
+        req_id = self.pool.get("purchase.requisition").search(cr,uid,[('origin','=',obj.name),('state','=','open')],context=context)
+        if not req_id:
+            raise osv.except_osv("错误","该申请单对应的招标询价单没有关闭，不能确认。")
+        self.write(cr, uid, ids, {'state': 'quotation'}, context=context)
+
     def action_dept(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'dept'}, context=context)
     def action_inspector(self, cr, uid, ids, context=None):
