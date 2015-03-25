@@ -69,7 +69,7 @@ class purchase_apply(osv.osv):
                     sup[j.name.id].append((i.product_id.id,i.qty,i.uom_po_id.id))
                 else:
                     sup[j.name.id]=[(i.product_id.id,i.qty,i.uom_po_id.id)]
-            val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_po_id.id}
+            val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_po_id.id,"apply_id":i.id}
             line.append(self.pool.get("purchase.requisition.line").create(cr,uid,val,context=context))
         req_id = self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
         req_obj = self.pool.get("purchase.requisition").browse(cr,uid,req_id,context=context)
@@ -122,6 +122,7 @@ class purchase_apply_line(osv.osv):
         "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
         "qty":fields.float(u"数量",digits_compute=dp.get_precision('Product Unit of Measure'),required=True),
         "price":fields.float(u"单价",digits_compute=dp.get_precision('Product Price')),
+        "price_purchase":fields.float(u"确认单价",digits_compute=dp.get_precision('Product Price')),
         "partner_id":fields.many2one("res.partner",u"供应商"),
         "note":fields.char(u"备注")
     }

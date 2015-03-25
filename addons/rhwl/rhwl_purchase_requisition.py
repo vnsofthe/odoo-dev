@@ -15,6 +15,7 @@ class purchase_requisition(osv.osv):
         for p in obj.line_ids:
             if p.min_price==0:
                 raise osv.except_osv("错误",u"产品[%s]未进行询价，不可以关闭"%(p.product_id.name))
+            self.pool.get("purchase.order.apply.line").write(cr,uid,p.apply_id.id,{'price':p.min_price})
         return super(purchase_requisition,self).tender_open(cr,uid,ids,context=context)
 
 class purchase_requisition_line(osv.osv):
@@ -37,5 +38,6 @@ class purchase_requisition_line(osv.osv):
         return val
 
     _columns={
-        "min_price":fields.function(_get_min_price,type="float",string=u"最低单价")
+        "min_price":fields.function(_get_min_price,type="float",string=u"最低单价"),
+        "apply_id":fields.many2one("purchase.order.apply.line",string="Apply ID"),
     }
