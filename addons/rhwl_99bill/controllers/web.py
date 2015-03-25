@@ -19,4 +19,15 @@ class WebClient(http.Controller):
     @http.route("/web/api/99bill/mas/",type="http",auth="none")
     def get_mas(self,**kw):
         _logger.warn(kw)
+        registry = RegistryManager.get(request.session.db)
+        with registry.cursor() as cr:
+            obj = registry.get("rhwl.99bill.mas")
+            val={
+                "txn_time":kw.get("txnTime",""),
+                "external_trace_no":kw.get("externalTraceNo",""),
+                "amt":kw.get("amt",0),
+                "process_flag":kw.get("processFlag",False)
+            }
+            obj.create(cr,SUPERUSER_ID,val)
+        cr.commit()
         return "0"
