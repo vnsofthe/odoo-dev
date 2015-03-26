@@ -44,6 +44,8 @@ class rhwl_gene(osv.osv):
     }
     def create(self,cr,uid,val,context=None):
         val["log"]=[[0,0,{"note":u"资料新增","data":"create"}]]
+        if not val.get("batch_no",None):
+            val["batch_no"]=datetime.datetime.strftime(datetime.datetime.today(),"%m-%d")
         return super(rhwl_gene,self).create(cr,uid,val,context=context)
 
     def write(self,cr,uid,id,val,context=None):
@@ -60,18 +62,41 @@ class rhwl_gene(osv.osv):
                 'view_type': 'form',
                 'res_model': 'rhwl.easy.genes.popup',
                 'view_mode': 'form',
-                'name':u"回馈说明",
+                'name':u"异常说明",
                 'target': 'new',
                 'context':{'col':'except_note'},
                 'flags': {'form': {'action_buttons': False}}}
 
         return self.write(cr,uid,ids,{"state":"except"})
 
-    def action_state_exceptconfirm(self, cr, uid, ids, context=None):
+    def action_state_except_confirm(self,cr,uid,ids,context=None):
+        if not context:
+            context={}
+        if context.get("view_type")=="tree":
+            return {
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'res_model': 'rhwl.easy.genes.popup',
+                'view_mode': 'form',
+                'name':u"回馈说明",
+                'target': 'new',
+                'context':{'col':'confirm_note'},
+                'flags': {'form': {'action_buttons': False}}}
+
         return self.write(cr,uid,ids,{"state":"except_confirm"})
+
 
     def action_state_confirm(self, cr, uid, ids, context=None):
         return self.write(cr,uid,ids,{"state":"confirm"})
+
+    def action_state_cancel(self,cr,uid,ids,context=None):
+        return self.write(cr,uid,ids,{"state":"cancel"})
+
+    def action_state_dna(self,cr,uid,ids,context=None):
+        return self.write(cr,uid,ids,{"state":"dna_except"})
+
+    def action_state_ok(self,cr,uid,ids,context=None):
+        return self.write(cr,uid,ids,{"state":"ok"})
 
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"
@@ -97,4 +122,9 @@ class rhwl_gene_popup(osv.osv_memory):
 
     def action_ok(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context)
-        self.pool.get("rhwl.easy.genes").write(cr,uid,context.get("active_id",0),{context.get('col'):obj.note,"state":"except"})
+        s={
+            "confirm_note":"except_confirm",
+            "except_note":"except"
+        }
+        col=context.get('col')
+        self.pool.get("rhwl.easy.genes").write(cr,uid,context.get("active_id",0),{col:obj.note,"state":s.get(col)})

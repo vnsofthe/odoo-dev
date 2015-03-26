@@ -17,7 +17,7 @@
                     <field name="except_note"/>
                     <field name="confirm_note"/>
                     <field name="state"/>
-                    <button name="action_state_confirm"  states="draft" string="确认" type="object"
+                    <button name="action_state_confirm"  states="draft,except_confirm" string="确认" type="object"
                                  icon="gtk-apply" />
                     <button name="action_state_except" states="draft" string="信息异常" type="object"
                              icon="gtk-cancel" context="{'view_type':'tree'}"/>
@@ -28,21 +28,19 @@
             <field name="name">rhwl.easy.genes.view.form</field>
             <field name="model">rhwl.easy.genes</field>
             <field name="arch" type="xml">
-                <form>
+                <form string="样本信息">
                     <header>
-                        <button name="action_state_except" string="信息异常反馈" type="object"/>
-                        <button name="action_state_exceptconfirm" string="信息异常回馈" type="object"/>
-                        <button name="action_state_confirm" string="样本确认" type="object"/>
-                        <button name="action_state_dna" string="DNA异常" type="object"/>
-                        <button name="action_state_ok" string="检测完成" type="object"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,done"
-                               statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
+                        <button name="action_state_except" string="信息异常反馈" states="draft" type="object"/>
+                        <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object"/>
+                        <button name="action_state_dna" string="DNA异常" states="confirm" type="object"/>
+                        <button name="action_state_ok" string="检测完成" states="confirm" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="batch_no"/>
-                                <field name="name"/>
+                                <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="date"/>
                                 <field name="cust_name"/>
                                 <field name="except_note" attrs="{'readonly':[('state','!=','draft')]}"/>
@@ -85,6 +83,10 @@
                     <field name="mobile"/>
                     <field name="identity"/>
                     <separator/>
+                    <filter string="草稿" name="type_draft" domain="[('state','=','draft')]"/>
+                    <filter string="异常确认" name="type_exceptconfirm" domain="[('state','=','except_confirm')]"/>
+                    <filter string="信息异常" name="type_except" domain="[('state','=','except')]"/>
+                    <filter string="DNA质检异常" name="type_dnaexcept" domain="[('state','=','dna_except')]"/>
                     <group expand="0" string="分组">
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
@@ -98,6 +100,8 @@
             <field name="res_model">rhwl.easy.genes</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_easy_genes_view_tree"/>
+            <field name="context">{'search_default_type_draft':1,'search_default_type_exceptconfirm':1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                 </p>
@@ -107,7 +111,10 @@
             </field>
         </record>
 
-        <menuitem id="menu_easy_genes" parent="base.menu_sales" name="易感基因样本" sequence="15"
+        <menuitem id="menu_easy_genes_root" name="人和易感" sequence="15"  />
+        <menuitem id="menu_rhwl_easy_genes" parent="menu_easy_genes_root" name="易感基因" sequence="10"  />
+
+        <menuitem id="menu_easy_genes" parent="menu_rhwl_easy_genes" name="样本信息维护" sequence="10"
                   action='action_easy_genes'/>
 
         <record model="ir.ui.view" id="rhwl_easy_genes_popup_view_form">
@@ -126,5 +133,46 @@
                 </form>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_except_view_tree">
+            <field name="name">rhwl.easy.genes.except.view.tree</field>
+            <field name="model">rhwl.easy.genes</field>
+            <field name="arch" type="xml">
+                <tree string="易感基因" >
+                    <field name="batch_no"/>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="cust_name"/>
+                    <field name="sex"/>
+                    <field name="identity"/>
+                    <field name="mobile"/>
+                    <field name="birthday"/>
+                    <field name="except_note"/>
+                    <field name="confirm_note"/>
+                    <field name="state"/>
+                    <button name="action_state_except_confirm"  states="except" string="异常回馈" type="object"
+                                 icon="gtk-apply" context="{'view_type':'tree'}"/>
+                    <button name="action_state_cancel" states="except" string="信息取消" type="object"
+                             icon="gtk-cancel" context="{'view_type':'tree'}"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_easy_genes_except" model="ir.actions.act_window">
+            <field name="name">样本信息异常回馈</field>
+            <field name="res_model">rhwl.easy.genes</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="rhwl_easy_genes_except_view_tree"/>
+            <field name="domain">[('state','=','except')]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes" name="样本信息异常回馈" sequence="15"
+                  action='action_easy_genes_except'/>
     </data>
 </openerp>
