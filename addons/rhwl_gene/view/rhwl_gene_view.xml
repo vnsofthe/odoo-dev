@@ -174,5 +174,23 @@
         </record>
         <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes" name="样本信息异常回馈" sequence="15"
                   action='action_easy_genes_except'/>
+
+        <record id="action_easy_genes_dnaexcept" model="ir.actions.act_window">
+            <field name="name">样本信息质检异常</field>
+            <field name="res_model">rhwl.easy.genes</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="rhwl_easy_genes_except_view_tree"/>
+            <field name="domain">[('state','=','dna_except')]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_easy_genes_dnaexcept" parent="menu_rhwl_easy_genes" name="样本信息质检异常" sequence="20"
+                  action='action_easy_genes_dnaexcept'/>
     </data>
 </openerp>
