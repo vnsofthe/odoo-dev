@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	  <meta name="description" content="">
+	  <meta name="keywords" content="">
+	  <meta name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	  <title>WebCam</title>
+
+	  <!-- Set render engine for 360 browser -->
+	  <meta name="renderer" content="webkit">
+	  <!-- No Baidu Siteapp-->
+	  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+	  
+	  <!-- Add to homescreen for Chrome on Android -->
+	  <meta name="mobile-web-app-capable" content="yes">
+	  
+	  <!-- Add to homescreen for Safari on iOS -->
+	  <meta name="apple-mobile-web-app-capable" content="yes">
+	  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+	  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+	  
+	  <!-- Tile icon for Win8 (144x144 + tile color) -->
+	  
+	  <meta name="msapplication-TileColor" content="#0e90d2">
+	  
+	</head>
+	<body>
+
+    <div id="my_camera" style="width:320px; height:240px;"></div>
+    <div id="my_result" style="width:640px;height:480px;"></div>
+
+	<script type="text/javascript" src="js/webcam.min.js"></script>
+    <script>
+		Webcam.set({
+			width: 320,
+			height: 240,
+			dest_width: 2048,
+			dest_height: 1536,
+			image_format: 'jpeg',
+			jpeg_quality: 100,
+			force_flash: false,
+			flip_horiz: false
+		});
+        Webcam.attach( '#my_camera' );
+
+        function take_snapshot() {
+            Webcam.snap( function(data_uri) {
+                document.getElementById('my_result').innerHTML = '<img src="'+data_uri+'"/>';
+            } );
+        }
+    </script>
+
+    <a href="javascript:void(take_snapshot())">Take Snapshot</a>
+	
+	</body>
+</html>
