@@ -36,6 +36,8 @@ class rhwl_gene(osv.osv):
         "confirm_note":fields.text(u"信息确认回馈"),
         "state":fields.selection(STATE_SELECT.items(),u"状态"),
         "note":fields.text(u"备注"),
+        "gene_id":fields.char(u"基因编号",size=20),
+        "img":fields.binary(u"图片"),
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log")
     }
 

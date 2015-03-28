@@ -66,6 +66,9 @@
                             <page string="备注">
                                 <field name="note"/>
                             </page>
+                            <page string="图片">
+                                <field name="img" widget="image" options="{'size':[480,640]}"/>
+                            </page>
                         </notebook>
                     </sheet>
                 </form>
