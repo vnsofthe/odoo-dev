@@ -509,11 +509,11 @@
                   action='action_sale_sample_exception' groups="base.group_sale_salesman,rhwl_base_sample"/>
 
         <menuitem name="Sample Information" id="menu_sale_sample_portal" parent="portal.portal_orders"
-            action="action_sale_sample" sequence="5"/>
+            action="action_sale_sample" sequence="5" groups="rhwl_base_sample_portal"/>
          <menuitem id="menu_sale_sample_reuse_portal" parent="portal.portal_orders" name="Again Blood" sequence="6"
-                  action='action_sale_sample_reuse' />
+                  action='action_sale_sample_reuse' groups="rhwl_base_sample_portal"/>
         <menuitem id="menu_sale_sample_exception_portal" parent="portal.portal_orders" name="Excep Information" sequence="7"
-                  action='action_sale_sample_exception'/>
+                  action='action_sale_sample_exception' groups="rhwl_base_sample_portal"/>
 
         <record id="mt_sample_cancel" model="mail.message.subtype">
             <field name="name">Sample Create</field>

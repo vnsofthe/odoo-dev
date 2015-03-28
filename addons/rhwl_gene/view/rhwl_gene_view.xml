@@ -118,7 +118,7 @@
         <menuitem id="menu_rhwl_easy_genes" parent="menu_easy_genes_root" name="易感基因" sequence="10"  />
 
         <menuitem id="menu_easy_genes" parent="menu_rhwl_easy_genes" name="样本信息维护" sequence="10"
-                  action='action_easy_genes'/>
+                  action='action_easy_genes' groups="rhwl_base_gene"/>
 
         <record model="ir.ui.view" id="rhwl_easy_genes_popup_view_form">
             <field name="name">rhwl.easy.genes.popup.view.form</field>
@@ -176,7 +176,7 @@
             </field>
         </record>
         <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes" name="样本信息异常回馈" sequence="15"
-                  action='action_easy_genes_except'/>
+                  action='action_easy_genes_except' groups="rhwl_base_tjs"/>
 
         <record id="action_easy_genes_dnaexcept" model="ir.actions.act_window">
             <field name="name">样本信息质检异常</field>
@@ -194,6 +194,6 @@
             </field>
         </record>
         <menuitem id="menu_easy_genes_dnaexcept" parent="menu_rhwl_easy_genes" name="样本信息质检异常" sequence="20"
-                  action='action_easy_genes_dnaexcept'/>
+                  action='action_easy_genes_dnaexcept' groups="rhwl_base_tjs"/>
     </data>
 </openerp>

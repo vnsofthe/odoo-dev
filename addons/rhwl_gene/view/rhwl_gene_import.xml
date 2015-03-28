@@ -27,6 +27,6 @@
             <field name="target">new</field>
         </record>
         <menuitem id="menu_rhwl_easy_genes_import" parent="menu_easy_genes_root" name="数据导入" sequence="20"  />
-        <menuitem action="action_rhwl_genes_import_report" id="menu_rhwl_easy_genes_instance" name="样本信息接收" parent="menu_rhwl_easy_genes_import" />
+        <menuitem action="action_rhwl_genes_import_report" id="menu_rhwl_easy_genes_instance" name="样本信息接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
     </data>
 </openerp>
