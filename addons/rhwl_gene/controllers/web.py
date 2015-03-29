@@ -13,15 +13,16 @@ import cStringIO
 import StringIO
 import Image
 import logging
+import os
 _logger = logging.getLogger(__name__)
 
 class gene(http.Controller):
-    @http.route("/web/api/gene/pic/",type="http",auth="none")
+    @http.route("/web/api/gene/pic/",type="http",auth="user")
     def imagepost(self,**kw):
         registry = RegistryManager.get(request.session.db)
         obj = registry.get("rhwl.easy.genes")
         with registry.cursor() as cr:
-            id = obj.search(cr,SUPERUSER_ID,[("name","=",kw.get("no"))])
+            id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
             if not id:
                 return "NO_DATA_FOUND"
             file_like = cStringIO.StringIO(kw.get("img1").split(";")[-1].split(",")[-1].decode('base64','strict'))
@@ -32,11 +33,21 @@ class gene(http.Controller):
 
             region = img2.crop((0,0,width/2,height))
             img.paste(region, (width/2, 0,width,height))
-            obj.write(cr,SUPERUSER_ID,id,{"img":base64.encodestring(img.tostring("jpeg",img.mode))})
+            obj.write(cr,request.uid,id,{"img":base64.encodestring(img.tostring("jpeg",img.mode))})
             cr.commit()
             return "OK"
 
-
+    @http.route("/web/rhwl_gene/images/",type="http",auth="user")
+    def index(self,**kw):
+        fname = os.path.join(os.path.split(os.path.split(__file__)[0])[0],"static/webcam.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+        return """<html><head><script>
+                    window.location = '/rhwl_gene/static/webcam.html';
+                </script></head></html>
+                """
 # assume data contains your decoded image
 
 
