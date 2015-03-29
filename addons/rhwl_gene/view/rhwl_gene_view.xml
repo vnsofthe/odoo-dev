@@ -120,6 +120,14 @@
         <menuitem id="menu_easy_genes" parent="menu_rhwl_easy_genes" name="样本信息维护" sequence="10"
                   action='action_easy_genes' groups="rhwl_base_gene"/>
 
+        <record model="ir.actions.act_url" id="action_easy_genes_image">
+            <field name="name">Gene Images</field>
+            <field name="url">/web/rhwl_gene/images/</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_easy_genes_image" parent="menu_rhwl_easy_genes" name="样本图像采集" sequence="12"
+                  action='action_easy_genes_image' groups="rhwl_base_gene"/>
+
         <record model="ir.ui.view" id="rhwl_easy_genes_popup_view_form">
             <field name="name">rhwl.easy.genes.popup.view.form</field>
             <field name="model">rhwl.easy.genes.popup</field>
