@@ -10,7 +10,10 @@
                         <field name="file_bin"/>
                     </group>
                     <footer>
-                        <button name="import_report" string="导入" type="object"  class="oe_highlight"  />
+                        <button name="import_report" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type1',False)"/>
+                        <button name="import_report2" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type2',False)"/>
+                        <button name="import_report3" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type3',False)"/>
+                        <button name="import_report4" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type4',False)"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel" />
                     </footer>
@@ -19,14 +22,49 @@
         </record>
 
         <record id="action_rhwl_genes_import_report" model="ir.actions.act_window">
-            <field name="name">接收数据</field>
+            <field name="name">接收样本数据</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">rhwl.genes.import</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
+            <field name="context">{"file_type1":1}</field>
             <field name="target">new</field>
         </record>
         <menuitem id="menu_rhwl_easy_genes_import" parent="menu_easy_genes_root" name="数据导入" sequence="20"  />
         <menuitem action="action_rhwl_genes_import_report" id="menu_rhwl_easy_genes_instance" name="样本信息接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+
+        <record id="action_rhwl_genes_import_report2" model="ir.actions.act_window">
+            <field name="name">接收质检不合格数据</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type2":1}</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_rhwl_genes_import_report2" id="menu_rhwl_easy_genes_instance2" name="质检异常信息接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+
+        <record id="action_rhwl_genes_import_report3" model="ir.actions.act_window">
+            <field name="name">接收检测点位数据</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type3":1}</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_rhwl_genes_import_report3" id="menu_rhwl_easy_genes_instance3" name="检测数据点位接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+
+        <record id="action_rhwl_genes_import_report4" model="ir.actions.act_window">
+            <field name="name">接收检测风险数据</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type4":1}</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_rhwl_genes_import_report4" id="menu_rhwl_easy_genes_instance4" name="检测风险数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+
     </data>
 </openerp>

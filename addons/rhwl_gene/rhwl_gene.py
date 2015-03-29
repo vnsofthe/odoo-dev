@@ -53,7 +53,15 @@ class rhwl_gene(osv.osv):
     def write(self,cr,uid,id,val,context=None):
         if val.has_key("state"):
             val["log"]=[[0,0,{"note":u"状态变更为:"+self.STATE_SELECT.get(val.get("state")),"data":val.get("state")}]]
+        if val.has_key("img"):
+            val["log"]=[[0,0,{"note":u"图片变更","data":"img"}]]
         return super(rhwl_gene,self).write(cr,uid,id,val,context=context)
+
+    def unlink(self, cr, uid, ids, context=None):
+        if isinstance(ids,(long,int)):
+            ids=[ids]
+        ids = self.search(cr,uid,[("id","in",ids),("state","=","draft")],context=context)
+        return super(rhwl_gene,self).unlink(cr,uid,ids,context=context)
 
     def action_state_except(self, cr, uid, ids, context=None):
         if not context:
