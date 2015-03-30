@@ -32,8 +32,7 @@
                     <header>
                         <button name="action_state_except" string="信息异常反馈" states="draft" type="object"/>
                         <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object"/>
-                        <button name="action_state_dna" string="DNA异常" states="confirm" type="object"/>
-                        <button name="action_state_ok" string="检测完成" states="confirm" type="object"/>
+                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
@@ -69,6 +68,14 @@
                             <page string="图片">
                                 <field name="img" widget="image" options="{'size':[480,640]}"/>
                             </page>
+                            <page string="点位数据">
+                                <field name="typ" attrs="{'readonly':True}">
+                                    <tree>
+                                        <field name="snp"/>
+                                        <field name="typ"/>
+                                    </tree>
+                                </field>
+                            </page>
                         </notebook>
                     </sheet>
                 </form>
@@ -80,8 +87,8 @@
             <field name="model">rhwl.easy.genes</field>
             <field name="arch" type="xml">
                 <search string="Gene">
-                    <field name="batch_no"/>
                     <field name="name"/>
+                    <field name="batch_no"/>
                     <field name="cust_name"/>
                     <field name="mobile"/>
                     <field name="identity"/>

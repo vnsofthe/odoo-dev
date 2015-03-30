@@ -22,6 +22,7 @@ class rhwl_gene(osv.osv):
         'done':u'完成'
     }
     _name = "rhwl.easy.genes"
+    _order="date desc,name asc"
     _columns={
         "batch_no":fields.char(u"批号"),
         "name":fields.char(u"样本编码",required=True,size=10),
@@ -38,9 +39,12 @@ class rhwl_gene(osv.osv):
         "note":fields.text(u"备注"),
         "gene_id":fields.char(u"基因编号",size=20),
         "img":fields.binary(u"图片"),
-        "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log")
+        "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
+        "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type")
     }
-
+    _sql_constraints = [
+        ('rhwl_easy_genes_name_uniq', 'unique(name)', u'样本编号不能重复!'),
+    ]
     _defaults={
         "state":'draft',
     }
@@ -60,7 +64,7 @@ class rhwl_gene(osv.osv):
     def unlink(self, cr, uid, ids, context=None):
         if isinstance(ids,(long,int)):
             ids=[ids]
-        ids = self.search(cr,uid,[("id","in",ids),("state","=","draft")],context=context)
+        if uid!=SUPERUSER_ID:ids = self.search(cr,uid,[("id","in",ids),("state","=","draft")],context=context)
         return super(rhwl_gene,self).unlink(cr,uid,ids,context=context)
 
     def action_state_except(self, cr, uid, ids, context=None):
@@ -108,6 +112,9 @@ class rhwl_gene(osv.osv):
     def action_state_ok(self,cr,uid,ids,context=None):
         return self.write(cr,uid,ids,{"state":"ok"})
 
+    def action_state_reset(self,cr,uid,ids,context=None):
+        return self.write(cr,uid,ids,{"state":"draft"})
+
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"
     _order = "date desc"
@@ -122,6 +129,14 @@ class rhwl_gene_log(osv.osv):
     _defaults={
         "date":fields.datetime.now,
         "user_id":lambda obj,cr,uid,context:uid,
+    }
+
+class rhwl_gene_type(osv.osv):
+    _name = "rhwl.easy.genes.type"
+    _columns={
+        "genes_id":fields.many2one("rhwl.easy.genes","Genes ID"),
+        "snp":fields.char("SNP",size=20),
+        "typ":fields.char("Type",size=10),
     }
 
 class rhwl_gene_popup(osv.osv_memory):

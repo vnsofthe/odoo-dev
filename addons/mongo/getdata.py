@@ -136,7 +136,7 @@ class WebClient(http.Controller):
 
 
     @http.route('/web/api/mongo/drugs-get/', type='http', auth="public",website=True)
-    def login(self,**kw):
+    def drugs_login(self,**kw):
         conn = pymongo.Connection(self.DBIP,27017)
         db = conn.drugs #连接库
         #db.authenticate("tage","123")
@@ -154,7 +154,7 @@ class WebClient(http.Controller):
         return response.make_conditional(request.httprequest)
 
     @http.route('/web/api/mongo/drugs-detail/get/', type='http', auth="public")
-    def detail_get(self,**kw):
+    def drugs_detail_get(self,**kw):
         conn = pymongo.Connection(self.DBIP,27017)
         db = conn.drugs #连接库
         res=db.drugs.find_one({"_id":kw.get("id").encode("utf-8")})
@@ -162,7 +162,7 @@ class WebClient(http.Controller):
         return response.make_conditional(request.httprequest)
 
     @http.route('/web/api/mongo/drugs-pic/post/', type='http', auth="public")
-    def pic_post(self,**kw):
+    def drugs_pic_post(self,**kw):
 
         #_logger.info(request.httprequest.files)
         if kw.get("choosefile"):
@@ -187,7 +187,7 @@ class WebClient(http.Controller):
         return 'OK'
 
     @http.route('/web/api/mongo/drugs-detail/post/', type='json', auth="public")
-    def detail_post(self,**kw):
+    def drugs_detail_post(self,**kw):
         conn = pymongo.Connection(self.DBIP,27017)
         db = conn.drugs #连接库
         res=db.drugs.find_one({"_id":request.jsonrequest.get("_id").encode("utf-8")})

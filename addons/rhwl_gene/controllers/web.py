@@ -34,8 +34,35 @@ class gene(http.Controller):
             region = img2.crop((0,0,width/2,height))
             img.paste(region, (width/2, 0,width,height))
             obj.write(cr,request.uid,id,{"img":base64.encodestring(img.tostring("jpeg",img.mode))})
+            if obj.state=="draft" and kw.get("is_confirm")=="true":
+                obj.action_state_confirm(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
             cr.commit()
             return "OK"
+
+    @http.route("/web/rhwl_gene/get/",type="http",auth="user")
+    def get_detail(self,**kw):
+        registry = RegistryManager.get(request.session.db)
+        obj = registry.get("rhwl.easy.genes")
+        sexdict={'T':u'男','F':u'女'}
+        with registry.cursor() as cr:
+            id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
+            if not id:
+                data={}
+            else:
+                res = obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+                data={
+                    "batch_no":res.batch_no,
+                    "name":res.name,
+                    "date":res.date,
+                    "cust_name":res.cust_name,
+                    "sex": sexdict.get(res.sex,""),
+                    "identity":res.identity and res.identity or "",
+                    "mobile":res.mobile and res.mobile or "",
+                    "birthday":res.birthday and res.birthday or "",
+                }
+
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
 
     @http.route("/web/rhwl_gene/images/",type="http",auth="user")
     def index(self,**kw):
