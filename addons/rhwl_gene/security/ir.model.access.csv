@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_rhwl_easy_genes,access_rhwl_easy_genes,model_rhwl_easy_genes,,1,1,0,0
 access_rhwl_easy_genes_base,access_rhwl_easy_genes_base,model_rhwl_easy_genes,rhwl_base_gene,1,1,1,0
 access_rhwl_easy_genes_menu,access_rhwl_easy_genes_menu,base.model_ir_ui_menu,,1,0,0,0
+access_rhwl_easy_genes_log,access_rhwl_easy_genes_log,model_rhwl_easy_genes_log,,1,1,1,0
