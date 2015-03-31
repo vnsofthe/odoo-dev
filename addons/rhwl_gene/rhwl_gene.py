@@ -23,6 +23,16 @@ class rhwl_gene(osv.osv):
     }
     _name = "rhwl.easy.genes"
     _order="date desc,name asc"
+    def _genes_type_get(self, cr, uid, ids, field_names, arg, context=None):
+        res = {}
+        maps={}
+        for id in ids:
+            res[id] = {}.fromkeys(field_names, "")
+            type_ids=self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id.id",'=',id)],context=context)
+            for i in self.pool.get("rhwl.easy.genes.type").browse(cr,uid,type_ids,context=context):
+                res[id][maps.get(i.snp,i.snp)] = i.typ
+        return res
+
     _columns={
         "batch_no":fields.char(u"批号"),
         "name":fields.char(u"样本编码",required=True,size=10),
@@ -42,7 +52,8 @@ class rhwl_gene(osv.osv):
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
         "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type"),
         "dns_chk":fields.one2many("rhwl.easy.genes.check","genes_id","DNA_Check"),
-        "test_log":fields.related("log","note",type="char",domain=[("data","=","create")],string=u"测试")
+        "rs1042713":fields.function(_genes_type_get,type="char",string='rs1042713', multi='typ'),
+        "rs1050152":fields.function(_genes_type_get,type="char",string='rs1050152', multi='typ'),
     }
     _sql_constraints = [
         ('rhwl_easy_genes_name_uniq', 'unique(name)', u'样本编号不能重复!'),

@@ -17,7 +17,7 @@
                     <field name="except_note"/>
                     <field name="confirm_note"/>
                     <field name="state"/>
-                    <field name="test_log"/>
+
                     <button name="action_state_confirm"  states="draft,except_confirm" string="确认" type="object"
                                  icon="gtk-apply" />
                     <button name="action_state_except" states="draft" string="信息异常" type="object"
