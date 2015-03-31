@@ -34,7 +34,8 @@ class gene(http.Controller):
             region = img2.crop((0,0,width/2,height))
             img.paste(region, (width/2, 0,width,height))
             obj.write(cr,request.uid,id,{"img":base64.encodestring(img.tostring("jpeg",img.mode))})
-            if obj.state=="draft" and kw.get("is_confirm")=="true":
+            o=obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+            if o.state=="draft" and kw.get("is_confirm")=="true":
                 obj.action_state_confirm(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
             cr.commit()
             return "OK"

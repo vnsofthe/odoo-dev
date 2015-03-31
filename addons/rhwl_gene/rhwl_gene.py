@@ -40,7 +40,9 @@ class rhwl_gene(osv.osv):
         "gene_id":fields.char(u"基因编号",size=20),
         "img":fields.binary(u"图片"),
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
-        "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type")
+        "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type"),
+        "dns_chk":fields.one2many("rhwl.easy.genes.check","genes_id","DNA_Check"),
+        "test_log":fields.related("log","note",type="char",domain=[("data","=","create")],string=u"测试")
     }
     _sql_constraints = [
         ('rhwl_easy_genes_name_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -131,12 +133,34 @@ class rhwl_gene_log(osv.osv):
         "user_id":lambda obj,cr,uid,context:uid,
     }
 
+class rhwl_gene_check(osv.osv):
+    _name = "rhwl.easy.genes.check"
+    _columns={
+        "genes_id":fields.many2one("rhwl.easy.genes","Genes ID"),
+        "date":fields.date(u"收样日期"),
+        "dna_date":fields.date(u"提取日期"),
+        "concentration":fields.char(u"浓度",size=5,help=u"参考值>=10"),
+        "lib_person":fields.char(u"实验操作人",size=10),
+        "od260_280":fields.char("OD260/OD280",size=5,help=u"参考值1.8-2.0"),
+        "od260_230":fields.char("OD260/OD230",size=5,help=u"参考值>=2.0"),
+        "chk_person":fields.char(u"检测人",size=10),
+        "active":fields.boolean("Active"),
+    }
+
+    _defaults={
+        "active":True
+    }
+
 class rhwl_gene_type(osv.osv):
     _name = "rhwl.easy.genes.type"
     _columns={
         "genes_id":fields.many2one("rhwl.easy.genes","Genes ID"),
         "snp":fields.char("SNP",size=20),
         "typ":fields.char("Type",size=10),
+        "active":fields.boolean("Active"),
+    }
+    _defaults={
+        "active":True
     }
 
 class rhwl_gene_popup(osv.osv_memory):
