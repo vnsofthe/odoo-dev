@@ -17,6 +17,7 @@
                     <field name="except_note"/>
                     <field name="confirm_note"/>
                     <field name="state"/>
+                    <field name="test_log"/>
                     <button name="action_state_confirm"  states="draft,except_confirm" string="确认" type="object"
                                  icon="gtk-apply" />
                     <button name="action_state_except" states="draft" string="信息异常" type="object"
@@ -68,6 +69,19 @@
                             <page string="图片">
                                 <field name="img" widget="image" options="{'size':[480,640]}"/>
                             </page>
+                            <page string="质检数据">
+                                <field name="dns_chk" attrs="{'readonly':True}">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="dna_date"/>
+                                        <field name="concentration"/>
+                                        <field name="lib_person"/>
+                                        <field name="od260_280"/>
+                                        <field name="od260_230"/>
+                                        <field name="chk_person"/>
+                                    </tree>
+                                </field>
+                            </page>
                             <page string="点位数据">
                                 <field name="typ" attrs="{'readonly':True}">
                                     <tree>
@@ -76,6 +90,7 @@
                                     </tree>
                                 </field>
                             </page>
+
                         </notebook>
                     </sheet>
                 </form>
