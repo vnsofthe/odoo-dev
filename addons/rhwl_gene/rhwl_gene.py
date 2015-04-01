@@ -34,20 +34,21 @@ class rhwl_gene(osv.osv):
         return res
 
     _columns={
-        "batch_no":fields.char(u"批号"),
-        "name":fields.char(u"样本编码",required=True,size=10),
-        "date":fields.date(u"日期",required=True),
-        "cust_name":fields.char(u"客户姓名",required=True,size=10),
+        "batch_no":fields.char(u"批次"),
+        "name":fields.char(u"基因样本编号",required=True,size=10),
+        "date":fields.date(u"送检日期",required=True),
+        "cust_name":fields.char(u"会员姓名",required=True,size=10),
         "sex":fields.selection([('T',u"男"),('F',u"女")],u"性别"),
         "identity":fields.char(u"身份证号",size=18),
-        "mobile":fields.char(u"手机号",size=15),
+        "mobile":fields.char(u"手机号码",size=15),
         "birthday":fields.date(u"出生日期"),
         "receiv_date":fields.datetime(u"接收时间"),
-        "except_note":fields.text(u"信息问题反馈"),
-        "confirm_note":fields.text(u"信息确认回馈"),
+        "except_note":fields.text(u"信息异常内容"),
+        "confirm_note":fields.text(u"信息异常反馈"),
         "state":fields.selection(STATE_SELECT.items(),u"状态"),
         "note":fields.text(u"备注"),
         "gene_id":fields.char(u"基因编号",size=20),
+        "cust_prop":fields.selection([("tjs",u"泰济生客户"),("employee",u"内部员工"),("extra",u"外部人员")],string=u"客户属性"),
         "img":fields.binary(u"图片"),
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
         "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type"),
@@ -60,6 +61,7 @@ class rhwl_gene(osv.osv):
     ]
     _defaults={
         "state":'draft',
+        "cust_prop":"tjs",
     }
     def create(self,cr,uid,val,context=None):
         val["log"]=[[0,0,{"note":u"资料新增","data":"create"}]]

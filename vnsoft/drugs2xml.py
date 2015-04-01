@@ -9,6 +9,9 @@ except ImportError:
 import os
 import base64
 import Image
+
+not_export_id=['Elavil','Tryptanol','Endep','Elatrol','Tryptizol','Trepiline','Laroxyl']
+
 def str2trans(s):
     return s and s.replace("%","{\%}").replace("\n","\n\n") or ""
     
@@ -45,16 +48,20 @@ def image_resize(f):
 
 def dict2file(d):
     if not d.has_key("_id"):return
+
+    if not_export_id.count(d.get("_id"))>0:return
+
     opt = etree.Element("opt")
     id = etree.SubElement(opt, "id").text=d.get("_id")
     
     for l in ["CN","EN"]:
         if not d.get(l,{}).get("desc",{}).get("description"):continue
+        if not d.get(l,{}).get("note",{}).get("description"):continue
         lang=lang2file(l,d.get(l,{}))
         pic=lang.findall("pic")
         if pic and pic[0].text:
             pic_base64 = pic[0].text
-            imgname=l+"/pic/section_"+d.get("_id").replace("'","").replace("`","").replace(" ","")+"."+(d.get(l).get("pic").get("mimetype").split("/")[1])
+            imgname=l+"/pic/section_"+d.get("_id").replace("'","").replace("`","").replace(" ","").replace("/","_")+"."+(d.get(l).get("pic").get("mimetype").split("/")[1])
             fimg = open(imgname,"wb")
             #base64.decode(pic_base64,fimg)
             fimg.write(pic_base64.decode('base64','strict'))
@@ -63,7 +70,7 @@ def dict2file(d):
             pic[0].text=image_resize(imgname).split('/')[2]
         opt.insert(0,lang)
 
-        f=open(l+"/section/section_"+d.get("_id").replace("'","").replace("`","").replace(" ","")+".xml","w")
+        f=open(l+"/section/section_"+d.get("_id").replace("'","").replace("`","").replace(" ","").replace("/","_")+".xml","w")
         f.write(etree.tostring(opt, encoding="utf-8", method="xml"))
         f.close()
         opt.remove(lang)
@@ -97,7 +104,7 @@ def check_dir():
 if __name__=="__main__":
     check_dir()
     conn = pymongo.Connection("10.0.0.8",27017)
-    db = conn.drugs
-    content = db.drugs.find()
+    db = conn.medicine
+    content = db.medicine.find()
     for i in content:
         dict2file(i)
