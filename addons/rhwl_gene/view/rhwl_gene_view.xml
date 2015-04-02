@@ -80,6 +80,9 @@
                                         <field name="od260_280"/>
                                         <field name="od260_230"/>
                                         <field name="chk_person"/>
+                                        <field name="data_loss"/>
+                                        <field name="loss_person"/>
+                                        <field name="loss_date"/>
                                     </tree>
                                 </field>
                             </page>

@@ -33,9 +33,13 @@ def lang2file(name,d):
 def image_resize(f):
     img = Image.open(f)
     width,height = img.size
-    if width>220:
+    if width>220 or height>220:
+        if width>height:
+            newbox=(220, 220 * height / width)
+        else:
+            newbox=(220*width/height, 220)
         targetImg = img.resize(
-                           (220, 220 * height / width),
+                           newbox,
                            Image.ANTIALIAS
                            )
     else:

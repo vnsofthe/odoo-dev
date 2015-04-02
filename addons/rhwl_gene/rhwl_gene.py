@@ -157,6 +157,9 @@ class rhwl_gene_check(osv.osv):
         "od260_280":fields.char("OD260/OD280",size=5,help=u"参考值1.8-2.0"),
         "od260_230":fields.char("OD260/OD230",size=5,help=u"参考值>=2.0"),
         "chk_person":fields.char(u"检测人",size=10),
+        "data_loss":fields.char(u"数据缺失率",size=6,help=u"参考值<1%"),
+        "loss_person":fields.char(u"判读人",size=10),
+        "loss_date":fields.date(u"判读日期"),
         "active":fields.boolean("Active"),
     }
 
