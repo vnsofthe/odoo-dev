@@ -45,7 +45,7 @@
         <menuitem action="action_rhwl_genes_import_report2" id="menu_rhwl_easy_genes_instance2" name="质检异常信息接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
 
         <record id="action_rhwl_genes_import_report3" model="ir.actions.act_window">
-            <field name="name">接收检测点位数据</field>
+            <field name="name">接收检测位点数据</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">rhwl.genes.import</field>
             <field name="view_type">form</field>
@@ -53,10 +53,10 @@
             <field name="context">{"file_type3":1}</field>
             <field name="target">new</field>
         </record>
-        <menuitem action="action_rhwl_genes_import_report3" id="menu_rhwl_easy_genes_instance3" name="检测数据点位接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+        <menuitem action="action_rhwl_genes_import_report3" id="menu_rhwl_easy_genes_instance3" name="检测位点数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
 
         <record id="action_rhwl_genes_import_report4" model="ir.actions.act_window">
-            <field name="name">接收检测风险数据</field>
+            <field name="name">接收风险分析数据</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">rhwl.genes.import</field>
             <field name="view_type">form</field>
@@ -64,7 +64,7 @@
             <field name="context">{"file_type4":1}</field>
             <field name="target">new</field>
         </record>
-        <menuitem action="action_rhwl_genes_import_report4" id="menu_rhwl_easy_genes_instance4" name="检测风险数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+        <menuitem action="action_rhwl_genes_import_report4" id="menu_rhwl_easy_genes_instance4" name="风险分析数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
 
     </data>
 </openerp>

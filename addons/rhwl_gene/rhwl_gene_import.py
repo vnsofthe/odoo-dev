@@ -116,6 +116,9 @@ class rhwl_import(osv.osv_memory):
                         "od260_280":t2,
                         "od260_230":t3,
                         "chk_person":sh.cell_value(i,7),
+                        "data_loss":sh.cell_value(i,8),
+                        "loss_person":sh.cell_value(i,9),
+                        "loss_date":self.date_trun(sh.cell_value(i,10)),
                         "active":True,
                     }
                 _logger.info(val)

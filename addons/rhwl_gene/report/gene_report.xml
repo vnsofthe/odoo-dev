@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="rhwl_gene_dna_except_ids" model="ir.actions.report.xml">
+			<field name="name">质检异常报告</field>
+			<field name="report_name">rhwl.gene.dna.except.ids</field>
+			<field name="model">rhwl.easy.genes</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+            <field name="report_type">pentaho</field>
+			<field name="rml">rhwl_gene/report/dna_except.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="rhwl_gene.model_rhwl_easy_genes"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">rhwl_gene/report/dna_except.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
+    </data>
+</openerp>

@@ -14,11 +14,12 @@
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
-    'depends': ['vnsoft_base','base'],
+    'depends': ['vnsoft_base','base','pentaho_reports'],
     'data': ["security/gene_security.xml",
              "security/ir.model.access.csv",
              "view/rhwl_gene_view.xml",
              "view/rhwl_gene_import.xml",
+             "report/gene_report.xml"
              ],
     "qweb":[],
     'demo': [],

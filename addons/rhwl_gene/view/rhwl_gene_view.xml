@@ -43,6 +43,7 @@
                                 <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="date"/>
                                 <field name="cust_name"/>
+                                <field name="cust_prop"/>
                                 <field name="except_note" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                             <group>
@@ -79,6 +80,9 @@
                                         <field name="od260_280"/>
                                         <field name="od260_230"/>
                                         <field name="chk_person"/>
+                                        <field name="data_loss"/>
+                                        <field name="loss_person"/>
+                                        <field name="loss_date"/>
                                     </tree>
                                 </field>
                             </page>
@@ -107,6 +111,7 @@
                     <field name="cust_name"/>
                     <field name="mobile"/>
                     <field name="identity"/>
+                    <field name="note"/>
                     <separator/>
                     <filter string="草稿" name="type_draft" domain="[('state','=','draft')]"/>
                     <filter string="异常确认" name="type_exceptconfirm" domain="[('state','=','except_confirm')]"/>
@@ -185,13 +190,12 @@
                     <field name="state"/>
                     <button name="action_state_except_confirm"  states="except" string="异常回馈" type="object"
                                  icon="gtk-apply" context="{'view_type':'tree'}"/>
-                    <button name="action_state_cancel" states="except" string="信息取消" type="object"
-                             icon="gtk-cancel" context="{'view_type':'tree'}"/>
+
                 </tree>
             </field>
         </record>
         <record id="action_easy_genes_except" model="ir.actions.act_window">
-            <field name="name">样本信息异常回馈</field>
+            <field name="name">样本信息异常反馈</field>
             <field name="res_model">rhwl.easy.genes</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
@@ -205,11 +209,11 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes" name="样本信息异常回馈" sequence="15"
+        <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes" name="样本信息异常反馈" sequence="15"
                   action='action_easy_genes_except' groups="rhwl_base_tjs"/>
 
         <record id="action_easy_genes_dnaexcept" model="ir.actions.act_window">
-            <field name="name">样本信息质检异常</field>
+            <field name="name">质检异常样本</field>
             <field name="res_model">rhwl.easy.genes</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
@@ -223,7 +227,7 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_easy_genes_dnaexcept" parent="menu_rhwl_easy_genes" name="样本信息质检异常" sequence="20"
+        <menuitem id="menu_easy_genes_dnaexcept" parent="menu_rhwl_easy_genes" name="质检异常样本" sequence="20"
                   action='action_easy_genes_dnaexcept' groups="rhwl_base_tjs"/>
     </data>
 </openerp>
