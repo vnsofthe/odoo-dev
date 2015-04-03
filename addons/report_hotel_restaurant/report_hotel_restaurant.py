@@ -2,8 +2,8 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2012-Today Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>)
+#    Copyright (C) 2004 OpenERP SA (<http://www.openerp.com>)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -16,30 +16,28 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 ##############################################################################
 
-from osv import fields,osv
+from openerp.osv import fields, osv
 
 AVAILABLE_STATES = [
-    ('draft','Draft'),
-    ('confirm','Confirm'),
+    ('draft', 'Draft'),
+    ('confirm', 'Confirm'),
     ('done', 'Done')
- 
 ]
 
-class report_hotel_restaurant_status(osv.osv):
+class report_hotel_restaurant_status(osv.Model):
     _name = "report.hotel.restaurant.status"
     _description = "Reservation By State"
     _auto = False
     _columns = {
-       
-        'reservation_id':fields.char('Reservation No',size=64,readonly=True),
+        'reservation_id':fields.char('Reservation No', size=64, readonly=True),
         'nbr': fields.integer('Reservation', readonly=True),
         'state': fields.selection(AVAILABLE_STATES, 'State', size=16, readonly=True),
         }
-    
+
     def init(self, cr):
         cr.execute("""
             create or replace view report_hotel_restaurant_status as (
@@ -52,7 +50,6 @@ class report_hotel_restaurant_status(osv.osv):
                     hotel_restaurant_reservation c
                 group by c.state,c.reservation_id
             )""")
-report_hotel_restaurant_status()
 
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

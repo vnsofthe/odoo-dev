@@ -2,7 +2,7 @@
 <openerp>
 <data noupdate="1">
 	#
-	# Sequences for hotel.folio
+	# Sequences for hotel.reservation
 	#
 
 	<record model="ir.sequence.type" id="seq_type_hotel_reservation">

@@ -1,9 +1,9 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2012-Today Serpent Consulting Services Pvt. Ltd. (<http://www.serpentcs.com>)
+#    Copyright (C) 2004 OpenERP SA (<http://www.openerp.com>)
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -16,14 +16,15 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
 #
 ##############################################################################
 
 {
     "name" : "Hotel Reservation Management - Reporting",
-    "version" : "1.0",
-    "author" : "Tiny",
+    "version" : "0.03",
+    "author": ["Serpent Consulting Services Pvt. Ltd.", "OpenERP SA" ],
+    "website": ["http://www.serpentcs.com", "http://www.openerp.com"],
     "depends" : ["hotel_reservation"],
     "category" : "Generic Modules/Hotel Reservation",
      "description": """
@@ -31,12 +32,12 @@
      * Current status of reserved room
      * List status of room as draft or done state
     """,
-    "init_xml" : [],
-    "demo_xml" : [],
-    "update_xml" : ["security/ir.model.access.csv","report_hotel_reservation_view.xml"],
-    "active": False,
-    "installable": True
+    "data": [
+        "security/ir.model.access.csv",
+        "report_hotel_reservation_view.xml",
+    ],
+    'installable': True,
+    'auto_install': False,
 }
-
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
