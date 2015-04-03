@@ -7,7 +7,7 @@ import openerp.addons.decimal_precision as dp
 import datetime
 import requests
 import logging
-
+import os
 _logger = logging.getLogger(__name__)
 class rhwl_gene(osv.osv):
     STATE_SELECT={
@@ -41,7 +41,7 @@ class rhwl_gene(osv.osv):
         "name":fields.char(u"基因样本编号",required=True,size=10),
         "date":fields.date(u"送检日期",required=True),
         "cust_name":fields.char(u"会员姓名",required=True,size=10),
-        "sex":fields.selection([('T',u"男"),('F',u"女")],u"性别"),
+        "sex":fields.selection([('T',u"男"),('F',u"女")],u"性别",required=True),
         "identity":fields.char(u"身份证号",size=18),
         "mobile":fields.char(u"手机号码",size=15),
         "birthday":fields.date(u"出生日期"),
@@ -132,6 +132,46 @@ class rhwl_gene(osv.osv):
 
     def action_state_reset(self,cr,uid,ids,context=None):
         return self.write(cr,uid,ids,{"state":"draft"})
+
+    def action_state_report(self,cr,uid,ids,context=None):
+        return self.write(cr,uid,ids,{"state":"report"})
+
+    def create_gene_type_file(self,cr,uid,ids,context=None):
+        ids=self.search(cr,uid,[("state","=","ok")],context=context)
+        if ids:
+            if isinstance(ids,(long,int)):
+                ids=[ids]
+            obj=self.browse(cr,uid,ids,context=context)
+            title={}
+            data=[]
+            for i in obj:
+                if not i.typ:
+                    ids.remove(i.id)
+                    continue
+                rec=[]
+                for t in i.typ:
+                    if not title.has_key(t.snp):
+                        title[i.snp]=""
+                    rec.append((t.snp,t.typ))
+                rec_dict = dict(rec)
+                r=[i.name,i.cust_name,i.sex if i.sex=='F' else 'M',]
+                for k in title.keys():
+                    r.append(rec_dict[k])
+                data.append(r)
+
+
+            fpath = os.path.join(os.path.split(__file__)[0],"static/remote/snp")
+            for i in range(1,100):
+                fname=os.path.join(fpath,"snp-"+str(i)+".txt")
+                if not os.path.exists(fname):
+                    break
+
+            f=open(fname,"w")
+            f.write("编号\t姓名\t性别\t"+"\t".join(title.keys()))
+            for i in data:
+                f.write("\t".join(i))
+            f.close()
+            self.action_state_report(cr,uid,ids,context=context)
 
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"

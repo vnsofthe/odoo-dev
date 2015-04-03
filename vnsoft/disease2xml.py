@@ -9,25 +9,52 @@ except ImportError:
 import os
 import base64
 import Image
-
-not_export_id=['Elavil','Tryptanol','Endep','Elatrol','Tryptizol','Trepiline','Laroxyl']
-
 def str2trans(s):
     return s and s.replace("%","{\%}").replace("\n","\n\n") or ""
     
 def lang2file(name,d):
     lang = etree.Element(name)
-    diagnose=etree.SubElement(lang,"desc")
-    etree.SubElement(diagnose,"header").text=str2trans(d.get("desc",{}).get("header"))
-    etree.SubElement(diagnose,"description").text=str2trans(d.get("desc",{}).get("description"))
-    nutrition=etree.SubElement(lang,"note")
-    etree.SubElement(nutrition,"header").text=str2trans(d.get("note",{}).get("header"))
-    etree.SubElement(nutrition,"description").text=str2trans(d.get("note",{}).get("description"))
+    diagnose=etree.SubElement(lang,"diagnose")
+    etree.SubElement(diagnose,"header").text=str2trans(d.get("diagnose",{}).get("header"))
+    etree.SubElement(diagnose,"description").text=str2trans(d.get("diagnose",{}).get("description"))
+    nutrition=etree.SubElement(lang,"nutrition")
+    etree.SubElement(nutrition,"header").text=str2trans(d.get("nutrition",{}).get("header"))
+    etree.SubElement(nutrition,"description").text=str2trans(d.get("nutrition",{}).get("description"))
+    for i in d.get("nutrition",{}).get("compound",[]):
+        compound=etree.SubElement(nutrition,"compound")
+        etree.SubElement(compound,"header").text=str2trans(i.get("name"))
+        etree.SubElement(compound,"function").text=str2trans(i.get("function"))
+
     pic=etree.SubElement(lang,"pic")
     pic.text=d.get("pic",{}).get("base64","")
     title=etree.SubElement(lang,"title")
     title.text=str2trans(d.get("title"))
+    ngenetic=etree.SubElement(lang,"ngenetic")
+    etree.SubElement(ngenetic,"header").text=str2trans(d.get("ngenetic",{}).get("header"))
+    etree.SubElement(ngenetic,"description").text=str2trans(d.get("ngenetic",{}).get("description"))
 
+    genetic=etree.SubElement(lang,"genetic")
+    etree.SubElement(genetic,"header").text=str2trans(d.get("genetic",{}).get("header"))
+    etree.SubElement(genetic,"description").text=str2trans(d.get("genetic",{}).get("description"))
+
+    clinical=etree.SubElement(lang,"clinical")
+    etree.SubElement(clinical,"header").text=str2trans(d.get("clinical",{}).get("header"))
+    etree.SubElement(clinical,"description").text=str2trans(d.get("clinical",{}).get("description"))
+
+    suggestion=etree.SubElement(lang,"suggestion")
+    etree.SubElement(suggestion,"header").text=str2trans(d.get("suggestion",{}).get("header"))
+    etree.SubElement(suggestion,"description").text=str2trans(d.get("suggestion",{}).get("description"))
+    report=etree.SubElement(lang,"report")
+    etree.SubElement(report,"header").text=str2trans(d.get("report",{}).get("header"))
+    etree.SubElement(report,"level0").text=str2trans(d.get("report",{}).get("level0"))
+    etree.SubElement(report,"level1").text=str2trans(d.get("report",{}).get("level1"))
+    etree.SubElement(report,"level2").text=str2trans(d.get("report",{}).get("level2"))
+    etree.SubElement(report,"level3").text=str2trans(d.get("report",{}).get("level3"))
+    etree.SubElement(report,"level4").text=str2trans(d.get("report",{}).get("level4"))
+    desc=etree.SubElement(lang,"desc")
+    etree.SubElement(desc,"header").text=str2trans(d.get("desc",{}).get("header"))
+    etree.SubElement(desc,"description").text=str2trans(d.get("desc",{}).get("description"))
+    
     return lang
 
 def image_resize(f):
@@ -55,15 +82,11 @@ def name_get(o):
 
 def dict2file(d):
     if not d.has_key("_id"):return
-
-    if not_export_id.count(d.get("_id"))>0:return
-
     opt = etree.Element("opt")
     id = etree.SubElement(opt, "id").text=d.get("_id")
     
     for l in ["CN","EN"]:
         if not d.get(l,{}).get("desc",{}).get("description"):continue
-        if not d.get(l,{}).get("note",{}).get("description"):continue
         lang=lang2file(l,d.get(l,{}))
         pic=lang.findall("pic")
         if pic and pic[0].text:
@@ -111,7 +134,7 @@ def check_dir():
 if __name__=="__main__":
     check_dir()
     conn = pymongo.Connection("10.0.0.8",27017)
-    db = conn.medicine
-    content = db.medicine.find()
+    db = conn.disease 
+    content = db.disease.find()
     for i in content:
         dict2file(i)

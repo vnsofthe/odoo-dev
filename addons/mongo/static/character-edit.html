@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Character Edit</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <ul class="nav nav-tabs" role="tablist" id="myTab">
+      <li role="presentation" class="active"><a href="#cn" aria-controls="cn" role="tab" data-toggle="tab">中文</a></li>
+      <li role="presentation"><a href="#en" aria-controls="profile" role="tab" data-toggle="tab">English</a></li>
+    </ul>
+
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="cn">
+          <br>
+          <div class="container-fluid">
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_title" class="control-label">名称</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="cn_title">
+              </div>
+              <hr/>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>性状简介</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_desc_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="cn_desc_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_desc_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_desc_description" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label class="control-label">图片</label>
+              </div>
+              <div class="col-lg-1 col-md-1">
+                  <img id="cn_pic" width="100%" height="100%" src=""/>
+              </div>
+              <div class="col-lg-10 col-md-9">
+                  <form id="cn_pic_form" enctype="multipart/form-data" action="/web/api/mongo/character-pic/post/" method="POST">
+                        <input type="text" name="cn_data_id" id="cn_data_id" style="display:none"/>
+                        <input type="file" name="choosefile" id="choosefile" />
+                  </form>
+              </div>
+
+              <div class="col-lg-12 col-md-12">
+                  <h2>行动建议</h2>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_note_header" class="control-label">标题</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <input type="text" class="form-control" id="cn_note_header">
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_note_description" class="control-label">描述</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_note_description" rows="4"></textarea>
+              </div>
+          </div>
+          <div>
+              <button id="cn_submit" type="button" class="btn btn-primary text-center">提交中文修改</button>
+          </div>
+          <br>
+      </div>
+      <div role="tabpanel" class="tab-pane" id="en">
+
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="js/json2.js"></script>
+    <script>
+        function getUrlParameter(sParam)
+        {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam)
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+    </script>
+    <script>
+        $(document).ajaxStart(function(){
+            $("<div id=\"wait_ajax\">数据加载中，请稍候......</div>").prependTo($("body"));
+            });
+        $(document).ajaxStop(function(){
+            $("#wait_ajax").remove();
+            });
+        $("#cn_data_id").val(decodeURIComponent(getUrlParameter("id")));
+        $("#cn_pic_form").ajaxForm();
+        $("#cn_submit").bind("click",function(e){
+            if($("#choosefile").val().length>0){$("#cn_pic_form").ajaxSubmit();}
+            var para = {}
+            para.CN={
+                    title:$("#cn_title").val(),
+                    desc:{
+                            header:$("#cn_desc_header").val(),
+                            description:$("#cn_desc_description").val()
+                            },
+                    note:{
+                            header:$("#cn_note_header").val(),
+                            description:$("#cn_note_description").val()
+                            }
+                    }
+            para._id=decodeURIComponent(getUrlParameter("id"))
+
+            $.ajax({
+                type:"POST",
+                contentType: "application/json; charset=utf-8",   //内容类型
+                url:"/web/api/mongo/character-detail/post/",
+                data:JSON.stringify(para),
+                success:function(data){
+                    alert("修改成功。");
+                }
+
+            })
+        });
+
+        $.ajax(
+                {
+                    type: 'POST',
+                      url: "/web/api/mongo/character-detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
+                      data: {},
+                      success: function(data){
+                              //console.log(data);
+                              $("#cn_title").val(data.CN.title);
+                              if(data.CN.desc!=undefined){
+                                  $("#cn_desc_header").val(data.CN.desc.header);
+                                  $("#cn_desc_description").val(data.CN.desc.description);
+                              }
+                              if(data.CN.note!=undefined) {
+                                  $("#cn_note_header").val(data.CN.note.header);
+                                  $("#cn_note_description").val(data.CN.note.description);
+                              }
+                              if(data.CN.pic!=undefined) {
+                                  $("#cn_pic").prop("src", "data:" + data.CN.pic.mimetype + ";base64," + data.CN.pic.base64);
+                              }
+
+                      }
+                }
+        );
+
+    </script>
+
+  </body>
+</html>

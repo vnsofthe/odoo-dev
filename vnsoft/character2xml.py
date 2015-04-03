@@ -111,7 +111,7 @@ def check_dir():
 if __name__=="__main__":
     check_dir()
     conn = pymongo.Connection("10.0.0.8",27017)
-    db = conn.medicine
-    content = db.medicine.find()
+    db = conn.character
+    content = db.character.find()
     for i in content:
         dict2file(i)
