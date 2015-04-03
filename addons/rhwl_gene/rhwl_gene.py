@@ -18,7 +18,10 @@ class rhwl_gene(osv.osv):
         'dna_except':u'DNA质检不合格',
         'cancel':u'取消',
         'ok':u'检测完成',
-        'report':u'报告发送',
+        'report':u'生成报告',
+        'report_done':u"报告已生成",
+        "result_done":u"分析结果确认",
+        "deliver":u"已出货",
         'done':u'完成'
     }
     _name = "rhwl.easy.genes"
@@ -48,7 +51,7 @@ class rhwl_gene(osv.osv):
         "state":fields.selection(STATE_SELECT.items(),u"状态"),
         "note":fields.text(u"备注"),
         "gene_id":fields.char(u"基因编号",size=20),
-        "cust_prop":fields.selection([("tjs",u"泰济生客户"),("employee",u"内部员工"),("extra",u"外部人员")],string=u"客户属性"),
+        "cust_prop":fields.selection([("tjs",u"泰济生客户"),("employee",u"内部员工"),("vip",u"VIP客户"),("extra",u"外部人员")],string=u"客户属性"),
         "img":fields.binary(u"图片"),
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
         "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type"),

@@ -107,6 +107,7 @@ class rhwl_import(osv.osv_memory):
                 t1=sh.cell_value(i,3)
                 t2=sh.cell_value(i,5)
                 t3=sh.cell_value(i,6)
+                t4=sh.cell_value(i,8)
                 val={
                         "genes_id":id[0],
                         "date":self.date_trun(sh.cell_value(i,0)),
@@ -116,15 +117,18 @@ class rhwl_import(osv.osv_memory):
                         "od260_280":t2,
                         "od260_230":t3,
                         "chk_person":sh.cell_value(i,7),
-                        "data_loss":sh.cell_value(i,8),
+                        "data_loss":t4,
                         "loss_person":sh.cell_value(i,9),
                         "loss_date":self.date_trun(sh.cell_value(i,10)),
                         "active":True,
                     }
                 _logger.info(val)
                 self.pool.get("rhwl.easy.genes.check").create(cr,uid,val,context=context)
-                if (t1<10 or t2<1.8 or t2>2 or t3<2) and obj_ids:
-                    self.pool.get("rhwl.easy.genes").action_state_dna(cr,uid,id,context=context)
+                if (t1<10 or t2<1.8 or t2>2 or t3<2 or t4>0.01):
+                    if obj_ids:
+                        self.pool.get("rhwl.easy.genes").action_state_dna(cr,uid,id,context=context)
+                else:
+                    self.pool.get("rhwl.easy.genes").action_state_ok(cr,uid,id,context=context)
 
         finally:
             f.close()
@@ -165,15 +169,34 @@ class rhwl_import(osv.osv_memory):
                 no=sh.cell_value(i,0)
                 if not no:continue
                 id=self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)],context=context)
+                if not id:
+                    raise osv.except_osv(u"错误",u"基因样本编码[%s]不存在。"%(no,))
                 self.pool.get("rhwl.easy.genes").write(cr,uid,id,{"log":[[0,0,{"note":u"导入点位数据","data":"SNP"}]]},context=context)
-                cr.execute("delete from rhwl_easy_genes_type where genes_id=%s" %(id[0],))
+                type_ids = self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id","=",id)],context=context)
+                old_type={}
+                if type_ids:
+                    for t in self.pool.get("rhwl.easy.genes.type").browse(cr,uid,type_ids,context=context):
+                        old_type[i.snp]=i.typ
+                is_ok=True #判断全部位点是否有值
                 for k in snp.keys():
+                    v=str(sh.cell_value(i,k)).split(".")[0]
+                    if old_type.has_key(snp.get(k)):
+                        if old_type[snp.get(k)]=="N/A":
+                            old_type[snp.get(k)]=v
+                        if v=="N/A":
+                            v=old_type[snp.get(k)]
+                        if old_type[snp.get(k)] != v:
+                            raise osv.except_osv(u"错误",u"基因样本编码[%s]位点[%s]原来的值为[%s],现在的值为[%s],请确认原因。"%(no,snp.get(k),old_type[snp.get(k)],v))
                     val={
                         "genes_id":id[0],
                         "snp":snp.get(k),
-                        "typ": str(sh.cell_value(i,k)).split(".")[0],
+                        "typ": v,
                     }
                     self.pool.get("rhwl.easy.genes.type").create(cr,uid,val,context=context)
+                    if v=="N/A":is_ok=False
+                if type_ids:
+                    self.pool.get("rhwl.easy.genes.type").write(cr,uid,type_ids,{"active":False},context=context)
+
 
         finally:
             f.close()

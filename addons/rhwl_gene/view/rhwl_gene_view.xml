@@ -6,16 +6,14 @@
             <field name="model">rhwl.easy.genes</field>
             <field name="arch" type="xml">
                 <tree string="易感基因" >
-                    <field name="batch_no"/>
-                    <field name="name"/>
                     <field name="date"/>
+                    <field name="name"/>
                     <field name="cust_name"/>
                     <field name="sex"/>
                     <field name="identity"/>
-                    <field name="mobile"/>
-                    <field name="birthday"/>
                     <field name="except_note"/>
                     <field name="confirm_note"/>
+                    <field name="batch_no"/>
                     <field name="state"/>
 
                     <button name="action_state_confirm"  states="draft,except_confirm" string="确认" type="object"
@@ -39,18 +37,16 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="batch_no"/>
                                 <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
-                                <field name="date"/>
-                                <field name="cust_name"/>
+                                <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="cust_name" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="cust_prop"/>
                                 <field name="except_note" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                             <group>
-                                <field name="identity"/>
-                                <field name="mobile"/>
-                                <field name="birthday"/>
-                                <field name="sex"/>
+                                <field name="identity" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="confirm_note" attrs="{'readonly':[('state','!=','except')]}"/>
                             </group>
                         </group>
@@ -86,14 +82,6 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="点位数据">
-                                <field name="typ" attrs="{'readonly':True}">
-                                    <tree>
-                                        <field name="snp"/>
-                                        <field name="typ"/>
-                                    </tree>
-                                </field>
-                            </page>
 
                         </notebook>
                     </sheet>
@@ -109,7 +97,6 @@
                     <field name="name"/>
                     <field name="batch_no"/>
                     <field name="cust_name"/>
-                    <field name="mobile"/>
                     <field name="identity"/>
                     <field name="note"/>
                     <separator/>
@@ -177,16 +164,14 @@
             <field name="model">rhwl.easy.genes</field>
             <field name="arch" type="xml">
                 <tree string="易感基因" >
-                    <field name="batch_no"/>
-                    <field name="name"/>
                     <field name="date"/>
+                    <field name="name"/>
                     <field name="cust_name"/>
                     <field name="sex"/>
                     <field name="identity"/>
-                    <field name="mobile"/>
-                    <field name="birthday"/>
                     <field name="except_note"/>
                     <field name="confirm_note"/>
+                    <field name="batch_no"/>
                     <field name="state"/>
                     <button name="action_state_except_confirm"  states="except" string="异常回馈" type="object"
                                  icon="gtk-apply" context="{'view_type':'tree'}"/>
