@@ -18,8 +18,8 @@ class vnsoft_partner(osv.osv):
     _inherit = "res.partner"
 
     def create(self,cr,uid,vals,context=None):
-        if vals.get("is_company",False) and (not vals.get("bank_ids")):
-            raise osv.except_osv("Error",u"请设置银行帐号信息。")
+        #if vals.get("is_company",False) and (not vals.get("bank_ids")):
+        #    raise osv.except_osv("Error",u"请设置银行帐号信息。")
         return super(vnsoft_partner,self).create(cr,uid,vals,context)
 
     def write(self,cr,uid,ids,vals,context=None):

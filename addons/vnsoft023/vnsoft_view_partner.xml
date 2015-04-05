@@ -22,6 +22,9 @@
                 <xpath expr="//field[@name='bank']" position="attributes">
                     <attribute name="attrs">{'invisible':True}</attribute>
                 </xpath>
+                <xpath expr="//field[@name='bank_bic']" position="replace">
+                    <field name="bank_bic" />
+                </xpath>
                 </data>
             </field>
         </record>
