@@ -74,6 +74,7 @@ def image_resize(f):
 
     os.remove(f)
     new=f.split(".")[0]+".jpg"
+    if f.split(".")[-1]=='gif':targetImg =targetImg.convert("RGB")
     targetImg.save(new, "jpeg")
     return new
 

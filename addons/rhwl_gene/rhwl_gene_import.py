@@ -117,7 +117,7 @@ class rhwl_import(osv.osv_memory):
                         "od260_280":t2,
                         "od260_230":t3,
                         "chk_person":sh.cell_value(i,7),
-                        "data_loss":t4,
+                        "data_loss":str(t4*100)+"%",
                         "loss_person":sh.cell_value(i,9),
                         "loss_date":self.date_trun(sh.cell_value(i,10)),
                         "active":True,
@@ -171,7 +171,7 @@ class rhwl_import(osv.osv_memory):
                 id=self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)],context=context)
                 if not id:
                     raise osv.except_osv(u"错误",u"基因样本编码[%s]不存在。"%(no,))
-                self.pool.get("rhwl.easy.genes").write(cr,uid,id,{"log":[[0,0,{"note":u"导入点位数据","data":"SNP"}]]},context=context)
+                self.pool.get("rhwl.easy.genes").write(cr,uid,id,{"log":[[0,0,{"note":u"导入位点数据","data":"SNP"}]]},context=context)
                 type_ids = self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id","=",id)],context=context)
                 old_type={}
                 if type_ids:

@@ -8,6 +8,8 @@ import datetime
 import requests
 import logging
 import os
+import shutil
+
 _logger = logging.getLogger(__name__)
 class rhwl_gene(osv.osv):
     STATE_SELECT={
@@ -18,9 +20,9 @@ class rhwl_gene(osv.osv):
         'dna_except':u'DNA质检不合格',
         'cancel':u'取消',
         'ok':u'检测完成',
-        'report':u'生成报告',
+        'report':u'生成报告中',
         'report_done':u"报告已生成",
-        "result_done":u"分析结果确认",
+        "result_done":u"风险报告确认",
         "deliver":u"已出货",
         'done':u'完成'
     }
@@ -56,6 +58,7 @@ class rhwl_gene(osv.osv):
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
         "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type"),
         "dns_chk":fields.one2many("rhwl.easy.genes.check","genes_id","DNA_Check"),
+        "pdf_file":fields.char(u"风险报告",size=100),
         "rs1042713":fields.function(_genes_type_get,type="char",string='rs1042713', multi='typ'),
         "rs1050152":fields.function(_genes_type_get,type="char",string='rs1050152', multi='typ'),
     }
@@ -68,8 +71,8 @@ class rhwl_gene(osv.osv):
     }
     def create(self,cr,uid,val,context=None):
         val["log"]=[[0,0,{"note":u"资料新增","data":"create"}]]
-        if not val.get("batch_no",None):
-            val["batch_no"]=datetime.datetime.strftime(datetime.datetime.today(),"%m-%d")
+        #if not val.get("batch_no",None):
+        #    val["batch_no"]=datetime.datetime.strftime(datetime.datetime.today(),"%m-%d")
         return super(rhwl_gene,self).create(cr,uid,val,context=context)
 
     def write(self,cr,uid,id,val,context=None):
@@ -136,6 +139,14 @@ class rhwl_gene(osv.osv):
     def action_state_report(self,cr,uid,ids,context=None):
         return self.write(cr,uid,ids,{"state":"report"})
 
+    def action_state_result_done(self,cr,uid,ids,context=None):
+        return self.write(cr,uid,ids,{"state":"result_done"})
+
+    def action_view_pdf(self,cr,uid,ids,context=None):
+        return {'type': 'ir.actions.act_url',
+                'url': context.get("file_name","/"),
+                'target': 'new'}
+
     def create_gene_type_file(self,cr,uid,ids,context=None):
         ids=self.search(cr,uid,[("state","=","ok")],context=context)
         if ids:
@@ -150,11 +161,13 @@ class rhwl_gene(osv.osv):
                     continue
                 rec=[]
                 for t in i.typ:
-                    if not title.has_key(t.snp):
-                        title[i.snp]=""
-                    rec.append((t.snp,t.typ))
+                    k=t.snp
+                    k=k.encode("utf-8")
+                    if not title.has_key(k):
+                        title[k]=""
+                    rec.append((k,(t.typ).encode("utf-8")))
                 rec_dict = dict(rec)
-                r=[i.name,i.cust_name,i.sex if i.sex=='F' else 'M',]
+                r=[i.name.encode("utf-8"),i.cust_name.encode("utf-8"),i.sex.encode("utf-8") if i.sex.encode("utf-8")=='F' else 'M',]
                 for k in title.keys():
                     r.append(rec_dict[k])
                 data.append(r)
@@ -166,12 +179,21 @@ class rhwl_gene(osv.osv):
                 if not os.path.exists(fname):
                     break
 
-            f=open(fname,"w")
-            f.write("编号\t姓名\t性别\t"+"\t".join(title.keys()))
+            f=open(fname,"w+")
+            f.write("编号\t姓名\t性别\t"+"\t".join(title.keys())+'\n')
             for i in data:
-                f.write("\t".join(i))
+                f.write("\t".join(i)+'\n')
             f.close()
             self.action_state_report(cr,uid,ids,context=context)
+
+    def get_gene_pdf_file(self,cr,uid,context=None):
+        fpath = os.path.join(os.path.split(__file__)[0],"static/remote/report")
+        tpath = os.path.join(os.path.split(__file__)[0],"static/local/report")
+        for f in os.listdir(fpath):
+            shutil.move(os.path.join(fpath,f),os.path.join(tpath,f))
+            ids = self.search(cr,uid,[("name","=",f.split(".")[0])])
+            if ids:
+                self.write(cr,uid,ids,{"pdf_file":"rhwl_gene/static/local/report/"+f,"state":"report_done","batch_no":datetime.datetime.strftime(datetime.datetime.today(),"%m%d")})
 
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"
