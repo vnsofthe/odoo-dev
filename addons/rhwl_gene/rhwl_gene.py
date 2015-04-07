@@ -174,10 +174,7 @@ class rhwl_gene(osv.osv):
 
 
             fpath = os.path.join(os.path.split(__file__)[0],"static/remote/snp")
-            for i in range(1,100):
-                fname=os.path.join(fpath,"snp-"+str(i)+".txt")
-                if not os.path.exists(fname):
-                    break
+            fname=os.path.join(fpath,"snp_"+datetime.datetime.now().strftime("%Y%m%d%H%M%S")+".txt")
 
             f=open(fname,"w+")
             f.write("编号\t姓名\t性别\t"+"\t".join(title.keys())+'\n')
@@ -190,10 +187,16 @@ class rhwl_gene(osv.osv):
         fpath = os.path.join(os.path.split(__file__)[0],"static/remote/report")
         tpath = os.path.join(os.path.split(__file__)[0],"static/local/report")
         for f in os.listdir(fpath):
-            shutil.move(os.path.join(fpath,f),os.path.join(tpath,f))
-            ids = self.search(cr,uid,[("name","=",f.split(".")[0])])
-            if ids:
-                self.write(cr,uid,ids,{"pdf_file":"rhwl_gene/static/local/report/"+f,"state":"report_done","batch_no":datetime.datetime.strftime(datetime.datetime.today(),"%m%d")})
+            newfile = os.path.join(fpath,f)
+            if os.path.isdir(newfile):
+                for f1 in os.listdir(newfile):
+                    f2=f1.split("_")[0] + ".pdf"
+                    shutil.move(os.path.join(newfile,f1),os.path.join(tpath,f2))
+                    ids = self.search(cr,uid,[("name","=",f2.split(".")[0])])
+                    if ids:
+                        self.write(cr,uid,ids,{"pdf_file":"rhwl_gene/static/local/report/"+f2,"state":"report_done","batch_no":datetime.datetime.strftime(datetime.datetime.today(),"%m%d")})
+                os.removedirs(newfile)
+
 
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"
