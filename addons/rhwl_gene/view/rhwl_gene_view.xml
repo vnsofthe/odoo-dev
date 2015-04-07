@@ -207,7 +207,8 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes" name="样本信息异常反馈" sequence="15"
+        <menuitem id="menu_rhwl_easy_genes_member" parent="menu_easy_genes_root" name="会员中心" sequence="15"  />
+        <menuitem id="menu_easy_genes_except" parent="menu_rhwl_easy_genes_member" name="样本信息异常反馈" sequence="10"
                   action='action_easy_genes_except' groups="rhwl_base_tjs"/>
 
         <record id="action_easy_genes_dnaexcept" model="ir.actions.act_window">

@@ -64,7 +64,7 @@
             <field name="context">{"file_type4":1}</field>
             <field name="target">new</field>
         </record>
-        <menuitem action="action_rhwl_genes_import_report4" id="menu_rhwl_easy_genes_instance4" name="风险分析数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_gene"/>
+
 
     </data>
 </openerp>

@@ -58,6 +58,7 @@ class rhwl_gene(osv.osv):
         "log":fields.one2many("rhwl.easy.genes.log","genes_id","Log"),
         "typ":fields.one2many("rhwl.easy.genes.type","genes_id","Type"),
         "dns_chk":fields.one2many("rhwl.easy.genes.check","genes_id","DNA_Check"),
+        "risk":fields.one2many("rhwl.easy.gene.risk","genes_id","Risk"),
         "pdf_file":fields.char(u"风险报告",size=100),
         "rs1042713":fields.function(_genes_type_get,type="char",string='rs1042713', multi='typ'),
         "rs1050152":fields.function(_genes_type_get,type="char",string='rs1050152', multi='typ'),
@@ -245,6 +246,31 @@ class rhwl_gene_type(osv.osv):
     }
     _defaults={
         "active":True
+    }
+
+class rhwl_gene_risk(osv.osv):
+    _name = "rhwl.easy.gene.risk"
+    _columns={
+        "genes_id":fields.many2one("rhwl.easy.genes","Genes ID"),
+        "disease_id":fields.many2one("rhwl.gene.disease",string=u"疾病名"),
+        "risk":fields.char(u"风险",size=20),
+        "active":fields.boolean("Active"),
+    }
+    _defaults={
+        "active":True
+    }
+
+class rhwl_gene_disease_type(osv.osv):
+    _name = "rhwl.gene.disease.type"
+    _columns={
+        "name":fields.char(u"分类名称",size=100),
+        "line":fields.one2many("rhwl.gene.disease","type_id",string=u"疾病名称")
+    }
+class rhwl_gene_disease(osv.osv):
+    _name = "rhwl.gene.disease"
+    _columns={
+        "name":fields.char(u"疾病名称",size=50),
+        "type_id":fields.many2one("rhwl.gene.disease.type",string=u"分类名称")
     }
 
 class rhwl_gene_popup(osv.osv_memory):

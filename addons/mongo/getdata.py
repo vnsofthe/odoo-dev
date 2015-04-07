@@ -131,7 +131,7 @@ class WebClient(http.Controller):
                 "name":i.get("name").encode("utf-8"),
                 "function":i.get("function").encode("utf-8")
             })
-        db.disease.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},{id:res.get(id),otherid:otherval})
+        db.disease.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},res)
         return 'OK'
 
 
@@ -215,5 +215,5 @@ class WebClient(http.Controller):
         res[id]['note']['header']=cn_obj.get("note").get("header").encode("utf-8")
         res[id]['note']['description']=cn_obj.get("note").get("description").encode("utf-8")
 
-        db.medicine.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},{id:res.get(id),otherid:otherval})
+        db.medicine.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},res)
         return 'OK'

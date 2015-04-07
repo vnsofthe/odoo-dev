@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_genes_disease_view_tree">
+            <field name="name">rhwl.gene.disease.type.tree</field>
+            <field name="model">rhwl.gene.disease.type</field>
+            <field name="arch" type="xml">
+                <tree string="疾病分类" >
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_disease_view_form">
+            <field name="name">rhwl.genes.disease.type.form</field>
+            <field name="model">rhwl.gene.disease.type</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group cols="8">
+                            <field name="name"/>
+                        </group>
+                        <field name="line">
+                            <tree string="Line" editable="bottom">
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_disease_search">
+            <field name="name">rhwl.genes.disease.search</field>
+            <field name="model">rhwl.gene.disease.type</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_easy_genes_disease" model="ir.actions.act_window">
+            <field name="name">疾病分类</field>
+            <field name="res_model">rhwl.gene.disease.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_disease_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_easy_genes_disease" parent="menu_easy_genes_root" name="设置" sequence="50"  />
+
+        <menuitem id="menu_easy_genes_disease" parent="menu_rhwl_easy_genes_disease" name="疾病分类" sequence="10"
+                  action='action_easy_genes_disease' groups="rhwl_base_gene"/>
+    </data>
+</openerp>
