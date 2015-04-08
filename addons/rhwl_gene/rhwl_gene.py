@@ -215,26 +215,34 @@ class rhwl_gene(osv.osv):
         tpath = os.path.join(model_path, "static/local/excel")
         for f in os.listdir(fpath):
             if f.split(".")[-1]!="xls":continue
-            os.remove(os.path.join(tpath, f))
+            if os.path.isfile(os.path.join(tpath, f)):os.remove(os.path.join(tpath, f)) #删除目标位置相同的文件
             shutil.move(os.path.join(fpath, f), os.path.join(tpath, f))
             fs = open(os.path.join(tpath, f),"r")
             res = fs.readlines()
             fs.close()
             risk = res[0].replace("\n","").split("\t")[3:]
             disease = self.pool.get("rhwl.gene.disease")
-            disease_dict={}
+            disease_dict={} #疾病在表中的id
+            dict_index=3
             for r in risk:
+                if not r:continue
                 r_id = disease.search(cr,uid,[("name","=",r.decode("utf-8"))])
                 if not r_id:
+                    shutil.move(os.path.join(tpath, f),os.path.join(fpath, f))
+                    _logger.warn(risk)
                     raise osv.except_osv(u"错误",u"疾病名称[%s]在基本数据中不存在。" %(r.decode("utf-8"),))
-                disease_dict[r]=r_id[0]
+                disease_dict[dict_index]=[r,r_id[0]]
+                dict_index +=1
             for l in res[1:]:
                 l = l.replace("\n","").split("\t")
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",l[0].decode("utf-8"))])
                 if not gene_id:
+                    shutil.move(os.path.join(tpath, f),os.path.join(fpath, f))
                     raise osv.except_osv(u"错误",u"样本编号[%s]在基本数据中不存在。" %(l[0].decode("utf-8"),))
-                #for r in l[3:]:
-                    #self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"risk":[[0, 0, {"disease_id": u"图片变更", "risk": "img"}]]})
+                val=[]
+                for k in disease_dict.keys():
+                    val.append([0, 0, {"disease_id": disease_dict[k][1], "risk": l[k]}])
+                self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"risk":val})
 
 
 
