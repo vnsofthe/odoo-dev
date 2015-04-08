@@ -16,7 +16,7 @@
                     <field name="batch_no"/>
                     <field name="state"/>
 
-                    <button name="action_state_confirm"  states="draft,except_confirm" string="确认" type="object"
+                    <button name="action_state_confirm"  states="draft" string="确认" type="object"
                                  icon="gtk-apply" />
                     <button name="action_state_except" states="draft" string="信息异常" type="object"
                              icon="gtk-cancel" context="{'view_type':'tree'}"/>
@@ -38,14 +38,14 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
-                                <field name="cust_name" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="cust_prop"/>
                                 <field name="except_note" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                             <group>
-                                <field name="identity" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <label string="风险数据" for="pdf_file" attrs="{'invisible':[('pdf_file','=',False)]}"/>
@@ -94,6 +94,14 @@
                                         <field name="snp"/>
                                         <field name="typ"/>
                                     </tree>
+                                </field>
+                            </page>
+                            <page string="风险数据">
+                                <field name="risk" attrs="{'readonly':True}">
+                                        <tree>
+                                            <field name="disease_id"/>
+                                            <field name="risk"/>
+                                        </tree>
                                 </field>
                             </page>
                         </notebook>

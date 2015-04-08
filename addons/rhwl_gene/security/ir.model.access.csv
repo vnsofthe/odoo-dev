@@ -5,3 +5,6 @@ access_rhwl_easy_genes_menu,access_rhwl_easy_genes_menu,base.model_ir_ui_menu,,1
 access_rhwl_easy_genes_log,access_rhwl_easy_genes_log,model_rhwl_easy_genes_log,,1,1,1,0
 access_rhwl_easy_genes_type,access_rhwl_easy_genes_type,model_rhwl_easy_genes_type,,1,1,1,0
 access_rhwl_easy_genes_check,access_rhwl_easy_genes_check,model_rhwl_easy_genes_check,,1,1,1,0
+access_rhwl_easy_genes_risk,access_rhwl_easy_genes_risk,model_rhwl_easy_gene_risk,,1,1,1,0
+access_rhwl_gene_disease_type,access_rhwl_gene_disease_type,model_rhwl_gene_disease_type,,1,1,1,0
+access_rhwl_gene_disease,access_rhwl_gene_disease,model_rhwl_gene_disease,,1,1,1,0
