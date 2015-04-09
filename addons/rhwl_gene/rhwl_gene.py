@@ -12,7 +12,6 @@ import shutil
 
 _logger = logging.getLogger(__name__)
 
-
 class rhwl_gene(osv.osv):
     STATE_SELECT = {
         'draft': u'草稿',
@@ -20,6 +19,7 @@ class rhwl_gene(osv.osv):
         'except_confirm': u'异常确认',
         'confirm': u'信息确认',
         'dna_except': u'DNA质检不合格',
+        'dna_ok':u"DNA质检合格",
         'cancel': u'取消',
         'ok': u'检测完成',
         'report': u'生成报告中',
@@ -76,10 +76,27 @@ class rhwl_gene(osv.osv):
         "cust_prop": "tjs",
     }
 
+    def init(self, cr):
+
+        ids = self.search(cr,SUPERUSER_ID,[("batch_no","=",False)],order="date")
+        if ids:
+            ids1 = self.search(cr,SUPERUSER_ID,[("batch_no","!=",False)],order="date")
+            if ids1:self.write(cr,SUPERUSER_ID,ids1,{"batch_no":False})
+        ids = self.search(cr,SUPERUSER_ID,[("batch_no","=",False)],order="date asc")
+        dd={}
+        for i in self.browse(cr,SUPERUSER_ID,ids):
+            if not dd.has_key(i.date):
+                dd[i.date]=[]
+            dd[i.date].append(i.id)
+        seq_no=0
+        for k in dd.keys():
+            seq_no = seq_no+1
+            self.write(cr,SUPERUSER_ID,dd[k],{"batch_no":str(seq_no).zfill(3)})
+
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
-        # if not val.get("batch_no",None):
-        #    val["batch_no"]=datetime.datetime.strftime(datetime.datetime.today(),"%m-%d")
+        if not val.get("batch_no",None):
+            val["batch_no"]=datetime.datetime.strftime(datetime.datetime.today(),"%m-%d")
         return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):
@@ -139,6 +156,9 @@ class rhwl_gene(osv.osv):
     def action_state_dna(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {"state": "dna_except"})
 
+    def action_state_dnaok(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {"state": "dna_ok"})
+
     def action_state_ok(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {"state": "ok"})
 
@@ -174,7 +194,7 @@ class rhwl_gene(osv.osv):
                     k = k.encode("utf-8")
                     if not title.has_key(k):
                         title[k] = ""
-                    rec.append((k, (t.typ).encode("utf-8")))
+                    rec.append((k, (t.typ).encode("utf-8").replace("/","")))
                 rec_dict = dict(rec)
                 r = [i.name.encode("utf-8"), i.cust_name.encode("utf-8").replace(" ",""),
                      i.sex.encode("utf-8") if i.sex.encode("utf-8") == 'F' else 'M', ]
@@ -205,8 +225,7 @@ class rhwl_gene(osv.osv):
                     ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
                     if ids:
                         self.write(cr, uid, ids,
-                                   {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done",
-                                    "batch_no": datetime.datetime.strftime(datetime.datetime.today(), "%m%d")})
+                                   {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
                 os.removedirs(newfile)
         cr.commit()
 

@@ -16,11 +16,15 @@ class rhwl_import(osv.osv_memory):
     }
 
     def date_trun(self,val):
-        _logger.info(val)
         if list(str(val)).count("/")==0:
             d=xlrd.xldate_as_tuple(int(val),0)
-            _logger.info("%s/%s/%s"%(d[0],d[1],d[2]))
             return "%s/%s/%s"%(d[0],d[1],d[2])
+        else:
+            return val
+    def datetime_trun(self,val):
+        if list(str(val)).count("/")==0:
+            d=xlrd.xldate_as_tuple(val,0)
+            return "%s/%s/%s %s:%s:%s"%(d[0],d[1],d[2],d[3],d[4],d[5])
         else:
             return val
 
@@ -46,17 +50,28 @@ class rhwl_import(osv.osv_memory):
                raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
             nrows = sh.nrows
             ncols = sh.ncols
+            batch_no={}
             for i in range(2,nrows+1):
                 if not sh.cell_value(i-1,0):continue
-
+                date_col=self.date_trun(sh.cell_value(i-1,0))
                 val={
-                    "date":datetime.datetime.strptime(sh.cell_value(i-1,0),"%Y/%m/%d"),
+                    "date":date_col,
                     "cust_name":sh.cell_value(i-1,1),
                     "sex": 'T' if sh.cell_value(i-1,2)==u"男" else 'F',
                     "name":sh.cell_value(i-1,3),
-                    "identity":sh.cell_value(i-1,4)
+                    "identity":sh.cell_value(i-1,4),
+                    "receiv_date":self.datetime_trun(sh.cell_value(i-1,5))
                 }
-
+                if batch_no.get(date_col):
+                    val["batch_no"]=batch_no.get(date_col)
+                else:
+                    cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
+                    max_no="0"
+                    for no in cr.fetchall():
+                        max_no = no
+                    max_no=str(int(max_no)+1).zfill(3)
+                    batch_no[date_col]=max_no
+                    val["batch_no"]=max_no
                 self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)
 
         finally:
@@ -128,7 +143,7 @@ class rhwl_import(osv.osv_memory):
                     if obj_ids:
                         self.pool.get("rhwl.easy.genes").action_state_dna(cr,uid,id,context=context)
                 else:
-                    self.pool.get("rhwl.easy.genes").action_state_ok(cr,uid,id,context=context)
+                    self.pool.get("rhwl.easy.genes").action_state_dnaok(cr,uid,id,context=context)
 
         finally:
             f.close()
@@ -176,7 +191,7 @@ class rhwl_import(osv.osv_memory):
                 old_type={}
                 if type_ids:
                     for t in self.pool.get("rhwl.easy.genes.type").browse(cr,uid,type_ids,context=context):
-                        old_type[i.snp]=i.typ
+                        old_type[t.snp]=t.typ
                 is_ok=True #判断全部位点是否有值
                 for k in snp.keys():
                     v=str(sh.cell_value(i,k)).split(".")[0]
@@ -194,6 +209,7 @@ class rhwl_import(osv.osv_memory):
                     }
                     self.pool.get("rhwl.easy.genes.type").create(cr,uid,val,context=context)
                     if v=="N/A":is_ok=False
+                self.pool.get("rhwl.easy.genes").action_state_ok(cr,uid,id,context=context)
                 if type_ids:
                     self.pool.get("rhwl.easy.genes.type").write(cr,uid,type_ids,{"active":False},context=context)
 

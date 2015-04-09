@@ -125,6 +125,10 @@
                     <filter string="异常确认" name="type_exceptconfirm" domain="[('state','=','except_confirm')]"/>
                     <filter string="信息异常" name="type_except" domain="[('state','=','except')]"/>
                     <filter string="DNA质检异常" name="type_dnaexcept" domain="[('state','=','dna_except')]"/>
+                    <filter string="DNA质检合格" name="type_dnaok" domain="[('state','=','dna_ok')]"/>
+                    <filter string="检测完成" name="type_ok" domain="[('state','=','ok')]"/>
+                    <filter string="生成报告中" name="type_report" domain="[('state','=','report')]"/>
+                    <filter string="报告已生成" name="type_report_done" domain="[('state','=','report_done')]"/>
                     <group expand="0" string="分组">
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
