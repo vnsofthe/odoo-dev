@@ -42,6 +42,22 @@ class rhwl_gene(osv.osv):
                 res[id][maps.get(i.snp, i.snp)] = i.typ
         return res
 
+    def _get_risk(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for id in ids:
+            res[id]={"risk_count":0,"risk_text":""}
+            risk_id = self.pool.get("rhwl.easy.gene.risk").search(cr,uid,[("genes_id.id","=",id),("risk","=",u"高风险")])
+            if field_names=="risk_count":
+                res[id][field_names]=risk_id.__len__()
+            elif field_names=="risk_text":
+                t=[]
+                for i in self.pool.get("rhwl.easy.gene.risk").browse(cr,uid,risk_id,context=context):
+                    t.append(i.risk)
+                res[id][field_names]=u"、".join(t)
+        _logger.info(res)
+        return res
+
+
     _columns = {
         "batch_no": fields.char(u"批次"),
         "name": fields.char(u"基因样本编号", required=True, size=10),
@@ -57,7 +73,7 @@ class rhwl_gene(osv.osv):
         "state": fields.selection(STATE_SELECT.items(), u"状态"),
         "note": fields.text(u"备注"),
         "gene_id": fields.char(u"基因编号", size=20),
-        "cust_prop": fields.selection([("tjs", u"泰济生客户"), ("employee", u"内部员工"), ("vip", u"VIP客户"), ("extra", u"外部人员")],
+        "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
         "img": fields.binary(u"图片"),
         "log": fields.one2many("rhwl.easy.genes.log", "genes_id", "Log"),
@@ -65,8 +81,9 @@ class rhwl_gene(osv.osv):
         "dns_chk": fields.one2many("rhwl.easy.genes.check", "genes_id", "DNA_Check"),
         "risk": fields.one2many("rhwl.easy.gene.risk", "genes_id", "Risk"),
         "pdf_file": fields.char(u"风险报告", size=100),
-        "rs1042713": fields.function(_genes_type_get, type="char", string='rs1042713', multi='typ'),
-        "rs1050152": fields.function(_genes_type_get, type="char", string='rs1050152', multi='typ'),
+        "is_risk":fields.boolean(u"是高风险"),
+        "risk_count": fields.function(_get_risk, type="integer", string=u'高风险疾病数', multi='risk'),
+        "risk_text": fields.function(_get_risk, type="char", string=u'高风险疾病', multi='risk'),
     }
     _sql_constraints = [
         ('rhwl_easy_genes_name_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -74,20 +91,25 @@ class rhwl_gene(osv.osv):
     _defaults = {
         "state": 'draft',
         "cust_prop": "tjs",
+        "is_risk":False,
     }
 
     def init(self, cr):
-
-        ids = self.search(cr,SUPERUSER_ID,[("batch_no","=",False)],order="date")
+        ids = self.search(cr,SUPERUSER_ID,[('risk','=',False)])
+        if ids:self.write(cr,SUPERUSER_ID,ids,{"is_risk":False})
+        ids = self.search(cr,SUPERUSER_ID,[("batch_no","=",False),('cust_prop','in',['tjs','tjs_vip'])],order="date")
         if ids:
-            ids1 = self.search(cr,SUPERUSER_ID,[("batch_no","!=",False)],order="date")
+            ids1 = self.search(cr,SUPERUSER_ID,[("batch_no","!=",False),('cust_prop','in',['tjs','tjs_vip'])],order="date")
             if ids1:self.write(cr,SUPERUSER_ID,ids1,{"batch_no":False})
-        ids = self.search(cr,SUPERUSER_ID,[("batch_no","=",False)],order="date asc")
+        else:
+            return
+        ids = self.search(cr,SUPERUSER_ID,[('cust_prop','in',['tjs','tjs_vip'])],order="date asc")
         dd={}
-        for i in self.browse(cr,SUPERUSER_ID,ids):
-            if not dd.has_key(i.date):
-                dd[i.date]=[]
-            dd[i.date].append(i.id)
+        for i in ids:
+            obj=self.browse(cr,SUPERUSER_ID,i)
+            if not dd.has_key(obj.date):
+                dd[obj.date]=[]
+            dd[obj.date].append(obj.id)
         seq_no=0
         for k in dd.keys():
             seq_no = seq_no+1
@@ -226,7 +248,7 @@ class rhwl_gene(osv.osv):
                     if ids:
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
-                os.removedirs(newfile)
+                os.rmdir(newfile)
         cr.commit()
 
         #分析风险数据
@@ -252,6 +274,7 @@ class rhwl_gene(osv.osv):
                     raise osv.except_osv(u"错误",u"疾病名称[%s]在基本数据中不存在。" %(r.decode("utf-8"),))
                 disease_dict[dict_index]=[r,r_id[0]]
                 dict_index +=1
+            is_risk=False
             for l in res[1:]:
                 l = l.replace("\n","").split("\t")
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",l[0].decode("utf-8"))])
@@ -261,7 +284,8 @@ class rhwl_gene(osv.osv):
                 val=[]
                 for k in disease_dict.keys():
                     val.append([0, 0, {"disease_id": disease_dict[k][1], "risk": l[k]}])
-                self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"risk":val})
+                    if l[k]=="高风险":is_risk=True
+                self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"is_risk":is_risk,"risk":val})
 
 
 

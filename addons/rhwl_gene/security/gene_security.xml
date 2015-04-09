@@ -21,7 +21,7 @@
         <record id="rhwl_gene_tjs_rule" model="ir.rule">
             <field name="name">Access rhwl easy genes TJS</field>
             <field name="model_id" ref="model_rhwl_easy_genes"/>
-            <field name="domain_force">[('cust_prop','=','tjs')]</field>
+            <field name="domain_force">['|',('cust_prop','=','tjs'),('cust_prop','=','tjs_vip')]</field>
             <field name="groups" eval="[(4, ref('rhwl_base_tjs'))]"/>
             <field eval="0" name="perm_unlink"/>
             <field eval="1" name="perm_write"/>

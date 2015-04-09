@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report
+            id="rhwl_easy_genes_high_risk"
+            model="rhwl.easy.genes"
+            string="高风险名单2"
+            report_type="qweb-pdf"
+            name="rhwl_gene.high_risk"
+            file="rhwl_gene.high_risk"
+            attachment_use="True"
+        />
+    </data>
+</openerp>
