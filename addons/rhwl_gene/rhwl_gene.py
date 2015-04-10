@@ -42,19 +42,28 @@ class rhwl_gene(osv.osv):
                 res[id][maps.get(i.snp, i.snp)] = i.typ
         return res
 
+    def _get_risk_detail(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for id in ids:
+            res[id] = {}.fromkeys(field_names,"")
+            obj = self.pool.get("rhwl.easy.genes").browse(cr,uid,id,context=context)
+            for o in obj.risk:
+                res[id][o.disease_id.code]=o.risk
+        return res
+
+
     def _get_risk(self,cr,uid,ids,field_names,arg,context=None):
         res={}
         for id in ids:
             res[id]={"risk_count":0,"risk_text":""}
-            risk_id = self.pool.get("rhwl.easy.gene.risk").search(cr,uid,[("genes_id.id","=",id),("risk","=",u"高风险")])
-            if field_names=="risk_count":
-                res[id][field_names]=risk_id.__len__()
-            elif field_names=="risk_text":
-                t=[]
-                for i in self.pool.get("rhwl.easy.gene.risk").browse(cr,uid,risk_id,context=context):
-                    t.append(i.risk)
-                res[id][field_names]=u"、".join(t)
-        _logger.info(res)
+            risk_id = self.pool.get("rhwl.easy.gene.risk").search(cr,uid,[("genes_id.id","=",id),("risk","=","高风险")])
+            res[id]["risk_count"]=risk_id.__len__()
+
+            t=[]
+            for i in self.pool.get("rhwl.easy.gene.risk").browse(cr,uid,risk_id,context=context):
+                t.append(i.disease_id.name)
+            res[id]["risk_text"]=u"、".join(t)
+
         return res
 
 
@@ -84,6 +93,76 @@ class rhwl_gene(osv.osv):
         "is_risk":fields.boolean(u"是高风险"),
         "risk_count": fields.function(_get_risk, type="integer", string=u'高风险疾病数', multi='risk'),
         "risk_text": fields.function(_get_risk, type="char", string=u'高风险疾病', multi='risk'),
+        "A1":fields.function(_get_risk_detail,type="char",string="A1",multi="risk_detail"),
+        "A2":fields.function(_get_risk_detail,type="char",string="A2",multi="risk_detail"),
+        "A3":fields.function(_get_risk_detail,type="char",string="A3",multi="risk_detail"),
+        "A4":fields.function(_get_risk_detail,type="char",string="A4",multi="risk_detail"),
+        "A5":fields.function(_get_risk_detail,type="char",string="A5",multi="risk_detail"),
+        "A6":fields.function(_get_risk_detail,type="char",string="A6",multi="risk_detail"),
+        "A7":fields.function(_get_risk_detail,type="char",string="A7",multi="risk_detail"),
+        "A8":fields.function(_get_risk_detail,type="char",string="A8",multi="risk_detail"),
+        "A9":fields.function(_get_risk_detail,type="char",string="A9",multi="risk_detail"),
+        "A10":fields.function(_get_risk_detail,type="char",string="A10",multi="risk_detail"),
+        "A11":fields.function(_get_risk_detail,type="char",string="A11",multi="risk_detail"),
+        "A12":fields.function(_get_risk_detail,type="char",string="A12",multi="risk_detail"),
+        "A13":fields.function(_get_risk_detail,type="char",string="A13",multi="risk_detail"),
+        "A14":fields.function(_get_risk_detail,type="char",string="A14",multi="risk_detail"),
+        "A15":fields.function(_get_risk_detail,type="char",string="A15",multi="risk_detail"),
+        "A16":fields.function(_get_risk_detail,type="char",string="A16",multi="risk_detail"),
+        "A17":fields.function(_get_risk_detail,type="char",string="A17",multi="risk_detail"),
+        "A18":fields.function(_get_risk_detail,type="char",string="A18",multi="risk_detail"),
+        "A19":fields.function(_get_risk_detail,type="char",string="A19",multi="risk_detail"),
+        "A20":fields.function(_get_risk_detail,type="char",string="A20",multi="risk_detail"),
+        "A21":fields.function(_get_risk_detail,type="char",string="A21",multi="risk_detail"),
+        "A22":fields.function(_get_risk_detail,type="char",string="A22",multi="risk_detail"),
+        "A23":fields.function(_get_risk_detail,type="char",string="A23",multi="risk_detail"),
+        "B1":fields.function(_get_risk_detail,type="char",string="B1",multi="risk_detail"),
+        "B2":fields.function(_get_risk_detail,type="char",string="B2",multi="risk_detail"),
+        "B3":fields.function(_get_risk_detail,type="char",string="B3",multi="risk_detail"),
+        "B4":fields.function(_get_risk_detail,type="char",string="B4",multi="risk_detail"),
+        "B5":fields.function(_get_risk_detail,type="char",string="B5",multi="risk_detail"),
+        "B6":fields.function(_get_risk_detail,type="char",string="B6",multi="risk_detail"),
+        "B7":fields.function(_get_risk_detail,type="char",string="B7",multi="risk_detail"),
+        "B8":fields.function(_get_risk_detail,type="char",string="B8",multi="risk_detail"),
+        "B9":fields.function(_get_risk_detail,type="char",string="B9",multi="risk_detail"),
+        "B10":fields.function(_get_risk_detail,type="char",string="B10",multi="risk_detail"),
+        "B11":fields.function(_get_risk_detail,type="char",string="B11",multi="risk_detail"),
+        "B12":fields.function(_get_risk_detail,type="char",string="B12",multi="risk_detail"),
+        "B13":fields.function(_get_risk_detail,type="char",string="B13",multi="risk_detail"),
+        "B14":fields.function(_get_risk_detail,type="char",string="B14",multi="risk_detail"),
+        "B15":fields.function(_get_risk_detail,type="char",string="B15",multi="risk_detail"),
+        "B16":fields.function(_get_risk_detail,type="char",string="B16",multi="risk_detail"),
+        "C1":fields.function(_get_risk_detail,type="char",string="C1",multi="risk_detail"),
+        "C2":fields.function(_get_risk_detail,type="char",string="C2",multi="risk_detail"),
+        "C3":fields.function(_get_risk_detail,type="char",string="C3",multi="risk_detail"),
+        "C4":fields.function(_get_risk_detail,type="char",string="C4",multi="risk_detail"),
+        "C5":fields.function(_get_risk_detail,type="char",string="C5",multi="risk_detail"),
+        "C6":fields.function(_get_risk_detail,type="char",string="C6",multi="risk_detail"),
+        "C7":fields.function(_get_risk_detail,type="char",string="C7",multi="risk_detail"),
+        "C8":fields.function(_get_risk_detail,type="char",string="C8",multi="risk_detail"),
+        "C9":fields.function(_get_risk_detail,type="char",string="C9",multi="risk_detail"),
+        "C10":fields.function(_get_risk_detail,type="char",string="C10",multi="risk_detail"),
+        "C11":fields.function(_get_risk_detail,type="char",string="C11",multi="risk_detail"),
+        "C12":fields.function(_get_risk_detail,type="char",string="C12",multi="risk_detail"),
+        "D1":fields.function(_get_risk_detail,type="char",string="D1",multi="risk_detail"),
+        "D2":fields.function(_get_risk_detail,type="char",string="D2",multi="risk_detail"),
+        "D3":fields.function(_get_risk_detail,type="char",string="D3",multi="risk_detail"),
+        "D4":fields.function(_get_risk_detail,type="char",string="D4",multi="risk_detail"),
+        "D5":fields.function(_get_risk_detail,type="char",string="D5",multi="risk_detail"),
+        "D6":fields.function(_get_risk_detail,type="char",string="D6",multi="risk_detail"),
+        "D7":fields.function(_get_risk_detail,type="char",string="D7",multi="risk_detail"),
+        "D8":fields.function(_get_risk_detail,type="char",string="D8",multi="risk_detail"),
+        "D9":fields.function(_get_risk_detail,type="char",string="D9",multi="risk_detail"),
+        "D10":fields.function(_get_risk_detail,type="char",string="D10",multi="risk_detail"),
+        "D11":fields.function(_get_risk_detail,type="char",string="D11",multi="risk_detail"),
+        "D12":fields.function(_get_risk_detail,type="char",string="D12",multi="risk_detail"),
+		"D13":fields.function(_get_risk_detail,type="char",string="D13",multi="risk_detail"),
+        "D14":fields.function(_get_risk_detail,type="char",string="D14",multi="risk_detail"),
+        "E1":fields.function(_get_risk_detail,type="char",string="E1",multi="risk_detail"),
+        "E2":fields.function(_get_risk_detail,type="char",string="E2",multi="risk_detail"),
+        "E3":fields.function(_get_risk_detail,type="char",string="E3",multi="risk_detail"),
+        "F1":fields.function(_get_risk_detail,type="char",string="F1",multi="risk_detail"),
+        "F2":fields.function(_get_risk_detail,type="char",string="F2",multi="risk_detail"),
     }
     _sql_constraints = [
         ('rhwl_easy_genes_name_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -248,7 +327,7 @@ class rhwl_gene(osv.osv):
                     if ids:
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
-                os.rmdir(newfile)
+                #os.rmdir(newfile)
         cr.commit()
 
         #分析风险数据
@@ -270,22 +349,26 @@ class rhwl_gene(osv.osv):
                 r_id = disease.search(cr,uid,[("name","=",r.decode("utf-8"))])
                 if not r_id:
                     shutil.move(os.path.join(tpath, f),os.path.join(fpath, f))
-                    _logger.warn(risk)
-                    raise osv.except_osv(u"错误",u"疾病名称[%s]在基本数据中不存在。" %(r.decode("utf-8"),))
+                    _logger.warn(u"疾病名称[%s]在基本数据中不存在。" %(r.decode("utf-8"),))
+                    return
                 disease_dict[dict_index]=[r,r_id[0]]
                 dict_index +=1
-            is_risk=False
+
             for l in res[1:]:
+                is_risk=False
                 l = l.replace("\n","").split("\t")
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",l[0].decode("utf-8"))])
                 if not gene_id:
-                    shutil.move(os.path.join(tpath, f),os.path.join(fpath, f))
-                    raise osv.except_osv(u"错误",u"样本编号[%s]在基本数据中不存在。" %(l[0].decode("utf-8"),))
-                val=[]
-                for k in disease_dict.keys():
-                    val.append([0, 0, {"disease_id": disease_dict[k][1], "risk": l[k]}])
-                    if l[k]=="高风险":is_risk=True
-                self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"is_risk":is_risk,"risk":val})
+                    _logger.warn(u"样本编号[%s]在基本数据中不存在。" %(l[0].decode("utf-8"),))
+                else:
+                    risk_id=self.pool.get("rhwl.easy.gene.risk").search(cr,uid,[("genes_id","in",gene_id)])
+                    if risk_id:
+                        self.pool.get("rhwl.easy.gene.risk").write(cr,uid,risk_id,{"active":False})
+                    val=[]
+                    for k in disease_dict.keys():
+                        val.append([0, 0, {"disease_id": disease_dict[k][1], "risk": l[k]}])
+                        if l[k]=="高风险":is_risk=True
+                    self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"is_risk":is_risk,"risk":val})
 
 
 
@@ -366,7 +449,8 @@ class rhwl_gene_disease(osv.osv):
     _name = "rhwl.gene.disease"
     _columns = {
         "name": fields.char(u"疾病名称", size=50),
-        "type_id": fields.many2one("rhwl.gene.disease.type", string=u"分类名称")
+        "type_id": fields.many2one("rhwl.gene.disease.type", string=u"分类名称"),
+        "code":fields.char("Code",size=5),
     }
 
 

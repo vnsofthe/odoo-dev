@@ -14,6 +14,19 @@
 			<field name="pentaho_filename">rhwl_gene/report/dna_except.prpt</field>
 			<field name="pentaho_load_file" eval="True"/>
 		</record>
+        <record id="rhwl_gene_risk_high1_ids" model="ir.actions.report.xml">
+			<field name="name">高风险总汇表</field>
+			<field name="report_name">rhwl.gene.risk.high1.ids</field>
+			<field name="model">rhwl.easy.genes</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+            <field name="report_type">pentaho</field>
+			<field name="rml">rhwl_gene/report/risk_high1.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="rhwl_gene.model_rhwl_easy_genes"/>
+			<field name="pentaho_report_output_type">xls</field>
+			<field name="pentaho_filename">rhwl_gene/report/risk_high1.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
         <record id="rhwl_gene_risk_high2_ids" model="ir.actions.report.xml">
 			<field name="name">高风险名单2</field>
 			<field name="report_name">rhwl.gene.risk.high2.ids</field>

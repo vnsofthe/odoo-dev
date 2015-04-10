@@ -22,6 +22,7 @@
                         </group>
                         <field name="line">
                             <tree string="Line" editable="bottom">
+                                <field name="code"/>
                                 <field name="name"/>
                             </tree>
                         </field>
