@@ -8,3 +8,7 @@ access_rhwl_easy_genes_check,access_rhwl_easy_genes_check,model_rhwl_easy_genes_
 access_rhwl_easy_genes_risk,access_rhwl_easy_genes_risk,model_rhwl_easy_gene_risk,,1,1,1,0
 access_rhwl_gene_disease_type,access_rhwl_gene_disease_type,model_rhwl_gene_disease_type,,1,1,1,0
 access_rhwl_gene_disease,access_rhwl_gene_disease,model_rhwl_gene_disease,,1,1,1,0
+access_rhwl_genes_picking,access_rhwl_genes_picking,model_rhwl_genes_picking,,1,1,1,1
+access_rhwl_genes_picking_line,access_rhwl_genes_picking_line,model_rhwl_genes_picking_line,,1,1,1,1
+access_rhwl_genes_picking_box,access_rhwl_genes_picking_box,model_rhwl_genes_picking_box,,1,1,1,1
+access_rhwl_genes_picking_box_line,access_rhwl_genes_picking_box_line,model_rhwl_genes_picking_box_line,,1,1,1,1

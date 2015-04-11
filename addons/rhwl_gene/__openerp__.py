@@ -21,6 +21,7 @@
              "view/rhwl_gene_import.xml",
              "report/gene_report.xml",
              "view/rhwl_risk.xml",
+             "view/rhwl_gene_picking.xml"
              ],
     "qweb":[],
     'demo': [],

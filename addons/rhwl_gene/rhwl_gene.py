@@ -68,7 +68,7 @@ class rhwl_gene(osv.osv):
 
 
     _columns = {
-        "batch_no": fields.char(u"批次"),
+        "batch_no": fields.char(u"批次",select=True),
         "name": fields.char(u"基因样本编号", required=True, size=10),
         "date": fields.date(u"送检日期", required=True),
         "cust_name": fields.char(u"会员姓名", required=True, size=10),
