@@ -91,6 +91,7 @@ class rhwl_gene(osv.osv):
         "risk": fields.one2many("rhwl.easy.gene.risk", "genes_id", "Risk"),
         "pdf_file": fields.char(u"风险报告", size=100),
         "is_risk":fields.boolean(u"是高风险"),
+        "is_child":fields.boolean(u"是儿童"),
         "risk_count": fields.function(_get_risk, type="integer", string=u'高风险疾病数', multi='risk'),
         "risk_text": fields.function(_get_risk, type="char", string=u'高风险疾病', multi='risk'),
         "A1":fields.function(_get_risk_detail,type="char",string="A1",multi="risk_detail"),
@@ -171,28 +172,15 @@ class rhwl_gene(osv.osv):
         "state": 'draft',
         "cust_prop": "tjs",
         "is_risk":False,
+        "is_child":False,
     }
 
     def init(self, cr):
-        ids = self.search(cr,SUPERUSER_ID,[('risk','=',False)])
-        if ids:self.write(cr,SUPERUSER_ID,ids,{"is_risk":False})
-        ids = self.search(cr,SUPERUSER_ID,[("batch_no","=",False),('cust_prop','in',['tjs','tjs_vip'])],order="date")
-        if ids:
-            ids1 = self.search(cr,SUPERUSER_ID,[("batch_no","!=",False),('cust_prop','in',['tjs','tjs_vip'])],order="date")
-            if ids1:self.write(cr,SUPERUSER_ID,ids1,{"batch_no":False})
-        else:
-            return
-        ids = self.search(cr,SUPERUSER_ID,[('cust_prop','in',['tjs','tjs_vip'])],order="date asc")
-        dd={}
-        for i in ids:
-            obj=self.browse(cr,SUPERUSER_ID,i)
-            if not dd.has_key(obj.date):
-                dd[obj.date]=[]
-            dd[obj.date].append(obj.id)
-        seq_no=0
-        for k in dd.keys():
-            seq_no = seq_no+1
-            self.write(cr,SUPERUSER_ID,dd[k],{"batch_no":str(seq_no).zfill(3)})
+        ids = self.search(cr,SUPERUSER_ID,[("identity","!=",False)])
+        #for i in self.browse(cr,SUPERUSER_ID,ids):
+            #if len(i.identity)==18:
+                #if int(i.identity[6:10])>=(datetime.datetime.today().year-12):
+                    #self.write(cr,SUPERUSER_ID,i.id,{"is_child":True})
 
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]

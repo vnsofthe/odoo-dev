@@ -46,6 +46,7 @@
                             </group>
                             <group>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="is_child" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <label string="风险报告 " for="pdf_file" attrs="{'invisible':[('pdf_file','=',False)]}"/>

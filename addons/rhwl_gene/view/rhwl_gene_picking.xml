@@ -86,6 +86,7 @@
                             <group>
                                 <field name="seq" />
                                 <field name="product_name" />
+                                <field name="batch_kind" />
                                 <field name="batch_no" />
                             </group>
                             <group>

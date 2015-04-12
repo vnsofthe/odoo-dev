@@ -26,27 +26,51 @@ class rhwl_picking(osv.osv):
 
 class rhwl_picking_line(osv.osv):
     _name = "rhwl.genes.picking.line"
+
+    def _get_box_qty(self,cr,uid,ids,field_names,arg,context=None):
+        res=dict.fromkeys(ids,0)
+        for k in res.keys():
+            res[k] = self.pool.get("rhwl.genes.picking.box").search_count(cr,uid,[("line_id","=",k)])
+        return res
+
+    def _get_detail_qty(self,cr,uid,ids,field_names,arg,context=None):
+        res=dict.fromkeys(ids,0)
+        for k in res.keys():
+            res[k] = self.pool.get("rhwl.genes.picking.box.line").search_count(cr,uid,[("box_id.line_id.id","=",k)])
+        return res
+
     _columns={
         "picking_id":fields.many2one("rhwl.genes.picking",u"发货单号",ondelete="restrict"),
         "seq":fields.integer(u"序号",required=True),
         "product_name":fields.char(u"货品名称",size=20),
         "batch_no":fields.char(u"批号",size=15,required=True),
-        "box_qty":fields.integer(u"箱数"),
-        "qty":fields.integer(u"数量"),
+        "batch_kind":fields.selection([("normal",u"普通"),("vip",u"VIP客户"),("resend",u"破损重印")],u"类型"),
+        "box_qty":fields.function(_get_box_qty,type="integer",string=u"箱数"),
+        "qty":fields.function(_get_detail_qty,type="integer",string=u"数量"),
         "note":fields.char(u"备注",size=200),
         "box_line":fields.one2many("rhwl.genes.picking.box","line_id","Detail"),
     }
     _defaults={
-        "product_name":u"检测报告"
+        "product_name":u"检测报告",
+        "batch_kind":"normal",
     }
     _sql_constraints = [
         ('rhwl_genes_picking_seq_uniq', 'unique(picking_id,seq)', u'发货明细序号不能重复!'),
     ]
 
+    @api.onchange("batch_kind")
+    def _onchange_batch_kind(self):
+        if self.batch_kind=="resend":
+            self.batch_no="破损重印"
+        elif self.batch_kind=="vip":
+            self.batch_no="VIP客户"
+        else:
+            self.batch_no=""
+
     def create(self,cr,uid,val,context=None):
         if val.get("seq",0)<=0:
             raise osv.except_osv(u'错误',u'发货明细的序号必须大于0')
-        if val.get("batch_no")!=u"破损重印":
+        if val.get("batch_kind")=="normal":
             ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no"))],context=context)
             if not ids:
                 raise osv.except_osv(u"错误",u"批次号不存在，请输入正确的批次号码。")
@@ -55,26 +79,37 @@ class rhwl_picking_line(osv.osv):
                 raise osv.except_osv(u"错误",u"该批次下还有样本没有实验结果，不能建立发货明细。")
 
         line_id = super(rhwl_picking_line,self).create(cr,uid,val,context=context)
-        box_no="0"
-        ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no")),("state","not in",["cancel"]),("is_risk","=",True)],order="name")
-        while len(ids)>13:
-            box_no=str(int(box_no)+1)
-            self._insert_box(cr,uid,line_id,box_no,"H",ids[0:13])
-            ids=ids[13:]
-        else:
-            if len(ids)>0:
-                box_no=str(int(box_no)+1)
-                self._insert_box(cr,uid,line_id,box_no,"H",ids)
 
-        ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no")),("state","not in",["cancel"]),("is_risk","=",False)],order="name")
-        while len(ids)>13:
-            box_no=str(int(box_no)+1)
-            self._insert_box(cr,uid,line_id,box_no,"L",ids[0:13])
-            ids=ids[13:]
-        else:
-            if len(ids)>0:
-                box_no=str(int(box_no)+1)
-                self._insert_box(cr,uid,line_id,box_no,"L",ids)
+        if val.get("batch_kind")=="normal":
+            risk_type={"H":True,"L":False}
+            box_no="0"
+            for k in risk_type.keys():
+                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no")),("state","not in",["cancel"]),("cust_prop","=","tjs"),("is_risk","=",risk_type[k])],order="name")
+                while len(ids)>13:
+                    box_no=str(int(box_no)+1)
+                    self._insert_box(cr,uid,line_id,box_no,k,ids[0:13])
+                    ids=ids[13:]
+                else:
+                    if len(ids)>0:
+                        box_no=str(int(box_no)+1)
+                        self._insert_box(cr,uid,line_id,box_no,k,ids)
+        elif val.get("batch_kind")=="vip":
+            ids = self.search(cr,uid,[("picking_id","=",val.get("picking_id")),("batch_kind","=","normal")])
+            batchno=[]
+            for i in self.browse(cr,uid,ids):
+                batchno.append(i.batch_no)
+            risk_type={"H":True,"L":False}
+            box_no="0"
+            for k in risk_type.keys():
+                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel"]),("cust_prop","=","tjs_vip"),("is_risk","=",risk_type[k])],order="name")
+                while len(ids)>13:
+                    box_no=str(int(box_no)+1)
+                    self._insert_box(cr,uid,line_id,box_no,k,ids[0:13])
+                    ids=ids[13:]
+                else:
+                    if len(ids)>0:
+                        box_no=str(int(box_no)+1)
+                        self._insert_box(cr,uid,line_id,box_no,k,ids)
 
         return line_id
 

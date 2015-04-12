@@ -54,12 +54,14 @@ class rhwl_import(osv.osv_memory):
             for i in range(2,nrows+1):
                 if not sh.cell_value(i-1,0):continue
                 date_col=self.date_trun(sh.cell_value(i-1,0))
+                idt=sh.cell_value(i-1,4)
                 val={
                     "date":date_col,
                     "cust_name":sh.cell_value(i-1,1),
                     "sex": 'T' if sh.cell_value(i-1,2)==u"男" else 'F',
                     "name":sh.cell_value(i-1,3),
-                    "identity":sh.cell_value(i-1,4),
+                    "identity":idt,
+                    "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) else False,
                     "receiv_date":self.datetime_trun(sh.cell_value(i-1,5))
                 }
                 if batch_no.get(date_col):
@@ -68,7 +70,7 @@ class rhwl_import(osv.osv_memory):
                     cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
                     max_no="0"
                     for no in cr.fetchall():
-                        max_no = no
+                        max_no = no[0]
                     max_no=str(int(max_no)+1).zfill(3)
                     batch_no[date_col]=max_no
                     val["batch_no"]=max_no
