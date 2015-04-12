@@ -9,20 +9,132 @@ import requests
 import logging
 import os
 import shutil
+import xlwt
 
 _logger = logging.getLogger(__name__)
 
 class rhwl_picking(osv.osv):
     _name="rhwl.genes.picking"
+
+    def _get_files(self,cr,uid,ids,field_names,arg,context=None):
+        res=dict.fromkeys(ids,0)
+        for i in self.browse(cr,uid,ids,context=context):
+            for l in i.line:
+                res[i.id] = res[i.id]+l.qty
+        return res
+
     _columns={
         "name":fields.char(u"发货单号",size=10,required=True),
         "date":fields.date(u"发货日期",required=True),
+        "state":fields.selection([("draft",u"草稿"),("done",u"完成")]),
+        "files":fields.function(_get_files,type="integer",string=u"合计样本数"),
+        "upload":fields.integer(u"已上传文件数",readonly=True),
         "line":fields.one2many("rhwl.genes.picking.line","picking_id","Detail"),
     }
     _defaults={
         "date":fields.date.today,
-
+        "state":"draft",
     }
+
+    def report_upload(self,cr,uid,context=None):
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
+        for i in self.search(cr,uid,[("state","=","draft")],context=context):
+            obj=self.browse(cr,uid,i,context=context)
+            d=obj.date.replace("/","").replace("-","")
+            d_path=os.path.join(upload_path,d)
+            u_count = 0
+            if not os.path.exists(d_path):
+                os.mkdir(d_path)
+            for l in obj.line:
+                #处理批号
+                if l.batch_kind=="normal":
+                    line_path=os.path.join(d_path,l.batch_no+"-"+str(l.qty))
+                    if not os.path.exists(line_path):
+                        os.mkdir(line_path)
+                    for b in l.box_line:
+                        box_path=line_path
+                        if b.level=="H":
+                            box_path=os.path.join(line_path,u"高风险")
+                            if not os.path.exists(box_path):
+                                os.mkdir(box_path)
+                        else:
+                            box_path=os.path.join(line_path,u"低风险")
+                            if not os.path.exists(box_path):
+                                os.mkdir(box_path)
+                        box_path=os.path.join(box_path,str(l.seq)+"-"+b.name)
+                        if not os.path.exists(box_path):
+                            os.mkdir(box_path)
+                        for bl in b.detail:
+                            pdf_file = bl.genes_id.name+".pdf"
+                            if os.path.exists(os.path.join(pdf_path,pdf_file)):
+                                shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
+                                u_count += 1
+                elif l.batch_kind=="resend":
+                    line_path=os.path.join(d_path,u"其它")
+                    if not os.path.exists(line_path):
+                        os.mkdir(line_path)
+                    line_path=os.path.join(line_path,u"重新印刷")
+                    if not os.path.exists(line_path):
+                        os.mkdir(line_path)
+                    for b in l.box_line:
+                        box_path=line_path
+                        box_path=os.path.join(box_path,"R"+b.name)
+                        if not os.path.exists(box_path):
+                            os.mkdir(box_path)
+                        for bl in b.detail:
+                            pdf_file = bl.genes_id.name+".pdf"
+                            if os.path.exists(os.path.join(pdf_path,pdf_file)):
+                                shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
+                                u_count += 1
+                elif l.batch_kind=="vip":
+                    line_path=os.path.join(d_path,u"其它")
+                    if not os.path.exists(line_path):
+                        os.mkdir(line_path)
+                    line_path=os.path.join(line_path,u"会员部VIP")
+                    if not os.path.exists(line_path):
+                        os.mkdir(line_path)
+                    for b in l.box_line:
+                        box_path=line_path
+                        box_path=os.path.join(box_path,"V"+b.name)
+                        if not os.path.exists(box_path):
+                            os.mkdir(box_path)
+                        for bl in b.detail:
+                            pdf_file = bl.genes_id.name+".pdf"
+                            if os.path.exists(os.path.join(pdf_path,pdf_file)):
+                                shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
+                                u_count += 1
+            self.write(cr,uid,i,{"upload":u_count},context=context)
+            self.excel_upload(cr,uid,i,context=context)
+
+    def excel_upload(self,cr,uid,ids,context=None):
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        template = os.path.join(os.path.split(__file__)[0], "static/template.xlsx")
+        obj = self.browse(cr,uid,ids,context=context)
+        excel_path = os.path.join(upload_path,obj.date.replace("/","").replace("-","")+"/"+obj.date.replace("/","").replace("-","")+".xls")
+        #shutil.copy(template,excel_path)
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet(u'发货单')
+        ws.col(8).width = 0x0d00 + 170
+        ws.write_merge(0,0, 0, 1, u'收件单位：')
+        ws.write_merge(0,0, 2, 4,u'天狮集团泰济生国际医院会员管理处')
+        ws.write_merge(1,1,0,1,u"收件人：")
+        ws.write_merge(1,1,2,4,u"虞俊安")
+        ws.write_merge(2,2,0,1,u"联系电话：")
+        ws.write_merge(2,2,2,4,u"13622162034")
+        ws.write_merge(3,3,0,1,u"地址：")
+        ws.write_merge(3,3,2,4,u"天津市武清开发区新源道18号")
+        ws.write(0,7,u"寄件单位：")
+        ws.write_merge(0,0, 8, 9, u"人和未来生物科技（长沙）有限公司")
+        ws.write(1,7,u"寄件人：")
+        ws.write_merge(1,1, 8, 9, u"李慧平")
+        ws.write(2,7,u"联系电话：")
+        ws.write_merge(2,2, 8, 9, u"18520590515")
+        ws.write(3,7,u"地址：")
+        ws.write_merge(3,3, 8, 9, u"湖南长沙市开福区太阳山路青竹湖镇湖心岛2栋")
+
+        w.save(excel_path)
+
 
 class rhwl_picking_line(osv.osv):
     _name = "rhwl.genes.picking.line"
