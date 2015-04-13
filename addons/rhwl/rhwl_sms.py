@@ -3,7 +3,7 @@ import requests
 
 arg={
     "id":"vnsoft",
-    "pwd":"10261121sms",
+    "pwd":"rhwl2015",
     "to":"",
     "content":'',
     "time":None
