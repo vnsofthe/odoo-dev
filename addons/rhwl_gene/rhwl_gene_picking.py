@@ -99,19 +99,23 @@ class rhwl_picking(osv.osv):
                                 shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
                                 u_count += 1
             self.write(cr,uid,i,{"upload":u_count},context=context)
-            self.excel_upload(cr,uid,i,context=context)
+            self.excel_upload(cr,uid,i,False,context=context)
 
-    def excel_upload(self,cr,uid,ids,context=None):
+    def excel_upload(self,cr,uid,ids,isvip=False,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         template = os.path.join(os.path.split(__file__)[0], "static/template.xlsx")
         obj = self.browse(cr,uid,ids,context=context)
-        excel_path = os.path.join(upload_path,obj.date.replace("/","").replace("-","")+"/"+obj.date.replace("/","").replace("-","")+".xls")
+        if isvip:
+            excel_path = os.path.join(upload_path,obj.date.replace("/","").replace("-","")+"/"+obj.date.replace("/","").replace("-","")+"_vip.xls")
+        else:
+            excel_path = os.path.join(upload_path,obj.date.replace("/","").replace("-","")+"/"+obj.date.replace("/","").replace("-","")+".xls")
         #shutil.copy(template,excel_path)
-
+        #11号字
         style = xlwt.XFStyle()
         style.font = xlwt.Font()
         style.font.height = 220
 
+        #18号字，加边框，水平居中，垂直居中
         style1 = xlwt.XFStyle()
         style1.font = xlwt.Font()
         style1.font.height = 360
@@ -128,6 +132,7 @@ class rhwl_picking(osv.osv):
         style1.borders.top_colour = 0x40
         style1.borders.bottom_colour = 0x40
 
+        #18号字，加边框，水平靠右，垂直居中
         style2 = xlwt.XFStyle()
         style2.font = xlwt.Font()
         style2.font.height = 360
@@ -144,7 +149,11 @@ class rhwl_picking(osv.osv):
         style2.borders.top_colour = 0x40
         style2.borders.bottom_colour = 0x40
 
+        #11号字，加边框，水平居中，重直居中
         style3 = xlwt.XFStyle() # Create Style
+        style3.alignment = xlwt.Alignment()
+        style3.alignment.horz = xlwt.Alignment.HORZ_CENTER
+        style3.alignment.vert = xlwt.Alignment.VERT_CENTER
         style3.borders = xlwt.Borders() # Add Borders to Style
         style3.borders.left = xlwt.Borders.MEDIUM # May be: NO_LINE, THIN, MEDIUM, DASHED, DOTTED, THICK, DOUBLE, HAIR, MEDIUM_DASHED, THIN_DASH_DOTTED, MEDIUM_DASH_DOTTED, THIN_DASH_DOT_DOTTED, MEDIUM_DASH_DOT_DOTTED, SLANTED_MEDIUM_DASH_DOTTED, or 0x00 through 0x0D.
         style3.borders.right = xlwt.Borders.MEDIUM
@@ -157,20 +166,58 @@ class rhwl_picking(osv.osv):
         style3.font = xlwt.Font()
         style3.font.height = 220
 
+        #11号字，加边框，水平靠左，重直居中
+        style4 = xlwt.XFStyle() # Create Style
+        style4.borders = xlwt.Borders() # Add Borders to Style
+        style4.borders.left = xlwt.Borders.MEDIUM # May be: NO_LINE, THIN, MEDIUM, DASHED, DOTTED, THICK, DOUBLE, HAIR, MEDIUM_DASHED, THIN_DASH_DOTTED, MEDIUM_DASH_DOTTED, THIN_DASH_DOT_DOTTED, MEDIUM_DASH_DOT_DOTTED, SLANTED_MEDIUM_DASH_DOTTED, or 0x00 through 0x0D.
+        style4.borders.right = xlwt.Borders.MEDIUM
+        style4.borders.top = xlwt.Borders.MEDIUM
+        style4.borders.bottom = xlwt.Borders.MEDIUM
+        style4.borders.left_colour = 0x40
+        style4.borders.right_colour = 0x40
+        style4.borders.top_colour = 0x40
+        style4.borders.bottom_colour = 0x40
+        style4.font = xlwt.Font()
+        style4.font.height = 220
+        style4.alignment = xlwt.Alignment()
+        style4.alignment.horz = xlwt.Alignment.HORZ_LEFT
+        style4.alignment.vert = xlwt.Alignment.VERT_CENTER
+
+        #11号字，加边框，水平靠右，垂直居中
+        style5 = xlwt.XFStyle()
+        style5.font = xlwt.Font()
+        style5.font.height = 220
+        style5.alignment = xlwt.Alignment()
+        style5.alignment.horz = xlwt.Alignment.HORZ_RIGHT
+        style5.alignment.vert = xlwt.Alignment.VERT_CENTER
+        style5.borders = xlwt.Borders() # Add Borders to Style
+        style5.borders.left = xlwt.Borders.MEDIUM # May be: NO_LINE, THIN, MEDIUM, DASHED, DOTTED, THICK, DOUBLE, HAIR, MEDIUM_DASHED, THIN_DASH_DOTTED, MEDIUM_DASH_DOTTED, THIN_DASH_DOT_DOTTED, MEDIUM_DASH_DOT_DOTTED, SLANTED_MEDIUM_DASH_DOTTED, or 0x00 through 0x0D.
+        style5.borders.right = xlwt.Borders.MEDIUM
+        style5.borders.top = xlwt.Borders.MEDIUM
+        style5.borders.bottom = xlwt.Borders.MEDIUM
+        style5.borders.left_colour = 0x40
+        style5.borders.right_colour = 0x40
+        style5.borders.top_colour = 0x40
+        style5.borders.bottom_colour = 0x40
 
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(u'发货单')
         ws.col(0).width = 1380
         ws.col(1).width = 2727
-        ws.col(2).width = 2288
+        ws.col(2).width = 2888
         ws.col(3).width = 2692
         ws.col(4).width = 3399
         ws.col(5).width = 2692
         ws.col(6).width = 4950 #1000 = 3.715(Excel)
         ws.col(7).width = 2692
         ws.col(8).width = 4950 #1000 = 3.715(Excel)
-        ws.col(9).width = 5854
-        ws.row(6).height = 1000
+        ws.col(9).width = 6554
+        ws.row(7).height_mismatch = True
+        ws.row(7).height = 500
+        ws.row(8).height_mismatch = True
+        ws.row(8).height = 500
+        ws.row(9).height_mismatch = True
+        ws.row(9).height = 500
         ws.write_merge(0,0, 0, 1, u'收件单位：',style)
         ws.write_merge(0,0, 2, 4,u'天狮集团泰济生国际医院会员管理处',style)
         ws.write_merge(1,1,0,1,u"收件人：",style)
@@ -191,84 +238,136 @@ class rhwl_picking(osv.osv):
         ws.write_merge(6,6,0,7,u"易感检测报告书送货清单",style1)
         ws.write_merge(6,6,8,9,u"NO."+obj.name,style2)
 
-        ws.write_merge(7,7,0,5,u"客户名称：泰济生国际医院（虞俊安）",style)
-        ws.write_merge(7,7,6,9,u"日期：  "+obj.date,style)
-        ws.write_merge(8,9,0,0,u"序号",style)
-        ws.write_merge(8,9,1,1,u"货品名称",style)
-        ws.write_merge(8,9,2,2,u"批号",style)
-        ws.write_merge(8,9,3,3,u"箱数",style)
-        ws.write_merge(8,9,4,4,u"数量（本）",style)
-        ws.write_merge(8,8,5,6,u"装箱-高风险",style)
-        ws.write(9,5,u"箱数",style)
-        ws.write(9,6,u"箱号",style)
-        ws.write_merge(8,8,7,8,u"装箱-低风险",style)
-        ws.write(9,7,u"箱数",style)
-        ws.write(9,8,u"箱号",style)
-        ws.write_merge(8,9,9,9,u"备注",style)
+        ws.write_merge(7,7,0,5,u"客户名称：泰济生国际医院（虞俊安）",style4)
+        ws.write_merge(7,7,6,9,u"日期：  "+obj.date,style5)
+        ws.write_merge(8,9,0,0,u"序号",style3)
+        ws.write_merge(8,9,1,1,u"货品名称",style3)
+        ws.write_merge(8,9,2,2,u"批号",style3)
+        ws.write_merge(8,9,3,3,u"箱数",style3)
+        ws.write_merge(8,9,4,4,u"数量（本）",style3)
+        ws.write_merge(8,8,5,6,u"装箱-高风险",style3)
+        ws.write(9,5,u"箱数",style3)
+        ws.write(9,6,u"箱号",style3)
+        ws.write_merge(8,8,7,8,u"装箱-低风险",style3)
+        ws.write(9,7,u"箱数",style3)
+        ws.write(9,8,u"箱号",style3)
+        ws.write_merge(8,9,9,9,u"备注",style3)
         excel_row = 10
         total_box = 0
         total_qty = 0
         for l in obj.line:
-            ws.write(excel_row,0,l.seq,style)
-            ws.write(excel_row,1,l.product_name,style)
+            if (isvip and l.batch_kind!="vip") or (isvip==False and l.batch_kind=="vip"):
+                continue
+            ws.write(excel_row,0,l.seq,style3)
+            ws.write(excel_row,1,l.product_name,style3)
+
+
             if l.batch_kind=="normal":
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",l.batch_no),("cust_prop","=","tjs")])
                 gene_obj=self.pool.get("rhwl.easy.genes").browse(cr,uid,gene_id[0],context=context)
-                ws.write(excel_row,2,gene_obj.date,style)
+                ws.write(excel_row,2,u".".join(gene_obj.date.split("-")[1:])+u"会",style3)
             elif l.batch_kind=="resend":
-                ws.write(excel_row,2,u"破损重印",style)
+                ws.write(excel_row,2,u"破损重印",style3)
             else:
-                ws.write(excel_row,2,u"VIP",style)
-            ws.write(excel_row,3,l.box_qty,style)
-            ws.write(excel_row,4,l.qty,style)
+                ws.write(excel_row,2,u"会员VIP",style3)
+            ws.write(excel_row,3,l.box_qty,style3)
+            ws.write(excel_row,4,l.qty,style3)
             total_box += l.box_qty
             total_qty += l.qty
-            ws.write(excel_row,5,l.box_h_qty,style)
-            if l.box_h_qty>0:
-                ws.write(excel_row,6,u"【"+str(l.seq)+u"-1】至【"+str(l.seq)+u"-"+str(l.box_h_qty)+u"】",style)
+            if l.batch_kind=="normal":
+                ws.write(excel_row,5,l.box_h_qty,style3)
             else:
-                ws.write(excel_row,6,"")
-            ws.write(excel_row,7,l.box_l_qty,style)
-            if l.box_l_qty>0:
-                ws.write(excel_row,8,u"【"+str(l.seq)+u"-"+str(l.box_h_qty+1)+u"】至【"+str(l.seq)+u"-"+str(l.box_qty)+u"】",style)
+                ws.write(excel_row,5,"",style3)
+            if l.box_h_qty>0 and l.batch_kind=="normal":
+                ws.write(excel_row,6,u"【"+str(l.seq)+u"-1】至【"+str(l.seq)+u"-"+str(l.box_h_qty)+u"】",style3)
             else:
-                ws.write(excel_row,8,"")
+                ws.write(excel_row,6,"",style3)
+            if l.batch_kind=="normal":
+                ws.write(excel_row,7,l.box_l_qty,style3)
+            else:
+                ws.write(excel_row,7,"",style3)
+            if l.box_l_qty>0 and l.batch_kind=="normal":
+                ws.write(excel_row,8,u"【"+str(l.seq)+u"-"+str(l.box_h_qty+1)+u"】至【"+str(l.seq)+u"-"+str(l.box_qty)+u"】",style3)
+            else:
+                ws.write(excel_row,8,"",style3)
+            ws.write(excel_row,9,"",style3)
+            ws.row(excel_row).height_mismatch = True
+            ws.row(excel_row).height = 500
             excel_row += 1
             #处理批号明细
             if l.batch_kind=="normal":
-               w1 = w.add_sheet(gene_obj.date)
+               w1 = w.add_sheet(u".".join(gene_obj.date.split("-")[1:])+u"会"+l.batch_no+u"批")
             elif l.batch_kind=="resend":
                w1 = w.add_sheet(u"破损重印")
             else:
-               w1 = w.add_sheet(u"VIP")
+               w1 = w.add_sheet(u"会员VIP")
             #w1 = w.add_sheet(gene_obj.date)
             w1.write(0,0,u"箱号")
             w1.write(0,1,u"基因编码")
             w1.write(0,2,u"姓名")
             w1.write(0,3,u"性别")
             w1.write(0,4,u"身份证号码")
-            w1.write(0,5,u"病症数量")
-            w1.write(0,6,u"病症名称")
+            if l.batch_kind=="resend":
+                w1.write(0,5,u"重印说明")
+            else:
+                w1.write(0,5,u"病症数量")
+                w1.write(0,6,u"病症名称")
             sheet_row=1
             for b in l.box_line:
                 for bl in b.detail:
-                    w1.write(sheet_row,0,str(l.seq)+"-"+b.name)
+                    if l.batch_kind=="vip":
+                        w1.write(sheet_row,0,"V"+b.name)
+                    elif l.batch_kind=="resend":
+                        w1.write(sheet_row,0,"R"+b.name)
+                    else:
+                        w1.write(sheet_row,0,str(l.seq)+"-"+b.name)
                     w1.write(sheet_row,1,bl.genes_id.name)
                     w1.write(sheet_row,2,bl.genes_id.cust_name)
                     w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男")
                     w1.write(sheet_row,4,bl.genes_id.identity)
-                    w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""))
-                    w1.write(sheet_row,6,bl.genes_id.risk_text)
+                    if l.batch_kind=="resend":
+                        w1.write(sheet_row,5,l.note)
+                    else:
+                        w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""))
+                        w1.write(sheet_row,6,bl.genes_id.risk_text)
+                    sheet_row += 1
+            #统计质检不合格数据
+            vip_batchno=[]
+            if isvip:
+                vip_ids = self.pool.get("rhwl.genes.picking.line").search(cr,uid,[("picking_id","=",l.picking_id.id),("batch_kind","=","normal")])
+                for ii in self.pool.get("rhwl.genes.picking.line").browse(cr,uid,vip_ids):
+                    vip_batchno.append(ii.batch_no)
+            else:
+                vip_batchno.append(l.batch_no)
+            gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs"),("state","=","dna_except")])
+            if gene_id:
+                gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs")])
+                sheet_row += 1
+                w1.write_merge(sheet_row,sheet_row,0,4,u"实收"+str(len(gene_all_id))+u"个，无编号未确认，质检不合格"+str(len(gene_id))+u"个，实发"+str(len(gene_all_id)-len(gene_id))+u"本")
+                sheet_row += 1
+                for s in self.pool.get("rhwl.easy.genes").browse(cr,uid,gene_id,context=context):
+                    w1.write(sheet_row,0,u"质检不合格")
+                    w1.write(sheet_row,1,s.name)
+                    w1.write(sheet_row,2,s.cust_name)
+                    w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男")
+                    w1.write(sheet_row,4,s.identity)
                     sheet_row += 1
 
 
-        ws.write_merge(excel_row,excel_row,0,2,u"合计件数",style)
-        ws.write(excel_row,3,total_box,style)
-        ws.write(excel_row,4,total_qty,style)
-        ws.write_merge(excel_row+1,excel_row+1,0,4,u"收货人签字：",style)
-        ws.write_merge(excel_row+1,excel_row+1,5,9,u"收货日期：",style)
-        w.save(excel_path)
 
+        ws.row(excel_row).height_mismatch = True
+        ws.row(excel_row).height = 500
+        ws.row(excel_row+1).height_mismatch = True
+        ws.row(excel_row+1).height = 500
+        ws.write_merge(excel_row,excel_row,0,2,u"合计件数",style3)
+        ws.write(excel_row,3,total_box,style3)
+        ws.write(excel_row,4,total_qty,style3)
+        ws.write_merge(excel_row,excel_row,5,9,"",style3)
+        ws.write_merge(excel_row+1,excel_row+1,0,4,u"收货人签字：",style4)
+        ws.write_merge(excel_row+1,excel_row+1,5,9,u"收货日期：",style4)
+        w.save(excel_path)
+        if not isvip:
+            self.excel_upload(cr,uid,ids,True,context=context)
 
 class rhwl_picking_line(osv.osv):
     _name = "rhwl.genes.picking.line"

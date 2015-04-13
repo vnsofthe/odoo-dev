@@ -32,6 +32,12 @@ class vnsoft_sale_order(osv.osv):
                 'context':{"id":res.id},
                 'flags': {'form': {'action_buttons': False}}}
 
+class vnsoft_purchase_order_line(osv.osv):
+    _inherit ="purchase.order.line"
+    _columns={
+        "sale_order_line_id":fields.integer("Sale Order Line ID"),
+    }
+
 class vnsoft_purchase(osv.osv_memory):
     _name = 'sale.order.purchase'
     _columns = {
@@ -63,7 +69,7 @@ class vnsoft_purchase(osv.osv_memory):
             res['name'] = id
             res['line']=[]
             for i in obj.order_line:
-                res['line'].append({'product_id':i.product_id.id,'product_qty':i.product_uom_qty})
+                res['line'].append({'product_id':i.product_id.id,'product_qty':i.product_uom_qty,"sale_order_line_id":i.id})
 
         return res
 
@@ -74,9 +80,9 @@ class vnsoft_purchase(osv.osv_memory):
 
         for i in obj.line:
             if d.has_key(i.partner_id.id):
-               d[i.partner_id.id].append([i.product_id.id,i.product_qty])
+               d[i.partner_id.id].append([i.product_id.id,i.product_qty,i.sale_order_line_id])
             else:
-               d[i.partner_id.id]=[[i.product_id.id,i.product_qty]]
+               d[i.partner_id.id]=[[i.product_id.id,i.product_qty,i.sale_order_line_id]]
 
         #遍历有多少不同的供应商
         for k,v in d.items():
@@ -92,7 +98,7 @@ class vnsoft_purchase(osv.osv_memory):
             for j in v:
                 detail_val = self.pool.get("purchase.order.line").onchange_product_id(cr, uid, 0, val.get("pricelist_id"),j[0], j[1], False, k,val.get("date_order"),val.get("fiscal_position"),val.get("date_planned"),False,False,'draft',context=context).get("value")
 
-                detail_val.update({'product_id':j[0],'product_qty':j[1]})
+                detail_val.update({'product_id':j[0],'product_qty':j[1],"sale_order_line_id":j[2]})
 
                 pline.append([0,0,detail_val])
 
@@ -111,5 +117,6 @@ class vnsoft_purchase_line(osv.osv_memory):
          "product_id":fields.many2one("product.product",u"产品"),
          "product_qty": fields.float(u'数量', digits_compute=dp.get_precision('Product Unit of Measure'),
                                     required=True),
-        "partner_id":fields.many2one("res.partner",u"供应商",domain="[('supplier','=',True)]")
+        "partner_id":fields.many2one("res.partner",u"供应商",domain="[('supplier','=',True)]"),
+        "sale_order_line_id":fields.integer("Sale Order Line ID")
     }
