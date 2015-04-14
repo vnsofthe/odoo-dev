@@ -41,8 +41,8 @@
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="cust_prop"/>
-                                <field name="except_note" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="cust_prop" />
+                                <field name="except_note" />
                             </group>
                             <group>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
@@ -162,7 +162,7 @@
         <menuitem id="menu_rhwl_easy_genes" parent="menu_easy_genes_root" name="易感基因" sequence="10"  />
 
         <menuitem id="menu_easy_genes" parent="menu_rhwl_easy_genes" name="样本信息维护" sequence="10"
-                  action='action_easy_genes' groups="rhwl_base_gene"/>
+                  action='action_easy_genes' groups="rhwl_base_tjs"/>
 
         <record model="ir.actions.act_url" id="action_easy_genes_image">
             <field name="name">Gene Images</field>

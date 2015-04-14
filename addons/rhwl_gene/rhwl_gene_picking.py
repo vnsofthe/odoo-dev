@@ -342,7 +342,7 @@ class rhwl_picking(osv.osv):
                 w1.write(0,5,u"病症数量",style6)
                 w1.write(0,6,u"病症名称",style)
                 w1.col(5).width = 2960
-                w1.col(6).width = 7000
+                w1.col(6).width = 9000
             sheet_row=1
             for b in l.box_line:
                 for bl in b.detail:
@@ -364,15 +364,21 @@ class rhwl_picking(osv.osv):
                     sheet_row += 1
             #统计质检不合格数据
             vip_batchno=[]
+
             if isvip:
                 vip_ids = self.pool.get("rhwl.genes.picking.line").search(cr,uid,[("picking_id","=",l.picking_id.id),("batch_kind","=","normal")])
                 for ii in self.pool.get("rhwl.genes.picking.line").browse(cr,uid,vip_ids):
                     vip_batchno.append(ii.batch_no)
+                gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs_vip"),("state","=","dna_except")])
             else:
                 vip_batchno.append(l.batch_no)
-            gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs"),("state","=","dna_except")])
+                gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs"),("state","=","dna_except")])
+
             if gene_id:
-                gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs")])
+                if isvip:
+                    gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs_vip")])
+                else:
+                    gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs")])
                 sheet_row += 1
                 w1.write_merge(sheet_row,sheet_row,0,4,u"实收"+str(len(gene_all_id))+u"个，无编号未确认，质检不合格"+str(len(gene_id))+u"个，实发"+str(len(gene_all_id)-len(gene_id))+u"本",style)
                 sheet_row += 1
