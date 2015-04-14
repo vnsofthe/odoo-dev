@@ -500,7 +500,7 @@ class rhwl_picking_line(osv.osv):
             risk_type={"H":True,"L":False}
             box_no="0"
             for k in risk_type.keys():
-                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no")),("state","not in",["cancel"]),("cust_prop","=","tjs"),("is_risk","=",risk_type[k])],order="name")
+                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no")),("state","not in",["cancel","dna_except"]),("cust_prop","=","tjs"),("is_risk","=",risk_type[k])],order="name")
                 while len(ids)>13:
                     box_no=str(int(box_no)+1)
                     self._insert_box(cr,uid,line_id,box_no,k,ids[0:13])
@@ -517,7 +517,7 @@ class rhwl_picking_line(osv.osv):
             risk_type={"H":True,"L":False}
             box_no="0"
             for k in risk_type.keys():
-                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel"]),("cust_prop","=","tjs_vip"),("is_risk","=",risk_type[k])],order="name")
+                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel","dna_except"]),("cust_prop","=","tjs_vip"),("is_risk","=",risk_type[k])],order="name")
                 while len(ids)>13:
                     box_no=str(int(box_no)+1)
                     self._insert_box(cr,uid,line_id,box_no,k,ids[0:13])
