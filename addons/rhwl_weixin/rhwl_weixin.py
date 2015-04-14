@@ -142,6 +142,22 @@ class rhwl_config(osv.osv):
             if res.get("errcode")!=0:
                 raise osv.except_osv("错误"+str(res.get("errcode")),res.get("errmsg"))
 
+    def send_template1(self,cr,uid,to_user,json_dict,context=None):
+        id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[("user_id","=",to_user)])
+        if not id:return
+        obj = self.pool.get("rhwl.weixin").browse(cr,SUPERUSER_ID,id)
+        json_dict["touser"]=obj.openid.encode('utf-8')
+        if json_dict["url"]:
+            json_dict["url"] += "?openid="+obj.openid.encode('utf-8')
+        token=self._get_token(cr,SUPERUSER_ID,context)
+        s=requests.post("https://api.weixin.qq.com/cgi-bin/message/template/send",
+                            params={"access_token":token},
+                            data=json.dumps(json_dict,ensure_ascii=False),
+                            headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)
+        ref = s.content
+        s.close()
+
+
 class rhwl_usermenu(osv.osv):
     _name = "rhwl.weixin.usermenu"
     _columns={

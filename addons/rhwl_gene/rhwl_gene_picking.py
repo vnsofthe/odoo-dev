@@ -362,6 +362,23 @@ class rhwl_picking(osv.osv):
                         w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""),style6)
                         w1.write(sheet_row,6,bl.genes_id.risk_text,style)
                     sheet_row += 1
+            if l.batch_kind=="normal":
+                line_ids = self.pool.get("rhwl.genes.picking.line").search(cr,uid,[("picking_id","=",l.picking_id.id),("batch_kind","=","vip")],context=context)
+                for ll in self.pool.get("rhwl.genes.picking.line").browse(cr,uid,line_ids,context=context):
+                    for vip_b in ll.box_line:
+                        for vip_bl in vip_b.detail:
+                            if vip_bl.genes_id.batch_no==l.batch_no:
+                                w1.write(sheet_row,0,"V"+vip_b.name,style6)
+                                w1.write(sheet_row,1,vip_bl.genes_id.name,style6)
+                                w1.write(sheet_row,2,vip_bl.genes_id.cust_name,style)
+                                w1.write(sheet_row,3,u"女" if vip_bl.genes_id.sex=="F" else u"男",style6)
+                                w1.write(sheet_row,4,vip_bl.genes_id.identity,style)
+                                w1.write(sheet_row,5,str(vip_bl.genes_id.risk_count)+(u"(儿童)" if vip_bl.genes_id.is_child else u""),style6)
+                                w1.write(sheet_row,6,vip_bl.genes_id.risk_text,style)
+                                sheet_row += 1
+
+
+
             #统计质检不合格数据
             vip_batchno=[]
 
@@ -372,13 +389,13 @@ class rhwl_picking(osv.osv):
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs_vip"),("state","=","dna_except")])
             else:
                 vip_batchno.append(l.batch_no)
-                gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs"),("state","=","dna_except")])
+                gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","in",["tjs","tjs_vip"]),("state","=","dna_except")])
 
             if gene_id:
                 if isvip:
                     gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs_vip")])
                 else:
-                    gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs")])
+                    gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","in",["tjs","tjs_vip"])])
                 sheet_row += 1
                 w1.write_merge(sheet_row,sheet_row,0,4,u"实收"+str(len(gene_all_id))+u"个，无编号未确认，质检不合格"+str(len(gene_id))+u"个，实发"+str(len(gene_all_id)-len(gene_id))+u"本",style)
                 sheet_row += 1

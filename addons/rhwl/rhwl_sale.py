@@ -384,6 +384,34 @@ class rhwl_sample_info(osv.osv):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse',"library_date":fields.date.today()}, context=context)
         for i in ids:
             self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+        weixin_send={
+            "touser":"",
+            "template_id":"YdKZj6dOiw6fqbqMg7LaLSqyj247yOkVP2eGQS0Pzig",
+            "url":"http://erp.genetalks.com/rhwl_weixin/static/listreuse.html",
+            "topcolor":"#FF0000",
+            "data":{
+                "first": {
+                            "value":"人和未来生物科技、何彬",
+                            "color":"#173177"
+                            },
+                "keyword1":{
+                            "value":"重新抽血",
+                            "color":"#173177"
+                            },
+                "keyword2":{
+                            "value":"无",
+                            "color":"#173177"
+                            },
+                "keyword3":{
+                            "value":fields.datetime.now(),
+                            "color":"#173177"
+                            },
+                "remark":{
+                            "value":"请及时通知孕妇重新进行抽血。"
+                }
+            }
+        }
+        self.pool.get("rhwl.weixin.base").send_template1(cr,uid,1,weixin_send,context=context)
 
     def action_check_except(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today()}, context=context)

@@ -189,7 +189,7 @@ class rhwl_import(osv.osv_memory):
                 if not id:
                     raise osv.except_osv(u"错误",u"基因样本编码[%s]不存在。"%(no,))
                 self.pool.get("rhwl.easy.genes").write(cr,uid,id,{"log":[[0,0,{"note":u"导入位点数据","data":"SNP"}]]},context=context)
-                type_ids = self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id","=",id)],context=context)
+                type_ids = self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id","=",id[0])],context=context)
                 old_type={}
                 if type_ids:
                     for t in self.pool.get("rhwl.easy.genes.type").browse(cr,uid,type_ids,context=context):
