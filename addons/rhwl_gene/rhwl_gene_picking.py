@@ -113,11 +113,22 @@ class rhwl_picking(osv.osv):
         #11号字
         style = xlwt.XFStyle()
         style.font = xlwt.Font()
+        style.font.name=u"宋体"
         style.font.height = 220
+
+        #11号字,水平居中,垂直居中
+        style6 = xlwt.XFStyle()
+        style6.font = xlwt.Font()
+        style6.font.name=u"宋体"
+        style6.font.height = 220
+        style6.alignment = xlwt.Alignment()
+        style6.alignment.horz = xlwt.Alignment.HORZ_CENTER
+        style6.alignment.vert = xlwt.Alignment.VERT_CENTER
 
         #18号字，加边框，水平居中，垂直居中
         style1 = xlwt.XFStyle()
         style1.font = xlwt.Font()
+        style1.font.name=u"宋体"
         style1.font.height = 360
         style1.alignment = xlwt.Alignment()
         style1.alignment.horz = xlwt.Alignment.HORZ_CENTER
@@ -135,6 +146,7 @@ class rhwl_picking(osv.osv):
         #18号字，加边框，水平靠右，垂直居中
         style2 = xlwt.XFStyle()
         style2.font = xlwt.Font()
+        style2.font.name=u"宋体"
         style2.font.height = 360
         style2.alignment = xlwt.Alignment()
         style2.alignment.horz = xlwt.Alignment.HORZ_RIGHT
@@ -152,6 +164,7 @@ class rhwl_picking(osv.osv):
         #11号字，加边框，水平居中，重直居中
         style3 = xlwt.XFStyle() # Create Style
         style3.alignment = xlwt.Alignment()
+        style3.font.name=u"宋体"
         style3.alignment.horz = xlwt.Alignment.HORZ_CENTER
         style3.alignment.vert = xlwt.Alignment.VERT_CENTER
         style3.borders = xlwt.Borders() # Add Borders to Style
@@ -179,6 +192,7 @@ class rhwl_picking(osv.osv):
         style4.borders.bottom_colour = 0x40
         style4.font = xlwt.Font()
         style4.font.height = 220
+        style4.font.name=u"宋体"
         style4.alignment = xlwt.Alignment()
         style4.alignment.horz = xlwt.Alignment.HORZ_LEFT
         style4.alignment.vert = xlwt.Alignment.VERT_CENTER
@@ -187,6 +201,7 @@ class rhwl_picking(osv.osv):
         style5 = xlwt.XFStyle()
         style5.font = xlwt.Font()
         style5.font.height = 220
+        style5.font.name=u"宋体"
         style5.alignment = xlwt.Alignment()
         style5.alignment.horz = xlwt.Alignment.HORZ_RIGHT
         style5.alignment.vert = xlwt.Alignment.VERT_CENTER
@@ -219,13 +234,20 @@ class rhwl_picking(osv.osv):
         ws.row(9).height_mismatch = True
         ws.row(9).height = 500
         ws.write_merge(0,0, 0, 1, u'收件单位：',style)
-        ws.write_merge(0,0, 2, 4,u'天狮集团泰济生国际医院会员管理处',style)
         ws.write_merge(1,1,0,1,u"收件人：",style)
-        ws.write_merge(1,1,2,4,u"虞俊安",style)
         ws.write_merge(2,2,0,1,u"联系电话：",style)
-        ws.write_merge(2,2,2,4,u"13622162034",style)
         ws.write_merge(3,3,0,1,u"地址：",style)
-        ws.write_merge(3,3,2,4,u"天津市武清开发区新源道18号",style)
+        if isvip:
+            ws.write_merge(0,0, 2, 4,u'天狮集团泰济生健康事业部会员管理处',style)
+            ws.write_merge(1,1,2,4,u"孙媛",style)
+            ws.write_merge(2,2,2,4,u"022-8213-6607",style)
+            ws.write_merge(3,3,2,4,u"天津市武清开发区新源道18号天狮国际健康产业园泰济生医院",style)
+        else:
+            ws.write_merge(0,0, 2, 4,u'天狮集团泰济生国际医院会员管理处',style)
+            ws.write_merge(1,1,2,4,u"虞俊安",style)
+            ws.write_merge(2,2,2,4,u"13622162034",style)
+            ws.write_merge(3,3,2,4,u"天津市武清开发区新源道18号",style)
+
         ws.write(0,7,u"寄件单位：",style)
         ws.write_merge(0,0, 8, 9, u"人和未来生物科技（长沙）有限公司",style)
         ws.write(1,7,u"寄件人：",style)
@@ -302,34 +324,43 @@ class rhwl_picking(osv.osv):
             else:
                w1 = w.add_sheet(u"会员VIP")
             #w1 = w.add_sheet(gene_obj.date)
-            w1.write(0,0,u"箱号")
-            w1.write(0,1,u"基因编码")
-            w1.write(0,2,u"姓名")
-            w1.write(0,3,u"性别")
-            w1.write(0,4,u"身份证号码")
+            w1.col(0).width = 2960
+            w1.col(1).width = 3160
+            w1.col(2).width = 2960
+            w1.col(3).width = 2960
+            w1.col(4).width = 5800
+
+            w1.write(0,0,u"箱号",style6)
+            w1.write(0,1,u"基因编码",style6)
+            w1.write(0,2,u"姓名",style)
+            w1.write(0,3,u"性别",style6)
+            w1.write(0,4,u"身份证号码",style)
             if l.batch_kind=="resend":
-                w1.write(0,5,u"重印说明")
+                w1.write(0,5,u"重印说明",style)
+                w1.col(5).width = 5560
             else:
-                w1.write(0,5,u"病症数量")
-                w1.write(0,6,u"病症名称")
+                w1.write(0,5,u"病症数量",style6)
+                w1.write(0,6,u"病症名称",style)
+                w1.col(5).width = 2960
+                w1.col(6).width = 7000
             sheet_row=1
             for b in l.box_line:
                 for bl in b.detail:
                     if l.batch_kind=="vip":
-                        w1.write(sheet_row,0,"V"+b.name)
+                        w1.write(sheet_row,0,"V"+b.name,style6)
                     elif l.batch_kind=="resend":
-                        w1.write(sheet_row,0,"R"+b.name)
+                        w1.write(sheet_row,0,"R"+b.name,style6)
                     else:
-                        w1.write(sheet_row,0,str(l.seq)+"-"+b.name)
-                    w1.write(sheet_row,1,bl.genes_id.name)
-                    w1.write(sheet_row,2,bl.genes_id.cust_name)
-                    w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男")
-                    w1.write(sheet_row,4,bl.genes_id.identity)
+                        w1.write(sheet_row,0,str(l.seq)+"-"+b.name,style6)
+                    w1.write(sheet_row,1,bl.genes_id.name,style6)
+                    w1.write(sheet_row,2,bl.genes_id.cust_name,style)
+                    w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男",style6)
+                    w1.write(sheet_row,4,bl.genes_id.identity,style)
                     if l.batch_kind=="resend":
-                        w1.write(sheet_row,5,l.note)
+                        w1.write(sheet_row,5,l.note,style)
                     else:
-                        w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""))
-                        w1.write(sheet_row,6,bl.genes_id.risk_text)
+                        w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""),style6)
+                        w1.write(sheet_row,6,bl.genes_id.risk_text,style)
                     sheet_row += 1
             #统计质检不合格数据
             vip_batchno=[]
@@ -343,14 +374,14 @@ class rhwl_picking(osv.osv):
             if gene_id:
                 gene_all_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",vip_batchno),("cust_prop","=","tjs")])
                 sheet_row += 1
-                w1.write_merge(sheet_row,sheet_row,0,4,u"实收"+str(len(gene_all_id))+u"个，无编号未确认，质检不合格"+str(len(gene_id))+u"个，实发"+str(len(gene_all_id)-len(gene_id))+u"本")
+                w1.write_merge(sheet_row,sheet_row,0,4,u"实收"+str(len(gene_all_id))+u"个，无编号未确认，质检不合格"+str(len(gene_id))+u"个，实发"+str(len(gene_all_id)-len(gene_id))+u"本",style)
                 sheet_row += 1
                 for s in self.pool.get("rhwl.easy.genes").browse(cr,uid,gene_id,context=context):
-                    w1.write(sheet_row,0,u"质检不合格")
-                    w1.write(sheet_row,1,s.name)
-                    w1.write(sheet_row,2,s.cust_name)
-                    w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男")
-                    w1.write(sheet_row,4,s.identity)
+                    w1.write(sheet_row,0,u"质检不合格",style)
+                    w1.write(sheet_row,1,s.name,style6)
+                    w1.write(sheet_row,2,s.cust_name,style)
+                    w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男",style6)
+                    w1.write(sheet_row,4,s.identity,style)
                     sheet_row += 1
 
 
