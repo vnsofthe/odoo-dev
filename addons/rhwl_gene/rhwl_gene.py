@@ -191,7 +191,7 @@ class rhwl_gene(osv.osv):
     def write(self, cr, uid, id, val, context=None):
         if val.has_key("state"):
             val["log"] = [
-                [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state")}]]
+                [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
         if val.has_key("img"):
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
         return super(rhwl_gene, self).write(cr, uid, id, val, context=context)
@@ -455,5 +455,8 @@ class rhwl_gene_popup(osv.osv_memory):
             "except_note": "except"
         }
         col = context.get('col')
-        self.pool.get("rhwl.easy.genes").write(cr, uid, context.get("active_id", 0),
-                                               {col: obj.note, "state": s.get(col)})
+        if not context:
+            context={}
+        context["user_id"]=uid
+        self.pool.get("rhwl.easy.genes").write(cr, SUPERUSER_ID, context.get("active_id", 0),
+                                               {col: obj.note, "state": s.get(col)},context=context)

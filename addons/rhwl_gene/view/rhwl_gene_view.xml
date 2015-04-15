@@ -17,9 +17,9 @@
                     <field name="state"/>
 
                     <button name="action_state_confirm"  states="draft" string="确认" type="object"
-                                 icon="gtk-apply" />
+                                 icon="gtk-apply"  groups="rhwl_gene.rhwl_base_gene"/>
                     <button name="action_state_except" states="draft" string="信息异常" type="object"
-                             icon="gtk-cancel" context="{'view_type':'tree'}"/>
+                             icon="gtk-cancel" context="{'view_type':'tree'}"  groups="rhwl_gene.rhwl_base_gene"/>
                 </tree>
             </field>
         </record>
@@ -29,10 +29,10 @@
             <field name="arch" type="xml">
                 <form string="样本信息">
                     <header>
-                        <button name="action_state_except" string="信息异常反馈" states="draft" type="object"/>
-                        <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object"/>
-                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object"/>
-                        <button name="action_state_result_done" string="风险报告确认" states="report_done" type="object"/>
+                        <button name="action_state_except" string="信息异常反馈" states="draft" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_result_done" string="风险报告确认" states="report_done" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,result_done,deliver,cancel,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
@@ -248,7 +248,7 @@
 
         <record id="ir_cron_genes_export_scheduler" model="ir.cron">
             <field eval="&quot;&quot;&quot;create_gene_type_file&quot;&quot;&quot;" name="function"/>
-            <field eval="&quot;&quot;&quot;hours&quot;&quot;&quot;" name="interval_type"/>
+            <field eval="&quot;&quot;&quot;minutes&quot;&quot;&quot;" name="interval_type"/>
             <field name="user_id" ref="base.user_root"/>
             <field eval="&quot;&quot;&quot;Genes Export&quot;&quot;&quot;" name="name"/>
             <field eval="-1" name="numbercall"/>
@@ -256,13 +256,13 @@
             <field eval="5" name="priority"/>
             <field eval="0" name="doall"/>
             <field eval="1" name="active"/>
-            <field eval="1" name="interval_number"/>
+            <field eval="5" name="interval_number"/>
             <field eval="([0],)" name="args"/>
             <field eval="&quot;&quot;&quot;rhwl.easy.genes&quot;&quot;&quot;" name="model"/>
         </record>
         <record id="ir_cron_genes_pdf_scheduler" model="ir.cron">
             <field eval="&quot;&quot;&quot;get_gene_pdf_file&quot;&quot;&quot;" name="function"/>
-            <field eval="&quot;&quot;&quot;hours&quot;&quot;&quot;" name="interval_type"/>
+            <field eval="&quot;&quot;&quot;minutes&quot;&quot;&quot;" name="interval_type"/>
             <field name="user_id" ref="base.user_root"/>
             <field eval="&quot;&quot;&quot;Genes PDF&quot;&quot;&quot;" name="name"/>
             <field eval="-1" name="numbercall"/>
@@ -270,7 +270,7 @@
             <field eval="5" name="priority"/>
             <field eval="0" name="doall"/>
             <field eval="1" name="active"/>
-            <field eval="1" name="interval_number"/>
+            <field eval="5" name="interval_number"/>
             <field eval="([],)" name="args"/>
             <field eval="&quot;&quot;&quot;rhwl.easy.genes&quot;&quot;&quot;" name="model"/>
         </record>

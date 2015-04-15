@@ -130,7 +130,7 @@
 
         <record id="ir_cron_gene_picking_upload_scheduler" model="ir.cron">
             <field eval="&quot;&quot;&quot;report_upload&quot;&quot;&quot;" name="function"/>
-            <field eval="&quot;&quot;&quot;hours&quot;&quot;&quot;" name="interval_type"/>
+            <field eval="&quot;&quot;&quot;minutes&quot;&quot;&quot;" name="interval_type"/>
             <field name="user_id" ref="base.user_root"/>
             <field eval="&quot;&quot;&quot;Genes UPLOAD&quot;&quot;&quot;" name="name"/>
             <field eval="-1" name="numbercall"/>
@@ -138,7 +138,7 @@
             <field eval="5" name="priority"/>
             <field eval="0" name="doall"/>
             <field eval="1" name="active"/>
-            <field eval="1" name="interval_number"/>
+            <field eval="5" name="interval_number"/>
             <field eval="([],)" name="args"/>
             <field eval="&quot;&quot;&quot;rhwl.genes.picking&quot;&quot;&quot;" name="model"/>
         </record>

@@ -158,9 +158,10 @@ class rhwl_sample_info(osv.osv):
 
     def create(self, cr, uid, vals, context=None):
         cxyy_obj = self.pool.get("res.partner").browse(cr,uid,vals.get("cxyy"),context)
-        cr.execute("select max(hospital_seq) from sale_sampleone where hospital_seq like '%s'" % (cxyy_obj.partner_unid + '-%',))
+        cr.execute("select hospital_seq from sale_sampleone where hospital_seq like '%s' order by id desc " % (cxyy_obj.partner_unid + '-%',))
         for unid in cr.fetchall():
             max_id = unid[0]
+            break
         if max_id:
             max_id = max_id.split('-')[0]+'-'+str(int(max_id.split('-')[1])+1)
         else:
@@ -384,6 +385,27 @@ class rhwl_sample_info(osv.osv):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse',"library_date":fields.date.today()}, context=context)
         for i in ids:
             self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+            self.send_weixin(cr,uid,i,context=context)
+
+    def action_check_except(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today()}, context=context)
+        for i in ids:
+            self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+            self.send_weixin(cr,uid,i,context=context)
+
+    def send_weixin(self,cr,uid,ids,context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+        #取医院联系人
+        person = self.pool.get("res.partner").get_Contact_person(cr,uid,obj.cxyy.id,context=context)
+        if not person:
+            #没有联系人取驻院代表
+            p_obj = self.pool.get("res.partner").browse(cr,uid,obj.cxyy.id,context=context)
+            if p_obj.zydb.id:
+                person = p_obj.zydb.id
+            elif p_obj.user_id:
+                #没有驻院代表取销售人员
+                person = p_obj.user_id.id
+
         weixin_send={
             "touser":"",
             "template_id":"YdKZj6dOiw6fqbqMg7LaLSqyj247yOkVP2eGQS0Pzig",
@@ -391,15 +413,15 @@ class rhwl_sample_info(osv.osv):
             "topcolor":"#FF0000",
             "data":{
                 "first": {
-                            "value":"人和未来生物科技、何彬",
+                            "value":(obj.cxyy.name+u"，"+obj.yfxm+u"-"+obj.name),
                             "color":"#173177"
                             },
                 "keyword1":{
-                            "value":"重新抽血",
+                            "value":"无创产前" ,
                             "color":"#173177"
                             },
                 "keyword2":{
-                            "value":"无",
+                            "value":"",
                             "color":"#173177"
                             },
                 "keyword3":{
@@ -407,16 +429,21 @@ class rhwl_sample_info(osv.osv):
                             "color":"#173177"
                             },
                 "remark":{
-                            "value":"请及时通知孕妇重新进行抽血。"
+                            "value":""
                 }
             }
         }
-        self.pool.get("rhwl.weixin.base").send_template1(cr,uid,1,weixin_send,context=context)
-
-    def action_check_except(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today()}, context=context)
-        for i in ids:
-            self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+        if obj.check_state=="reuse":
+            weixin_send["url"]="http://erp.genetalks.com/rhwl_weixin/static/listreuse.html"
+            weixin_send["data"]["keyword2"]["value"]="需重新采血"
+            weixin_send["data"]["remark"]["value"]="请及时通知孕妇重新进行抽血。"
+        elif obj.check_state=="except":
+            weixin_send["url"]="http://erp.genetalks.com/rhwl_weixin/static/listexcept.html"
+            weixin_send["data"]["keyword2"]["value"]="检测结果异常"
+            weixin_send["data"]["remark"]["value"]="请及时通知孕妇联系医生进行进一步检测。"
+        weixin_send["data"]["first"]["value"] =weixin_send["data"]["first"]["value"].encode("utf-8")
+        if person:
+            self.pool.get("rhwl.weixin.base").send_template1(cr,uid,person,weixin_send,context=context)
 
     def create_sale_order(self,cr,uid,ids,context=None):
         obj = self.browse(cr, uid, ids, context=context) #取得记录对象
