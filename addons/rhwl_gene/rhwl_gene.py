@@ -189,6 +189,8 @@ class rhwl_gene(osv.osv):
         return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):
+        if not context:
+            context={}
         if val.has_key("state"):
             val["log"] = [
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]

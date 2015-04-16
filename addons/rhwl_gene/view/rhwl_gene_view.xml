@@ -71,7 +71,7 @@
                                 <field name="note"/>
                             </page>
                             <page string="图片">
-                                <field name="img" widget="image" options="{'size':[480,640]}"/>
+                                <field name="img" widget="image" options="{'size':[800,640]}"/>
                             </page>
                             <page string="质检数据">
                                 <field name="dns_chk" attrs="{'readonly':True}">

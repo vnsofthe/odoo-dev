@@ -500,7 +500,7 @@ class rhwl_sample_info(osv.osv):
         move_obj = self.pool.get("stock.move")
         ori_name=self.pool.get("sale.order").browse(cr,SUPERUSER_ID,order_id,context=context).name
         move_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('origin','=',ori_name)],context=context)
-        move_dest_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('move_dest_id','=',move_id)],context=context)
+        move_dest_id = move_obj.search(cr,SUPERUSER_ID,[('state','!=','done'),('move_dest_id','in',move_id)],context=context)
         if move_dest_id:
             move_obj.action_done(cr,SUPERUSER_ID,move_dest_id,context=context)
         move_obj.action_done(cr,SUPERUSER_ID,move_id,context=context)
