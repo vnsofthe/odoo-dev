@@ -304,6 +304,7 @@ class rhwl_gene(osv.osv):
             self.action_state_report(cr, uid, ids, context=context)
 
     def get_gene_pdf_file(self, cr, uid, context=None):
+        _logger.warn("cron job get_gene_pdf_file")
         model_path=os.path.split(__file__)[0]
         fpath = os.path.join(model_path, "static/remote/report")
         tpath = os.path.join(model_path, "static/local/report")
