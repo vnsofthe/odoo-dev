@@ -32,7 +32,37 @@ class vnsoft_purchase_line(osv.osv):
     _columns={
         "qualification":fields.selection([('draft','draft'),('done','done'),('cancel','cancel')],"Qualification"),
         "web_id":fields.integer('Web ID'),
+        "active":fields.boolean("Active"),
     }
     _defaults={
-        "qualification":'draft'
+        "qualification":'draft',
+        "active":True
     }
+    def write(self,cr,uid,ids,val,context=None):
+        if val.get("qualification","draft")=="cancel":
+            val['active']=False
+        return super(vnsoft_purchase_line,self).write(cr,uid,ids,val,context=context)
+
+class vnsoft_sale_purchase(osv.osv_memory):
+    _inherit = 'sale.order.purchase'
+
+    def do_create(self,cr,uid,ids,context=None):
+        result = super(vnsoft_sale_purchase,self).do_create(cr,uid,ids,context=context)
+        obj=self.browse(cr,uid,ids)
+        sale_obj = self.pool.get("sale.order").browse(cr,uid,obj.name.id,context=context)
+        id = self.pool.get("purchase.order").search(cr,uid,[('origin','=',obj.name.name)],context=context)
+        self.pool.get("purchase.order").write(cr,uid,id,{"order_kind":sale_obj.order_kind},context=context)
+        return result
+
+class vnsoft_purchase_order_group(osv.osv_memory):
+    _inherit = "purchase.order.group"
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type='form',
+                        context=None, toolbar=False, submenu=False):
+        res = super(vnsoft_purchase_order_group,self).fields_view_get(cr,uid,view_id,view_type,context,toolbar,submenu)
+        if context.get('active_model','') == 'purchase.order':
+
+            for i in self.pool.get("purchase.order").browse(cr,uid,context['active_ids']):
+                if i.order_kind!="internal":
+                    raise osv.except_osv(u"错误",u"选择的采购订单中，有进口订单，不可以合并。")
+        return res

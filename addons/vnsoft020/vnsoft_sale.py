@@ -56,7 +56,7 @@ class vnsoft_purchase(osv.osv_memory):
             for i in obj.order_line:
                 id = self.env["purchase.order"].search([('origin','=',self.name.name),('order_line.product_id','=',i.product_id.id)])
                 if not id:
-                    ids.append({'name':i.id,'product_id':i.product_id.id,'product_qty':i.product_uom_qty})
+                    ids.append({'name':self.id,'product_id':i.product_id.id,'product_qty':i.product_uom_qty,"sale_order_line_id":i.id})
             self.update({"line":ids})
 
 
@@ -97,13 +97,10 @@ class vnsoft_purchase(osv.osv_memory):
             val.update({'picking_type_id':pick,'partner_id':k,'origin':obj.name.name,})
             for j in v:
                 detail_val = self.pool.get("purchase.order.line").onchange_product_id(cr, uid, 0, val.get("pricelist_id"),j[0], j[1], False, k,val.get("date_order"),val.get("fiscal_position"),val.get("date_planned"),False,False,'draft',context=context).get("value")
-
                 detail_val.update({'product_id':j[0],'product_qty':j[1],"sale_order_line_id":j[2]})
-
                 pline.append([0,0,detail_val])
 
             val.update({'company_id':1,'order_line':pline})
-
             res_id.append(self.pool.get("purchase.order").create(cr,uid,val,context=context))
 
         result = self.pool.get("product.template")._get_act_window_dict(cr, uid, 'purchase.purchase_rfq', context=context)
