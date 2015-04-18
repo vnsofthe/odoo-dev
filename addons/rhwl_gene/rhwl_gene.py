@@ -85,6 +85,8 @@ class rhwl_gene(osv.osv):
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
         "img": fields.binary(u"图片"),
+        "img_atta":fields.many2one("ir.attachment","IMG"),
+        "img_new":fields.related("img_atta","datas",type="binary"),
         "log": fields.one2many("rhwl.easy.genes.log", "genes_id", "Log"),
         "typ": fields.one2many("rhwl.easy.genes.type", "genes_id", "Type"),
         "dns_chk": fields.one2many("rhwl.easy.genes.check", "genes_id", "DNA_Check"),
@@ -176,11 +178,23 @@ class rhwl_gene(osv.osv):
     }
 
     def init(self, cr):
-        ids = self.search(cr,SUPERUSER_ID,[("identity","!=",False)])
-        #for i in self.browse(cr,SUPERUSER_ID,ids):
-            #if len(i.identity)==18:
-                #if int(i.identity[6:10])>=(datetime.datetime.today().year-12):
-                    #self.write(cr,SUPERUSER_ID,i.id,{"is_child":True})
+        ids = self.search(cr,SUPERUSER_ID,[("img","!=",False),("img_atta","=",False)])
+        for i in ids:
+            obj = self.browse(cr,SUPERUSER_ID,i)
+            val={
+                "name":obj.name,
+                "datas_fname":obj.name+".jpg",
+                "description":obj.name+" information to IMG",
+                "res_model":"rhwl.easy.genes",
+                "res_id":obj.id,
+                "create_date":fields.datetime.now,
+                "create_uid":SUPERUSER_ID,
+                "datas":obj.img,
+            }
+            atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,val)
+            self.write(cr,SUPERUSER_ID,obj.id,{"img_atta":atta_id})
+
+
 
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
@@ -196,6 +210,23 @@ class rhwl_gene(osv.osv):
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
         if val.has_key("img"):
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
+            obj = self.browse(cr,SUPERUSER_ID,id,context=context)
+            val={
+                "name":obj.name,
+                "datas_fname":obj.name+".jpg",
+                "description":obj.name+" information to IMG",
+                "res_model":"rhwl.easy.genes",
+                "res_id":obj.id,
+                "create_date":fields.datetime.now,
+                "create_uid":SUPERUSER_ID,
+                "datas":val.get("img"),
+            }
+            if obj.img_atta:
+                self.pool.get('ir.attachment').unlink(cr,SUPERUSER_ID,obj.img_atta.id)
+            atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,val)
+            val["img_atta"]=atta_id
+            val.pop("img")
+
         return super(rhwl_gene, self).write(cr, uid, id, val, context=context)
 
     def unlink(self, cr, uid, ids, context=None):
