@@ -4,7 +4,7 @@ from openerp import SUPERUSER_ID, api
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
-import datetime
+import datetime,time
 import requests
 import logging
 import os
@@ -349,7 +349,9 @@ class rhwl_gene(osv.osv):
                     if ids:
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
-                #os.rmdir(newfile)
+                last_week = time.time() - 60*60*24*3
+                if os.path.getmtime(newfile) < last_week:
+                    os.rmdir(newfile)
         cr.commit()
 
         #分析风险数据

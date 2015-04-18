@@ -14,6 +14,7 @@ from openerp.addons.rhwl import rhwl_sale,rhwl_sms
 
 
 import logging
+import re
 _logger = logging.getLogger(__name__)
 
 class weixin(http.Controller):
@@ -149,7 +150,10 @@ class weixin(http.Controller):
                     else:
                         return self.replyWeiXin(fromUser,toUser,u"您查询的样品编码在检测知情同意书上没有登记电话，不能发送验证码，请与送检医院查询结果。")
                 else:
-                    return self.replyWeiXin(fromUser,toUser,u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!")
+                    if re.search("[^0-9a-zA-Z]",content):
+                        return self.customer_service(fromUser,toUser)
+                    else:
+                        return self.replyWeiXin(fromUser,toUser,u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!")
             cr.commit()
 
     def send_photo_text(self,toUser,fromUser,articles):
@@ -173,6 +177,11 @@ class weixin(http.Controller):
         """微信号统一回复方法"""
         temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content></xml>"
         return temp % (toUser,fromUser,time.time().__trunc__().__str__(),text)
+
+    def customer_service(self,toUser,fromUser):
+        """微信号统一回复方法"""
+        temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[transfer_customer_service]]></MsgType></xml>"
+        return temp % (toUser,fromUser,time.time().__trunc__().__str__())
 
     def _get_userid(self,openid):
         registry = RegistryManager.get(request.session.db)
