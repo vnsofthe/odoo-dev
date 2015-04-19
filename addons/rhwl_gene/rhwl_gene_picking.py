@@ -26,7 +26,7 @@ class rhwl_picking(osv.osv):
     _columns={
         "name":fields.char(u"发货单号",size=10,required=True),
         "date":fields.date(u"发货日期",required=True),
-        "state":fields.selection([("draft",u"草稿"),("done",u"完成")]),
+        "state":fields.selection([("draft",u"草稿"),("upload",u"已上传"),("send",u"已出货"),("done",u"完成")],u"状态"),
         "files":fields.function(_get_files,type="integer",string=u"合计样本数"),
         "upload":fields.integer(u"已上传文件数",readonly=True),
         "line":fields.one2many("rhwl.genes.picking.line","picking_id","Detail"),
@@ -36,40 +36,67 @@ class rhwl_picking(osv.osv):
         "state":"draft",
     }
 
+    def write(self,cr,uid,ids,val,context=None):
+        id=super(rhwl_picking,self).write(cr,uid,ids,val,context=context)
+        if val.has_key("state"):
+            stat = {
+                "draft":'result_done',
+                "send":'deliver',
+                "done":'done',
+                "upload":"result_done"
+            }
+            objs=self.browse(cr,uid,ids,context=context)
+            genes_id=[]
+            for i in objs.line:
+                for j in i.box_line:
+                    for k in j.detail:
+                       genes_id.append(k.genes_id.id)
+            self.pool.get("rhwl.easy.genes").write(cr,uid,genes_id,{"state":stat[val["state"]]},context=context)
+        return id
+
+    def pdf_copy(self,pdf_path,files):
+        u_count = 0
+        for k,v in files.items():
+            for i in v:
+                if os.path.exists(os.path.join(pdf_path,i)):
+                    shutil.copy(os.path.join(pdf_path,i),os.path.join(k,i))
+                    u_count += 1
+        return u_count
+
     def report_upload(self,cr,uid,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
+        dict_level={
+            "H":u"高风险",
+            "L":u"低风险",
+        }
         for i in self.search(cr,uid,[("state","=","draft")],context=context):
             obj=self.browse(cr,uid,i,context=context)
-            d=obj.date.replace("/","").replace("-","")
+            d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
-            u_count = 0
+            files={}
             if not os.path.exists(d_path):
                 os.mkdir(d_path)
             for l in obj.line:
                 #处理批号
+                sheet_data={} #用于保存每个批次的装箱数据，给印刷厂查看
                 if l.batch_kind=="normal":
                     line_path=os.path.join(d_path,l.batch_no+"-"+str(l.qty))
                     if not os.path.exists(line_path):
                         os.mkdir(line_path)
                     for b in l.box_line:
-                        box_path=line_path
-                        if b.level=="H":
-                            box_path=os.path.join(line_path,u"高风险")
-                            if not os.path.exists(box_path):
-                                os.mkdir(box_path)
-                        else:
-                            box_path=os.path.join(line_path,u"低风险")
-                            if not os.path.exists(box_path):
-                                os.mkdir(box_path)
-                        box_path=os.path.join(box_path,str(l.seq)+"-"+b.name)
+                        box_path=os.path.join(line_path,dict_level[b.level])
                         if not os.path.exists(box_path):
                             os.mkdir(box_path)
+                        box_path=os.path.join(box_path,str(l.seq)+"-"+b.name)
+                        sheet_data[str(l.seq)+"-"+b.name]=[]
+                        if not os.path.exists(box_path):
+                            os.mkdir(box_path)
+                        if not files.has_key(box_path):files[box_path]=[]
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
-                            if os.path.exists(os.path.join(pdf_path,pdf_file)):
-                                shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
-                                u_count += 1
+                            files[box_path].append(pdf_file)
+                            sheet_data[str(l.seq)+"-"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 elif l.batch_kind=="resend":
                     line_path=os.path.join(d_path,u"重新印刷")
                     if not os.path.exists(line_path):
@@ -79,11 +106,12 @@ class rhwl_picking(osv.osv):
                         box_path=os.path.join(box_path,"R"+b.name)
                         if not os.path.exists(box_path):
                             os.mkdir(box_path)
+                        sheet_data["R"+b.name]=[]
+                        if not files.has_key(box_path):files[box_path]=[]
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
-                            if os.path.exists(os.path.join(pdf_path,pdf_file)):
-                                shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
-                                u_count += 1
+                            files[box_path].append(pdf_file)
+                            sheet_data["R"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 elif l.batch_kind=="vip":
                     line_path=os.path.join(d_path,u"会员部VIP")
                     if not os.path.exists(line_path):
@@ -93,13 +121,31 @@ class rhwl_picking(osv.osv):
                         box_path=os.path.join(box_path,"V"+b.name)
                         if not os.path.exists(box_path):
                             os.mkdir(box_path)
+                        sheet_data["V"+b.name]=[]
+                        if not files.has_key(box_path):files[box_path]=[]
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
-                            if os.path.exists(os.path.join(pdf_path,pdf_file)):
-                                shutil.copy(os.path.join(pdf_path,pdf_file),os.path.join(box_path,pdf_file))
-                                u_count += 1
-            self.write(cr,uid,i,{"upload":u_count},context=context)
+                            files[box_path].append(pdf_file)
+                            sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
+                self.create_sheet_excel(line_path,sheet_data)
+            u_count=self.pdf_copy(pdf_path,files)
+            self.write(cr,uid,i,{"upload":u_count,"state":"upload" if obj.files==u_count else "draft"},context=context)
             self.excel_upload(cr,uid,i,False,context=context)
+
+    def create_sheet_excel(self,line_path,data):
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet(os.path.split(line_path)[1])
+        row=0
+        batch=data.keys()
+        batch.sort()
+        for k in batch:
+            for i in data[k]:
+                ws.write(row,0,k)
+                ws.write(row,1,i[0])
+                ws.write(row,2,i[1])
+                ws.write(row,3,u"男" if i[2]=="T" else u"女" )
+                row +=1
+        w.save(os.path.join(line_path,os.path.split(line_path)[1])+".xls")
 
     def excel_upload(self,cr,uid,ids,isvip=False,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
