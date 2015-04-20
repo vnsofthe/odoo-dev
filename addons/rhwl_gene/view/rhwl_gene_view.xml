@@ -46,6 +46,7 @@
                             </group>
                             <group>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="birthday" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="is_child" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
@@ -136,6 +137,7 @@
                     <filter string="高风险名单" name="type_risk_high" domain="[('is_risk','=',True)]"/>
                     <group expand="0" string="分组">
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
+                        <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
                     </group>
                 </search>

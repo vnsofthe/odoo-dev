@@ -132,6 +132,9 @@ class rhwl_picking(osv.osv):
             self.write(cr,uid,i,{"upload":u_count,"state":"upload" if obj.files==u_count else "draft"},context=context)
             self.excel_upload(cr,uid,i,False,context=context)
 
+    def action_excel_upload(self,cr,uid,ids,context=None):
+        self.excel_upload(cr,uid,ids,False,context=context)
+
     def create_sheet_excel(self,line_path,data):
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(os.path.split(line_path)[1])

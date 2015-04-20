@@ -64,6 +64,11 @@ class rhwl_import(osv.osv_memory):
                     "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) else False,
                     "receiv_date":self.datetime_trun(sh.cell_value(i-1,5))
                 }
+                if idt and len(idt)==18:
+                    try:
+                        val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
+                    except:
+                        pass
                 if batch_no.get(date_col):
                     val["batch_no"]=batch_no.get(date_col)
                 else:

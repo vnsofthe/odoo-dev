@@ -56,7 +56,7 @@ class rhwl_gene(osv.osv):
         res={}
         for id in ids:
             res[id]={"risk_count":0,"risk_text":""}
-            risk_id = self.pool.get("rhwl.easy.gene.risk").search(cr,uid,[("genes_id.id","=",id),("risk","=","高风险")])
+            risk_id = self.pool.get("rhwl.easy.gene.risk").search(cr,uid,[("genes_id.id","=",id),'|',("risk","=","高风险"),("risk","=","低能力")])
             res[id]["risk_count"]=risk_id.__len__()
 
             t=[]
@@ -194,7 +194,22 @@ class rhwl_gene(osv.osv):
             atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,val)
             self.write(cr,SUPERUSER_ID,obj.id,{"img_atta":atta_id})
 
+        ids = self.search(cr,SUPERUSER_ID,[("is_risk","=",False),("risk","!=",False)])
+        for i in ids:
+            obj = self.browse(cr,SUPERUSER_ID,i)
+            for j in obj.risk:
+                if j.risk==u"低能力":
+                    self.write(cr,SUPERUSER_ID,i,{"is_risk":True})
 
+        ids = self.search(cr,SUPERUSER_ID,[("birthday","=",False)])
+        for i in ids:
+            obj = self.browse(cr,SUPERUSER_ID,i)
+            if obj.identity and len(obj.identity)==18:
+                try:
+                    d=datetime.datetime.strptime(obj.identity[6:14],"%Y%m%d").strftime("%Y/%m/%d")
+                    self.write(cr,SUPERUSER_ID,i,{"birthday":d})
+                except:
+                    pass
 
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
@@ -211,7 +226,7 @@ class rhwl_gene(osv.osv):
         if val.has_key("img"):
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
             obj = self.browse(cr,SUPERUSER_ID,id,context=context)
-            val={
+            vals={
                 "name":obj.name,
                 "datas_fname":obj.name+".jpg",
                 "description":obj.name+" information to IMG",
@@ -223,7 +238,7 @@ class rhwl_gene(osv.osv):
             }
             if obj.img_atta:
                 self.pool.get('ir.attachment').unlink(cr,SUPERUSER_ID,obj.img_atta.id)
-            atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,val)
+            atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,vals)
             val["img_atta"]=atta_id
             val.pop("img")
 
@@ -391,7 +406,7 @@ class rhwl_gene(osv.osv):
                     val=[]
                     for k in disease_dict.keys():
                         val.append([0, 0, {"disease_id": disease_dict[k][1], "risk": l[k]}])
-                        if l[k]=="高风险":is_risk=True
+                        if l[k]=="高风险" or l[k]=="低能力":is_risk=True
                     self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"is_risk":is_risk,"risk":val})
 
 
