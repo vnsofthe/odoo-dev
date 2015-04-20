@@ -348,26 +348,59 @@ class rhwl_gene(osv.osv):
                 f.write("\t".join(i) + '\n')
             f.close()
             self.action_state_report(cr, uid, ids, context=context)
+            js={
+                "first":"易感样本检测结果转报告生成：",
+                "keyword1":"即时",
+                "keyword2":"本次转出样本%s笔，等待生成报告。" %(len(ids),),
+                "keyword3":fields.datetime.now(),
+                "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
+            }
+            self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
+
+    def pdf_error(self,cr,uid,file,context=None):
+        js={
+            "first":"易感样本报告接收出错：",
+            "keyword1":"即时",
+            "keyword2":"样本报告%s文件大小不正确。" %(file,),
+            "keyword3":fields.datetime.now(),
+            "remark":"以上数据仅供参考，详细情况请登录服务器查询。"
+        }
+        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
 
     def get_gene_pdf_file(self, cr, uid, context=None):
-        _logger.warn("cron job get_gene_pdf_file")
+        #_logger.warn("cron job get_gene_pdf_file")
         model_path=os.path.split(__file__)[0]
         fpath = os.path.join(model_path, "static/remote/report")
         tpath = os.path.join(model_path, "static/local/report")
+        pdf_count = 0
         for f in os.listdir(fpath):
             newfile = os.path.join(fpath, f)
             if os.path.isdir(newfile):
                 for f1 in os.listdir(newfile):
                     f2 = f1.split("_")[0] + ".pdf"
+                    s=os.stat(os.path.join(newfile, f1)).st_size
+                    if s/1024/1024<16 or s/1024/1024>20:
+                        self.pdf_error(cr,uid,f1,context=context)
+                        continue
+
                     shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
                     ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
                     if ids:
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
+                        pdf_count += 1
                 last_week = time.time() - 60*60*24*3
                 if os.path.getmtime(newfile) < last_week:
                     os.rmdir(newfile)
         cr.commit()
+        js={
+            "first":"易感样本报告接收：",
+            "keyword1":"即时",
+            "keyword2":"本次接收样本报告%s本。" %(pdf_count,),
+            "keyword3":fields.datetime.now(),
+            "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
+        }
+        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
 
         #分析风险数据
         fpath = os.path.join(model_path, "static/remote/excel")
@@ -409,7 +442,35 @@ class rhwl_gene(osv.osv):
                         if l[k]=="高风险" or l[k]=="低能力":is_risk=True
                     self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"is_risk":is_risk,"risk":val})
 
-
+    def weixin_notice_template2(self,cr,uid,context=None):
+        ids = self.search(cr,uid,[("date",">=",datetime.datetime.today()-datetime.timedelta(days=30))],context=context)
+        v_count0=0
+        v_count1=0
+        v_count2=0
+        v_count3=0
+        v_count4=0
+        v_count5 = 0
+        for i in self.browse(cr,uid,ids,context=context):
+            if i.state=='draft':
+                v_count0 += 1
+            elif i.state in ['except','except_confirm','confirm']:
+                v_count1 += 1
+            elif i.state in ['dna_except',]:
+                v_count2 += 1
+            elif i.state == 'report':
+                v_count3 += 1
+            elif i.state in ['report_done',"result_done","deliver",'done']:
+                v_count4 += 1
+            elif i.state in ['dna_ok','ok']:
+                v_count5 += 1
+        js={
+            "first":"易感样本状况统计：",
+            "keyword1":"最近30天",
+            "keyword2":"未收件%s笔，未检测%s笔，检测异常%s笔，等待报告产生%s笔，已完成%s笔。" %(v_count0,v_count1,v_count2,v_count3,v_count4),
+            "keyword3":fields.datetime.now(),
+            "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
+        }
+        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_notice",context=context)
 
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"

@@ -20,7 +20,9 @@ class rhwl_weixin(osv.osv):
         "state":fields.selection([('draft','draft'),('process','process'),('pass','pass')],string="State"),
         "checkNum":fields.char(u"验证码"),
         "checkDateTime":fields.datetime(u"验证码发送时间"),
-        "sampleno":fields.char("sample No")
+        "sampleno":fields.char("sample No"),
+        "is_jobmanager":fields.boolean(u"易感数据/报告数据交换通知"),
+        "is_notice":fields.boolean(u"易感信息状态通知")
     }
 
 class rhwl_config(osv.osv):
@@ -157,6 +159,32 @@ class rhwl_config(osv.osv):
         ref = s.content
         s.close()
 
+    def send_template2(self,cr,uid,json_dict,col,context=None):
+        template= {
+                    "touser":"OPENID",
+                    "template_id":"D2fDRIhwFe9jpHgLtTjkRy5jOz_AqQnvuGzpYQFkgRs",
+                    "url":"",
+                    "topcolor":"#FF0000",
+                    "data":{
+                            "first": {"value":json_dict["first"],"color":"#173177"},
+                            "keyword1":{"value":json_dict["keyword1"],"color":"#173177"},
+                            "keyword2":{"value":json_dict["keyword2"],"color":"#173177"},
+                            "keyword3":{"value":json_dict["keyword3"],"color":"#173177"},
+                            "remark":{"value":json_dict["remark"],"color":"#173177"}
+                    }
+                }
+        id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[(col,"=",True)])
+        for i in id:
+            obj = self.pool.get("rhwl.weixin").browse(cr,SUPERUSER_ID,i,context=context)
+            token=self._get_token(cr,SUPERUSER_ID,context)
+            template["touser"]=obj.openid.encode('utf-8')
+
+            s=requests.post("https://api.weixin.qq.com/cgi-bin/message/template/send",
+                            params={"access_token":token},
+                            data=json.dumps(template,ensure_ascii=False),
+                            headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)
+            ref = s.content
+            s.close()
 
 class rhwl_usermenu(osv.osv):
     _name = "rhwl.weixin.usermenu"

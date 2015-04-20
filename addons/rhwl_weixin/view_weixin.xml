@@ -23,6 +23,8 @@
                              <field name="openid"/>
                             <field name="active"/>
                             <field name="user_id"/>
+                            <field name="is_jobmanager"/>
+                            <field name="is_notice"/>
                         </group>
                     </sheet>
                 </form>
