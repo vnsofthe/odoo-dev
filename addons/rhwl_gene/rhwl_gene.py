@@ -393,14 +393,15 @@ class rhwl_gene(osv.osv):
                 if os.path.getmtime(newfile) < last_week:
                     os.rmdir(newfile)
         cr.commit()
-        js={
-            "first":"易感样本报告接收：",
-            "keyword1":"即时",
-            "keyword2":"本次接收样本报告%s本。" %(pdf_count,),
-            "keyword3":fields.datetime.now(),
-            "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
-        }
-        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
+        if pdf_count>0:
+            js={
+                "first":"易感样本报告接收：",
+                "keyword1":"即时",
+                "keyword2":"本次接收样本报告%s本。" %(pdf_count,),
+                "keyword3":fields.datetime.now(),
+                "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
+            }
+            self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
 
         #分析风险数据
         fpath = os.path.join(model_path, "static/remote/excel")
