@@ -15,7 +15,7 @@ class vnsoft_sale(models.Model):
     tariff = fields.Float('Tariff', digits_compute=dp.get_precision('Product Price'))
     web_id = fields.Integer('Web ID')
 
-    @api.one
+
     def action_invoice_create(self, cr, uid, ids, grouped=False, states=None, date_invoice = False, context=None):
         order_group={}
         for i in self.browse(cr,uid,ids,context=context):
