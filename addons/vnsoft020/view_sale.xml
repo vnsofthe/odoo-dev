@@ -25,6 +25,7 @@
                         <page string="订单明细">
                         <field name="line">
                             <tree editable="bottom">
+                                <field name="sale_order_line_id" attrs="{'readonly':True}"/>
                                 <field name="product_id" attrs="{'readonly':True,'required':True}"/>
                                 <field name="product_qty" attrs="{'readonly':True}"/>
                                 <field name="partner_id" attrs="{'required':True}"/>

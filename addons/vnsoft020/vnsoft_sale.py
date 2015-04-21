@@ -115,5 +115,5 @@ class vnsoft_purchase_line(osv.osv_memory):
          "product_qty": fields.float(u'数量', digits_compute=dp.get_precision('Product Unit of Measure'),
                                     required=True),
         "partner_id":fields.many2one("res.partner",u"供应商",domain="[('supplier','=',True)]"),
-        "sale_order_line_id":fields.integer("Sale Order Line ID")
+        "sale_order_line_id":fields.integer("Line ID")
     }
