@@ -5,7 +5,6 @@ from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 import datetime,time
-import requests
 import logging
 import os
 import shutil

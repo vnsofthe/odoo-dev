@@ -237,6 +237,9 @@ class rhwl_partner(osv.osv):
             for j in i.category_id:
                 if j.name==u"联络人":
                     return i.user_ids and i.user_ids[0].id or None
+        if obj.zydb:
+            return obj.zydb.id
+
         return None
 
     def get_detail_address(self,cr,uid,id,context=None):

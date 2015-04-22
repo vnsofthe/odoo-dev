@@ -9,6 +9,9 @@ import requests
 import openerp.tools as tools
 import time
 import json
+import logging
+
+_logger = logging.getLogger(__name__)
 class rhwl_weixin(osv.osv):
     _name = "rhwl.weixin"
 
@@ -70,7 +73,7 @@ class rhwl_config(osv.osv):
         ids = self.search(cr,uid,[],limit=1)
         obj = self.browse(cr,uid,ids,context=context)
 
-        if not obj.token or (datetime.datetime.now() - datetime.datetime.strptime(obj.token_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).seconds > (obj.expires_in - 30):
+        if (not obj.token) or (datetime.datetime.now() - datetime.datetime.strptime(obj.token_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.expires_in - 30):
             arg["appid"]=obj.appid
             arg["secret"]=obj.appsecret
             s=requests.post("https://api.weixin.qq.com/cgi-bin/token",params=arg)
@@ -81,8 +84,10 @@ class rhwl_config(osv.osv):
                 self.write(cr,uid,obj.id,{"token":res.get("access_token"),"token_create":fields.datetime.now(),"expires_in":res.get("expires_in")})
             else:
                 raise osv.except_osv("错误",res.get("errmsg"))
+            _logger.info("Get New Token:"+res.get("access_token"))
             return res.get("access_token")
         elif obj.token:
+            _logger.info("Get Old Token:"+obj.token.encode('utf-8'))
             return obj.token.encode('utf-8')
 
     def action_token(self,cr,uid,ids,context=None):
