@@ -13,10 +13,15 @@
                     <xpath expr="//field[@name='default_code']" position="before">
                         <field name="product_no" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
                     </xpath>
-                    <xpath expr="//field[@name='brand']" position="after">
-                        <field name="sample_count" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
-                    </xpath>
 
+                    <xpath expr="//field[@name='description']" position="before">
+                        <field name="project_ids" attrs="{'invisible': [('product_variant_count', '>', 1)]}">
+                            <tree string="Project" editable="bottom">
+                                <field name="project_id"/>
+                                <field name="sample_count"/>
+                            </tree>
+                        </field>
+                    </xpath>
                  </data>
             </field>
         </record>
@@ -29,9 +34,7 @@
                     <xpath expr="//field[@name='default_code']" position="before">
                         <field name="product_no"/>
                     </xpath>
-                    <xpath expr="//field[@name='ean13']" position="before">
-                        <field name="sample_count"/>
-                    </xpath>
+
                 </data>
             </field>
         </record>
@@ -44,8 +47,14 @@
                     <xpath expr="//field[@name='default_code']" position="before">
                         <field name="product_no"/>
                     </xpath>
-                    <xpath expr="//field[@name='lst_price']" position="after">
-                        <field name="sample_count"/>
+
+                    <xpath expr="//field[@name='description']" position="before">
+                        <field name="project_ids" >
+                            <tree string="Project" editable="bottom">
+                                <field name="project_id"/>
+                                <field name="sample_count"/>
+                            </tree>
+                        </field>
                     </xpath>
                 </data>
             </field>

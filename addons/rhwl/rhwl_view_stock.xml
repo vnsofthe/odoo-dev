@@ -24,7 +24,7 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='product_min_qty']" position="before">
-                        <field name="min_work_days" on_change="onchange_min_work_days(min_work_days)"/>
+                        <field name="min_work_days" on_change="onchange_min_work_days(min_work_days,product_id)"/>
                     </xpath>
                 </data>
             </field>

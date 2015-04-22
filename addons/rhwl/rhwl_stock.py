@@ -5,8 +5,9 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 import datetime
 import openerp
+import logging
 
-
+_logger = logging.getLogger(__name__)
 class rhwl_stock(osv.osv):
     _inherit = "stock.warehouse"
 
@@ -42,31 +43,54 @@ class rhwl_warehouse_orderpoint(osv.osv):
         "min_work_days":fields.integer(u"安全用量天数"),
     }
 
-    def onchange_min_work_days(self, cr, uid, ids, days, context=None):
+    def compute_all_orderpoint(self,cr,uid,context=None):
+        ids = self.search(cr,uid,[("min_work_days",">",0)],context=context)
+        self.compute_orderpoint(cr,uid,ids,context=context)
+
+    def compute_product_orderpoint(self,cr,uid,id,context=None):
+        ids = self.search(cr,uid,[("product_id","=",id)],context=context)
+        self.compute_orderpoint(cr,uid,ids,context=context)
+
+    def compute_orderpoint(self,cr,uid,id,context=None):
+        if isinstance(id,(long,int)):
+            id=[id,]
+        for o in self.browse(cr,uid,id,context=context):
+            res=self.onchange_min_work_days(cr,uid,o.id,o.min_work_days,o.product_id.id,context=context)
+            if res['value'].has_key("product_min_qty"):
+                self.write(cr,uid,o.id,res['value'],context=context)
+
+    def onchange_min_work_days(self, cr, uid, ids, days,product_id, context=None):
+        if (not days) or days==0:return {"value":{}}
+        if not product_id:return {"value":{}}
+
         comp = self.pool.get("res.company").browse(cr,uid,[1,],context=context)
-        if comp.sample_count and comp.sample_count>0:
-            obj = self.browse(cr,uid,ids,context)
-            if obj.product_id.sample_count and obj.product_id.sample_count>0:
-                vals={
-                    "product_min_qty": round(comp.sample_count/22.0 * days / obj.product_id.sample_count),
-                    "product_max_qty": round(comp.sample_count/22.0 * days / obj.product_id.sample_count)*2
-                }
-                return {"value":vals}
-            else:
-                return {
-                    "warning":{
-                        "title":u"提示",
-                        "message":u"产品未设置每单位可做样品数量，不能计算最小安全数量。"
-                    }
-                }
-        else:
-            return {
-                'warning': {
-                     'title': u'提示',
-                     'message': u"公司别基本资料中未设置每月预估样品数，不能计算最小安全数量。"
-                }
-            }
-        return {"value":{}}
+
+        if not comp.project_id:
+            return {"value":{}}
+        #统计每个项目的月检测数量
+        comp_qty={}
+        for c in comp.project_id:
+            comp_qty[c.id]=c.month_qty
+
+        obj = self.pool.get("product.product").browse(cr,uid,product_id,context)
+        if not obj.project_ids:
+            return {"value":{}} #产品没有针对项目的耗用量，则不能计算安全库存
+
+        #统计产品针对每个项目的耗用量
+        pro_qty={}
+        for p in obj.project_ids:
+            pro_qty[p.project_id.id]=p.sample_count
+
+        vals={"product_min_qty":0,"product_max_qty":0}
+        for i in pro_qty.keys():
+            if not comp_qty.has_key(i):continue
+            vals={
+               "product_min_qty": comp_qty[i]/30.0 * days / pro_qty[i] + vals["product_min_qty"],
+             }
+        vals["product_min_qty"] = round(vals["product_min_qty"])
+        vals["product_max_qty"] = round(vals["product_min_qty"]/days * (days+15))
+
+        return {"value":vals}
 
 class rhwl_order(osv.osv):
     _inherit = "procurement.order"

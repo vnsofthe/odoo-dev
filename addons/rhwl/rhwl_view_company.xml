@@ -7,8 +7,16 @@
             <field name="inherit_id" ref="base.view_company_form"/>
             <field name="arch" type="xml">
                 <data>
-                    <xpath expr="//field[@name='company_registry']" position="after">
-                        <field name="sample_count"/>
+
+                    <xpath expr="//page[@string='Report Configuration']" position="after">
+                        <page string="Project">
+                            <field name="project_id">
+                                <tree string="Project" editable="bottom">
+                                    <field name="name"/>
+                                    <field name="month_qty"/>
+                                </tree>
+                            </field>
+                        </page>
                     </xpath>
                 </data>
             </field>
