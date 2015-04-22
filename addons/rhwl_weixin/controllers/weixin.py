@@ -74,16 +74,33 @@ class weixin(http.Controller):
             else:
                 articles=self._get_htmlmsg(key)
                 if articles[0]:
-                    if not self._get_userid(fromUser):
+                    userid=self._get_userid(fromUser)
+                    if not userid:
                         articles={
                             "Title":"内部ERP帐号绑定",
                             "Description":"您查阅的功能需要授权，请先进行内部ERP帐号绑定",
-                            "PicUrl":"/rhwl_weixin/static/img/logo.png",
+                            "PicUrl":"/rhwl_weixin/static/img/logo1.png",
                             "Url":"/rhwl_weixin/static/weixinbind.html"
                             }
                         return self.send_photo_text(fromUser,toUser,[articles,])
-                if articles[1]:
-                    return self.send_photo_text(fromUser,toUser,articles[1])
+                    if articles[1]:
+                        registry = RegistryManager.get(request.session.db)
+                        is_has_group=False
+                        with registry.cursor() as cr:
+                            obj = registry.get("res.users")
+                            for i in articles[1].split(","):
+                                is_has_group = obj.has_group(cr,userid,i)
+                                if is_has_group:break
+                            if not is_has_group:
+                                articles={
+                                    "Title":"访问权限不足",
+                                    "Description":"您查阅的功能需要特别授权，请与管理员联系。",
+                                    "PicUrl":"/rhwl_weixin/static/img/logo1.png",
+                                    }
+                                return self.send_photo_text(fromUser,toUser,[articles,])
+
+                if articles[2]:
+                    return self.send_photo_text(fromUser,toUser,articles[2])
                 else:
                     return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
         elif Event=="unsubscribe":
@@ -200,10 +217,10 @@ class weixin(http.Controller):
         with registry.cursor() as cr:
             id = msg.search(cr,SUPERUSER_ID,[("key","=",key)])
             if not id:
-                return (False,None)
+                return (False,"",None)
             obj = msg.browse(cr,SUPERUSER_ID,id)
             if not obj.htmlmsg:
-                return (obj.need_user,None)
+                return (obj.need_user,obj.groups,None)
             articles=[]
             for j in obj.htmlmsg:
                 if j.url:
@@ -219,7 +236,7 @@ class weixin(http.Controller):
                         "Description":j.description.encode("utf-8"),
                         "PicUrl":j.picurl.encode("utf-8"),
                     })
-            return (obj.need_user,articles)
+            return (obj.need_user,obj.groups,articles)
 
     @http.route("/web/weixin/",type="http",auth="none")
     def rhwl_weixin(self,**kw):

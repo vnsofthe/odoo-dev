@@ -43,6 +43,7 @@
                                             <field name="type"/>
                                             <field name="name"/>
                                             <field name="need_user"/>
+                                            <field name="groups"/>
                                             <field name="key" attrs="{'readonly':[('type','!=','click')]}"/>
                                             <field name="url" attrs="{'readonly':[('type','!=','view')]}"/>
                                     </group>

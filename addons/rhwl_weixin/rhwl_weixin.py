@@ -213,6 +213,7 @@ class rhwl_usermenu2(osv.osv):
         "need_user":fields.boolean("Need UserID"),
         "parent":fields.many2one("rhwl.weixin.usermenu","Parent"),
         "htmlmsg":fields.one2many("rhwl.weixin.htmlmsg","menu","HtmlMsg"),
+        "groups":fields.char("Groups",size=100),
         "seq":fields.integer("Seq"),
     }
     _order = "seq asc"
