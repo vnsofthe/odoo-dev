@@ -56,8 +56,11 @@
             <div class="am-u-sm-1 ">
                 <button  type="button" id="btn_cam" onclick="take_snapshot()" class="am-btn am-btn-warning">拍照</button>
             </div>
+            <div class="am-u-sm-1">
+                <button  type="button" onclick="delete_img()" class="am-btn am-btn-danger">全部取消</button>
+            </div>
             <div class="am-u-sm-1 am-u-end">
-                <button  type="button" onclick="delete_img()" class="am-btn am-btn-danger">取消</button>
+                <button  type="button" onclick="delete_img2()" class="am-btn am-btn-danger">取消第二个</button>
             </div>
         </div>
     </form>
@@ -132,6 +135,11 @@
 
         function delete_img(){
             document.getElementById('my_result0').innerHTML="";
+            document.getElementById('my_result1').innerHTML="";
+            $('#btn_cam').focus();
+            return false;
+        }
+        function delete_img2(){
             document.getElementById('my_result1').innerHTML="";
             $('#btn_cam').focus();
             return false;

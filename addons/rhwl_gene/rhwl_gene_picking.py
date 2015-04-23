@@ -134,6 +134,7 @@ class rhwl_picking(osv.osv):
 
     def action_excel_upload(self,cr,uid,ids,context=None):
         self.excel_upload(cr,uid,ids,False,context=context)
+        self.risk_excel(cr,uid,ids,context=context)
 
     def create_sheet_excel(self,line_path,data):
         w = xlwt.Workbook(encoding='utf-8')
@@ -472,6 +473,104 @@ class rhwl_picking(osv.osv):
         if not isvip:
             self.excel_upload(cr,uid,ids,True,context=context)
 
+    def risk_excel_header(self,cr,uid,context=None):
+        hd={
+            0:[u"人员信息",[u"姓名",u"性别",u"出生日期",u"身份证号",u"体检编码",u"基因编码"]]
+        }
+        k=1
+        ids = self.pool.get("rhwl.gene.disease.type").search(cr,uid,[],order="name",context=context)
+        for i in self.pool.get("rhwl.gene.disease.type").browse(cr,uid,ids,context=context):
+            hd[k]=[i.name,[]]
+            for j in i.line:
+                hd[k][1].append(j.name)
+            k+=1
+        return hd
+
+    def risk_excel(self,cr,uid,id,context=None):
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        obj = self.browse(cr,uid,id,context=context)
+        d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
+        d_path=os.path.join(upload_path,d)
+        w = xlwt.Workbook(encoding='utf-8')
+        ws1 = w.add_sheet(u'总表')
+        ws2 = w.add_sheet(u'儿童筛选')
+        ws3 = w.add_sheet(u'高值筛选')
+        ws1_row=2
+        ws2_row=2
+        ws1_col=0
+        ws2_col=0
+        #写表头内容
+        for s in [ws1,ws2]:
+            for n in range(1,71):
+                s.write(0,n+5,n)
+        hd = self.risk_excel_header(cr,uid,context=context)
+        hd_keys = hd.keys()
+        hd_keys.sort()
+        for k in hd_keys:
+            col_temp = ws1_col
+            for v in hd[k][1]:
+                ws1.write(ws1_row,ws1_col,v)
+                ws2.write(ws2_row,ws2_col,v)
+                ws1_col+=1
+                ws2_col+=1
+            ws1.write_merge(ws1_row-1,ws1_row-1,col_temp,ws1_col-1,hd[k][0])
+            ws2.write_merge(ws1_row-1,ws1_row-1,col_temp,ws1_col-1,hd[k][0])
+        ws3.write_merge(1,1,0,5,hd[0][0])
+        ws3_col=0
+        for i in hd[0][1]:
+            ws3.write(2,ws3_col,i)
+            ws3_col+=1
+        ws3.write(2,ws3_col,u"病症数量")
+        ws3.write(2,ws3_col+1,u"病症名称")
+
+        #统计需要转出的样本数据
+        gene_ids=[]
+        for i in obj.line:
+            if i.batch_kind=="resend":continue
+            for b in i.box_line:
+                for bl in b.detail:
+                    gene_ids.append(bl.genes_id.id)
+        ws1_row = 3
+        ws2_row = 3
+
+        cols=["cust_name","sex","birthday","identity","name","batch_no","A1","A2","A3","A4","A5","A6","A7","A8","A9","A10","A11","A12","A13","A14","A15","A16","A17","A18","A19","A20","A21","A22","A23","B1","B2","B3","B4","B5","B6","B7","B8","B9","B10","B11","B12","B13","B14","B15","B16","C1","C2","C3","C4","C5","C6","C7","C8","C9","C10","C11","C12","D1","D2","D3","D4","D5","D6","D7","D8","D9","D10","D11","D12","D13","D14","E1","E2","E3","F1","F2"]
+        for i in self.pool.get("rhwl.easy.genes").browse(cr,uid,gene_ids,context=context):
+            ws1_col = 0
+            ws2_col = 0
+            for c in cols:
+                if c=="sex":
+                    ws1.write(ws1_row,ws1_col,u"男" if i[c]==u"T" else u"女")
+                elif c=="batch_no":
+                    ws1.write(ws1_row,ws1_col,i.batch_no+"-"+i.name)
+                else:
+                    ws1.write(ws1_row,ws1_col,i[c] if i[c] else "")
+                ws1_col +=1
+            ws1_col=0
+            for c in cols[0:6]+["risk_count","risk_text"]:
+                if c=="sex":
+                    ws3.write(ws1_row,ws1_col,u"男" if i[c]==u"T" else u"女")
+                elif c=="batch_no":
+                    ws3.write(ws1_row,ws1_col,i.batch_no+"-"+i.name)
+                elif c=="risk_count":
+                    ws3.write(ws1_row,ws1_col,str(i.risk_count)+(u"(儿童)" if i.is_child else ""))
+                else:
+                    ws3.write(ws1_row,ws1_col,i[c] if i[c] else "")
+                ws1_col +=1
+
+            ws1_row += 1
+
+            if i.is_child:
+               for c in cols:
+                    if c=="sex":
+                        ws2.write(ws2_row,ws2_col,u"男" if i[c]==u"T" else u"女")
+                    elif c=="batch_no":
+                        ws2.write(ws2_row,ws2_col,i.batch_no+"-"+i.name)
+                    else:
+                        ws2.write(ws2_row,ws2_col,i[c]  if i[c] else "")
+                    ws2_col +=1
+               ws2_row += 1
+
+        w.save(os.path.join(d_path,d+u"-横版报告.xls"))
 class rhwl_picking_line(osv.osv):
     _name = "rhwl.genes.picking.line"
 
