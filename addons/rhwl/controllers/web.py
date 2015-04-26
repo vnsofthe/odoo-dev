@@ -126,7 +126,7 @@ class WebClient(http.Controller):
                 id  = u.search(cr,SUPERUSER_ID,[('name','=',kw.get('id')),('yftelno','=',kw.get('telno'))],context=None)
                 if id:
                     obj = u.browse(cr,SUPERUSER_ID,id,context=None)
-                    rhwl_sms.send_sms(obj.yftelno,obj.check_state)
+                    registry.get("res.company").send_sms(cr,SUPERUSER_ID,obj.yftelno,obj.check_state)
                 cr.commit()
             data = {
                 "state":200,

@@ -159,6 +159,7 @@ class rhwl_sample_info(osv.osv):
     def create(self, cr, uid, vals, context=None):
         cxyy_obj = self.pool.get("res.partner").browse(cr,uid,vals.get("cxyy"),context)
         cr.execute("select hospital_seq from sale_sampleone where hospital_seq like '%s' order by id desc " % (cxyy_obj.partner_unid + '-%',))
+        max_id=""
         for unid in cr.fetchall():
             max_id = unid[0]
             break
@@ -374,7 +375,7 @@ class rhwl_sample_info(osv.osv):
             else:
                 str=None
             if i.yftelno and str:
-                res = rhwl_sms.send_sms(i.yftelno,str )
+                res = self.pool.get("res.company").send_sms(cr,uid,i.yftelno,str )
                 if res.split('/')[0]!="000":
                     raise osv.except_osv(u"错误",u"短信发送错误，"+res)
 

@@ -162,7 +162,7 @@ class weixin(http.Controller):
                     user.write(cr,SUPERUSER_ID,openid,{"telno":obj.yftelno,"state":"process","checkNum":rand,"checkDateTime":checkDateTime,"sampleno":content})
                     cr.commit()
                     if obj.yftelno:
-                        rhwl_sms.send_sms(obj.yftelno,u"您查询样品检测结果的验证码为%s，请在五分钟内输入，如果不是您本人操作，请不用处理。" %(rand,))
+                        registry.get("res.company").send_sms(cr,SUPERUSER_ID,obj.yftelno,u"您查询样品检测结果的验证码为%s，请在五分钟内输入，如果不是您本人操作，请不用处理。" %(rand,))
                         return self.replyWeiXin(fromUser,toUser,u"验证码已经发送至检测知情同意书上登记的电话"+obj.yftelno[:3]+u"****"+obj.yftelno[-4:]+u"，请收到验证码后在五分钟内输入。")
                     else:
                         return self.replyWeiXin(fromUser,toUser,u"您查询的样品编码在检测知情同意书上没有登记电话，不能发送验证码，请与送检医院查询结果。")
