@@ -13,6 +13,7 @@ import xlwt
 
 _logger = logging.getLogger(__name__)
 
+#样本发货单对象
 class rhwl_picking(osv.osv):
     _name="rhwl.genes.picking"
 
@@ -56,12 +57,14 @@ class rhwl_picking(osv.osv):
 
     def pdf_copy(self,pdf_path,files):
         u_count = 0
+        t_count = 0
         for k,v in files.items():
+            t_count += len(v)
             for i in v:
                 if os.path.exists(os.path.join(pdf_path,i)):
                     shutil.copy(os.path.join(pdf_path,i),os.path.join(k,i))
                     u_count += 1
-        return u_count
+        return (t_count,u_count)
 
     def report_upload(self,cr,uid,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
@@ -70,6 +73,7 @@ class rhwl_picking(osv.osv):
             "H":u"高风险",
             "L":u"低风险",
         }
+        is_upload=True
         for i in self.search(cr,uid,[("state","=","draft")],context=context):
             obj=self.browse(cr,uid,i,context=context)
             d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
@@ -78,6 +82,8 @@ class rhwl_picking(osv.osv):
             if not os.path.exists(d_path):
                 os.mkdir(d_path)
             for l in obj.line:
+                if not l.box_line:is_upload=False
+                if not l.export:is_upload=False
                 #处理批号
                 sheet_data={} #用于保存每个批次的装箱数据，给印刷厂查看
                 if l.batch_kind=="normal":
@@ -128,8 +134,9 @@ class rhwl_picking(osv.osv):
                             files[box_path].append(pdf_file)
                             sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 self.create_sheet_excel(line_path,sheet_data)
-            u_count=self.pdf_copy(pdf_path,files)
-            self.write(cr,uid,i,{"upload":u_count,"state":"upload" if obj.files==u_count else "draft"},context=context)
+            t_count,u_count=self.pdf_copy(pdf_path,files)
+            if t_count!=u_count:is_upload=False
+            self.write(cr,uid,i,{"upload":u_count,"state":"upload" if is_upload else "draft"},context=context)
             self.excel_upload(cr,uid,i,False,context=context)
 
     def action_excel_upload(self,cr,uid,ids,context=None):
@@ -486,6 +493,7 @@ class rhwl_picking(osv.osv):
             k+=1
         return hd
 
+    #创建发货单的excel表
     def risk_excel(self,cr,uid,id,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         obj = self.browse(cr,uid,id,context=context)
@@ -571,6 +579,59 @@ class rhwl_picking(osv.osv):
                ws2_row += 1
 
         w.save(os.path.join(d_path,d+u"-横版报告.xls"))
+
+    #明细批次分配箱号
+    def create_box(self,cr,uid,context=None):
+        ids = self.search(cr,uid,[("state","=","draft")])
+        if not ids:return
+        for i in self.browse(cr,uid,ids,context=context):
+            for l in i.line:
+                if not l.box_line:
+                    self.pool.get("rhwl.genes.picking.line").create_box(cr,uid,l.id,context=context)
+
+    #导出已经分配好箱号的样本给报告生成服务器
+    def export_box_genes(self,cr,uid,context=None):
+        ids = self.search(cr,uid,[("state","=","draft")])
+        if not ids:return
+        genes_ids=[]
+        l_ids=[]
+        genes_box={}
+        for i in self.browse(cr,uid,ids,context=context):
+            for l in i.line:
+                if l.export:continue
+                if not l.box_line:continue
+                l_ids.append(l.id)
+                for b in l.box_line:
+                    for dl in b.detail:
+                        genes_ids.append(dl.genes_id.id)
+                        if l.batch_kind=="normal":
+                            genes_box[dl.genes_id.name]=str(l.seq)+"-"+b.name
+                        elif l.batch_kind=="vip":
+                            genes_box[dl.genes_id.name]="V"+b.name
+                        elif l.batch_kind=="resend":
+                            genes_box[dl.genes_id.name]="R"+b.name
+        data=self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,genes_ids,context=context)
+        fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
+        fname = os.path.join(fpath, "box_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
+        header=[]
+        f = open(fname, "w+")
+        for k in data.keys():
+            line_row=[genes_box[data[k]["name"]],data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
+            if not header:
+                header = data[k].keys()
+                header.pop("name")
+                header.pop("cust_name")
+                header.pop("sex")
+                header.sort()
+                f.write("箱号\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+            for i in header:
+                line_row.append(data[k][i])
+            f.write("\t".join(line_row) + '\n')
+        f.close()
+        if l_ids:
+            self.pool.get("rhwl.genes.picking.line").write(cr,uid,l_ids,{"export":True},context=context)
+
+#发货单批次明细对象
 class rhwl_picking_line(osv.osv):
     _name = "rhwl.genes.picking.line"
 
@@ -613,10 +674,12 @@ class rhwl_picking_line(osv.osv):
         "qty":fields.function(_get_detail_qty,type="integer",string=u"数量"),
         "note":fields.char(u"备注",size=200),
         "box_line":fields.one2many("rhwl.genes.picking.box","line_id","Detail"),
+        "export":fields.boolean("Export"),
     }
     _defaults={
         "product_name":u"检测报告",
         "batch_kind":"normal",
+        "export":False,
     }
     _sql_constraints = [
         ('rhwl_genes_picking_seq_uniq', 'unique(picking_id,seq)', u'发货明细序号不能重复!'),
@@ -638,44 +701,46 @@ class rhwl_picking_line(osv.osv):
             ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no"))],context=context)
             if not ids:
                 raise osv.except_osv(u"错误",u"批次号不存在，请输入正确的批次号码。")
-            ids=self.pool.get("rhwl.easy.genes").search_count(cr,uid,[("batch_no","=",val.get("batch_no")),("state","in",["draft","except","except_confirm","confirm"])],context=context)
-            if ids:
-                raise osv.except_osv(u"错误",u"该批次下还有样本没有实验结果，不能建立发货明细。")
+        if val["batch_kind"] != "resend":
+            if val.get("note"):
+                val["note"] = val.get("note"," ")+u"【该批次未出完报告，不能分配箱号。】"
+            else:
+                val["note"] = u"【该批次未出完报告，不能分配箱号。】"
 
         line_id = super(rhwl_picking_line,self).create(cr,uid,val,context=context)
-
-        if val.get("batch_kind")=="normal":
-            risk_type={"H":True,"L":False}
-            box_no="0"
-            for k in risk_type.keys():
-                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("batch_no")),("state","not in",["cancel","dna_except"]),("cust_prop","=","tjs"),("is_risk","=",risk_type[k])],order="name")
-                while len(ids)>13:
-                    box_no=str(int(box_no)+1)
-                    self._insert_box(cr,uid,line_id,box_no,k,ids[0:13])
-                    ids=ids[13:]
-                else:
-                    if len(ids)>0:
-                        box_no=str(int(box_no)+1)
-                        self._insert_box(cr,uid,line_id,box_no,k,ids)
-        elif val.get("batch_kind")=="vip":
-            ids = self.search(cr,uid,[("picking_id","=",val.get("picking_id")),("batch_kind","=","normal")])
-            batchno=[]
-            for i in self.browse(cr,uid,ids):
-                batchno.append(i.batch_no)
-            risk_type={"H":True,"L":False}
-            box_no="0"
-            for k in risk_type.keys():
-                ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel","dna_except"]),("cust_prop","=","tjs_vip"),("is_risk","=",risk_type[k])],order="name")
-                while len(ids)>13:
-                    box_no=str(int(box_no)+1)
-                    self._insert_box(cr,uid,line_id,box_no,k,ids[0:13])
-                    ids=ids[13:]
-                else:
-                    if len(ids)>0:
-                        box_no=str(int(box_no)+1)
-                        self._insert_box(cr,uid,line_id,box_no,k,ids)
-
         return line_id
+
+    def create_box(self,cr,uid,id,context=None):
+        obj=self.browse(cr,uid,id,context=context)
+        batchno=[]
+        cust_prop=""
+        if obj.batch_kind == "normal":
+            batchno.append(obj.batch_no)
+            cust_prop="tjs"
+        elif obj.batch_kind == "vip":
+            pid=self.search(cr,uid,[("picking_id","=",obj.picking_id),("batch_kind","=","normal")],context=context)
+            for d in self.browse(cr,uid,pid,context=context):
+                batchno.append(d.batch_no)
+            cust_prop="tjs_vip"
+        else:
+            return
+        #如果指定批次下，除去已取消、质检不合格的，如果还有样本没有风险报告，则不分配箱号
+        pids = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel","dna_except"]),("risk","=",False)])
+        if pids:return
+
+        risk_type={"H":True,"L":False}
+        box_no="0"
+        for k in risk_type.keys():
+            ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel","dna_except"]),("cust_prop","=",cust_prop),("is_risk","=",risk_type[k])],order="name")
+            while len(ids)>13:
+                box_no=str(int(box_no)+1)
+                self._insert_box(cr,uid,id,box_no,k,ids[0:13])
+                ids=ids[13:]
+            else:
+                if len(ids)>0:
+                    box_no=str(int(box_no)+1)
+                    self._insert_box(cr,uid,id,box_no,k,ids)
+        self.write(cr,uid,id,{"note":obj.note.split("【")[0]},context=context)
 
     def _insert_box(self,cr,uid,id,box,level,val):
         values=[]

@@ -305,49 +305,58 @@ class rhwl_gene(osv.osv):
                 'url': context.get("file_name", "/"),
                 'target': 'new'}
 
+    #取得指定id列表的所有位点数据
+    def get_gene_type_list(self,cr,uid,ids,context=None):
+        data={}
+        for i in self.browse(cr,uid,ids,context=context):
+            key = i.name.encode("utf-8")
+            if not data.has_key(key):
+                data[key]={"name":key,
+                           "cust_name":i.cust_name.encode("utf-8").replace(" ",""),
+                           "sex":i.sex.encode("utf-8") if i.sex.encode("utf-8") == 'F' else 'M'}
+
+            for t in i.typ:
+                k = t.snp.encode("utf-8")
+                data[key][k]=(t.typ).encode("utf-8").replace("/","")
+
+        return data
+
+    #导出样本位点数据到报告生成服务器
     def create_gene_type_file(self, cr, uid, ids, context=None):
-        ids = self.search(cr, uid, [("state", "=", "ok")], context=context)
-        if ids:
-            if isinstance(ids, (long, int)):
-                ids = [ids]
-            obj = self.browse(cr, uid, ids, context=context)
-            title = {}
-            data = []
-            for i in obj:
-                if not i.typ:
-                    ids.remove(i.id)
-                    continue
-                rec = []
-                for t in i.typ:
-                    k = t.snp
-                    k = k.encode("utf-8")
-                    if not title.has_key(k):
-                        title[k] = ""
-                    rec.append((k, (t.typ).encode("utf-8").replace("/","")))
-                rec_dict = dict(rec)
-                r = [i.name.encode("utf-8"), i.cust_name.encode("utf-8").replace(" ",""),
-                     i.sex.encode("utf-8") if i.sex.encode("utf-8") == 'F' else 'M', ]
-                for k in title.keys():
-                    r.append(rec_dict[k])
-                data.append(r)
+        self.pool.get("rhwl.genes.picking").export_box_genes(cr,uid,context=context) #先导出已经分箱的样本
+        ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], context=context)
+        if not ids:return
 
-            fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
-            fname = os.path.join(fpath, "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        data = self.get_gene_type_list(cr,uid,ids,context=context)
 
-            f = open(fname, "w+")
-            f.write("编号\t姓名\t性别\t" + "\t".join(title.keys()) + '\n')
-            for i in data:
-                f.write("\t".join(i) + '\n')
-            f.close()
-            self.action_state_report(cr, uid, ids, context=context)
-            js={
-                "first":"易感样本检测结果转报告生成：",
-                "keyword1":"即时",
-                "keyword2":"本次转出样本%s笔，等待生成报告。" %(len(ids),),
-                "keyword3":fields.datetime.now(),
-                "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
-            }
-            self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
+        fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
+        fname = os.path.join(fpath, "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
+        header=[]
+        f = open(fname, "w+")
+        for k in data.keys():
+            line_row=[data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
+            if not header:
+                header = data[k].keys()
+                header.pop("name")
+                header.pop("cust_name")
+                header.pop("sex")
+                header.sort()
+                f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+            for i in header:
+                line_row.append(data[k][i])
+            f.write("\t".join(line_row) + '\n')
+        f.close()
+        self.action_state_report(cr, uid, ids, context=context)
+        js={
+            "first":"易感样本检测结果转报告生成：",
+            "keyword1":"即时",
+            "keyword2":"本次转出样本%s笔，等待生成报告。" %(len(ids),),
+            "keyword3":fields.datetime.now(),
+            "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
+        }
+        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
 
     def pdf_error(self,cr,uid,file,context=None):
         js={
@@ -359,6 +368,7 @@ class rhwl_gene(osv.osv):
         }
         self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
 
+    #接收风险报告
     def get_gene_pdf_file(self, cr, uid, context=None):
         #_logger.warn("cron job get_gene_pdf_file")
         model_path=os.path.split(__file__)[0]
@@ -409,6 +419,7 @@ class rhwl_gene(osv.osv):
             disease = self.pool.get("rhwl.gene.disease")
             disease_dict={} #疾病在表中的id
             dict_index=3
+            #检查风险报告中的疾病基本数据
             for r in risk:
                 if not r:continue
                 r_id = disease.search(cr,uid,[("name","=",r.decode("utf-8"))])
@@ -434,7 +445,9 @@ class rhwl_gene(osv.osv):
                         val.append([0, 0, {"disease_id": disease_dict[k][1], "risk": l[k]}])
                         if l[k]=="高风险" or l[k]=="低能力":is_risk=True
                     self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"is_risk":is_risk,"risk":val})
+        self.pool.get("rhwl.genes.picking").create_box(cr,uid,context=context) #接收完风险数据以后，重新调用分箱
 
+    #样本状态数据微信通知
     def weixin_notice_template2(self,cr,uid,context=None):
         ids = self.search(cr,uid,[("date",">=",datetime.datetime.today()-datetime.timedelta(days=30))],context=context)
         v_count0=0
@@ -459,12 +472,13 @@ class rhwl_gene(osv.osv):
         js={
             "first":"易感样本状况统计：",
             "keyword1":"最近30天",
-            "keyword2":"未收件%s笔，未检测%s笔，检测异常%s笔，等待报告产生%s笔，已完成%s笔。" %(v_count0,v_count1,v_count2,v_count3,v_count4),
-            "keyword3":fields.datetime.now(),
+            "keyword2":"待收件%s笔，待检测%s笔，检测异常%s笔，等待报告产生%s笔，已完成%s笔。" %(v_count0,v_count1,v_count2,v_count3,v_count4),
+            "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }
         self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_notice",context=context)
 
+#样本对象操作日志
 class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"
     _order = "date desc"
@@ -481,7 +495,7 @@ class rhwl_gene_log(osv.osv):
         "user_id": lambda obj, cr, uid, context: uid,
     }
 
-
+#疾病检测结果对象
 class rhwl_gene_check(osv.osv):
     _name = "rhwl.easy.genes.check"
     _columns = {
@@ -503,7 +517,7 @@ class rhwl_gene_check(osv.osv):
         "active": True
     }
 
-
+#疾病位点数据对象
 class rhwl_gene_type(osv.osv):
     _name = "rhwl.easy.genes.type"
     _columns = {
@@ -516,7 +530,7 @@ class rhwl_gene_type(osv.osv):
         "active": True
     }
 
-
+#疾病风险对象
 class rhwl_gene_risk(osv.osv):
     _name = "rhwl.easy.gene.risk"
     _columns = {
@@ -529,7 +543,7 @@ class rhwl_gene_risk(osv.osv):
         "active": True
     }
 
-
+#疾病分类对象
 class rhwl_gene_disease_type(osv.osv):
     _name = "rhwl.gene.disease.type"
     _columns = {
@@ -537,7 +551,7 @@ class rhwl_gene_disease_type(osv.osv):
         "line": fields.one2many("rhwl.gene.disease", "type_id", string=u"疾病名称")
     }
 
-
+#疾病明细对象
 class rhwl_gene_disease(osv.osv):
     _name = "rhwl.gene.disease"
     _columns = {
