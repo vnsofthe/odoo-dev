@@ -193,13 +193,6 @@ class rhwl_gene(osv.osv):
             atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,val)
             self.write(cr,SUPERUSER_ID,obj.id,{"img_atta":atta_id})
 
-        ids = self.search(cr,SUPERUSER_ID,[("is_risk","=",False),("risk","!=",False)])
-        for i in ids:
-            obj = self.browse(cr,SUPERUSER_ID,i)
-            for j in obj.risk:
-                if j.risk==u"低能力":
-                    self.write(cr,SUPERUSER_ID,i,{"is_risk":True})
-
         ids = self.search(cr,SUPERUSER_ID,[("birthday","=",False)])
         for i in ids:
             obj = self.browse(cr,SUPERUSER_ID,i)

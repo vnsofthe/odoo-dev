@@ -7,15 +7,21 @@
             <field name="sequence">25</field>
         </record>
         <record id="rhwl_base_tjs" model="res.groups">
-            <field name="name">一般客户</field>
+            <field name="name">外部客户</field>
             <field name="category_id" ref="module_category_rhwl_gene"/>
             <field name="comment">客户维护人员</field>
         </record>
+        <record id="rhwl_base_library" model="res.groups">
+            <field name="name">实验室用户</field>
+            <field name="category_id" ref="module_category_rhwl_gene"/>
+            <field name="comment">实验室用户</field>
+            <field name="implied_ids" eval="[(4, ref('rhwl_base_tjs'))]"/>
+        </record>
          <record id="rhwl_base_gene" model="res.groups">
-            <field name="name">一般用户</field>
+            <field name="name">运营用户</field>
             <field name="category_id" ref="module_category_rhwl_gene"/>
             <field name="comment">公司内部用户</field>
-            <field name="implied_ids" eval="[(4, ref('rhwl_base_tjs'))]"/>
+            <field name="implied_ids" eval="[(4, ref('rhwl_base_library'))]"/>
         </record>
 
         <record id="rhwl_gene_tjs_rule" model="ir.rule">
