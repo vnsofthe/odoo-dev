@@ -475,7 +475,7 @@ class rhwl_picking(osv.osv):
 
     def risk_excel_header(self,cr,uid,context=None):
         hd={
-            0:[u"人员信息",[u"姓名",u"性别",u"出生日期",u"身份证号",u"体检编码",u"基因编码"]]
+            0:[u"人员信息",[u"姓名",u"性别",u"出生日期",u"身份证号",u"体检编号",u"基因编码"]]
         }
         k=1
         ids = self.pool.get("rhwl.gene.disease.type").search(cr,uid,[],order="name",context=context)
