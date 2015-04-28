@@ -14,7 +14,7 @@
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
-    'depends': ['base', 'web','vnsoft_base'],
+    'depends': ['base', 'web','vnsoft_base',"stock"],
     'data': [  ],
     "qweb":[],
     'demo': [],

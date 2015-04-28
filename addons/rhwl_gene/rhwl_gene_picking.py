@@ -619,9 +619,9 @@ class rhwl_picking(osv.osv):
             line_row=[genes_box[data[k]["name"]],data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
             if not header:
                 header = data[k].keys()
-                header.pop("name")
-                header.pop("cust_name")
-                header.pop("sex")
+                header.remove("name")
+                header.remove("cust_name")
+                header.remove("sex")
                 header.sort()
                 f.write("箱号\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
             for i in header:

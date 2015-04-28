@@ -8,6 +8,7 @@ import datetime,time
 import logging
 import os
 import shutil
+from openerp import tools
 
 _logger = logging.getLogger(__name__)
 
@@ -321,9 +322,34 @@ class rhwl_gene(osv.osv):
 
         return data
 
+    #导出样本信息图片
+    def export_genes_img(self,cr,uid,context=None):
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        d=os.path.join(upload_path,u"样本信息图片")
+        if not os.path.exists(d):
+            os.mkdir(d)
+        all_ids = self.search(cr,uid,[("cust_prop","in",["tjs","tjs_vip"])],context=context)
+        pic_ids = self.search(cr,uid,[("cust_prop","in",["tjs","tjs_vip"]),("log.data","=","expimg")],context=context)
+        for i in pic_ids:
+            all_ids.remove(i)
+        filestore=tools.config.filestore(cr.dbname)
+        for i in self.browse(cr,uid,all_ids,context=context):
+            if not i.img_atta:continue
+            if len(i.date.split("/"))>1:
+                tname = ".".join(i.date.split('/')[1:]) + u"会_图片"
+            else:
+                tname = ".".join(i.date.split('-')[1:]) + u"会_图片"
+            tname = os.path.join(d,tname)
+            if not os.path.exists(tname):
+                os.mkdir(tname)
+            att_obj = self.pool.get('ir.attachment').browse(cr,uid,i.img_atta.id,context=context)
+            shutil.copy(os.path.join(filestore,att_obj.store_fname),os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))
+            self.write(cr,uid,i.id,{"log":[[0,0,{"note":u"图片导出","data":"expimg"}]]})
+
     #导出样本位点数据到报告生成服务器
     def create_gene_type_file(self, cr, uid, ids, context=None):
         self.pool.get("rhwl.genes.picking").export_box_genes(cr,uid,context=context) #先导出已经分箱的样本
+        self.export_genes_img(cr,uid,context=context) #导出图片信息
         ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], context=context)
         if not ids:return
 
@@ -339,9 +365,9 @@ class rhwl_gene(osv.osv):
             line_row=[data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
             if not header:
                 header = data[k].keys()
-                header.pop("name")
-                header.pop("cust_name")
-                header.pop("sex")
+                header.remove("name")
+                header.remove("cust_name")
+                header.remove("sex")
                 header.sort()
                 f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
             for i in header:
