@@ -611,6 +611,7 @@ class rhwl_picking(osv.osv):
                         elif l.batch_kind=="resend":
                             genes_box[dl.genes_id.name]="R"+b.name
         data=self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,genes_ids,context=context)
+        if not data:return
         fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
         fname = os.path.join(fpath, "box_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
         header=[]
