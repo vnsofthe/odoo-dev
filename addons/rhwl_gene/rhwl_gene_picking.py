@@ -709,6 +709,7 @@ class rhwl_picking_line(osv.osv):
                 val["note"] = u"【该批次未出完报告，不能分配箱号。】"
 
         line_id = super(rhwl_picking_line,self).create(cr,uid,val,context=context)
+        self.create_box(cr,uid,line_id,context=context)
         return line_id
 
     def create_box(self,cr,uid,id,context=None):
@@ -719,7 +720,7 @@ class rhwl_picking_line(osv.osv):
             batchno.append(obj.batch_no)
             cust_prop="tjs"
         elif obj.batch_kind == "vip":
-            pid=self.search(cr,uid,[("picking_id","=",obj.picking_id),("batch_kind","=","normal")],context=context)
+            pid=self.search(cr,uid,[("picking_id","=",obj.picking_id.id),("batch_kind","=","normal")],context=context)
             for d in self.browse(cr,uid,pid,context=context):
                 batchno.append(d.batch_no)
             cust_prop="tjs_vip"
@@ -741,7 +742,7 @@ class rhwl_picking_line(osv.osv):
                 if len(ids)>0:
                     box_no=str(int(box_no)+1)
                     self._insert_box(cr,uid,id,box_no,k,ids)
-        self.write(cr,uid,id,{"note":obj.note.split("【")[0]},context=context)
+        self.write(cr,uid,id,{"note":obj.note.split(u"【")[0]},context=context)
 
     def _insert_box(self,cr,uid,id,box,level,val):
         values=[]

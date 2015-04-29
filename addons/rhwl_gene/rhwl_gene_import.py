@@ -16,11 +16,19 @@ class rhwl_import(osv.osv_memory):
     }
 
     def date_trun(self,val):
+        if not val:
+            return fields.date.today()
+        if isinstance(val,str):val=val.replace(".","/")
         if list(str(val)).count("/")==0:
+
             d=xlrd.xldate_as_tuple(int(val),0)
             return "%s/%s/%s"%(d[0],d[1],d[2])
+        if list(str(val)).count("/")==1:
+            val=val.split("/")[0]
+            return val[:4]+'/'+val[4:6]+'/'+val[6:8]
         else:
-            return val
+            return val.replace(".","/")
+
     def datetime_trun(self,val):
         if list(str(val)).count("/")==0:
             d=xlrd.xldate_as_tuple(val,0)
@@ -126,16 +134,17 @@ class rhwl_import(osv.osv_memory):
                 obj_ids = self.pool.get("rhwl.easy.genes.check").search(cr,uid,[("genes_id.name",'=',no)],context=context)
                 if obj_ids:
                     self.pool.get("rhwl.easy.genes.check").write(cr,uid,obj_ids,{"active":False})
-                t1=sh.cell_value(i,3)
+                t1=sh.cell_value(i,4)
                 t2=sh.cell_value(i,5)
                 t3=sh.cell_value(i,6)
                 t4=sh.cell_value(i,8)
+                if not t4:t4=0
                 val={
                         "genes_id":id[0],
                         "date":self.date_trun(sh.cell_value(i,0)),
                         "dna_date":self.date_trun(sh.cell_value(i,2)),
                         "concentration":round(t1,2),
-                        "lib_person":sh.cell_value(i,4),
+                        "lib_person":sh.cell_value(i,3),
                         "od260_280":round(t2,2),
                         "od260_230":round(t3,2),
                         "chk_person":sh.cell_value(i,7),
