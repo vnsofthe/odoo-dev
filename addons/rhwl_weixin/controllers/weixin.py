@@ -112,6 +112,8 @@ class weixin(http.Controller):
                    user.write(cr,SUPERUSER_ID,id,{"active":False},context=self.CONTEXT)
                 cr.commit()
              return self.replyWeiXin(fromUser,toUser,u"祝您生活愉快!")
+        else:
+            return ""
 
     def textProcess(self,xmlstr):
         msgType=xmlstr.find("MsgType").text

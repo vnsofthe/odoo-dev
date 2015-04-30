@@ -401,6 +401,7 @@ class rhwl_gene(osv.osv):
         fpath = os.path.join(model_path, "static/remote/report")
         tpath = os.path.join(model_path, "static/local/report")
         pdf_count = 0
+        last_week = time.time() - 60*60*24*3
         for f in os.listdir(fpath):
             newfile = os.path.join(fpath, f)
             if os.path.isdir(newfile):
@@ -417,7 +418,7 @@ class rhwl_gene(osv.osv):
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
                         pdf_count += 1
-                last_week = time.time() - 60*60*24*3
+
                 if os.path.getmtime(newfile) < last_week:
                     os.rmdir(newfile)
         cr.commit()
@@ -475,7 +476,16 @@ class rhwl_gene(osv.osv):
 
     #样本状态数据微信通知
     def weixin_notice_template2(self,cr,uid,context=None):
-        ids = self.search(cr,uid,[("date",">=",datetime.datetime.today()-datetime.timedelta(days=30))],context=context)
+        today = datetime.datetime.today()
+        if today.day<=20:
+            s_date = today-datetime.timedelta(days=today.day+1)
+            s_date = datetime.datetime(s_date.year,s_date.month,21)
+            e_date = today
+        else:
+            s_date = datetime.datetime(today.year,today.month,21)
+            e_date = today
+
+        ids = self.search(cr,uid,[("date",">=",s_date),("date","<=",e_date)],context=context)
         v_count0=0
         v_count1=0
         v_count2=0
@@ -484,21 +494,21 @@ class rhwl_gene(osv.osv):
         v_count5 = 0
         for i in self.browse(cr,uid,ids,context=context):
             if i.state=='draft':
-                v_count0 += 1
+                v_count0 += 1 #待收件
             elif i.state in ['except','except_confirm','confirm']:
-                v_count1 += 1
-            elif i.state in ['dna_except',]:
-                v_count2 += 1
-            elif i.state == 'report':
-                v_count3 += 1
-            elif i.state in ['report_done',"result_done","deliver",'done']:
-                v_count4 += 1
-            elif i.state in ['dna_ok','ok']:
-                v_count5 += 1
+                v_count1 += 1 #待检测
+            elif i.state in ['dna_ok','ok','report']:
+                v_count2 += 1 #待生成报告
+            elif i.state == 'dna_except':
+                v_count3 += 1 #质检异常
+            elif i.state in ['report_done',"result_done","deliver",]:
+                v_count4 += 1 #待送货
+            elif i.state in ['done']:
+                v_count5 += 1 #已完成
         js={
             "first":"易感样本状况统计：",
-            "keyword1":"最近30天",
-            "keyword2":"待收件%s笔，待检测%s笔，检测异常%s笔，等待报告产生%s笔，已完成%s笔。" %(v_count0,v_count1,v_count2,v_count3,v_count4),
+            "keyword1":"本期从(%s-%s)"%(s_date.strftime("%Y/%m/%d"),e_date.strftime("%Y/%m/%d")),
+            "keyword2":"待收件%s笔，待检测%s笔，等待报告产生%s笔，已出报告%s笔(质检不合格%s笔)，待送货%s笔，已完成%s笔。总计%s笔。" %(v_count0,v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,v_count4,v_count5,len(ids)),
             "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }

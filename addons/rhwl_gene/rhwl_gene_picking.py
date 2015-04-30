@@ -612,6 +612,7 @@ class rhwl_picking(osv.osv):
                             genes_box[dl.genes_id.name]="R"+b.name
         data=self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,genes_ids,context=context)
         if not data:return
+        return
         fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
         fname = os.path.join(fpath, "box_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
         header=[]
@@ -627,7 +628,7 @@ class rhwl_picking(osv.osv):
                 f.write("箱号\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
             for i in header:
                 line_row.append(data[k][i])
-            f.write("\t".join(line_row) + '\n')
+            #f.write("\t".join(line_row) + '\n')
         f.close()
         if l_ids:
             self.pool.get("rhwl.genes.picking.line").write(cr,uid,l_ids,{"export":True},context=context)
@@ -730,18 +731,31 @@ class rhwl_picking_line(osv.osv):
         pids = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel","dna_except"]),("risk","=",False)])
         if pids:return
 
-        risk_type={"H":True,"L":False}
         box_no="0"
-        for k in risk_type.keys():
-            ids=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),("state","not in",["cancel","dna_except"]),("cust_prop","=",cust_prop),("is_risk","=",risk_type[k])],order="name")
+        ids1=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
+                                                                ("state","not in",["cancel","dna_except"]),
+                                                                ("cust_prop","=",cust_prop),
+                                                                ("is_risk","=",'H'),
+                                                                ("is_child","=",False)],order="sex,name")
+        ids2=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
+                                                                ("state","not in",["cancel","dna_except"]),
+                                                                ("cust_prop","=",cust_prop),
+                                                                ("is_risk","=",'H'),
+                                                                ("is_child","=",True)],order="sex,name")
+        ids3=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
+                                                                ("state","not in",["cancel","dna_except"]),
+                                                                ("cust_prop","=",cust_prop),
+                                                                ("is_risk","=",'L')],order="sex,name")
+        for gid in [[ids1,'H'],[ids2,'H'],[ids3,'L']]:
+            ids=gid[0]
             while len(ids)>13:
                 box_no=str(int(box_no)+1)
-                self._insert_box(cr,uid,id,box_no,k,ids[0:13])
+                self._insert_box(cr,uid,id,box_no,gid[1],ids[0:13])
                 ids=ids[13:]
             else:
                 if len(ids)>0:
                     box_no=str(int(box_no)+1)
-                    self._insert_box(cr,uid,id,box_no,k,ids)
+                    self._insert_box(cr,uid,id,box_no,gid[1],ids)
         self.write(cr,uid,id,{"note":obj.note.split(u"【")[0]},context=context)
 
     def _insert_box(self,cr,uid,id,box,level,val):
