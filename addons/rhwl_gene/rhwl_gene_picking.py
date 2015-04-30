@@ -62,7 +62,8 @@ class rhwl_picking(osv.osv):
             t_count += len(v)
             for i in v:
                 if os.path.exists(os.path.join(pdf_path,i)):
-                    shutil.copy(os.path.join(pdf_path,i),os.path.join(k,i))
+                    if (not os.path.exists(os.path.join(k,i))) or os.stat(os.path.join(pdf_path,i)).st_size != os.stat(os.path.join(k,i)).st_size:
+                        shutil.copy(os.path.join(pdf_path,i),os.path.join(k,i))
                     u_count += 1
         return (t_count,u_count)
 
@@ -83,7 +84,7 @@ class rhwl_picking(osv.osv):
                 os.mkdir(d_path)
             for l in obj.line:
                 if not l.box_line:is_upload=False
-                if not l.export:is_upload=False
+                #if not l.export:is_upload=False
                 #处理批号
                 sheet_data={} #用于保存每个批次的装箱数据，给印刷厂查看
                 if l.batch_kind=="normal":
@@ -735,18 +736,22 @@ class rhwl_picking_line(osv.osv):
         ids1=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
                                                                 ("state","not in",["cancel","dna_except"]),
                                                                 ("cust_prop","=",cust_prop),
-                                                                ("is_risk","=",'H'),
+                                                                ("is_risk","=",True),
                                                                 ("is_child","=",False)],order="sex,name")
         ids2=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
                                                                 ("state","not in",["cancel","dna_except"]),
                                                                 ("cust_prop","=",cust_prop),
-                                                                ("is_risk","=",'H'),
+                                                                ("is_risk","=",True),
                                                                 ("is_child","=",True)],order="sex,name")
         ids3=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
                                                                 ("state","not in",["cancel","dna_except"]),
                                                                 ("cust_prop","=",cust_prop),
-                                                                ("is_risk","=",'L')],order="sex,name")
-        for gid in [[ids1,'H'],[ids2,'H'],[ids3,'L']]:
+                                                                ("is_risk","=",False)],order="sex,name")
+        if cust_prop=="tjs":
+            all_ids = [[ids1,'H'],[ids2,'H'],[ids3,'L']]
+        else:
+            all_ids = [[ids1+ids2+ids3,'L']]
+        for gid in all_ids:
             ids=gid[0]
             while len(ids)>13:
                 box_no=str(int(box_no)+1)

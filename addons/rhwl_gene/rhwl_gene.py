@@ -343,7 +343,8 @@ class rhwl_gene(osv.osv):
             if not os.path.exists(tname):
                 os.mkdir(tname)
             att_obj = self.pool.get('ir.attachment').browse(cr,uid,i.img_atta.id,context=context)
-            shutil.copy(os.path.join(filestore,att_obj.store_fname),os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))
+            if (not os.path.exists(os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))) or os.stat(os.path.join(filestore,att_obj.store_fname)).st_size != os.stat(os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg")).st_size:
+                shutil.copy(os.path.join(filestore,att_obj.store_fname),os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))
             self.write(cr,uid,i.id,{"log":[[0,0,{"note":u"图片导出","data":"expimg"}]]})
 
     #导出样本位点数据到报告生成服务器
@@ -437,6 +438,7 @@ class rhwl_gene(osv.osv):
         tpath = os.path.join(model_path, "static/local/excel")
         for f in os.listdir(fpath):
             if f.split(".")[-1]!="xls":continue
+            if f.split("_")[0]=="box":continue
             if os.path.isfile(os.path.join(tpath, f)):os.remove(os.path.join(tpath, f)) #删除目标位置相同的文件
             shutil.move(os.path.join(fpath, f), os.path.join(tpath, f))
             fs = open(os.path.join(tpath, f),"r")
