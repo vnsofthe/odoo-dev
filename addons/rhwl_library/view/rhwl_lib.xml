@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_library_view_tree">
+            <field name="name">rhwl.library.view.tree</field>
+            <field name="model">rhwl.library.request</field>
+            <field name="arch" type="xml">
+                <tree string="领料单" >
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="location_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_library_view_form">
+            <field name="name">rhwl.library.view.form</field>
+            <field name="model">rhwl.library.request</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="state" widget="statusbar" readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="date"/>
+                            </group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="location_id"/>
+                            </group>
+                        </group>
+                        <field name="line">
+                            <tree string="Line" editable="bottom">
+                                <field name="product_id"/>
+                                <field name="brand"/>
+                                <field name="default_code"/>
+                                
+                                <field name="uom_id"/>
+                                <field name="qty"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_library_request_search">
+            <field name="name">rhwl.library.request.search</field>
+            <field name="model">rhwl.library.request</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_library_request" model="ir.actions.act_window">
+            <field name="name">领料单</field>
+            <field name="res_model">rhwl.library.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_library_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_library_request" parent="stock.menu_stock_warehouse_mgmt" name="领料单" sequence="20"
+                  action='action_library_request'/>
+    </data>
+</openerp>

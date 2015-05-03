@@ -494,7 +494,11 @@ class rhwl_gene(osv.osv):
         v_count3=0
         v_count4=0
         v_count5 = 0
+        dna_rate={}
         for i in self.browse(cr,uid,ids,context=context):
+            if not dna_rate.has_key(i.batch_no):
+                dna_rate[i.batch_no]={"count":0,"except":0}
+            dna_rate[i.batch_no]["count"] =dna_rate[i.batch_no]["count"]+1
             if i.state=='draft':
                 v_count0 += 1 #待收件
             elif i.state in ['except','except_confirm','confirm']:
@@ -503,14 +507,19 @@ class rhwl_gene(osv.osv):
                 v_count2 += 1 #待生成报告
             elif i.state == 'dna_except':
                 v_count3 += 1 #质检异常
+                dna_rate[i.batch_no]["except"] = dna_rate[i.batch_no]["except"] +1
             elif i.state in ['report_done',"result_done","deliver",]:
                 v_count4 += 1 #待送货
             elif i.state in ['done']:
                 v_count5 += 1 #已完成
+        except_rate=[]
+        for k,v in dna_rate.items():
+            if v["except"]>0:
+                except_rate.append(k+"="+str(v["except"])+"/"+str(v["count"]))
         js={
             "first":"易感样本状况统计：",
             "keyword1":"本期从(%s-%s)"%(s_date.strftime("%Y/%m/%d"),e_date.strftime("%Y/%m/%d")),
-            "keyword2":"待收件%s笔，待检测%s笔，等待报告产生%s笔，已出报告%s笔(质检不合格%s笔)，待送货%s笔，已完成%s笔。总计%s笔。" %(v_count0,v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,v_count4,v_count5,len(ids)),
+            "keyword2":"待收件%s笔，待检测%s笔，等待报告产生%s笔，已出报告%s笔(质检不合格%s笔[%s]，待送货%s笔，已完成%s笔)。总计%s笔。" %(v_count0,v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4,v_count5,len(ids)),
             "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }
