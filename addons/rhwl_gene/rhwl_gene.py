@@ -405,9 +405,13 @@ class rhwl_gene(osv.osv):
         last_week = time.time() - 60*60*24*3
         for f in os.listdir(fpath):
             newfile = os.path.join(fpath, f)
-            if os.path.isdir(newfile):
+            if os.path.isdir(newfile) and f.split("_")[0]!="box":
                 for f1 in os.listdir(newfile):
-                    f2 = f1.split("_")[0] + ".pdf"
+                    if len(f1.split("_"))>1:
+                        f2 = f1.split("_")[0] + ".pdf"
+                    else:
+                        f2 = f1.split(".")[0] + ".pdf"
+
                     s=os.stat(os.path.join(newfile, f1)).st_size
                     if s/1024/1024<16 or s/1024/1024>20:
                         self.pdf_error(cr,uid,f1,context=context)

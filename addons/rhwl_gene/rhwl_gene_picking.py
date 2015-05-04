@@ -36,7 +36,7 @@ class rhwl_picking(osv.osv):
         "date":fields.date.today,
         "state":"draft",
     }
-
+    #重载更新方法，发货单状态更新时，同时更新发货单对应的所有样本信息状态。
     def write(self,cr,uid,ids,val,context=None):
         id=super(rhwl_picking,self).write(cr,uid,ids,val,context=context)
         if val.has_key("state"):
@@ -67,6 +67,7 @@ class rhwl_picking(osv.osv):
                     u_count += 1
         return (t_count,u_count)
 
+    #根据发货单，生成需要上传的目录结构，并复制pdf文件到相应的目录中。
     def report_upload(self,cr,uid,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
@@ -144,6 +145,7 @@ class rhwl_picking(osv.osv):
         self.excel_upload(cr,uid,ids,False,context=context)
         self.risk_excel(cr,uid,ids,context=context)
 
+    #生成批次下的excel，方便印刷厂查阅
     def create_sheet_excel(self,line_path,data):
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(os.path.split(line_path)[1])
@@ -159,6 +161,7 @@ class rhwl_picking(osv.osv):
                 row +=1
         w.save(os.path.join(line_path,os.path.split(line_path)[1])+".xls")
 
+    #生成发货单Excel
     def excel_upload(self,cr,uid,ids,isvip=False,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         template = os.path.join(os.path.split(__file__)[0], "static/template.xlsx")
@@ -494,7 +497,7 @@ class rhwl_picking(osv.osv):
             k+=1
         return hd
 
-    #创建发货单的excel表
+    #创建发货单的横板excel表
     def risk_excel(self,cr,uid,id,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         obj = self.browse(cr,uid,id,context=context)
@@ -590,27 +593,79 @@ class rhwl_picking(osv.osv):
                 if not l.box_line:
                     self.pool.get("rhwl.genes.picking.line").create_box(cr,uid,l.id,context=context)
 
+    def _list_split(self,list1,list2):
+        l1_yu=""
+        l2_yu=""
+        if len(list1)%2==0:
+            l1=list1
+        else:
+            l1=list1[:-1]
+            l1_yu=list1[-1]
+
+        if len(list2)%2==0:
+            l2=list2
+        else:
+            l2=list2[:-1]
+            l2_yu=list2[-1]
+
+        l1_split=[[x,l1[l1.index(x)+1]] for x in l1 if l1.index(x)%2==0]
+        l2_split=[[x,l2[l2.index(x)+1]] for x in l2 if l2.index(x)%2==0]
+        l=l1_split+l2_split
+        if l1_yu or l2_yu:
+            l = l+[l1_yu,l2_yu]
+        return l
+
     #导出已经分配好箱号的样本给报告生成服务器
     def export_box_genes(self,cr,uid,context=None):
         ids = self.search(cr,uid,[("state","=","draft")])
         if not ids:return
-        genes_ids=[]
-        l_ids=[]
-        genes_box={}
+        genes_ids=[] #记录导出的样本
+        l_ids=[] #记录已经导出的批次明细
+        genes_box={} #记录每个样本的箱号、风险值
+        #取所有符合条件的发货单
+        pdf_seq_count=0
         for i in self.browse(cr,uid,ids,context=context):
+
             for l in i.line:
                 if l.export:continue
                 if not l.box_line:continue
+                pdf_seq=[[[],[]],[[],[]]] #接版计算用，第一层分男女，第二层分高低风险
                 l_ids.append(l.id)
                 for b in l.box_line:
                     for dl in b.detail:
                         genes_ids.append(dl.genes_id.id)
                         if l.batch_kind=="normal":
-                            genes_box[dl.genes_id.name]=str(l.seq)+"-"+b.name
+                            genes_box[dl.genes_id.name]=[str(l.seq)+"-"+b.name,b.level]
                         elif l.batch_kind=="vip":
-                            genes_box[dl.genes_id.name]="V"+b.name
+                            genes_box[dl.genes_id.name]=["V"+b.name,b.level]
                         elif l.batch_kind=="resend":
-                            genes_box[dl.genes_id.name]="R"+b.name
+                            genes_box[dl.genes_id.name]=["R"+b.name,b.level]
+
+                        #接版
+                        idx1=0
+                        idx2=0
+                        if dl.genes_id.sex=="T":
+                            idx1=0
+                        else:
+                            idx1=1
+                        if l.batch_kind=="normal" and b.level=="L":
+                            idx2=1
+                        else:
+                            idx2=0
+                        pdf_seq[idx1][idx2].append(dl.genes_id.name)
+
+                #计算每批次的拼版
+                for p1 in pdf_seq:
+                    p_res=self._list_split(p1[0],p1[1])
+                    for p2 in p_res:
+                        pdf_seq_count += 1
+                        if p2[0]:
+                            genes_box[p2[0]].append(pdf_seq_count)
+                        if p2[1]:
+                            genes_box[p2[1]].append(pdf_seq_count)
+
+
+
         data=self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,genes_ids,context=context)
         if not data:return
         return
@@ -619,17 +674,17 @@ class rhwl_picking(osv.osv):
         header=[]
         f = open(fname, "w+")
         for k in data.keys():
-            line_row=[genes_box[data[k]["name"]],data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
+            line_row=[genes_box[data[k]["name"]][0],genes_box[data[k]["name"]][1],genes_box[data[k]["name"]][2],data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
             if not header:
                 header = data[k].keys()
                 header.remove("name")
                 header.remove("cust_name")
                 header.remove("sex")
                 header.sort()
-                f.write("箱号\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                f.write("箱号\t风险\t拼版\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
             for i in header:
                 line_row.append(data[k][i])
-            #f.write("\t".join(line_row) + '\n')
+            f.write("\t".join(line_row) + '\n')
         f.close()
         if l_ids:
             self.pool.get("rhwl.genes.picking.line").write(cr,uid,l_ids,{"export":True},context=context)
@@ -769,7 +824,7 @@ class rhwl_picking_line(osv.osv):
             values.append([0,0,{"genes_id":i}])
         return self.pool.get("rhwl.genes.picking.box").create(cr,uid,{"line_id":id,"name":box,"level":level,"detail":values})
 
-
+#发货批次的箱号明细
 class rhwl_picking_box(osv.osv):
     _name="rhwl.genes.picking.box"
     _columns={
@@ -782,10 +837,12 @@ class rhwl_picking_box(osv.osv):
         ('rhwl_genes_picking_box_name_uniq', 'unique(line_id,name)', u'发货明细箱号不能重复!'),
     ]
 
+#发货单每箱样本明细
 class rhwl_picking_box_line(osv.osv):
     _name="rhwl.genes.picking.box.line"
     _columns={
         "box_id":fields.many2one("rhwl.genes.picking.box",u"箱号",ondelete="cascade"),
         "genes_id":fields.many2one("rhwl.easy.genes",u"基因样本编号",ondelete="restrict",required=True),
-        "name":fields.related("genes_id","cust_name",type="char",string=u"会员姓名")
+        "name":fields.related("genes_id","cust_name",type="char",string=u"会员姓名"),
+
     }
