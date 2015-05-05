@@ -612,79 +612,87 @@ class rhwl_picking(osv.osv):
         l2_split=[[x,l2[l2.index(x)+1]] for x in l2 if l2.index(x)%2==0]
         l=l1_split+l2_split
         if l1_yu or l2_yu:
-            l = l+[l1_yu,l2_yu]
+            l = l+[[l1_yu,l2_yu]]
         return l
 
     #导出已经分配好箱号的样本给报告生成服务器
     def export_box_genes(self,cr,uid,context=None):
         ids = self.search(cr,uid,[("state","=","draft")])
         if not ids:return
+        for i in ids:
+            self.export_box(cr,uid,i,context=context)
+
+    def export_box(self,cr,uid,ids,context=None):
         genes_ids=[] #记录导出的样本
         l_ids=[] #记录已经导出的批次明细
         genes_box={} #记录每个样本的箱号、风险值
         #取所有符合条件的发货单
         pdf_seq_count=0
-        for i in self.browse(cr,uid,ids,context=context):
+        pick_obj = self.browse(cr,uid,ids,context=context)
 
-            for l in i.line:
-                if l.export:continue
-                if not l.box_line:continue
-                pdf_seq=[[[],[]],[[],[]]] #接版计算用，第一层分男女，第二层分高低风险
-                l_ids.append(l.id)
-                for b in l.box_line:
-                    for dl in b.detail:
-                        genes_ids.append(dl.genes_id.id)
-                        if l.batch_kind=="normal":
-                            genes_box[dl.genes_id.name]=[str(l.seq)+"-"+b.name,b.level]
-                        elif l.batch_kind=="vip":
-                            genes_box[dl.genes_id.name]=["V"+b.name,b.level]
-                        elif l.batch_kind=="resend":
-                            genes_box[dl.genes_id.name]=["R"+b.name,b.level]
+        for l in pick_obj.line:
+            if l.export:continue
+            if not l.box_line:continue
+            pdf_seq=[[[],[]],[[],[]]] #接版计算用，第一层分男女，第二层分高低风险
+            l_ids.append(l.id)
+            for b in l.box_line:
+                for dl in b.detail:
+                    genes_ids.append(dl.genes_id.id)
+                    if l.batch_kind=="normal":
+                        genes_box[dl.genes_id.name.encode("utf-8")]=[str(l.seq)+"-"+b.name.encode("utf-8"),b.level.encode("utf-8")]
+                    elif l.batch_kind=="vip":
+                        genes_box[dl.genes_id.name.encode("utf-8")]=["V"+b.name.encode("utf-8"),b.level.encode("utf-8")]
+                    elif l.batch_kind=="resend":
+                        genes_box[dl.genes_id.name.encode("utf-8")]=["R"+b.name.encode("utf-8"),b.level.encode("utf-8")]
 
-                        #接版
+                    #接版
+                    idx1=0
+                    idx2=0
+                    if dl.genes_id.sex=="T":
                         idx1=0
+                    else:
+                        idx1=1
+                    if l.batch_kind=="normal" and b.level=="L":
+                        idx2=1
+                    else:
                         idx2=0
-                        if dl.genes_id.sex=="T":
-                            idx1=0
-                        else:
-                            idx1=1
-                        if l.batch_kind=="normal" and b.level=="L":
-                            idx2=1
-                        else:
-                            idx2=0
-                        pdf_seq[idx1][idx2].append(dl.genes_id.name)
+                    pdf_seq[idx1][idx2].append(dl.genes_id.name.encode("utf-8"))
 
-                #计算每批次的拼版
-                for p1 in pdf_seq:
-                    p_res=self._list_split(p1[0],p1[1])
-                    for p2 in p_res:
-                        pdf_seq_count += 1
-                        if p2[0]:
-                            genes_box[p2[0]].append(pdf_seq_count)
-                        if p2[1]:
-                            genes_box[p2[1]].append(pdf_seq_count)
+            #计算每批次的拼版
+            for p1 in pdf_seq:
+                p_res=self._list_split(p1[0],p1[1])
+
+                for p2 in p_res:
+                    pdf_seq_count += 1
+                    if p2[0]:
+                        genes_box[p2[0]].append(str(pdf_seq_count))
+                    if p2[1]:
+                        genes_box[p2[1]].append(str(pdf_seq_count))
 
 
 
         data=self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,genes_ids,context=context)
         if not data:return
-        return
+
         fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
-        fname = os.path.join(fpath, "box_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
+        fname = os.path.join(fpath, "box_" + pick_obj.name.encode("utf-8")+"_"+datetime.datetime.now().strftime("%m%d%H%M%S") + ".txt")
         header=[]
         f = open(fname, "w+")
-        for k in data.keys():
-            line_row=[genes_box[data[k]["name"]][0],genes_box[data[k]["name"]][1],genes_box[data[k]["name"]][2],data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
-            if not header:
-                header = data[k].keys()
-                header.remove("name")
-                header.remove("cust_name")
-                header.remove("sex")
-                header.sort()
-                f.write("箱号\t风险\t拼版\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
-            for i in header:
-                line_row.append(data[k][i])
-            f.write("\t".join(line_row) + '\n')
+        for s in ["F","M"]:
+            if not data.has_key(s):continue
+            data_list =data[s].keys()
+            data_list.sort()
+            for k in data_list:
+                line_row=[genes_box[data[s][k]["name"]][0],genes_box[data[s][k]["name"]][1],genes_box[data[s][k]["name"]][2],data[s][k]["name"],data[s][k]["cust_name"],s]
+                if not header:
+                    header = data[s][k].keys()
+                    header.remove("name")
+                    header.remove("cust_name")
+                    header.sort()
+                    f.write("箱号\t风险\t拼版\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                for i in header:
+                    line_row.append(data[s][k][i])
+                f.write("\t".join(line_row) + '\n')
         f.close()
         if l_ids:
             self.pool.get("rhwl.genes.picking.line").write(cr,uid,l_ids,{"export":True},context=context)

@@ -19,6 +19,7 @@
                 <form string="发货单">
                     <header>
                         <button name="action_excel_upload" string="Excel Update" type="object"/>
+                        <button name="export_box" string="Export BOX" type="object"/>
                         <field name="state" widget="statusbar" clickable="True" />
                     </header>
                     <sheet>

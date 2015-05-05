@@ -124,12 +124,17 @@ class rhwl_import(osv.osv_memory):
             except:
                raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
             nrows = sh.nrows
-
+            genes_ids=[]
             for i in range(2,nrows):
                 no=sh.cell_value(i,1)
                 if not no:continue
                 if type(no)==type(1.0):no = no.__trunc__()
                 id=self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)],context=context)
+                if not id:
+                    raise osv.except_osv(u"错误",u"基因编号[%s]不存在."%(no,))
+                if genes_ids.count(id[0])>0:
+                    raise osv.except_osv(u"错误",u"基因编号[%s]在Excel中存在多笔。"%(no,))
+                genes_ids.append(id[0])
                 self.pool.get("rhwl.easy.genes").write(cr,uid,id,{"log":[[0,0,{"note":u"导入质检数据","data":"DNA"}]]},context=context)
                 obj_ids = self.pool.get("rhwl.easy.genes.check").search(cr,uid,[("genes_id.name",'=',no)],context=context)
                 if obj_ids:
@@ -153,7 +158,7 @@ class rhwl_import(osv.osv_memory):
                         "loss_date":self.date_trun(sh.cell_value(i,10)),
                         "active":True,
                     }
-                _logger.info(val)
+
                 self.pool.get("rhwl.easy.genes.check").create(cr,uid,val,context=context)
                 if (t1<10 or t2<1.8 or t2>2 or t3<2 or t4>0.01):
                     if obj_ids:
@@ -198,12 +203,16 @@ class rhwl_import(osv.osv_memory):
                     raise osv.except_osv(u"错误",u"转入数据中的位点名称[%s]不正确。" %(v,))
                 snp[i]=v
 
+            genes_ids=[]
             for i in range(1,nrows):
                 no=sh.cell_value(i,0)
                 if not no:continue
                 id=self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)],context=context)
                 if not id:
                     raise osv.except_osv(u"错误",u"基因样本编码[%s]不存在。"%(no,))
+                if genes_ids.count(id[0])>0:
+                    raise osv.except_osv(u"错误",u"基因编号[%s]在Excel中存在多笔。"%(no,))
+                genes_ids.append(id[0])
                 self.pool.get("rhwl.easy.genes").write(cr,uid,id,{"log":[[0,0,{"note":u"导入位点数据","data":"SNP"}]]},context=context)
                 type_ids = self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id","=",id[0])],context=context)
                 old_type={}

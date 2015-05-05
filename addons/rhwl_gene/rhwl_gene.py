@@ -16,17 +16,17 @@ class rhwl_gene(osv.osv):
     STATE_SELECT = {
         'draft': u'草稿',
         'except': u'信息异常',
-        'except_confirm': u'异常确认',
+        'except_confirm': u'异常已确认',
         'confirm': u'信息确认',
         'dna_except': u'DNA质检不合格',
         'dna_ok':u"DNA质检合格",
         'cancel': u'取消',
-        'ok': u'检测完成',
+        'ok': u'位点数据已导入',
         'report': u'生成报告中',
         'report_done': u"报告已生成",
         "result_done": u"风险报告确认",
-        "deliver": u"已出货",
-        'done': u'完成'
+        "deliver": u"印刷厂已接收",
+        'done': u'客户已收货'
     }
     _name = "rhwl.easy.genes"
     _order = "date desc,name asc"
@@ -310,15 +310,18 @@ class rhwl_gene(osv.osv):
     def get_gene_type_list(self,cr,uid,ids,context=None):
         data={}
         for i in self.browse(cr,uid,ids,context=context):
+            sex=i.sex.encode("utf-8") if i.sex.encode("utf-8") == 'F' else 'M'
             key = i.name.encode("utf-8")
-            if not data.has_key(key):
-                data[key]={"name":key,
+            if not data.has_key(sex):
+                data[sex]={}
+            if not data[sex].has_key(key):
+                data[sex][key]={"name":key,
                            "cust_name":i.cust_name.encode("utf-8").replace(" ",""),
-                           "sex":i.sex.encode("utf-8") if i.sex.encode("utf-8") == 'F' else 'M'}
+                           }
 
             for t in i.typ:
                 k = t.snp.encode("utf-8")
-                data[key][k]=(t.typ).encode("utf-8").replace("/","")
+                data[sex][key][k]=(t.typ).encode("utf-8").replace("/","")
 
         return data
 
@@ -351,7 +354,7 @@ class rhwl_gene(osv.osv):
     def create_gene_type_file(self, cr, uid, ids, context=None):
         self.pool.get("rhwl.genes.picking").export_box_genes(cr,uid,context=context) #先导出已经分箱的样本
         self.export_genes_img(cr,uid,context=context) #导出图片信息
-        ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], context=context)
+        ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], order="sex,name",context=context)
         if not ids:return
 
         if isinstance(ids, (long, int)):
@@ -362,18 +365,22 @@ class rhwl_gene(osv.osv):
         fname = os.path.join(fpath, "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
         header=[]
         f = open(fname, "w+")
-        for k in data.keys():
-            line_row=[data[k]["name"],data[k]["cust_name"],data[k]["sex"]]
-            if not header:
-                header = data[k].keys()
-                header.remove("name")
-                header.remove("cust_name")
-                header.remove("sex")
-                header.sort()
-                f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
-            for i in header:
-                line_row.append(data[k][i])
-            f.write("\t".join(line_row) + '\n')
+
+        for s in ["F","M"]:
+            if not data.has_key(s):continue
+            data_list=data[s].keys()
+            data_list.sort()
+            for k in data_list:
+                line_row=[data[s][k]["name"],data[s][k]["cust_name"],s]
+                if not header:
+                    header = data[s][k].keys()
+                    header.remove("name")
+                    header.remove("cust_name")
+                    header.sort()
+                    f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                for i in header:
+                    line_row.append(data[s][k][i])
+                f.write("\t".join(line_row) + '\n')
         f.close()
         self.action_state_report(cr, uid, ids, context=context)
         js={
