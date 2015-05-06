@@ -8,6 +8,7 @@ import datetime,time
 import logging
 import os
 import shutil
+import re
 from openerp import tools
 
 _logger = logging.getLogger(__name__)
@@ -17,10 +18,10 @@ class rhwl_gene(osv.osv):
         'draft': u'草稿',
         'except': u'信息异常',
         'except_confirm': u'异常已确认',
-        'confirm': u'信息确认',
+        'confirm': u'信息已确认',
         'dna_except': u'DNA质检不合格',
         'dna_ok':u"DNA质检合格",
-        'cancel': u'取消',
+        'cancel': u'检测取消',
         'ok': u'位点数据已导入',
         'report': u'生成报告中',
         'report_done': u"报告已生成",
@@ -392,15 +393,21 @@ class rhwl_gene(osv.osv):
         }
         self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
 
-    def pdf_error(self,cr,uid,file,context=None):
-        js={
-            "first":"易感样本报告接收出错：",
-            "keyword1":"即时",
-            "keyword2":"样本报告%s文件大小不正确。" %(file,),
-            "keyword3":fields.datetime.now(),
-            "remark":"以上数据仅供参考，详细情况请登录服务器查询。"
-        }
-        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
+    #发送文件大小错误微信通知
+    def pdf_size_error(self,cr,uid,file,lens,context=None):
+        s=os.stat(file).st_size
+        if s/1024/1024<16 or ( (lens<7 and s/1024/1024>20) or (lens>=7 and s/1024/1024>40) ):
+            js={
+                "first":"易感样本报告接收出错：",
+                "keyword1":"即时",
+                "keyword2":"样本报告%s文件大小不正确。" %(os.path.split(file)[-1],),
+                "keyword3":fields.datetime.now(),
+                "remark":"以上数据仅供参考，详细情况请登录服务器查询。"
+            }
+            self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
+            return True
+        else:
+            return False
 
     #接收风险报告
     def get_gene_pdf_file(self, cr, uid, context=None):
@@ -412,16 +419,16 @@ class rhwl_gene(osv.osv):
         last_week = time.time() - 60*60*24*3
         for f in os.listdir(fpath):
             newfile = os.path.join(fpath, f)
-            if os.path.isdir(newfile) and f.split("_")[0]!="box":
-                for f1 in os.listdir(newfile):
-                    if len(f1.split("_"))>1:
-                        f2 = f1.split("_")[0] + ".pdf"
-                    else:
-                        f2 = f1.split(".")[0] + ".pdf"
-
-                    s=os.stat(os.path.join(newfile, f1)).st_size
-                    if s/1024/1024<16 or s/1024/1024>20:
-                        self.pdf_error(cr,uid,f1,context=context)
+            if not os.path.isdir(newfile):continue
+            for f1 in os.listdir(newfile):
+                name_list = re.split("[_\.]",f1) #分解文件名称
+                #文件名分为三种模式
+                #1. 398877432.pdf
+                #2. 1-2_H_384778393.pdf
+                #3. 2-5_H_494839848_2-9_H_49384345.pdf
+                if len(name_list)==2:
+                    f2 = ".".join(name_list)
+                    if self.pdf_size_error(cr,uid,os.path.join(newfile, f1),len(name_list),context=context):
                         continue
 
                     shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
@@ -430,9 +437,11 @@ class rhwl_gene(osv.osv):
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
                         pdf_count += 1
+                elif len(name_list)==4 or len(name_list)==7:
+                    pass
 
-                if os.path.getmtime(newfile) < last_week:
-                    os.rmdir(newfile)
+            if os.path.getmtime(newfile) < last_week:
+                os.rmdir(newfile)
         cr.commit()
         if pdf_count>0:
             js={
@@ -489,14 +498,7 @@ class rhwl_gene(osv.osv):
 
     #样本状态数据微信通知
     def weixin_notice_template2(self,cr,uid,context=None):
-        today = datetime.datetime.today()
-        if today.day<=20:
-            s_date = today-datetime.timedelta(days=today.day+1)
-            s_date = datetime.datetime(s_date.year,s_date.month,21)
-            e_date = today
-        else:
-            s_date = datetime.datetime(today.year,today.month,21)
-            e_date = today
+        s_date,e_date = self.date_between(20)
 
         ids = self.search(cr,uid,[("date",">=",s_date),("date","<=",e_date)],context=context)
         v_count0=0
@@ -535,6 +537,18 @@ class rhwl_gene(osv.osv):
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }
         self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_notice",context=context)
+
+    #根据中间日期计算本周期的起迄日期
+    def date_between(self,days=20):
+        today = datetime.datetime.today()
+        if today.day<=days:
+            s_date = today-datetime.timedelta(days=today.day+1)
+            s_date = datetime.datetime(s_date.year,s_date.month,days+1)
+            e_date = today
+        else:
+            s_date = datetime.datetime(today.year,today.month,days+1)
+            e_date = today
+        return s_date,e_date
 
 #样本对象操作日志
 class rhwl_gene_log(osv.osv):

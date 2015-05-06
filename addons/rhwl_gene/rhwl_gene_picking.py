@@ -24,9 +24,11 @@ class rhwl_picking(osv.osv):
                 res[i.id] = res[i.id]+l.qty
         return res
 
+    _order="date desc"
     _columns={
         "name":fields.char(u"发货单号",size=10,required=True),
-        "date":fields.date(u"发货日期",required=True),
+        "date":fields.date(u"预计发货日期",required=True),
+        "real_date":fields.date(u"实际发货日期",),
         "state":fields.selection([("draft",u"草稿"),("upload",u"已上传"),("send",u"已出货"),("done",u"完成")],u"状态"),
         "files":fields.function(_get_files,type="integer",string=u"合计样本数"),
         "upload":fields.integer(u"已上传文件数",readonly=True),
@@ -138,7 +140,12 @@ class rhwl_picking(osv.osv):
                 self.create_sheet_excel(line_path,sheet_data)
             t_count,u_count=self.pdf_copy(pdf_path,files)
             if t_count!=u_count:is_upload=False
-            self.write(cr,uid,i,{"upload":u_count,"state":"upload" if is_upload else "draft"},context=context)
+            vals={
+                "upload":u_count,
+            }
+            if is_upload:
+                vals["state"]="upload"
+            self.write(cr,uid,i,vals,context=context)
             self.excel_upload(cr,uid,i,False,context=context)
 
     def action_excel_upload(self,cr,uid,ids,context=None):

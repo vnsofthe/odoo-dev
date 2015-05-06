@@ -27,6 +27,7 @@
                             <group>
                                 <field name="name" />
                                 <field name="date" />
+                                <field name="real_date" />
                             </group>
                             <group>
                                 <field name="files" />
