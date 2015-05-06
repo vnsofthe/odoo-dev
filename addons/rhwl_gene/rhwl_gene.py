@@ -417,6 +417,7 @@ class rhwl_gene(osv.osv):
         tpath = os.path.join(model_path, "static/local/report")
         pdf_count = 0
         last_week = time.time() - 60*60*24*3
+        self.pool.get("rhwl.genes.picking")._clear_picking_dict()
         for f in os.listdir(fpath):
             newfile = os.path.join(fpath, f)
             if not os.path.isdir(newfile):continue
@@ -426,11 +427,11 @@ class rhwl_gene(osv.osv):
                 #1. 398877432.pdf
                 #2. 1-2_H_384778393.pdf
                 #3. 2-5_H_494839848_2-9_H_49384345.pdf
+                if self.pdf_size_error(cr,uid,os.path.join(newfile, f1),len(name_list),context=context):
+                    continue
+
                 if len(name_list)==2:
                     f2 = ".".join(name_list)
-                    if self.pdf_size_error(cr,uid,os.path.join(newfile, f1),len(name_list),context=context):
-                        continue
-
                     shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
                     ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
                     if ids:
@@ -438,7 +439,13 @@ class rhwl_gene(osv.osv):
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
                         pdf_count += 1
                 elif len(name_list)==4 or len(name_list)==7:
-                    pass
+                    gene_no = name_list[2]
+                    picking_no = self.pool.get("rhwl.genes.picking")._get_picking_from_genes(cr,uid,gene_no,context=context)
+                    if not picking_no:continue
+                    ppath=os.path.join(tpath,picking_no)
+                    if not os.path.exists(ppath):
+                        os.mkdir(ppath)
+                    shutil.move(os.path.join(newfile, f1), os.path.join(ppath, f1))
 
             if os.path.getmtime(newfile) < last_week:
                 os.rmdir(newfile)

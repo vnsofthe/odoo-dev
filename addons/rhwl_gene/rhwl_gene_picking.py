@@ -17,6 +17,27 @@ _logger = logging.getLogger(__name__)
 class rhwl_picking(osv.osv):
     _name="rhwl.genes.picking"
 
+    BOX_TO_PICKING={}
+    BATCH_TO_PICKING={}
+
+    def _get_picking_from_genes(self,cr,uid,gene_no,context=None):
+        id=self.pool.get("rhwl.genes.picking.box.line").search(cr,uid,[("genes_id.name","=",gene_no)],context=context)
+        if not id:
+            return None
+        obj=self.pool.get("rhwl.genes.picking.box.line").browse(cr,uid,id,context=context)
+        if self.BOX_TO_PICKING.has_key(obj.box_id.id):
+            return self.BOX_TO_PICKING.get(obj.box_id.id)
+        if self.BATCH_TO_PICKING.has_key(obj.box_id.line_id.id):
+            return self.BATCH_TO_PICKING.get(obj.box_id.line_id.id)
+        no = obj.box_id.line_id.picking_id.name
+        self.BOX_TO_PICKING[obj.box_id.id]=no
+        self.BATCH_TO_PICKING[obj.box_id.line_id.id]=no
+        return no
+
+    def _clear_picking_dict(self):
+        self.BOX_TO_PICKING={}
+        self.BATCH_TO_PICKING={}
+
     def _get_files(self,cr,uid,ids,field_names,arg,context=None):
         res=dict.fromkeys(ids,0)
         for i in self.browse(cr,uid,ids,context=context):
