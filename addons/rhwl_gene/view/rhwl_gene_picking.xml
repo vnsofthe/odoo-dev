@@ -6,8 +6,10 @@
             <field name="model">rhwl.genes.picking</field>
             <field name="arch" type="xml">
                 <tree string="Picking" >
-                    <field name="name"/>
                     <field name="date"/>
+                    <field name="real_date" />
+                    <field name="name"/>
+                    <field name="note"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -32,6 +34,7 @@
                             <group>
                                 <field name="files" />
                                 <field name="upload" />
+                                <field name="note" />
                             </group>
                         </group>
                         <field name="line">

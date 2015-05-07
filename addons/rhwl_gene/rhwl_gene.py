@@ -14,21 +14,23 @@ from openerp import tools
 _logger = logging.getLogger(__name__)
 
 class rhwl_gene(osv.osv):
-    STATE_SELECT = {
-        'draft': u'草稿',
-        'except': u'信息异常',
-        'except_confirm': u'异常已确认',
-        'confirm': u'信息已确认',
-        'dna_except': u'DNA质检不合格',
-        'dna_ok':u"DNA质检合格",
-        'cancel': u'检测取消',
-        'ok': u'位点数据已导入',
-        'report': u'生成报告中',
-        'report_done': u"报告已生成",
-        "result_done": u"风险报告确认",
-        "deliver": u"印刷厂已接收",
-        'done': u'客户已收货'
-    }
+    STATE_SELECT_LIST=[
+        ('draft', u'草稿'),
+        ('cancel', u'检测取消'),
+        ('except', u'信息异常'),
+        ('except_confirm', u'异常已确认'),
+        ('confirm', u'信息已确认'),
+        ('dna_except', u'DNA质检不合格'),
+        ('dna_ok',u"DNA质检合格"),
+        ('ok', u'位点数据已导入'),
+        ('report', u'生成报告中'),
+        ('report_done', u"报告已生成"),
+        ("result_done", u"风险报告确认"),
+        ("deliver", u"印刷厂已接收"),
+        ('done', u'客户已收货')
+    ]
+    STATE_SELECT = dict(STATE_SELECT_LIST)
+
     _name = "rhwl.easy.genes"
     _order = "date desc,name asc"
 
@@ -80,7 +82,7 @@ class rhwl_gene(osv.osv):
         "receiv_date": fields.datetime(u"接收时间"),
         "except_note": fields.text(u"信息异常内容"),
         "confirm_note": fields.text(u"信息异常反馈"),
-        "state": fields.selection(STATE_SELECT.items(), u"状态"),
+        "state": fields.selection(STATE_SELECT_LIST, u"状态"),
         "note": fields.text(u"备注"),
         "gene_id": fields.char(u"基因编号", size=20),
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
@@ -362,7 +364,7 @@ class rhwl_gene(osv.osv):
             ids = [ids]
         data = self.get_gene_type_list(cr,uid,ids,context=context)
 
-        fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
+        fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp/hebin")
         fname = os.path.join(fpath, "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
         header=[]
         f = open(fname, "w+")
@@ -535,7 +537,7 @@ class rhwl_gene(osv.osv):
         except_rate=[]
         for k,v in dna_rate.items():
             if v["except"]>0:
-                except_rate.append(k+"="+str(v["except"])+"/"+str(v["count"]))
+                except_rate.append(k.encode("utf-8")+"="+str(v["except"])+"/"+str(v["count"]))
         js={
             "first":"易感样本状况统计：",
             "keyword1":"本期从(%s-%s)"%(s_date.strftime("%Y/%m/%d"),e_date.strftime("%Y/%m/%d")),

@@ -33,7 +33,7 @@
                         <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_result_done" string="风险报告确认" states="report_done" type="object" groups="rhwl_gene.rhwl_base_gene"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,result_done,deliver,cancel,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
                         <group>

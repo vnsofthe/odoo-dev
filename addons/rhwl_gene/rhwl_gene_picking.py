@@ -50,9 +50,10 @@ class rhwl_picking(osv.osv):
         "name":fields.char(u"发货单号",size=10,required=True),
         "date":fields.date(u"预计发货日期",required=True),
         "real_date":fields.date(u"实际发货日期",),
-        "state":fields.selection([("draft",u"草稿"),("upload",u"已上传"),("send",u"已出货"),("done",u"完成")],u"状态"),
+        "state":fields.selection([("draft",u"草稿"),("upload",u"已上传"),("send",u"印刷已接收"),("done",u"完成")],u"状态"),
         "files":fields.function(_get_files,type="integer",string=u"合计样本数"),
         "upload":fields.integer(u"已上传文件数",readonly=True),
+        "note":fields.char(u"备注",size=300),
         "line":fields.one2many("rhwl.genes.picking.line","picking_id","Detail"),
     }
     _defaults={
