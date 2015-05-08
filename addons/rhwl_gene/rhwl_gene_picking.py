@@ -10,7 +10,7 @@ import logging
 import os
 import shutil
 import xlwt
-
+import re
 _logger = logging.getLogger(__name__)
 
 #样本发货单对象
@@ -161,7 +161,8 @@ class rhwl_picking(osv.osv):
                             sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 self.create_sheet_excel(line_path,sheet_data)
             t_count,u_count=self.pdf_copy(pdf_path,files)
-            if t_count!=u_count:is_upload=False
+            u_count += self.report_pdf_merge(cr,uid,obj.name,d,context=context)
+            if t_count!=u_count/2:is_upload=False
             vals={
                 "upload":u_count,
             }
@@ -169,6 +170,44 @@ class rhwl_picking(osv.osv):
                 vals["state"]="upload"
             self.write(cr,uid,i,vals,context=context)
             self.excel_upload(cr,uid,i,False,context=context)
+    #复制发货单下面的所有拼版报告
+    def report_pdf_merge(self,cr,uid,name,d,context=None):
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
+        pdf_count=0
+        source_path = os.path.join(pdf_path,name)
+        if not os.path.exists(source_path):return 0
+
+        target_path = os.path.join(upload_path,d)
+        if not os.path.exists(target_path):
+            os.mkdir(target_path)
+        target_path = os.path.join(target_path,u"拼版")
+        if not os.path.exists(target_path):
+            os.mkdir(target_path)
+
+        for f in os.listdir(source_path):
+            new_pdf = os.path.join(source_path,f)
+            name_list = re.split("[_\.]",f) #分解文件名称
+            #文件名分为三种模式
+            #1. 398877432.pdf
+            #2. 1-2_H_384778393.pdf
+            #3. 2-5_H_494839848_2-9_H_49384345.pdf
+            if len(name_list)==4 or (len(name_list)==7 and name_list[0]!=name_list[3]):
+                #单拼
+                tpath=os.path.join(target_path,u"单拼")
+                if not os.path.exists(tpath):
+                    os.mkdir(tpath)
+                if not os.path.exists(os.path.join(tpath,f)):
+                    shutil.copy(new_pdf,os.path.join(tpath,f))
+                pdf_count += 1 if len(name_list)==4 else 2
+            elif len(name_list)==7 and name_list[0]==name_list[3]:
+                tpath=os.path.join(target_path,name_list[0])
+                if not os.path.exists(tpath):
+                    os.mkdir(tpath)
+                if not os.path.exists(os.path.join(tpath,f)):
+                    shutil.copy(new_pdf,os.path.join(tpath,f))
+                pdf_count += 2
+        return pdf_count
 
     def action_excel_upload(self,cr,uid,ids,context=None):
         self.excel_upload(cr,uid,ids,False,context=context)
