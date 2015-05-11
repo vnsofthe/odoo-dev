@@ -21,22 +21,26 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
+                        <button name="action_state_confirm" string="确认" states="draft" type="object"/>
+                        <button name="action_state_done" string="产生领用出库" states="confirm" type="object"/>
+                        <button name="action_view_picking" string="查看出库单" states="done" type="object"/>
                         <field name="state" widget="statusbar" readonly="1"/>
                     </header>
                     <sheet>
-                        <group>
-                            <group>
+                        <group colspan="8">
+                            <group cols="4">
                                 <field name="name"/>
                                 <field name="date"/>
                             </group>
-                            <group>
+                            <group cols="4">
                                 <field name="user_id"/>
                                 <field name="location_id"/>
                             </group>
-                            <group cols="8">
+
+                        </group>
+                        <group cols="8">
                                 <field name="note"/>
                             </group>
-                        </group>
                         <field name="line">
                             <tree string="Line" editable="bottom">
                                 <field name="product_id"/>
@@ -78,6 +82,6 @@
         </record>
 
         <menuitem id="menu_rhwl_library_request" parent="stock.menu_stock_warehouse_mgmt" name="领料单" sequence="20"
-                  action='action_library_request'/>
+                  action='action_library_request' groups="base.group_user"/>
     </data>
 </openerp>
