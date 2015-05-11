@@ -15,7 +15,8 @@ class rhwl_lib(osv.osv):
         "user_id":fields.many2one("res.users","User"),
         "location_id":fields.many2one("stock.location","Location",required=True,domain=[('usage', '=', 'internal')],readonly=True,states={'draft':[('readonly',False)]}),
         "state":fields.selection([("draft","Draft"),("confirm","Confirm"),("done","Done"),("cancel","Cancel")],"State"),
-        "line":fields.one2many("rhwl.library.request.line","name","Line",readonly=True,states={'draft':[('readonly',False)]})
+        "line":fields.one2many("rhwl.library.request.line","name","Line",readonly=True,states={'draft':[('readonly',False)]}),
+        "note":fields.char("Note",size=200),
     }
 
     _defaults={

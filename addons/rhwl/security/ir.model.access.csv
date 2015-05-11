@@ -18,3 +18,8 @@ access_rhwl_product_portal,product.product portal,stock.model_product_product,ba
 access_rhwl_sample_report,access_rhwl_sample_report,model_rhwl_sample_report,,1,0,0,0
 access_sale_sampleone_lims,access_sale_sampleone_lims,model_sale_sampleone_lims,,1,1,1,1
 access_rhwl_res_partner,access_res_partner_rhwl,base.model_res_partner,rhwl_base_sample,1,0,0,0
+access_rhwl_product_project,access_rhwl_product_project,model_rhwl_product_project,,1,1,1,0
+access_rhwl_import_temp,access_rhwl_import_temp,model_rhwl_import_temp,,1,1,1,0
+access_res_company_project,access_res_company_project,model_res_company_project,,1,1,1,0
+access_purchase_order_apply,access_purchase_order_apply,model_purchase_order_apply,,1,1,1,0
+access_purchase_order_apply_line,access_purchase_order_apply_line,model_purchase_order_apply_line,,1,1,1,0
