@@ -1,21 +1,21 @@
-# Dutch translation for openobject-addons
-# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# Kabyle translation for openobject-addons
+# Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
 # This file is distributed under the same license as the openobject-addons package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: openobject-addons\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2015-01-21 14:08+0000\n"
-"PO-Revision-Date: 2015-04-02 09:19+0000\n"
-"Last-Translator: Erwin van der Ploeg (BAS Solutions) <Unknown>\n"
-"Language-Team: Dutch <nl@li.org>\n"
+"PO-Revision-Date: 2015-03-14 18:48+0000\n"
+"Last-Translator: Belkacem Mohammed <belkacem77@gmail.com>\n"
+"Language-Team: Kabyle <kab@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-04-03 06:07+0000\n"
-"X-Generator: Launchpad (build 17413)\n"
+"X-Launchpad-Export-Date: 2015-03-15 05:34+0000\n"
+"X-Generator: Launchpad (build 17389)\n"
 
 #. module: procurement
 #: model:ir.actions.act_window,help:procurement.procurement_exceptions
@@ -43,32 +43,6 @@ msgid ""
 "              </p>\n"
 "            "
 msgstr ""
-"<p class=\"oe_view_nocontent_create\">\n"
-"                 Klik om een verwerving aan te maken.\n"
-"              </p>\n"
-"              <p>\n"
-"                <b>Verwervingsopdrachten</b> vertegenwoordigen een behoefte "
-"voor een zekere hoeveelheid product op een gegeven tijd en een gegeven "
-"locatie.\n"
-"              </p>\n"
-"              <p>\n"
-"                <b>Verkooporders</b> zijn een typisch voorbeeld als een bron "
-"voor verwervingsorders (maar dit zijn verschillende documenten).  \n"
-"                 <br/>Afhankelijk van de parameters en de configuratie van "
-"het product, zal de verwervings planner proberen om de behoefte te voldoen "
-"door het reserveren van producten uit voorraad, het bestellen van de "
-"producten bij een leverancier, of het aanmaken van een productieorder, etc "
-"... \n"
-"              </p>\n"
-"              <p>\n"
-"                <b>Verwervinsfouten</b>  treden op wanneer het systeem een "
-"manier om een ​​verwerving te voldoen niet kan vinden. Enkele fouten zullen "
-"zichzelf automatisch op te lossen, maar anderen vragen om een handmatige "
-"interventie (die worden geïdentificeerd door een specifieke foutmelding in "
-"de chatter). \n"
-"\n"
-"              </p>\n"
-"            "
 
 #. module: procurement
 #: model:ir.actions.act_window,help:procurement.procurement_action
@@ -93,67 +67,47 @@ msgid ""
 "              </p>\n"
 "            "
 msgstr ""
-"<p class=\"oe_view_nocontent_create\">\n"
-"                Klik voor het aanmaken van een verwervingsopdracht. \n"
-"              </p><p>\n"
-"                Een verwervingsopdracht wordt gebruikt om een behoefte vast\n"
-"                te leggen voor een specifiek product op een specifieke "
-"locatie.\n"
-"                Een verwervingsopdracht wordt gewoonlijk automatisch "
-"gemaakt\n"
-"               vanuit de verkooporders, een logistieke pull regel of "
-"minimale voorraadregels. \n"
-"              </p><p>\n"
-"                Als de verwervingsopdracht is bevestigd maakt het "
-"automatisch de\n"
-"                noodzakelijke bewerkingen om de behoefte te vervullen: "
-"inkoopvoorstel, \n"
-"                productieorder, etc.\n"
-"              </p>\n"
-"            "
 
 #. module: procurement
 #: field:procurement.rule,action:0
 msgid "Action"
-msgstr "Actie"
+msgstr "Tigawt"
 
 #. module: procurement
 #: field:procurement.rule,active:0
 msgid "Active"
-msgstr "Actief"
+msgstr "Urmid"
 
 #. module: procurement
 #: selection:procurement.group,move_type:0
 msgid "All at once"
-msgstr "Lever alles tegelijk"
+msgstr "Imaṛa deg iwet tikelt"
 
 #. module: procurement
 #: view:procurement.order.compute.all:procurement.view_compute_schedulers_wizard
 msgid "Cancel"
-msgstr "Annuleren"
+msgstr "Sefsax"
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Cancel Procurement"
-msgstr "Verwerving annuleren"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.order,state:0
 msgid "Cancelled"
-msgstr "Geannuleerd"
+msgstr "Ifsax"
 
 #. module: procurement
 #: code:addons/procurement/procurement.py:156
 #, python-format
 msgid "Cannot delete Procurement Order(s) which are in %s state."
 msgstr ""
-"Het is niet mogelijk om verwerving order(s) te verwijderen welke zich in de "
-"%s status bevindend"
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Check Procurement"
-msgstr "Controleer verwerving"
+msgstr ""
 
 #. module: procurement
 #: help:procurement.order,rule_id:0
@@ -161,30 +115,27 @@ msgid ""
 "Chosen rule for the procurement resolution. Usually chosen by the system but "
 "can be manually set by the procurement manager to force an unusual behavior."
 msgstr ""
-"De gekozen regel voor de verwerving.Normaliter wordt dit automatisch "
-"ingesteld door het systeem, maar kan worden aangepast door de manager om "
-"abnormaal gedrag te forceren."
 
 #. module: procurement
 #: field:procurement.order,company_id:0
 #: field:procurement.rule,company_id:0
 msgid "Company"
-msgstr "Bedrijf"
+msgstr "Takebbwanit"
 
 #. module: procurement
 #: view:procurement.order.compute.all:procurement.view_compute_schedulers_wizard
 msgid "Compute all procurements in the background."
-msgstr "Bereken alle verwervingen op de achtergrond"
+msgstr ""
 
 #. module: procurement
 #: model:ir.model,name:procurement.model_procurement_order_compute_all
 msgid "Compute all schedulers"
-msgstr "Alle planningen berekenen"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.order,state:0
 msgid "Confirmed"
-msgstr "Bevestigd"
+msgstr "Intem"
 
 #. module: procurement
 #: field:procurement.group,create_uid:0
@@ -192,7 +143,7 @@ msgstr "Bevestigd"
 #: field:procurement.order.compute.all,create_uid:0
 #: field:procurement.rule,create_uid:0
 msgid "Created by"
-msgstr "Aangemaakt door"
+msgstr "Ilul-ed sɣuṛ"
 
 #. module: procurement
 #: field:procurement.group,create_date:0
@@ -200,78 +151,78 @@ msgstr "Aangemaakt door"
 #: field:procurement.order.compute.all,create_date:0
 #: field:procurement.rule,create_date:0
 msgid "Created on"
-msgstr "Aangemaakt op"
+msgstr "Ilul-ed di"
 
 #. module: procurement
 #: help:procurement.order,message_last_post:0
 msgid "Date of the last message posted on the record."
-msgstr "Datum van het laatste bericht verstuurt op deze regel."
+msgstr "Azemz n yizen anegaru di ţunefken ɣef ukalas agi"
 
 #. module: procurement
 #: field:procurement.group,move_type:0
 msgid "Delivery Method"
-msgstr "Verzendwijze"
+msgstr "Tarrayt n usiweḍ"
 
 #. module: procurement
 #: field:procurement.order,name:0
 msgid "Description"
-msgstr "Omschrijving"
+msgstr "Aglam"
 
 #. module: procurement
 #: selection:procurement.order,state:0
 msgid "Done"
-msgstr "Verwerkt"
+msgstr "Immed"
 
 #. module: procurement
 #: selection:procurement.order,state:0
 msgid "Exception"
-msgstr "Fout"
+msgstr "Asuref"
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Exceptions"
-msgstr "Fouten"
+msgstr "Isurifen"
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "External note..."
-msgstr "Externe notitie..."
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Extra Information"
-msgstr "Extra informatie"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.rule,group_propagation_option:0
 msgid "Fixed"
-msgstr "Vast"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.rule,group_id:0
 msgid "Fixed Procurement Group"
-msgstr "Vaste verwervingsgroep"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,message_follower_ids:0
 msgid "Followers"
-msgstr "Volgers"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.rule:procurement.view_procurement_rule_form
 msgid "General Information"
-msgstr "Algemene informatie"
+msgstr "Tilɣa timatutin"
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Group By"
-msgstr "Groepeer op"
+msgstr "Sdukel s"
 
 #. module: procurement
 #: model:ir.actions.act_window,name:procurement.do_view_procurements
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Group's Procurements"
-msgstr "Groepeer verwervingen"
+msgstr ""
 
 #. module: procurement
 #: help:procurement.order,message_summary:0
@@ -279,9 +230,8 @@ msgid ""
 "Holds the Chatter summary (number of messages, ...). This summary is "
 "directly in html format in order to be inserted in kanban views."
 msgstr ""
-"Bevat de samenvatting van de chatter (aantal berichten,...). Deze "
-"samenvatting is direct in html formaat om zo in de kanban weergave te worden "
-"ingevoegd."
+"Igber agzul n lehduṛ (amḍan n iznan,…). Agzul agi illa  deg umasal HTML "
+"iwakken ad isireg aseqdec-ines di tmeẓri n Kanban."
 
 #. module: procurement
 #: field:procurement.group,id:0
@@ -289,35 +239,33 @@ msgstr ""
 #: field:procurement.order.compute.all,id:0
 #: field:procurement.rule,id:0
 msgid "ID"
-msgstr "ID"
+msgstr "Asulay"
 
 #. module: procurement
 #: help:procurement.order,message_unread:0
 msgid "If checked new messages require your attention."
-msgstr "Indien aangevinkt zullen nieuwe berichten uw aandacht vragen."
+msgstr ""
 
 #. module: procurement
 #: help:procurement.rule,active:0
 msgid "If unchecked, it will allow you to hide the rule without removing it."
 msgstr ""
-"Indien uitgevinkt kunt u de groep verbergen, zonder deze te hoeven "
-"verwijderen."
 
 #. module: procurement
 #: code:addons/procurement/procurement.py:155
 #, python-format
 msgid "Invalid Action!"
-msgstr "Ongeldige actie!"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,message_is_follower:0
 msgid "Is a Follower"
-msgstr "Is een volger"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,message_last_post:0
 msgid "Last Message Date"
-msgstr "Laatste bericht datum"
+msgstr "Azemz n yizen anegaru"
 
 #. module: procurement
 #: field:procurement.group,write_uid:0
@@ -325,7 +273,7 @@ msgstr "Laatste bericht datum"
 #: field:procurement.order.compute.all,write_uid:0
 #: field:procurement.rule,write_uid:0
 msgid "Last Updated by"
-msgstr "Laatst aangepast door"
+msgstr "Aleqqem aneggaru sɣuṛ"
 
 #. module: procurement
 #: field:procurement.group,write_date:0
@@ -333,179 +281,179 @@ msgstr "Laatst aangepast door"
 #: field:procurement.order.compute.all,write_date:0
 #: field:procurement.rule,write_date:0
 msgid "Last Updated on"
-msgstr "Laatst aangepast op"
+msgstr "Aleqqem aneggaru di"
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Late"
-msgstr "Te laat"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.rule,group_propagation_option:0
 msgid "Leave Empty"
-msgstr "Laat leeg"
+msgstr ""
 
 #. module: procurement
 #: view:res.company:procurement.mrp_company
 msgid "Logistics"
-msgstr "Logistiek"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,message_ids:0
 msgid "Messages"
-msgstr "Berichten"
+msgstr "Iznan"
 
 #. module: procurement
 #: help:procurement.order,message_ids:0
 msgid "Messages and communication history"
-msgstr "Berichten en communicatie historie"
+msgstr "Amazray n iznan  d  tiywalin"
 
 #. module: procurement
 #: field:procurement.rule,name:0
 msgid "Name"
-msgstr "Naam"
+msgstr "Isem"
 
 #. module: procurement
 #: code:addons/procurement/procurement.py:212
 #, python-format
 msgid "No rule matching this procurement"
-msgstr "Geen regel gevonden die geschikt is voor deze verwerving"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.order,priority:0
 msgid "Normal"
-msgstr "Normaal"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.order,priority:0
 msgid "Not urgent"
-msgstr "Niet urgent"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Notes"
-msgstr "Notities"
+msgstr "Iwenniten"
 
 #. module: procurement
 #: selection:procurement.group,move_type:0
 msgid "Partial"
-msgstr "Gedeeltelijk"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,priority:0
 msgid "Priority"
-msgstr "Prioriteit"
+msgstr ""
 
 #. module: procurement
 #: model:ir.model,name:procurement.model_procurement_order
 #: view:procurement.order:procurement.procurement_form_view
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Procurement"
-msgstr "Verwerving"
+msgstr ""
 
 #. module: procurement
 #: model:ir.actions.act_window,name:procurement.procurement_action5
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Procurement Exceptions"
-msgstr "Verwervingsfouten"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,group_id:0
 msgid "Procurement Group"
-msgstr "Verwervingsgroep"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_tree_view
 msgid "Procurement Lines"
-msgstr "Verwervingsregels"
+msgstr ""
 
 #. module: procurement
 #: model:ir.actions.act_window,name:procurement.procurement_action
 msgid "Procurement Orders"
-msgstr "Verwervingsopdrachten"
+msgstr ""
 
 #. module: procurement
 #: model:ir.model,name:procurement.model_procurement_group
 msgid "Procurement Requisition"
-msgstr "Verwervingsaanvraag"
+msgstr ""
 
 #. module: procurement
 #: model:ir.model,name:procurement.model_procurement_rule
 msgid "Procurement Rule"
-msgstr "Verwerving regel"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.group:procurement.procurement_group_form_view
 msgid "Procurement group"
-msgstr "Verwervingsgroep"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Procurement started late"
-msgstr "Verwerving is te laat gestart"
+msgstr ""
 
 #. module: procurement
 #: model:ir.actions.act_window,name:procurement.procurement_exceptions
 #: view:procurement.group:procurement.procurement_group_form_view
 #: field:procurement.group,procurement_ids:0
 msgid "Procurements"
-msgstr "Verwervingen"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 #: field:procurement.order,product_id:0
 msgid "Product"
-msgstr "Product"
+msgstr "Afaris"
 
 #. module: procurement
 #: field:procurement.order,product_uom:0
 msgid "Product Unit of Measure"
-msgstr "Maateenheid product"
+msgstr "Aferdis n usɣel n ufaris"
 
 #. module: procurement
 #: field:procurement.order,product_uos:0
 msgid "Product UoS"
-msgstr "Product verkoopeenheid"
+msgstr "Aferdis n uznuzu n ufaris"
 
 #. module: procurement
 #: selection:procurement.rule,group_propagation_option:0
 msgid "Propagate"
-msgstr "Doorgeven"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.rule:procurement.view_procurement_rule_form
 msgid "Propagation Options"
-msgstr "Doorgifte opties"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.rule,group_propagation_option:0
 msgid "Propagation of Procurement Group"
-msgstr "Doorgifte van doorgifte groepen"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.rule:procurement.view_procurement_rule_form
 msgid "Pull Rule"
-msgstr "Pull regel"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.rule:procurement.view_procurement_rule_tree
 msgid "Pull Rules"
-msgstr "Pull regels"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,product_qty:0
 msgid "Quantity"
-msgstr "Hoeveelheid"
+msgstr "Tanecta"
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Reconfirm Procurement"
-msgstr "Herbevestig verwerving"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.group,name:0
 msgid "Reference"
-msgstr "Referentie"
+msgstr "Tamsisɣelt"
 
 #. module: procurement
 #: help:procurement.order,origin:0
@@ -513,112 +461,110 @@ msgid ""
 "Reference of the document that created this Procurement.\n"
 "This is automatically completed by Odoo."
 msgstr ""
-"Referentie van het document dat deze verwerving heeft aangemaakt.\n"
-"Dit wordt automatisch ingevuld door Odoo."
 
 #. module: procurement
 #: field:procurement.order,rule_id:0
 msgid "Rule"
-msgstr "Regel"
+msgstr "Alugen"
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Run Procurement"
-msgstr "Verwerving uitvoeren"
+msgstr ""
 
 #. module: procurement
 #: model:ir.actions.act_window,name:procurement.action_compute_schedulers
 #: view:procurement.order.compute.all:procurement.view_compute_schedulers_wizard
 msgid "Run Schedulers"
-msgstr "Starten planners"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.order,state:0
 msgid "Running"
-msgstr "In behandeling"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.order,date_planned:0
 msgid "Scheduled Date"
-msgstr "Datum gepland"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Scheduled Month"
-msgstr "Geplande maand"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order.compute.all:procurement.view_compute_schedulers_wizard
 msgid "Scheduler Parameters"
-msgstr "Parameters planner"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "Scheduling"
-msgstr "Planning"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 msgid "Search Procurement"
-msgstr "Verwerving zoeken"
+msgstr ""
 
 #. module: procurement
 #: field:procurement.rule,sequence:0
 msgid "Sequence"
-msgstr "Reeks"
+msgstr "Agzum"
 
 #. module: procurement
 #: field:procurement.order,origin:0
 msgid "Source Document"
-msgstr "Bron document"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.view_procurement_filter
 #: field:procurement.order,state:0
 msgid "Status"
-msgstr "Status"
+msgstr "Addad"
 
 #. module: procurement
 #: field:procurement.order,message_summary:0
 msgid "Summary"
-msgstr "Samenvatting"
+msgstr "Agzul"
 
 #. module: procurement
 #: help:procurement.rule,name:0
 msgid "This field will fill the packing origin and the name of its moves"
-msgstr "Dit veld zal de verpakking bron en de naam van de mutaties invullen"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_tree_view
 msgid "Unit of Measure"
-msgstr "Maateenheid"
+msgstr "Aferdis n usɣel"
 
 #. module: procurement
 #: field:procurement.order,message_unread:0
 msgid "Unread Messages"
-msgstr "Ongelezen berichten"
+msgstr "Iznan ur neţwaɣer-ara"
 
 #. module: procurement
 #: field:procurement.order,product_uos_qty:0
 msgid "UoS Quantity"
-msgstr "Hoeveelheid (VE)"
+msgstr "Tanecta n uferdis n usɣel n uznuzu"
 
 #. module: procurement
 #: selection:procurement.order,priority:0
 msgid "Urgent"
-msgstr "Urgent"
+msgstr ""
 
 #. module: procurement
 #: selection:procurement.order,priority:0
 msgid "Very Urgent"
-msgstr "Zeer urgent"
+msgstr ""
 
 #. module: procurement
 #: view:procurement.order:procurement.procurement_form_view
 msgid "e.g. SO005"
-msgstr "Bijv. SO005"
+msgstr "Amedya. SO005"
 
 #. module: procurement
 #: view:procurement.order.compute.all:procurement.view_compute_schedulers_wizard
 msgid "or"
-msgstr "of"
+msgstr "neɣ"
