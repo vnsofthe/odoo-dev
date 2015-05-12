@@ -22,8 +22,9 @@
                 <form>
                     <header>
                         <button name="action_state_confirm" string="确认" states="draft" type="object"/>
-                        <button name="action_state_done" string="产生领用出库" states="confirm" type="object"/>
-                        <button name="action_view_picking" string="查看出库单" states="done" type="object"/>
+                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object"/>
+                        <button name="action_state_done" string="产生领用出库" states="confirm" type="object" groups="stock.group_stock_user"/>
+                        <button name="action_view_picking" string="查看出库单" states="done" type="object" groups="stock.group_stock_user"/>
                         <field name="state" widget="statusbar" readonly="1"/>
                     </header>
                     <sheet>

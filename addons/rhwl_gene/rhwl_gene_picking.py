@@ -418,9 +418,9 @@ class rhwl_picking(osv.osv):
                 gene_obj=self.pool.get("rhwl.easy.genes").browse(cr,uid,gene_id[0],context=context)
                 ws.write(excel_row,2,u".".join(gene_obj.date.split("-")[1:])+u"会",style3)
             elif l.batch_kind=="resend":
-                ws.write(excel_row,2,u"破损重印",style3)
+                ws.write(excel_row,2,l.batch_no,style3)
             else:
-                ws.write(excel_row,2,u"会员VIP",style3)
+                ws.write(excel_row,2,l.batch_no,style3)
             ws.write(excel_row,3,l.box_qty,style3)
             ws.write(excel_row,4,l.qty,style3)
             total_box += l.box_qty
@@ -449,9 +449,9 @@ class rhwl_picking(osv.osv):
             if l.batch_kind=="normal":
                w1 = w.add_sheet(u".".join(gene_obj.date.split("-")[1:])+u"会"+l.batch_no+u"批")
             elif l.batch_kind=="resend":
-               w1 = w.add_sheet(u"破损重印")
+               w1 = w.add_sheet(l.batch_no)
             else:
-               w1 = w.add_sheet(u"会员VIP")
+               w1 = w.add_sheet(l.batch_no)
             #w1 = w.add_sheet(gene_obj.date)
             w1.col(0).width = 2960
             w1.col(1).width = 3160
@@ -872,11 +872,12 @@ class rhwl_picking_line(osv.osv):
         ids2=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
                                                                 ("state","not in",["cancel","dna_except"]),
                                                                 ("cust_prop","=",cust_prop),
-                                                                ("is_risk","=",True),
+                                                                #("is_risk","=",True),
                                                                 ("is_child","=",True)],order="sex,name")
         ids3=self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","in",batchno),
                                                                 ("state","not in",["cancel","dna_except"]),
                                                                 ("cust_prop","=",cust_prop),
+                                                                ("is_child","=",False),
                                                                 ("is_risk","=",False)],order="sex,name")
         if cust_prop=="tjs":
             all_ids = [[ids1,'H'],[ids2,'H'],[ids3,'L']]

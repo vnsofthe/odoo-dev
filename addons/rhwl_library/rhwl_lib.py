@@ -37,6 +37,9 @@ class rhwl_lib(osv.osv):
     def action_state_confirm(self,cr,uid,ids,context=None):
         self.write(cr,uid,ids,{"state":"confirm"},context=context)
 
+    def action_state_reset(self,cr,uid,ids,context=None):
+        self.write(cr,uid,ids,{"state":"draft"},context=context)
+
     def action_state_done(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
         location_dest_id = self.pool.get("stock.location").search(cr,uid,[("usage","=","production")])

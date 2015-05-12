@@ -442,7 +442,10 @@ class rhwl_gene(osv.osv):
                         pdf_count += 1
                 elif len(name_list)==4 or len(name_list)==7:
                     gene_no = name_list[2]
-                    picking_no = self.pool.get("rhwl.genes.picking")._get_picking_from_genes(cr,uid,gene_no,context=context)
+                    if len(f.split("_"))==3:
+                        picking_no = f.split("_")[1]
+                    else:
+                        picking_no = self.pool.get("rhwl.genes.picking")._get_picking_from_genes(cr,uid,gene_no,context=context)
                     if not picking_no:continue
                     ppath=os.path.join(tpath,picking_no)
                     if not os.path.exists(ppath):
