@@ -657,8 +657,15 @@ class rhwl_report_except(osv.osv):
         self.sex_n = self.name.sex
         self.identity_n = self.name.identity
 
+    def create(self,cr,uid,val,context=None):
+        obj = self.pool.get("rhwl.easy.genes").browse(cr,uid,val.get("name"),context=context)
+        val["cust_name"]=obj.cust_name
+        val["sex"] = obj.sex
+        val["identity"] = obj.identity
+        return super(rhwl_report_except,self).create(cr,uid,val,context=context)
+
     def action_state_confirm(self,cr,uid,ids,context=None):
-        super(rhwl_report_except,self).write(cr,uid,ids,{"state":"confirm"},context=context)
+        self.write(cr,uid,ids,{"state":"confirm"},context=context)
         obj = self.browse(cr,uid,ids,context=context)
         if obj.cust_name != obj.cust_name_n or obj.sex != obj.sex_n or obj.identity != obj.identity_n:
             self.pool.get("rhwl.easy.genes").write(cr,uid,obj.name.id,{"cust_name":obj.cust_name_n,"sex":obj.sex_n,"identity":obj.identity_n},context=context)

@@ -32,7 +32,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="name"/>
+                                <field name="name" attrs="{'readonly':[('state','=','confirm')]}"/>
                                 <field name="cust_name"/>
                                 <field name="sex"/>
                                 <field name="identity"/>
@@ -40,9 +40,9 @@
                             <group>
                                 <field name="user_id"/>
                                 <field name="date"/>
-                                <field name="cust_name_n"/>
-                                <field name="sex_n"/>
-                                <field name="identity_n"/>
+                                <field name="cust_name_n" attrs="{'readonly':[('state','=','confirm')]}"/>
+                                <field name="sex_n" attrs="{'readonly':[('state','=','confirm')]}"/>
+                                <field name="identity_n" attrs="{'readonly':[('state','=','confirm')]}"/>
                             </group>
                         </group>
                         <group>
