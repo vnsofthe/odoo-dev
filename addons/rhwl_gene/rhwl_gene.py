@@ -627,6 +627,45 @@ class rhwl_gene_risk(osv.osv):
         "active": True
     }
 
+#报告书信息异常
+class rhwl_report_except(osv.osv):
+    _name = "rhwl.easy.genes.report.except"
+    _columns={
+        "name":fields.many2one("rhwl.easy.genes",u"基因样本编号",required=True),
+        "cust_name": fields.char(u"会员姓名(原)", readonly=True, size=10),
+        "sex": fields.selection([('T', u"男"), ('F', u"女")], u"性别(原)", readonly=True),
+        "identity": fields.char(u"身份证号(原)", size=18,readonly=True),
+        "cust_name_n": fields.char(u"会员姓名(新)", required=True, size=10),
+        "sex_n": fields.selection([('T', u"男"), ('F', u"女")], u"性别(新)", required=True),
+        "identity_n": fields.char(u"身份证号(新)", size=18),
+        "state":fields.selection([("draft",u"草稿"),("confirm",u"确认")]),
+        "user_id":fields.many2one("res.users",u"异常确认人",required=True),
+        "date":fields.date(u"确认日期",required=True),
+        "note":fields.text(u"备注"),
+    }
+
+    _defaults={
+        "state":'draft',
+    }
+
+    @api.onchange("name")
+    def onchange_name(self):
+        self.cust_name = self.name.cust_name
+        self.sex = self.name.sex
+        self.identity = self.name.identity
+        self.cust_name_n = self.name.cust_name
+        self.sex_n = self.name.sex
+        self.identity_n = self.name.identity
+
+    def action_state_confirm(self,cr,uid,ids,context=None):
+        super(rhwl_report_except,self).write(cr,uid,ids,{"state":"confirm"},context=context)
+        obj = self.browse(cr,uid,ids,context=context)
+        if obj.cust_name != obj.cust_name_n or obj.sex != obj.sex_n or obj.identity != obj.identity_n:
+            self.pool.get("rhwl.easy.genes").write(cr,uid,obj.name.id,{"cust_name":obj.cust_name_n,"sex":obj.sex_n,"identity":obj.identity_n},context=context)
+            if obj.name.state.encode("utf-8") in ('report','report_done',"result_done","deliver",'done'):
+                self.pool.get("rhwl.easy.genes").write(cr,uid,obj.name.id,{"state":"ok"},context=context)
+
+
 #疾病分类对象
 class rhwl_gene_disease_type(osv.osv):
     _name = "rhwl.gene.disease.type"

@@ -20,10 +20,10 @@ class WebClient(http.Controller):
     @http.route('/web/api/mongo/character-get/', type='http', auth="public",website=True)
     def drugs_login(self,**kw):
         conn = pymongo.Connection(self.DBIP,27017)
-        db = conn.character #连接库
+        db = conn.topic #连接库
         #db.authenticate("tage","123")
         if not kw:
-            content = db.character.find()
+            content = db.topic.find()
             res=[]
             #打印所有数据
             for i in content:
@@ -31,15 +31,15 @@ class WebClient(http.Controller):
             res.sort()
         else:
             res={"_id":kw.get("id"),"CN":{"title":kw.get("cn")},"EN":{"title":kw.get("en")}}
-            db.character.insert(res)
+            db.topic.insert(res)
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
     @http.route('/web/api/mongo/character-detail/get/', type='http', auth="public")
     def drugs_detail_get(self,**kw):
         conn = pymongo.Connection(self.DBIP,27017)
-        db = conn.character #连接库
-        res=db.character.find_one({"_id":kw.get("id").encode("utf-8")})
+        db = conn.topic #连接库
+        res=db.topic.find_one({"_id":kw.get("id").encode("utf-8")})
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
@@ -62,17 +62,17 @@ class WebClient(http.Controller):
         else:
             fs=base64.encodestring(kw.get("en_choosefile").stream.read())
         conn = pymongo.Connection(self.DBIP,27017)
-        db = conn.character #连接库
-        res=db.character.find_one({"_id":id})
+        db = conn.topic #连接库
+        res=db.topic.find_one({"_id":id})
         res[key]['pic']={"mimetype":mimetype,"base64":fs}
-        db.character.update({"_id":id},res)
+        db.topic.update({"_id":id},res)
         return 'OK'
 
     @http.route('/web/api/mongo/character-detail/post/', type='json', auth="public")
     def drugs_detail_post(self,**kw):
         conn = pymongo.Connection(self.DBIP,27017)
-        db = conn.character #连接库
-        res=db.character.find_one({"_id":request.jsonrequest.get("_id").encode("utf-8")})
+        db = conn.topic #连接库
+        res=db.topic.find_one({"_id":request.jsonrequest.get("_id").encode("utf-8")})
 
         if request.jsonrequest.get("CN"):
             id="CN"
@@ -97,5 +97,5 @@ class WebClient(http.Controller):
         res[id]['note']['header']=cn_obj.get("note").get("header").encode("utf-8")
         res[id]['note']['description']=cn_obj.get("note").get("description").encode("utf-8")
 
-        db.character.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},res)
+        db.topic.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},res)
         return 'OK'

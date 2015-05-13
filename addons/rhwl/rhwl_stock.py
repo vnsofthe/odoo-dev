@@ -116,7 +116,7 @@ class rhwl_order(osv.osv):
                         "deliver_user":self.pool.get("res.partner").get_Contact_person(cr,SUPERUSER_ID,1,context),
                         "deliver_addr":self.pool.get("res.partner").get_detail_address(cr,SUPERUSER_ID,1,context),
                         "deliver_partner":1,
-                        "receiv_partner":dest.warehouse_id.partner_id.id,
+                        "receiv_partner":dest.procurement_id.warehouse_id.partner_id.id,
                         "product_id":i.product_id.id,
                         "receiv_user":self.pool.get("res.partner").get_Contact_person(cr,SUPERUSER_ID,dest.procurement_id.warehouse_id.partner_id.id,context),
                         "receiv_addr":self.pool.get("res.partner").get_detail_address(cr,SUPERUSER_ID,dest.procurement_id.warehouse_id.partner_id.id,context),

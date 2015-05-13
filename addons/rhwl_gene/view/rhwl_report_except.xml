@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_easy_genes_report_except_view_tree">
+            <field name="name">rhwl.easy.genes.report.except.view.tree</field>
+            <field name="model">rhwl.easy.genes.report.except</field>
+            <field name="arch" type="xml">
+                <tree string="易感基因" >
+                    <field name="name"/>
+                    <field name="cust_name"/>
+                    <field name="sex"/>
+                    <field name="identity"/>
+                    <field name="cust_name_n"/>
+                    <field name="sex_n"/>
+                    <field name="identity_n"/>
+                    <field name="user_id"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_report_except_view_form">
+            <field name="name">rhwl.easy.genes.report.except.view.form</field>
+            <field name="model">rhwl.easy.genes.report.except</field>
+            <field name="arch" type="xml">
+                <form string="样本信息">
+                    <header>
+                        <button name="action_state_confirm" string="确认" states="draft" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm"  readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="cust_name"/>
+                                <field name="sex"/>
+                                <field name="identity"/>
+                            </group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="date"/>
+                                <field name="cust_name_n"/>
+                                <field name="sex_n"/>
+                                <field name="identity_n"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_report_except_search">
+            <field name="name">rhwl.easy.genes.report.except.search</field>
+            <field name="model">rhwl.easy.genes.report.except</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+
+                        </search>
+            </field>
+        </record>
+
+        <record id="action_easy_genes_report_except" model="ir.actions.act_window">
+            <field name="name">报告信息异常</field>
+            <field name="res_model">rhwl.easy.genes.report.except</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_easy_genes_report_except_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_genes_report_except" parent="menu_rhwl_easy_genes" name="报告信息异常" sequence="40"
+                  action='action_easy_genes_report_except' groups="rhwl_base_gene"/>
+    </data>
+</openerp>

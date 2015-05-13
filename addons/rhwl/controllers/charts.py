@@ -27,7 +27,7 @@ class WebClient(web.WebClient):
                 select b.id,b.name,a.cx_date,count(*) as c
                                 from sale_sampleone a
                                 left join res_partner b on a.cxyy=b.id
-                                where b.id in %s
+                                where a.is_reused='0' and b.id in %s
                                 group by b.id,b.name,a.cx_date)
                 select	id
                     ,name

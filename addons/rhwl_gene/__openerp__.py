@@ -23,7 +23,8 @@
              "view/rhwl_risk.xml",
              "view/rhwl_gene_picking.xml",
              "view/rhwl_lib.xml",
-             "view/rhwl_cron.xml"
+             "view/rhwl_cron.xml",
+             "view/rhwl_report_except.xml",
              ],
     "qweb":[],
     'demo': [],
