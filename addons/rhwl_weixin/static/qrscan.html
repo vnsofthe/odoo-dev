@@ -228,7 +228,7 @@
     function scan(f,is_continue){
             wx.scanQRCode({
                 needResult:1,
-                scanType: ["barCode"], // 可以指定扫二维码还是一维码
+                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码
                 success: function (res) {
                             var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
                             if(result==undefined){

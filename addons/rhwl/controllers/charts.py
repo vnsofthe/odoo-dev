@@ -33,6 +33,7 @@ class WebClient(web.WebClient):
                     ,name
                     ,sum(c)
                     ,(select COALESCE(sum(c),0) from t where date_trunc('month',cx_date)::date = date_trunc('month',now())::date and t.id=tt.id)
+                    ,(select COALESCE(sum(c),0) from t where date_trunc('month',cx_date)::date = date_trunc('month',(now() - interval '1 month'))::date and t.id=tt.id)
                     ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '3 month')::date and t.id=tt.id)
                     ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '6 month')::date and t.id=tt.id)
                     ,(select COALESCE(sum(c),0) from t where cx_date >= (now() - interval '12 month')::date and t.id=tt.id)
