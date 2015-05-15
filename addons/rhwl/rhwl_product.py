@@ -57,6 +57,14 @@ class rhwl_product_template(osv.osv):
         "product_no":fields.related("product_variant_ids","product_no",type="char",string=u"物品编码"),
         "project_ids":fields.related("product_variant_ids","project_ids",type="one2many",relation="rhwl.product.project",string=u"项目耗用量")
     }
+    _defaults={
+        'purchase_requisition':True,
+    }
+
+    def init(self,cr):
+        ids = self.search(cr,SUPERUSER_ID,[("purchase_ok","=",True),("purchase_requisition","=",False)])
+        self.write(cr,SUPERUSER_ID,ids,{"purchase_requisition":True})
+
     def create(self, cr, uid, vals, context=None):
         ''' Store the initial standard price in order to be able to retrieve the cost of a product template for a given date'''
         product_template_id = super(rhwl_product_template, self).create(cr, uid, vals, context=context)

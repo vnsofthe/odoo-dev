@@ -99,6 +99,7 @@ class rhwl_gene(osv.osv):
         "is_child":fields.boolean(u"是儿童"),
         "risk_count": fields.function(_get_risk, type="integer", string=u'高风险疾病数', multi='risk'),
         "risk_text": fields.function(_get_risk, type="char", string=u'高风险疾病', multi='risk'),
+        "snp_name":fields.char("SNP File",size=20),
         "A1":fields.function(_get_risk_detail,type="char",string="A1",multi="risk_detail"),
         "A2":fields.function(_get_risk_detail,type="char",string="A2",multi="risk_detail"),
         "A3":fields.function(_get_risk_detail,type="char",string="A3",multi="risk_detail"),
@@ -363,9 +364,9 @@ class rhwl_gene(osv.osv):
         if isinstance(ids, (long, int)):
             ids = [ids]
         data = self.get_gene_type_list(cr,uid,ids,context=context)
-
+        snp_name = "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
-        fname = os.path.join(fpath, "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + ".txt")
+        fname = os.path.join(fpath, snp_name + ".txt")
         header=[]
         f = open(fname, "w+")
 
@@ -386,6 +387,7 @@ class rhwl_gene(osv.osv):
                 f.write("\t".join(line_row) + '\n')
         f.close()
         self.action_state_report(cr, uid, ids, context=context)
+        self.write(cr,uid,ids,{"snp_name":snp_name},context=context)
         js={
             "first":"易感样本检测结果转报告生成：",
             "keyword1":"即时",
@@ -398,7 +400,7 @@ class rhwl_gene(osv.osv):
     #发送文件大小错误微信通知
     def pdf_size_error(self,cr,uid,file,lens,context=None):
         s=os.stat(file).st_size
-        if s/1024/1024<16 or ( (lens<7 and s/1024/1024>20) or (lens>=7 and s/1024/1024>40) ):
+        if s/1024/1024<16 or ( (lens<10 and s/1024/1024>20) or (lens>=10 and s/1024/1024>40) ):
             js={
                 "first":"易感样本报告接收出错：",
                 "keyword1":"即时",
@@ -425,10 +427,13 @@ class rhwl_gene(osv.osv):
             if not os.path.isdir(newfile):continue
             for f1 in os.listdir(newfile):
                 name_list = re.split("[_\.]",f1) #分解文件名称
-                #文件名分为三种模式
+                #文件名分为六种模式
                 #1. 398877432.pdf
-                #2. 1-2_H_384778393.pdf
-                #3. 2-5_H_494839848_2-9_H_49384345.pdf
+                #2. 399834245_张三.pdf
+                #3. 1-2_H_384778393.pdf
+                #4. 1-4_H_394834949_王五_男.pdf
+                #5. 2-5_H_494839848_2-9_H_49384345.pdf
+                #6. 2-3_H_394857583_张三_2-3_H_40348934_李四_男.pdf
                 if self.pdf_size_error(cr,uid,os.path.join(newfile, f1),len(name_list),context=context):
                     continue
 
@@ -440,7 +445,26 @@ class rhwl_gene(osv.osv):
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
                         pdf_count += 1
+                elif len(name_list)==3:
+                    f2 = ".".join([name_list[0],name_list[2]])
+                    shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
+                    ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
+                    if ids:
+                        self.write(cr, uid, ids,
+                                   {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
+                        pdf_count += 1
                 elif len(name_list)==4 or len(name_list)==7:
+                    gene_no = name_list[2]
+                    if len(f.split("_"))==3:
+                        picking_no = f.split("_")[1]
+                    else:
+                        picking_no = self.pool.get("rhwl.genes.picking")._get_picking_from_genes(cr,uid,gene_no,context=context)
+                    if not picking_no:continue
+                    ppath=os.path.join(tpath,picking_no)
+                    if not os.path.exists(ppath):
+                        os.mkdir(ppath)
+                    shutil.move(os.path.join(newfile, f1), os.path.join(ppath, f1))
+                elif len(name_list)==6 or len(name_list)==10:
                     gene_no = name_list[2]
                     if len(f.split("_"))==3:
                         picking_no = f.split("_")[1]

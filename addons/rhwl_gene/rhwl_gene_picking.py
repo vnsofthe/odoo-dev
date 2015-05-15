@@ -20,6 +20,8 @@ class rhwl_picking(osv.osv):
     BOX_TO_PICKING={}
     BATCH_TO_PICKING={}
 
+    BOX_TO_BATCH={}
+
     def _get_picking_from_genes(self,cr,uid,gene_no,context=None):
         id=self.pool.get("rhwl.genes.picking.box.line").search(cr,uid,[("genes_id.name","=",gene_no)],context=context)
         if not id:
@@ -34,9 +36,21 @@ class rhwl_picking(osv.osv):
         self.BATCH_TO_PICKING[obj.box_id.line_id.id]=no
         return no
 
+    def _get_batch_from_genes(self,cr,uid,picking,gene_no,context=None):
+        id=self.pool.get("rhwl.genes.picking.box.line").search(cr,uid,[("genes_id.name","=",gene_no),("box_id.line_id.picking_id.name","=",picking)],context=context)
+        if not id:
+            return None
+        obj=self.pool.get("rhwl.genes.picking.box.line").browse(cr,uid,id,context=context)
+        if self.BOX_TO_BATCH.has_key(obj.box_id.id):
+            return self.BOX_TO_BATCH.get(obj.box_id.id)
+        no = obj.box_id.line_id.batch_no
+        self.BOX_TO_BATCH[obj.box_id.id] = no
+        return no
+
     def _clear_picking_dict(self):
         self.BOX_TO_PICKING={}
         self.BATCH_TO_PICKING={}
+        self.BOX_TO_BATCH={}
 
     def _get_files(self,cr,uid,ids,field_names,arg,context=None):
         res=dict.fromkeys(ids,0)
@@ -178,29 +192,37 @@ class rhwl_picking(osv.osv):
         source_path = os.path.join(pdf_path,name)
         if not os.path.exists(source_path):return 0
 
-        target_path = os.path.join(upload_path,d)
-        if not os.path.exists(target_path):
-            os.mkdir(target_path)
-        target_path = os.path.join(target_path,u"拼版")
-        if not os.path.exists(target_path):
-            os.mkdir(target_path)
-
         for f in os.listdir(source_path):
             new_pdf = os.path.join(source_path,f)
             name_list = re.split("[_\.]",f) #分解文件名称
-            #文件名分为三种模式
+
+            batch_name =  self._get_batch_from_genes(self,cr,uid,name,name_list[2],context=None)
+            target_path = os.path.join(upload_path,d)
+            if not os.path.exists(target_path):
+                os.mkdir(target_path)
+            target_path = os.path.join(target_path,u"拼版")
+            if not os.path.exists(target_path):
+                os.mkdir(target_path)
+            target_path = os.path.join(target_path,batch_name)
+            if not os.path.exists(target_path):
+                os.mkdir(target_path)
+
+            #文件名分为六种模式
             #1. 398877432.pdf
-            #2. 1-2_H_384778393.pdf
-            #3. 2-5_H_494839848_2-9_H_49384345.pdf
-            if len(name_list)==4 or (len(name_list)==7 and name_list[0]!=name_list[3]):
+            #2. 399834245_张三.pdf
+            #3. 1-2_H_384778393.pdf
+            #4. 1-4_H_394834949_王五_男.pdf
+            #5. 2-5_H_494839848_2-9_H_49384345.pdf
+            #6. 2-3_H_394857583_张三_2-3_H_40348934_李四_男.pdf
+            if len(name_list)==4 or len(name_list)==6 or (len(name_list)==7 and name_list[0]!=name_list[3]) or (len(name_list)==10 and name_list[0]!=name_list[4]):
                 #单拼
                 tpath=os.path.join(target_path,u"单拼")
                 if not os.path.exists(tpath):
                     os.mkdir(tpath)
                 if not os.path.exists(os.path.join(tpath,f)):
                     shutil.copy(new_pdf,os.path.join(tpath,f))
-                pdf_count += 1 if len(name_list)==4 else 2
-            elif len(name_list)==7 and name_list[0]==name_list[3]:
+                pdf_count += 1 if len(name_list) in [4,6] else 2
+            elif (len(name_list)==7 and name_list[0]==name_list[3]) or (len(name_list)==10 and name_list[0]==name_list[4]):
                 tpath=os.path.join(target_path,name_list[0])
                 if not os.path.exists(tpath):
                     os.mkdir(tpath)
@@ -707,11 +729,11 @@ class rhwl_picking(osv.osv):
                 for dl in b.detail:
                     genes_ids.append(dl.genes_id.id)
                     if l.batch_kind=="normal":
-                        genes_box[dl.genes_id.name.encode("utf-8")]=[str(l.seq)+"-"+b.name.encode("utf-8"),b.level.encode("utf-8")]
+                        genes_box[dl.genes_id.name.encode("utf-8")]=[str(l.seq)+"-"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name]
                     elif l.batch_kind=="vip":
-                        genes_box[dl.genes_id.name.encode("utf-8")]=["V"+b.name.encode("utf-8"),b.level.encode("utf-8")]
+                        genes_box[dl.genes_id.name.encode("utf-8")]=["V"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name]
                     elif l.batch_kind=="resend":
-                        genes_box[dl.genes_id.name.encode("utf-8")]=["R"+b.name.encode("utf-8"),b.level.encode("utf-8")]
+                        genes_box[dl.genes_id.name.encode("utf-8")]=["R"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name]
 
                     #接版
                     idx1=0
@@ -751,13 +773,13 @@ class rhwl_picking(osv.osv):
             data_list =data[s].keys()
             data_list.sort()
             for k in data_list:
-                line_row=[genes_box[data[s][k]["name"]][0],genes_box[data[s][k]["name"]][1],genes_box[data[s][k]["name"]][2],data[s][k]["name"],data[s][k]["cust_name"],s]
+                line_row=[genes_box[data[s][k]["name"]][0],genes_box[data[s][k]["name"]][1],genes_box[data[s][k]["name"]][3],genes_box[data[s][k]["name"]][2],data[s][k]["name"],data[s][k]["cust_name"],s]
                 if not header:
                     header = data[s][k].keys()
                     header.remove("name")
                     header.remove("cust_name")
                     header.sort()
-                    f.write("箱号\t风险\t拼版\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                    f.write("箱号\t风险\t拼版\t批次\t编号\t姓名\t性别\t" + "\t".join(header) + '\n')
                 for i in header:
                     line_row.append(data[s][k][i])
                 f.write("\t".join(line_row) + '\n')
@@ -880,7 +902,7 @@ class rhwl_picking_line(osv.osv):
                                                                 ("is_child","=",False),
                                                                 ("is_risk","=",False)],order="sex,name")
         if cust_prop=="tjs":
-            all_ids = [[ids1,'H'],[ids2,'H'],[ids3,'L']]
+            all_ids = [[ids1,'H'],[ids2,'L'],[ids3,'L']]
         else:
             all_ids = [[ids1+ids2+ids3,'L']]
         for gid in all_ids:
