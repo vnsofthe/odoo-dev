@@ -196,7 +196,7 @@ class rhwl_picking(osv.osv):
             new_pdf = os.path.join(source_path,f)
             name_list = re.split("[_\.]",f) #分解文件名称
 
-            batch_name =  self._get_batch_from_genes(self,cr,uid,name,name_list[2],context=None)
+            batch_name =  self._get_batch_from_genes(cr,uid,name,name_list[2],context=context)
             target_path = os.path.join(upload_path,d)
             if not os.path.exists(target_path):
                 os.mkdir(target_path)
@@ -729,11 +729,11 @@ class rhwl_picking(osv.osv):
                 for dl in b.detail:
                     genes_ids.append(dl.genes_id.id)
                     if l.batch_kind=="normal":
-                        genes_box[dl.genes_id.name.encode("utf-8")]=[str(l.seq)+"-"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name]
+                        genes_box[dl.genes_id.name.encode("utf-8")]=[str(l.seq)+"-"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name.encode("utf-8")]
                     elif l.batch_kind=="vip":
-                        genes_box[dl.genes_id.name.encode("utf-8")]=["V"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name]
+                        genes_box[dl.genes_id.name.encode("utf-8")]=["V"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name.encode("utf-8")]
                     elif l.batch_kind=="resend":
-                        genes_box[dl.genes_id.name.encode("utf-8")]=["R"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name]
+                        genes_box[dl.genes_id.name.encode("utf-8")]=["R"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name.encode("utf-8")]
 
                     #接版
                     idx1=0

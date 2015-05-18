@@ -591,7 +591,7 @@ class rhwl_gene_log(osv.osv):
     _name = "rhwl.easy.genes.log"
     _order = "date desc"
     _columns = {
-        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID"),
+        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID",select=True),
         "date": fields.datetime(u"时间"),
         "user_id": fields.many2one("res.users", u"操作人员"),
         "note": fields.text(u"作业说明"),
@@ -607,7 +607,7 @@ class rhwl_gene_log(osv.osv):
 class rhwl_gene_check(osv.osv):
     _name = "rhwl.easy.genes.check"
     _columns = {
-        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID"),
+        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID",select=True),
         "date": fields.date(u"收样日期"),
         "dna_date": fields.date(u"提取日期"),
         "concentration": fields.char(u"浓度", size=5, help=u"参考值>=10"),
@@ -629,7 +629,7 @@ class rhwl_gene_check(osv.osv):
 class rhwl_gene_type(osv.osv):
     _name = "rhwl.easy.genes.type"
     _columns = {
-        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID"),
+        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID",select=True),
         "snp": fields.char("SNP", size=20),
         "typ": fields.char("Type", size=10),
         "active": fields.boolean("Active"),
@@ -642,7 +642,7 @@ class rhwl_gene_type(osv.osv):
 class rhwl_gene_risk(osv.osv):
     _name = "rhwl.easy.gene.risk"
     _columns = {
-        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID"),
+        "genes_id": fields.many2one("rhwl.easy.genes", "Genes ID",select=True),
         "disease_id": fields.many2one("rhwl.gene.disease", string=u"疾病名"),
         "risk": fields.char(u"风险", size=20),
         "active": fields.boolean("Active"),
