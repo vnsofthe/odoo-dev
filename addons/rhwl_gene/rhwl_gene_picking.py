@@ -113,6 +113,7 @@ class rhwl_picking(osv.osv):
             "H":u"高风险",
             "L":u"低风险",
         }
+        hardcode=[]
         is_upload=True
         for i in self.search(cr,uid,[("state","=","draft")],context=context):
             obj=self.browse(cr,uid,i,context=context)
@@ -131,6 +132,7 @@ class rhwl_picking(osv.osv):
                     if not os.path.exists(line_path):
                         os.mkdir(line_path)
                     for b in l.box_line:
+
                         box_path=os.path.join(line_path,dict_level[b.level])
                         if not os.path.exists(box_path):
                             os.mkdir(box_path)
@@ -708,6 +710,7 @@ class rhwl_picking(osv.osv):
     #导出已经分配好箱号的样本给报告生成服务器
     def export_box_genes(self,cr,uid,context=None):
         ids = self.search(cr,uid,[("state","=","draft")])
+
         if not ids:return
         for i in ids:
             self.export_box(cr,uid,i,context=context)
@@ -719,9 +722,10 @@ class rhwl_picking(osv.osv):
         #取所有符合条件的发货单
         pdf_seq_count=0
         pick_obj = self.browse(cr,uid,ids,context=context)
-
+        hardcode=[]
         for l in pick_obj.line:
             if l.export:continue
+
             if not l.box_line:continue
             pdf_seq=[[[],[]],[[],[]]] #接版计算用，第一层分男女，第二层分高低风险
             l_ids.append(l.id)
