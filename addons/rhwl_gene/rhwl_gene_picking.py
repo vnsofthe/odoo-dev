@@ -491,6 +491,10 @@ class rhwl_picking(osv.osv):
             if l.batch_kind=="resend":
                 w1.write(0,5,u"重印说明",style)
                 w1.col(5).width = 5560
+                w1.write(0,6,u"病症数量",style6)
+                w1.write(0,7,u"病症名称",style)
+                w1.col(6).width = 2960
+                w1.col(7).width = 9000
             else:
                 w1.write(0,5,u"病症数量",style6)
                 w1.write(0,6,u"病症名称",style)
@@ -511,6 +515,8 @@ class rhwl_picking(osv.osv):
                     w1.write(sheet_row,4,bl.genes_id.identity,style)
                     if l.batch_kind=="resend":
                         w1.write(sheet_row,5,l.note,style)
+                        w1.write(sheet_row,6,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""),style6)
+                        w1.write(sheet_row,7,bl.genes_id.risk_text,style)
                     else:
                         w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""),style6)
                         w1.write(sheet_row,6,bl.genes_id.risk_text,style)
@@ -710,7 +716,7 @@ class rhwl_picking(osv.osv):
     #导出已经分配好箱号的样本给报告生成服务器
     def export_box_genes(self,cr,uid,context=None):
         ids = self.search(cr,uid,[("state","=","draft")])
-
+        return
         if not ids:return
         for i in ids:
             self.export_box(cr,uid,i,context=context)
@@ -722,7 +728,7 @@ class rhwl_picking(osv.osv):
         #取所有符合条件的发货单
         pdf_seq_count=0
         pick_obj = self.browse(cr,uid,ids,context=context)
-        hardcode=[]
+        #hardcode=['2799995306','2799996362','3299999811','3499990556','2799996076','3299995577','3399992519','3399993441','3399996552','3399999137','3499991386']
         for l in pick_obj.line:
             if l.export:continue
 
@@ -731,6 +737,7 @@ class rhwl_picking(osv.osv):
             l_ids.append(l.id)
             for b in l.box_line:
                 for dl in b.detail:
+                    #if hardcode.count(dl.genes_id.name.encode("utf-8"))==0:continue
                     genes_ids.append(dl.genes_id.id)
                     if l.batch_kind=="normal":
                         genes_box[dl.genes_id.name.encode("utf-8")]=[str(l.seq)+"-"+b.name.encode("utf-8"),b.level.encode("utf-8"),dl.genes_id.snp_name.encode("utf-8")]
