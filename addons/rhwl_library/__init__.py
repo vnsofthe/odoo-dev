@@ -1,1 +1,2 @@
 import rhwl_lib
+import wizard

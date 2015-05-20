@@ -84,5 +84,16 @@
 
         <menuitem id="menu_rhwl_library_request" parent="stock.menu_stock_warehouse_mgmt" name="领料单" sequence="20"
                   action='action_library_request' groups="base.group_user"/>
+
+        <record model="ir.ui.view" id="rhwl_purchase_requisition_view_form">
+        <field name="name">rhwl.purchase.requisition.view.form</field>
+        <field name="model">purchase.requisition</field>
+        <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='cancel_requisition']" position="after">
+                <button name="purchase_requisition" states="draft,in_progress" string="转采购申请单" type="object"/>
+            </xpath>
+        </field>
+    </record>
     </data>
 </openerp>

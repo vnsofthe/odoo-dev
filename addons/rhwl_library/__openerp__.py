@@ -15,7 +15,10 @@
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
     'depends': ['base', 'web','vnsoft_base',"stock","rhwl"],
-    'data': [ "security/ir.model.access.csv","view/rhwl_lib.xml","view/library_request_sequence.xml", ],
+    'data': [ "security/ir.model.access.csv"
+                ,"view/rhwl_lib.xml"
+                ,"view/library_request_sequence.xml"
+                ,"wizard/purchase_requisition_group.xml" ],
     "qweb":[],
     'demo': [],
     'test': [],

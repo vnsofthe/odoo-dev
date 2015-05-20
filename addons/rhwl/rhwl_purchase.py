@@ -21,10 +21,10 @@ class purchase_apply(osv.osv):
     _columns = {
         "name":fields.char(u"申请单号",size=20,readonly=True),
         "date":fields.date(u"申请日期",required=True,),
-        "dept":fields.many2one("hr.department",u"部门",required=True),
+        "dept":fields.many2one("hr.department",u"部门"),
         "user_id":fields.many2one("res.users",u"申请人",required=True,readonly=True),
-        "need_date":fields.date(u"需求日期",required=True),
-        "reason":fields.char(u"申请事由",required=True),
+        "need_date":fields.date(u"需求日期"),
+        "reason":fields.char(u"申请事由"),
         "state":fields.selection([("draft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成"),("dept",u"部门批准"),("inspector",u"总监批准"),("quotation",u"询价确认"),("account",u"财务核准"),("chief",u"总裁批准")],u"状态"),
         "note":fields.text(u"备注"),
         "line":fields.one2many("purchase.order.apply.line","name","Detail"),
@@ -46,6 +46,8 @@ class purchase_apply(osv.osv):
 
     def action_confirm(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
+        if not (obj.dept and obj.need_date and obj.reason):
+            raise osv.except_osv("错误","申请部门、需求日期、申请事由内容不能为空。")
         if not obj.line:
             raise osv.except_osv("错误","申请单明细不能为空。")
         if obj.need_date <= obj.date:
