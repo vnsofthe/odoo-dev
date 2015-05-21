@@ -60,6 +60,16 @@ class rhwl_picking(osv.osv):
                 res[i.id] = res[i.id]+l.qty
         return res
 
+    def _get_batchs(self,cr,uid,ids,field_name,arg,context=None):
+        res=dict.fromkeys(ids,"")
+        for i in self.browse(cr,uid,ids,context=context):
+            batch=[]
+            for b in i.line:
+                if b.batch_kind=="normal":
+                    batch.append(b.batch_no)
+            res[i.id]=','.join(batch)
+        return res
+
     _order="date desc"
     _columns={
         "name":fields.char(u"发货单号",size=10,required=True),
@@ -69,6 +79,7 @@ class rhwl_picking(osv.osv):
         "files":fields.function(_get_files,type="integer",string=u"合计样本数"),
         "upload":fields.integer(u"已上传文件数",readonly=True),
         "note":fields.char(u"备注",size=300),
+        "batchs":fields.function(_get_batchs,type="char",string=u"发货批号"),
         "line":fields.one2many("rhwl.genes.picking.line","picking_id","Detail"),
     }
     _defaults={
