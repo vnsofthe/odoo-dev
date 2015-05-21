@@ -3,7 +3,7 @@
     <data>
         <template id="assets_backend" name="vnsoft03 assets" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
-                <script type="text/javascript" src="/vnsoft03/static/js/data.js"></script>
+                <script type="text/javascript" src="/vnsoft03/static/js/vnsoft03.js"></script>
             </xpath>
         </template>
     </data>

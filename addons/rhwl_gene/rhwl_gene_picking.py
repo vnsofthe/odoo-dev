@@ -4,6 +4,7 @@ from openerp import SUPERUSER_ID, api
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
+import openerp.tools.osutil
 import datetime
 import requests
 import logging
@@ -186,6 +187,9 @@ class rhwl_picking(osv.osv):
                 vals["state"]="upload"
             self.write(cr,uid,i,vals,context=context)
             self.excel_upload(cr,uid,i,False,context=context)
+            if vals.get("state","")=="upload":
+                self.report_pdf_zip(cr,uid,obj.name,d,context=context)
+
     #复制发货单下面的所有拼版报告
     def report_pdf_merge(self,cr,uid,name,d,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
@@ -233,8 +237,24 @@ class rhwl_picking(osv.osv):
                 pdf_count += 2
         return pdf_count
 
+    def report_pdf_zip(self,cr,uid,name,d,context=None):
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        target_path = os.path.join(upload_path,d)
+        if not os.path.exists(target_path):
+            return
+        target_path = os.path.join(target_path,u"拼版")
+        if not os.path.exists(target_path):
+            return
+        for d in os.listdir(target_path):
+            d_path = os.path.join(target_path,d)
+            if not os.path.isdir(d_path):continue
+            for b in os.listdir(d_path):
+                f = open(os.path.join(d_path,b+"_"+fields.datetime.now()+".zip"),'wb')
+                openerp.tools.osutil.zip_dir(os.path.join(d_path,b), f, include_dir=False)
+                f.close()
+
     def action_excel_upload(self,cr,uid,ids,context=None):
-        self.excel_upload(cr,uid,ids,False,context=context)
+        #self.excel_upload(cr,uid,ids,False,context=context)
         self.risk_excel(cr,uid,ids,context=context)
 
     #生成批次下的excel，方便印刷厂查阅

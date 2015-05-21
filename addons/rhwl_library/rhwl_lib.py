@@ -111,3 +111,28 @@ class rhwl_lib_line(osv.osv):
             self.default_code = obj.default_code
             self.attribute = obj.attribute_value_ids
             self.uom_id = obj.uom_id
+
+class rhwl_purchase_requisition(osv.osv):
+    _inherit="purchase.requisition"
+
+    def purchase_requisition(self,cr,uid,id,context=None):
+        obj = self.browse(cr,uid,id,context=context)
+        if obj.origin:
+            app_id = self.pool.get("purchase.order.apply").search(cr,uid,[("name","=",obj.origin)])
+            if app_id:
+                raise osv.except_osv("Error","该招标单已经有关联的采购申请单，不可以重复建立。")
+        if obj.line_ids:
+            app_id = self.pool.get("purchase.order.apply").create(cr,uid,{},context=context)
+            apply_obj = self.pool.get("purchase.order.apply").browse(cr,uid,app_id,context=context)
+        else:
+            return
+
+        for l in obj.line_ids:
+            pid = self.pool.get("purchase.order.apply.line").create(cr,uid,{"product_id":l.product_id.id,"qty":l.product_qty},context=context)
+            self.pool.get("purchase.order.apply").write(cr,uid,app_id,{"line":[[4,pid]]})
+
+        self.write(cr,uid,id,{"origin":apply_obj.name},context=context)
+
+        result = self.pool.get("product.template")._get_act_window_dict(cr, uid, 'rhwl.action_purchase_order_apply', context=context)
+        result['domain'] = "[('id','in',[" + str(app_id) + "])]"
+        return result

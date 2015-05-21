@@ -120,7 +120,7 @@ class purchase_apply_line(osv.osv):
         "product_id":fields.many2one("product.product",u"产品",required=True,domain=[('purchase_ok','=',True)]),
         "brand":fields.related("product_id","brand",type="char",string=u"品牌",readonly=True),
         "default_code":fields.related("product_id","default_code",type="char",string=u"货号",readonly=True),
-        "uom_po_id":fields.related("product_id","uom_po_id",type="many2one",obj="product.uom",string=u"采购单位",readonly=True),
+        "uom_id":fields.related("product_id","uom_id",type="many2one",obj="product.uom",string=u"计量单位",readonly=True),
         "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
         "qty":fields.float(u"数量",digits_compute=dp.get_precision('Product Unit of Measure'),required=True),
         "price":fields.float(u"单价",digits_compute=dp.get_precision('Product Price')),
@@ -136,5 +136,5 @@ class purchase_apply_line(osv.osv):
             self.brand = obj.brand
             self.default_code = obj.default_code
             self.attribute = obj.attribute_value_ids
-            self.uom_po_id = obj.uom_po_id
+            self.uom_id = obj.uom_id
 
