@@ -10,7 +10,9 @@ import os
 import base64
 import Image
 def str2trans(s):
-    return s and s.replace("%","{\%}").replace("\n","\n\n") or ""
+    if not s:return ""
+
+    return s.replace("%","{\%}").replace("\n","\n\n").replace(u"Ⅰ","I").replace(u"Ⅲ","III").replace(u"Ⅱ","II").replace(u"Ⅳ","IV").replace(u"Ⅵ","VI").replace(u"Ⅶ","VII").replace(u"Ⅸ","IX").replace(u"β","beta")
     
 def lang2file(name,d):
     lang = etree.Element(name)
@@ -20,6 +22,8 @@ def lang2file(name,d):
     nutrition=etree.SubElement(lang,"nutrition")
     etree.SubElement(nutrition,"header").text=str2trans(d.get("nutrition",{}).get("header"))
     etree.SubElement(nutrition,"description").text=str2trans(d.get("nutrition",{}).get("description"))
+    etree.SubElement(nutrition,"descriptionM").text=str2trans(d.get("nutrition",{}).get("descriptionM"))
+    etree.SubElement(nutrition,"descriptionF").text=str2trans(d.get("nutrition",{}).get("descriptionF"))
     for i in d.get("nutrition",{}).get("compound",[]):
         compound=etree.SubElement(nutrition,"compound")
         etree.SubElement(compound,"header").text=str2trans(i.get("name"))
@@ -44,6 +48,9 @@ def lang2file(name,d):
     suggestion=etree.SubElement(lang,"suggestion")
     etree.SubElement(suggestion,"header").text=str2trans(d.get("suggestion",{}).get("header"))
     etree.SubElement(suggestion,"description").text=str2trans(d.get("suggestion",{}).get("description"))
+    etree.SubElement(suggestion,"descriptionM").text=str2trans(d.get("suggestion",{}).get("descriptionM"))
+    etree.SubElement(suggestion,"descriptionF").text=str2trans(d.get("suggestion",{}).get("descriptionF"))
+
     report=etree.SubElement(lang,"report")
     etree.SubElement(report,"header").text=str2trans(d.get("report",{}).get("header"))
     etree.SubElement(report,"level0").text=str2trans(d.get("report",{}).get("level0"))
@@ -60,11 +67,11 @@ def lang2file(name,d):
 def image_resize(f):
     img = Image.open(f)
     width,height = img.size
-    if width>200 or height>200:
+    if width>250 or height>250:
         if width>height:
-            newbox=(200, 200 * height / width)
+            newbox=(250, 250 * height / width)
         else:
-            newbox=(200*width/height, 200)
+            newbox=(250*width/height, 250)
         targetImg = img.resize(
                            newbox,
                            Image.ANTIALIAS
@@ -78,9 +85,6 @@ def image_resize(f):
     targetImg.save(new, "jpeg")
     return new
 
-def name_get(o):
-    return o.replace("'","").replace("`","").replace(" ","").replace("/","_").replace(":","-")
-
 def dict2file(d):
     if not d.has_key("_id"):return
     opt = etree.Element("opt")
@@ -92,7 +96,7 @@ def dict2file(d):
         pic=lang.findall("pic")
         if pic and pic[0].text:
             pic_base64 = pic[0].text
-            imgname=l+"/pic/section_"+name_get(d.get("_id"))+"."+(d.get(l).get("pic").get("mimetype").split("/")[1])
+            imgname=l+"/pic/section_"+d.get("_id").replace("'","").replace("`","").replace(" ","")+"."+(d.get(l).get("pic").get("mimetype").split("/")[1])
             fimg = open(imgname,"wb")
             #base64.decode(pic_base64,fimg)
             fimg.write(pic_base64.decode('base64','strict'))
@@ -101,7 +105,7 @@ def dict2file(d):
             pic[0].text=image_resize(imgname).split('/')[2]
         opt.insert(0,lang)
 
-        f=open(l+"/section/section_"+name_get(d.get("_id"))+".xml","w")
+        f=open(l+"/section/section_"+d.get("_id").replace("'","").replace("`","").replace(" ","")+".xml","w")
         f.write(etree.tostring(opt, encoding="utf-8", method="xml"))
         f.close()
         opt.remove(lang)

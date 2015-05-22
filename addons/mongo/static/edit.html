@@ -182,6 +182,18 @@
               <div class="col-lg-11 col-md-10">
                   <textarea  class="form-control" id="cn_suggestion_description" rows="4"></textarea>
               </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_suggestion_descriptionM" class="control-label">描述(男)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_suggestion_descriptionM" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_suggestion_descriptionF" class="control-label">描述(女)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_suggestion_descriptionF" rows="4"></textarea>
+              </div>
 
               <div class="col-lg-12 col-md-12">
                   <h2>营养保健</h2>
@@ -197,6 +209,18 @@
               </div>
               <div class="col-lg-11 col-md-10">
                   <textarea  class="form-control" id="cn_nutrition_description" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_nutrition_descriptionM" class="control-label">描述(男)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_nutrition_descriptionM" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_nutrition_descriptionF" class="control-label">描述(女)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_nutrition_descriptionF" rows="4"></textarea>
               </div>
               <div class="col-lg-1 col-md-2">
                   <label  class="control-label">饮食</label>
@@ -379,6 +403,18 @@
               <div class="col-lg-11 col-md-10">
                   <textarea  class="form-control" id="en_suggestion_description" rows="4"></textarea>
               </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="en_suggestion_descriptionM" class="control-label">Description(MALE)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="en_suggestion_descriptionM" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="en_suggestion_descriptionF" class="control-label">Description(FEMALE)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="en_suggestion_descriptionF" rows="4"></textarea>
+              </div>
 
               <div class="col-lg-12 col-md-12">
                   <h2>Nutrition</h2>
@@ -394,6 +430,18 @@
               </div>
               <div class="col-lg-11 col-md-10">
                   <textarea  class="form-control" id="en_nutrition_description" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="en_nutrition_descriptionM" class="control-label">Description(MALE)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="en_nutrition_descriptionM" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="en_nutrition_descriptionF" class="control-label">Description(FEMALE)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="en_nutrition_descriptionF" rows="4"></textarea>
               </div>
               <div class="col-lg-1 col-md-2">
                   <label  class="control-label">Compound</label>
@@ -484,11 +532,15 @@
                             },
                     suggestion:{
                             header:$("#cn_suggestion_header").val(),
-                            description:$("#cn_suggestion_description").val()
+                            description:$("#cn_suggestion_description").val(),
+                            descriptionM:$("#cn_suggestion_descriptionM").val(),
+                            descriptionF:$("#cn_suggestion_descriptionF").val()
                              },
                     nutrition:{
                             header:$("#cn_nutrition_header").val(),
-                            description:$("#cn_nutrition_description").val()
+                            description:$("#cn_nutrition_description").val(),
+                            descriptionM:$("#cn_nutrition_descriptionM").val(),
+                            descriptionF:$("#cn_nutrition_descriptionF").val()
                              }
                     }
             para._id=decodeURIComponent(getUrlParameter("id"))
@@ -558,10 +610,15 @@
                               if(data.CN.suggestion!=undefined) {
                                   $("#cn_suggestion_header").val(data.CN.suggestion.header);
                                   $("#cn_suggestion_description").val(data.CN.suggestion.description);
+                                  $("#cn_suggestion_descriptionM").val(data.CN.suggestion.descriptionM);
+                                  $("#cn_suggestion_descriptionF").val(data.CN.suggestion.descriptionF);
                               }
                               if(data.CN.nutrition!=undefined) {
                                   $("#cn_nutrition_header").val(data.CN.nutrition.header);
                                   $("#cn_nutrition_description").val(data.CN.nutrition.description);
+                                  $("#cn_nutrition_descriptionM").val(data.CN.nutrition.descriptionM);
+                                  $("#cn_nutrition_descriptionF").val(data.CN.nutrition.descriptionF);
+
                                   $.each(data.CN.nutrition.compound,function(k,v){
                                       $("#cn_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
                                   });
@@ -615,11 +672,15 @@
                             },
                     suggestion:{
                             header:$("#en_suggestion_header").val(),
-                            description:$("#en_suggestion_description").val()
+                            description:$("#en_suggestion_description").val(),
+                            descriptionM:$("#en_suggestion_descriptionM").val(),
+                            descriptionF:$("#en_suggestion_descriptionF").val()
                              },
                     nutrition:{
                             header:$("#en_nutrition_header").val(),
-                            description:$("#en_nutrition_description").val()
+                            description:$("#en_nutrition_description").val(),
+                            descriptionM:$("#en_nutrition_descriptionM").val(),
+                            descriptionF:$("#en_nutrition_descriptionF").val()
                              }
                     }
             para._id=decodeURIComponent(getUrlParameter("id"))
@@ -689,10 +750,14 @@
                               if(data.EN.suggestion!=undefined) {
                                   $("#en_suggestion_header").val(data.EN.suggestion.header);
                                   $("#en_suggestion_description").val(data.EN.suggestion.description);
+                                  $("#en_suggestion_descriptionM").val(data.EN.suggestion.descriptionM);
+                                  $("#en_suggestion_descriptionF").val(data.EN.suggestion.descriptionF);
                               }
                               if(data.EN.nutrition!=undefined) {
                                   $("#en_nutrition_header").val(data.EN.nutrition.header);
                                   $("#en_nutrition_description").val(data.EN.nutrition.description);
+                                  $("#en_nutrition_descriptionM").val(data.EN.nutrition.descriptionM);
+                                  $("#en_nutrition_descriptionF").val(data.EN.nutrition.descriptionF);
                                   $.each(data.EN.nutrition.compound,function(k,v){
                                       $("#en_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
                                   })

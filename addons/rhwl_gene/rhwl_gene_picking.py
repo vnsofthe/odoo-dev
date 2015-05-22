@@ -125,7 +125,7 @@ class rhwl_picking(osv.osv):
             "H":u"高风险",
             "L":u"低风险",
         }
-        hardcode=[]
+        #hardcode=[]
         is_upload=True
         for i in self.search(cr,uid,[("state","=","draft")],context=context):
             obj=self.browse(cr,uid,i,context=context)
@@ -260,7 +260,7 @@ class rhwl_picking(osv.osv):
             d_path = os.path.join(target_path,d)
             if not os.path.isdir(d_path):continue
             for b in os.listdir(d_path):
-                f = open(os.path.join(d_path,b+"_"+fields.datetime.now()+".zip"),'wb')
+                f = open(os.path.join(d_path,b+"_"+(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y%m%d%H%M%S")+".zip"),'wb')
                 openerp.tools.osutil.zip_dir(os.path.join(d_path,b), f, include_dir=False)
                 f.close()
 
@@ -747,7 +747,7 @@ class rhwl_picking(osv.osv):
     #导出已经分配好箱号的样本给报告生成服务器
     def export_box_genes(self,cr,uid,context=None):
         ids = self.search(cr,uid,[("state","=","draft")])
-        return
+
         if not ids:return
         for i in ids:
             self.export_box(cr,uid,i,context=context)

@@ -96,6 +96,8 @@ class WebClient(http.Controller):
             res[id]['note']={}
         res[id]['note']['header']=cn_obj.get("note").get("header").encode("utf-8")
         res[id]['note']['description']=cn_obj.get("note").get("description").encode("utf-8")
+        res[id]['note']['descriptionM']=cn_obj.get("note").get("descriptionM").encode("utf-8")
+        res[id]['note']['descriptionF']=cn_obj.get("note").get("descriptionF").encode("utf-8")
 
         db.topic.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},res)
         return 'OK'

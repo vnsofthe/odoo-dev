@@ -77,6 +77,18 @@
               <div class="col-lg-11 col-md-10">
                   <textarea  class="form-control" id="cn_note_description" rows="4"></textarea>
               </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_note_descriptionM" class="control-label">描述(男)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_note_descriptionM" rows="4"></textarea>
+              </div>
+              <div class="col-lg-1 col-md-2">
+                  <label for="cn_note_descriptionF" class="control-label">描述(女)</label>
+              </div>
+              <div class="col-lg-11 col-md-10">
+                  <textarea  class="form-control" id="cn_note_descriptionF" rows="4"></textarea>
+              </div>
           </div>
           <div>
               <button id="cn_submit" type="button" class="btn btn-primary text-center">提交中文修改</button>
@@ -129,7 +141,9 @@
                             },
                     note:{
                             header:$("#cn_note_header").val(),
-                            description:$("#cn_note_description").val()
+                            description:$("#cn_note_description").val(),
+                            descriptionM:$("#cn_note_descriptionM").val(),
+                            descriptionF:$("#cn_note_descriptionF").val()
                             }
                     }
             para._id=decodeURIComponent(getUrlParameter("id"))
@@ -161,6 +175,9 @@
                               if(data.CN.note!=undefined) {
                                   $("#cn_note_header").val(data.CN.note.header);
                                   $("#cn_note_description").val(data.CN.note.description);
+                                  $("#cn_note_descriptionM").val(data.CN.note.descriptionM);
+                                  $("#cn_note_descriptionF").val(data.CN.note.descriptionF);
+
                               }
                               if(data.CN.pic!=undefined) {
                                   $("#cn_pic").prop("src", "data:" + data.CN.pic.mimetype + ";base64," + data.CN.pic.base64);

@@ -120,10 +120,14 @@ class WebClient(http.Controller):
             res[id]['suggestion']={}
         res[id]['suggestion']['header']=cn_obj.get("suggestion").get("header").encode("utf-8")
         res[id]['suggestion']['description']=cn_obj.get("suggestion").get("description").encode("utf-8")
+        res[id]['suggestion']['descriptionM']=cn_obj.get("suggestion").get("descriptionM").encode("utf-8")
+        res[id]['suggestion']['descriptionF']=cn_obj.get("suggestion").get("descriptionF").encode("utf-8")
         if not res[id].get("nutrition"):
             res[id]['nutrition']={}
         res[id]['nutrition']['header']=cn_obj.get("nutrition").get("header").encode("utf-8")
         res[id]['nutrition']['description']=cn_obj.get("nutrition").get("description").encode("utf-8")
+        res[id]['nutrition']['descriptionM']=cn_obj.get("nutrition").get("descriptionM").encode("utf-8")
+        res[id]['nutrition']['descriptionF']=cn_obj.get("nutrition").get("descriptionF").encode("utf-8")
 
         res[id]['nutrition']['compound']=[]
         for i in cn_obj.get("nutrition").get("compound"):
@@ -214,6 +218,9 @@ class WebClient(http.Controller):
             res[id]['note']={}
         res[id]['note']['header']=cn_obj.get("note").get("header").encode("utf-8")
         res[id]['note']['description']=cn_obj.get("note").get("description").encode("utf-8")
+        if not res[id].get("generelations"):
+            res[id]['generelations']={}
+        res[id]['generelations']['description']=cn_obj.get("generelations").get("description").encode("utf-8")
 
         db.medicine.update({"_id":request.jsonrequest.get("_id").encode("utf-8")},res)
         return 'OK'
