@@ -46,6 +46,8 @@
                                 <field name="batch_no"/>
                                 <field name="box_qty"/>
                                 <field name="qty"/>
+                                <field name="qty_pdf"/>
+                                <field name="qty_merge"/>
                                 <field name="note"/>
                             </tree>
                         </field>
@@ -100,17 +102,23 @@
                                 <field name="product_name" />
                                 <field name="batch_kind" />
                                 <field name="batch_no" />
+                                <field name="note" />
                             </group>
                             <group>
                                 <field name="box_qty" />
                                 <field name="qty" />
-                                <field name="note" />
+                                <field name="qty_pdf" />
+                                <field name="qty_merge" />
+
                             </group>
                         </group>
                         <field name="box_line">
                             <tree string="装箱明细">
                                 <field name="name"/>
                                 <field name="level"/>
+                                <field name="qty" />
+                                <field name="qty_pdf" />
+                                <field name="qty_merge" />
                             </tree>
                         </field>
                     </sheet>
@@ -124,12 +132,22 @@
                 <form string="箱号">
                     <sheet>
                         <group>
+                            <group>
                                 <field name="name" />
+                                <field name="level" />
+                            </group>
+                            <group>
+                                <field name="qty" />
+                                <field name="qty_pdf" />
+                                <field name="qty_merge" />
+                            </group>
                         </group>
                         <field name="detail">
                             <tree editable="bottom">
                                 <field name="genes_id"/>
                                 <field name="name"/>
+                                <field name="has_pdf"/>
+                                <field name="has_merge"/>
                             </tree>
                         </field>
                     </sheet>

@@ -105,15 +105,17 @@ class rhwl_picking(osv.osv):
             self.pool.get("rhwl.easy.genes").write(cr,uid,genes_id,{"state":stat[val["state"]]},context=context)
         return id
 
-    def pdf_copy(self,pdf_path,files):
+    def pdf_copy(self,cr,uid,pdf_path,files):
         u_count = 0
         t_count = 0
         for k,v in files.items():
             t_count += len(v)
             for i in v:
-                if os.path.exists(os.path.join(pdf_path,i)):
-                    if (not os.path.exists(os.path.join(k,i))) or os.stat(os.path.join(pdf_path,i)).st_size != os.stat(os.path.join(k,i)).st_size:
-                        shutil.copy(os.path.join(pdf_path,i),os.path.join(k,i))
+                if os.path.exists(os.path.join(pdf_path,i[0])):
+                    if (not os.path.exists(os.path.join(k,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(k,i[0])).st_size:
+                        shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(k,i[0]))
+                    self.pool.get("rhwl.genes.picking.box.line").write(cr,uid,i[1],{"has_pdf":True})
+
                     u_count += 1
         return (t_count,u_count)
 
@@ -155,7 +157,7 @@ class rhwl_picking(osv.osv):
                         if not files.has_key(box_path):files[box_path]=[]
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
-                            files[box_path].append(pdf_file)
+                            files[box_path].append([pdf_file,bl.id])
                             sheet_data[str(l.seq)+"-"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 elif l.batch_kind=="resend":
                     line_path=os.path.join(d_path,u"重新印刷")
@@ -170,7 +172,7 @@ class rhwl_picking(osv.osv):
                         if not files.has_key(box_path):files[box_path]=[]
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
-                            files[box_path].append(pdf_file)
+                            files[box_path].append([pdf_file,bl.id])
                             sheet_data["R"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 elif l.batch_kind=="vip":
                     line_path=os.path.join(d_path,u"会员部VIP")
@@ -185,10 +187,10 @@ class rhwl_picking(osv.osv):
                         if not files.has_key(box_path):files[box_path]=[]
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
-                            files[box_path].append(pdf_file)
+                            files[box_path].append([pdf_file,bl.id])
                             sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 self.create_sheet_excel(line_path,sheet_data)
-            t_count,u_count=self.pdf_copy(pdf_path,files)
+            t_count,u_count=self.pdf_copy(cr,uid,pdf_path,files)
             u_count += self.report_pdf_merge(cr,uid,obj.name,d,context=context)
             if t_count!=u_count/2:is_upload=False
             vals={
@@ -238,6 +240,9 @@ class rhwl_picking(osv.osv):
                     os.mkdir(tpath)
                 if not os.path.exists(os.path.join(tpath,f)):
                     shutil.copy(new_pdf,os.path.join(tpath,f))
+                self.pool.get("rhwl.genes.picking.box.line").update_merge_flag(cr,uid,name,name_list[2],context=context)
+                if len(name_list)==10:
+                    self.pool.get("rhwl.genes.picking.box.line").update_merge_flag(cr,uid,name,name_list[6],context=context)
                 pdf_count += 1 if len(name_list) in [4,6] else 2
             elif (len(name_list)==7 and name_list[0]==name_list[3]) or (len(name_list)==10 and name_list[0]==name_list[4]):
                 tpath=os.path.join(target_path,name_list[0])
@@ -245,6 +250,9 @@ class rhwl_picking(osv.osv):
                     os.mkdir(tpath)
                 if not os.path.exists(os.path.join(tpath,f)):
                     shutil.copy(new_pdf,os.path.join(tpath,f))
+                self.pool.get("rhwl.genes.picking.box.line").update_merge_flag(cr,uid,name,name_list[2],context=context)
+                if len(name_list)==10:
+                    self.pool.get("rhwl.genes.picking.box.line").update_merge_flag(cr,uid,name,name_list[6],context=context)
                 pdf_count += 2
         return pdf_count
 
@@ -860,6 +868,16 @@ class rhwl_picking_line(osv.osv):
             res[k] = self.pool.get("rhwl.genes.picking.box.line").search_count(cr,uid,[("box_id.line_id.id","=",k)])
         return res
 
+    def _get_detail_qty_pdf(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for i in ids:
+            res[i] = {}.fromkeys(field_names,0)
+            res[i]["qty_pdf"] = self.pool.get("rhwl.genes.picking.box.line").search_count(cr,uid,[("box_id.line_id.id","=",i),("has_pdf","=",True)])
+            res[i]["qty_merge"] = self.pool.get("rhwl.genes.picking.box.line").search_count(cr,uid,[("box_id.line_id.id","=",i),("has_merge","=",True)])
+
+        return res
+
+    _order = "seq"
     _columns={
         "picking_id":fields.many2one("rhwl.genes.picking",u"发货单号",ondelete="restrict"),
         "seq":fields.integer(u"序号",required=True),
@@ -870,6 +888,8 @@ class rhwl_picking_line(osv.osv):
         "box_h_qty":fields.function(_get_box_qty_h,type="integer",string=u"高风险箱数"),
         "box_l_qty":fields.function(_get_box_qty_l,type="integer",string=u"低风险箱数"),
         "qty":fields.function(_get_detail_qty,type="integer",string=u"数量"),
+        "qty_pdf":fields.function(_get_detail_qty_pdf,type="integer",string=u"已接收单本数量",multi="get_qty_pdf"),
+        "qty_merge":fields.function(_get_detail_qty_pdf,type="integer",string=u"已接收拼版数量",multi="get_qty_pdf"),
         "note":fields.char(u"备注",size=200),
         "box_line":fields.one2many("rhwl.genes.picking.box","line_id","Detail"),
         "export":fields.boolean("Export"),
@@ -968,10 +988,24 @@ class rhwl_picking_line(osv.osv):
 #发货批次的箱号明细
 class rhwl_picking_box(osv.osv):
     _name="rhwl.genes.picking.box"
+
+    def _get_qty(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for id in ids:
+            res[id] = {}.fromkeys(field_names,0)
+            obj = self.pool.get("rhwl.genes.picking.box.line")
+            res[id]["qty"] = obj.search_count(cr,uid,[("box_id","=",id)],context=context)
+            res[id]["qty_pdf"] = obj.search_count(cr,uid,[("box_id","=",id),("has_pdf","=",True)],context=context)
+            res[id]["qty_merge"] = obj.search_count(cr,uid,[("box_id","=",id),("has_merge","=",True)],context=context)
+        return res
+
     _columns={
         "line_id":fields.many2one("rhwl.genes.picking.line",u"发货明细",ondelete="cascade"),
         "name":fields.char(u"箱号",size=5,required=True),
         "level":fields.selection([("H",u"高风险"),("L",u"低风险")],u"风险值"),
+        "qty":fields.function(_get_qty,type="integer",string=u"样本数量",multi="get_qty"),
+        "qty_pdf":fields.function(_get_qty,type="integer",string=u"已接收单本数量",multi="get_qty"),
+        "qty_merge":fields.function(_get_qty,type="integer",string=u"已接收拼版数量",multi="get_qty"),
         "detail":fields.one2many("rhwl.genes.picking.box.line","box_id","Detail")
     }
     _sql_constraints = [
@@ -985,5 +1019,16 @@ class rhwl_picking_box_line(osv.osv):
         "box_id":fields.many2one("rhwl.genes.picking.box",u"箱号",ondelete="cascade"),
         "genes_id":fields.many2one("rhwl.easy.genes",u"基因样本编号",ondelete="restrict",required=True),
         "name":fields.related("genes_id","cust_name",type="char",string=u"会员姓名"),
-
+        "has_pdf":fields.boolean("Has PDF"),
+        "has_merge":fields.boolean("Has Merge")
     }
+
+    _defauts={
+        "has_pdf":False,
+        "has_merge":False
+    }
+
+    def update_merge_flag(self,cr,uid,picking,name,context=None):
+        id = self.search(cr,uid,[("box_id.line_id.picking_id.name","=",picking),("genes_id.name","=",name)])
+        if id:
+            self.write(cr,uid,id,{"has_merge":True},context=context)
