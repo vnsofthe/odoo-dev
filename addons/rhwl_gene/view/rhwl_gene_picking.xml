@@ -22,8 +22,9 @@
             <field name="arch" type="xml">
                 <form string="发货单">
                     <header>
-                        <button name="action_excel_upload" string="Excel Update" type="object"/>
-                        <button name="export_box" string="Export BOX" type="object"/>
+                        <button name="action_excel_upload" string="发货单Excel更新" type="object"/>
+                        <button name="export_box" string="导出拼版数据" type="object"/>
+                        <button name="report_upload_picking" string="发货单PDF更新" type="object"/>
                         <field name="state" widget="statusbar" clickable="True" />
                     </header>
                     <sheet>

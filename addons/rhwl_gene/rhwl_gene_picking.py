@@ -121,15 +121,21 @@ class rhwl_picking(osv.osv):
 
     #根据发货单，生成需要上传的目录结构，并复制pdf文件到相应的目录中。
     def report_upload(self,cr,uid,context=None):
+        for i in self.search(cr,uid,[("state","=","draft")],context=context):
+            self.report_upload_picking(cr,uid,i,context=context)
+
+    def report_upload_picking(self,cr,uid,id,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
         pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
         dict_level={
             "H":u"高风险",
             "L":u"低风险",
         }
+        if isinstance(id,(long,int)):
+            id=[id]
         #hardcode=[]
         is_upload=True
-        for i in self.search(cr,uid,[("state","=","draft")],context=context):
+        for i in id:
             obj=self.browse(cr,uid,i,context=context)
             d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
