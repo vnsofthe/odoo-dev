@@ -221,6 +221,9 @@ class rhwl_gene(osv.osv):
             val["log"] = [
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
         if val.has_key("img"):
+            log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","=",id),("data","=","expimg")])
+            if log_id:
+                self.pool.get("rhwl.easy.genes.log").write(cr,uid,log_id,{"data":"expimg,1"},context=context)
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
             obj = self.browse(cr,SUPERUSER_ID,id,context=context)
             vals={
