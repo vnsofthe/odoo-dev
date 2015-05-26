@@ -50,6 +50,7 @@
                                 
                                 <field name="uom_id"/>
                                 <field name="qty"/>
+
                             </tree>
                         </field>
                     </sheet>

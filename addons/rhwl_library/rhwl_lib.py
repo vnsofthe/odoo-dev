@@ -98,11 +98,16 @@ class rhwl_lib_line(osv.osv):
         "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
         "uom_id":fields.related("product_id","uom_id",type="many2one",obj="product.uom",string="Unit",readonly=True),
         "qty":fields.float("Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True,),
+        "real_qty":fields.float("Real Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True ),
     }
     _sql_constraints = [
         ('rhwl_lib_request_line_uniq', 'unique(name,product_id)', u'明细清单中相同产品不能重复!'),
     ]
 
+    _defaults={
+        "qty":0,
+        "real_qty":0
+    }
     @api.onchange("product_id")
     def _onchange_product(self):
         if self.product_id:

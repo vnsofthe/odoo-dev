@@ -148,6 +148,7 @@ class rhwl_picking(osv.osv):
                 #处理批号
                 sheet_data={} #用于保存每个批次的装箱数据，给印刷厂查看
                 if l.batch_kind=="normal":
+                    if l.qty==0:continue
                     line_path=os.path.join(d_path,l.batch_no+"-"+str(l.qty))
                     if not os.path.exists(line_path):
                         os.mkdir(line_path)
@@ -267,14 +268,23 @@ class rhwl_picking(osv.osv):
         target_path = os.path.join(upload_path,d)
         if not os.path.exists(target_path):
             return
+        zip_path = os.path.join(target_path,u"拼版压缩")
+        if not os.path.exists(zip_path):
+            os.mkdir(zip_path)
         target_path = os.path.join(target_path,u"拼版")
+
         if not os.path.exists(target_path):
             return
         for d in os.listdir(target_path):
             d_path = os.path.join(target_path,d)
             if not os.path.isdir(d_path):continue
+            zip_batch_path = os.path.join(zip_path,d)
+            if not os.path.exists(zip_batch_path):
+                os.mkdir(zip_batch_path)
+
             for b in os.listdir(d_path):
-                f = open(os.path.join(d_path,b+"_"+(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y%m%d%H%M%S")+".zip"),'wb')
+                if not os.path.isdir(os.path.join(d_path,b)):continue
+                f = open(os.path.join(zip_batch_path,b+"_"+(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y%m%d%H%M%S")+".zip"),'wb')
                 openerp.tools.osutil.zip_dir(os.path.join(d_path,b), f, include_dir=False)
                 f.close()
 

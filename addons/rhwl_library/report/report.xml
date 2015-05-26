@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Define 'ids' report -->
+		<record id="rhwl_library_request_ids" model="ir.actions.report.xml">
+			<field name="name">领料单</field>
+			<field name="report_name">rhwl.library.request.ids</field>
+			<field name="model">rhwl.library.request</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+            <field name="report_type">pentaho</field>
+			<field name="rml">rhwl_library/report/requisition.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="rhwl_library.model_rhwl_library_request"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">rhwl_library/report/requisition.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
+
+	</data>
+</openerp>
