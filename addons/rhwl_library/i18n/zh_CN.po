@@ -1,0 +1,64 @@
+#. module: rhwl_library
+#: field:rhwl.library.request,name:0
+msgid "Name"
+msgstr "领料单号"
+
+#. module: rhwl_library
+#: field:rhwl.library.request,date:0
+msgid "Date"
+msgstr "领料日期"
+
+#. module: rhwl_library
+#: field:rhwl.library.request,user_id:0
+msgid "User"
+msgstr "领料人"
+
+#. module: rhwl_library
+#: field:rhwl.library.request,location_id:0
+msgid "Location"
+msgstr "领料库位"
+
+#. module: rhwl_library
+#: field:rhwl.library.request,note:0
+msgid "Note"
+msgstr "备注"
+
+#. module: rhwl_library
+#: field:rhwl.library.request,state:0
+msgid "State"
+msgstr "状态"
+
+#. module: rhwl_library
+#: selection:rhwl.library.request,state:0
+msgid "Draft"
+msgstr "草稿"
+
+#. module: rhwl_library
+#: selection:rhwl.library.request,state:0
+msgid "Confirm"
+msgstr "确认"
+
+#. module: rhwl_library
+#: selection:rhwl.library.request,state:0
+msgid "Done"
+msgstr "完成"
+
+#. module: rhwl_library
+#: selection:rhwl.library.request,state:0
+msgid "Cancel"
+msgstr "取消"
+
+#. module: rhwl_library
+#: field:rhwl.library.request.line,product_id:0
+msgid "Product"
+msgstr "产品"
+
+#. module: rhwl_library
+#: field:rhwl.library.request.line,uom_id:0
+msgid "Unit"
+msgstr "单位"
+
+#. module: rhwl_library
+#: field:rhwl.library.request.line,qty:0
+msgid "Qty"
+msgstr "数量"
