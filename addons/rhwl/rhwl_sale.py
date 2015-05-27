@@ -4,7 +4,7 @@ from openerp import SUPERUSER_ID,api
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
-import datetime
+import datetime,time
 import rhwl_sms
 import requests
 import logging
@@ -128,9 +128,10 @@ class rhwl_sample_info(osv.osv):
         "lims":fields.one2many("sale.sampleone.lims","name",readonly=True),
         "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True),
         "library_date":fields.date(u"实验结果时间"),
-        "lib_t13":fields.float("T13",digits=(9,4),readonly=True),
-        "lib_t18":fields.float("T18",digits=(9,4),readonly=True),
-        "lib_t21":fields.float("T21",digits=(9,4),readonly=True),
+        "lib_t13":fields.float("T13",digits=(12,8),readonly=True),
+        "lib_t18":fields.float("T18",digits=(12,8),readonly=True),
+        "lib_t21":fields.float("T21",digits=(12,8),readonly=True),
+        "lib_note":fields.text("Note",readonly=True)
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -342,20 +343,64 @@ class rhwl_sample_info(osv.osv):
             self.urgency = "1"
 
     def action_get_library(self,cr,uid,ids,context=None):
+        config_obj = self.pool.get('ir.config_parameter')
+        lims_email = config_obj.get_param(cr, uid, 'rhwl.lims.email', default='').encode('utf-8')
+        lims_pwd = config_obj.get_param(cr, uid, 'rhwl.lims.pwd', default='').encode('utf-8')
         obj = self.browse(cr,uid,ids,context=context)
         for i in obj:
-            json = requests.post("http://10.0.0.2:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email=admin@tony.com&password=123qwe")
+            t13=0.0
+            t18=0.0
+            t21=0.0
+            libnote=""
+            json = requests.post("http://10.0.0.2:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email="+lims_email+"&password="+lims_pwd)
             json = json.json()
             if json.get("haserror",False):
                 continue
-            if json["sample"]["status"]:
-                note = json["sample"]["note"]
-                stat = json["sample"]["status"]
-                timestr = json["sample"]["timeGenStr"]
-                lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timestr)])
+            if json["sample"].has_key("dnaExtractions"):
+                dnaExtractions = json["sample"]["dnaExtractions"]
+            else:
+                continue
+            for dna in dnaExtractions:
+                timeGen = dna.get("timeCom",0)
+                timeGen = time.localtime(float(str(timeGen)[:10])+28800)
+                timeGen = "%s/%s/%s %s:%s:%s" %(timeGen.tm_year,timeGen.tm_mon,timeGen.tm_mday,timeGen.tm_hour,timeGen.tm_min,timeGen.tm_sec)
+                lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timeGen)])
                 if not lims_id:
-                    lims_id = self.pool.get("sale.sampleone.lims").create(cr,uid,{"name":i.id,"timestr":timestr,"stat":stat,"note":note})
+                    lims_id = self.pool.get("sale.sampleone.lims").create(cr,uid,{"name":i.id,"timestr":timeGen,"stat":dna.get("status"),"note":u"DNA提取"})
                     self.write(cr,uid,i.id,{"check_state":"library","lims":[[4,lims_id]]},context=context)
+                if dna.has_key("libraries"):
+                    libraries = dna.get("libraries")
+                else:
+                    continue
+
+                for lib in libraries:
+                    timeGen = lib.get("timeCom",0)
+                    timeGen = time.localtime(float(str(timeGen)[:10])+28800)
+                    timeGen = "%s/%s/%s %s:%s:%s" %(timeGen.tm_year,timeGen.tm_mon,timeGen.tm_mday,timeGen.tm_hour,timeGen.tm_min,timeGen.tm_sec)
+                    lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timeGen)])
+                    if not lims_id:
+                        lims_id = self.pool.get("sale.sampleone.lims").create(cr,uid,{"name":i.id,"timestr":timeGen,"stat":lib.get("status"),"note":u"建库"})
+                        self.write(cr,uid,i.id,{"check_state":"library","lims":[[4,lims_id]]},context=context)
+
+                    if lib.has_key("runs"):
+                        runs = lib.get("runs")
+                    else:
+                        continue
+                    for r in runs:
+                        if not r.has_key("lane"):continue
+                        timeGen = r["lane"].get("timeCom",0)
+                        timeGen = time.localtime(float(str(timeGen)[:10])+28800)
+                        timeGen = "%s/%s/%s %s:%s:%s" %(timeGen.tm_year,timeGen.tm_mon,timeGen.tm_mday,timeGen.tm_hour,timeGen.tm_min,timeGen.tm_sec)
+                        lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timeGen)])
+                        if not lims_id:
+                            lims_id = self.pool.get("sale.sampleone.lims").create(cr,uid,{"name":i.id,"timestr":timeGen,"stat":r["lane"].get("status"),"note":u"上机分析"})
+                            self.write(cr,uid,i.id,{"check_state":"library","lims":[[4,lims_id]]},context=context)
+                        t13 = float(r["data"]["chr13"])
+                        t18 = float(r["data"]["chr18"])
+                        t21 = float(r["data"]["chr21"])
+                        libnote = r["data"]["state"] + "," +  r["data"]["result"]
+            self.write(cr,uid,i.id,{"lib_t13":t13,"lib_t18":t18,"lib_t21":t21,"lib_note":libnote})
+
     def get_all_library(self, cr, user, context=None):
         ids = self.search(cr,user,[("state","=","done")])
         self.action_get_library(cr,user,ids,context=context)
@@ -522,7 +567,7 @@ class rhwl_sample_lims(osv.osv):
     _name = "sale.sampleone.lims"
     _description = "样品实验记录"
     _columns = {
-        "name":fields.many2one("sale.sampleone", u"样本单号",ondelete="restrict"),
+        "name":fields.many2one("sale.sampleone", u"样本单号",ondelete="restrict",select=True),
         "timestr":fields.char(u"处理时间",size=20),
         "stat":fields.char(u"状态",size=20),
         "note":fields.char(u"备注",size=100),

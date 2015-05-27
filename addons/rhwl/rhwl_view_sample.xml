@@ -273,6 +273,9 @@
                                         <group col="3"><field name="lib_t18"/></group>
                                         <group col="3"><field name="lib_t21"/></group>
                                 </group>
+                                <group col="9" colspan="9">
+                                    <group col="9"><field name="lib_note"/></group>
+                                </group>
                                 <field name="lims">
                                     <tree>
                                         <field name="timestr"/>
