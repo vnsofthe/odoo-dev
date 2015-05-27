@@ -44,6 +44,7 @@
             <field name="view_id" ref="view_rhwl_sample_graph"/>
         </record>
 
-        <menuitem action="action_rhwl_sample_report_all" id="menu_rhwl_sample_report_all" parent="base.next_id_64" sequence="15"/>
+        <menuitem id="rhwl.next_id_64" name="人和无创" parent="base.menu_reporting" sequence="2"/>
+        <menuitem action="action_rhwl_sample_report_all" id="menu_rhwl_sample_report_all" parent="rhwl.next_id_64" sequence="10"/>
     </data>
 </openerp>
