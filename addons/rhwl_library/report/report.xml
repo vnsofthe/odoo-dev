@@ -10,9 +10,23 @@
             <field name="report_type">pentaho</field>
 			<field name="rml">rhwl_library/report/requisition.prpt</field>
 			<field name="is_pentaho_report" eval="True"/>
-			<field name="pentaho_report_model_id" ref="rhwl_library.model_rhwl_library_request"/>
+			<field name="pentaho_report_model_id" ref="model_rhwl_library_request"/>
 			<field name="pentaho_report_output_type">pdf</field>
 			<field name="pentaho_filename">rhwl_library/report/requisition.prpt</field>
+			<field name="pentaho_load_file" eval="True"/>
+		</record>
+
+        <record id="rhwl_stock_picking_ids" model="ir.actions.report.xml">
+			<field name="name">入库单</field>
+			<field name="report_name">rhwl.stock.picking.ids</field>
+			<field name="model">stock.picking</field>	<!-- Report will appear on 'Print' menu for partners. -->
+			<field name="auto" eval="False"/>
+            <field name="report_type">pentaho</field>
+			<field name="rml">rhwl_library/report/stock_picking.prpt</field>
+			<field name="is_pentaho_report" eval="True"/>
+			<field name="pentaho_report_model_id" ref="stock.model_stock_picking"/>
+			<field name="pentaho_report_output_type">pdf</field>
+			<field name="pentaho_filename">rhwl_library/report/stock_picking.prpt</field>
 			<field name="pentaho_load_file" eval="True"/>
 		</record>
 

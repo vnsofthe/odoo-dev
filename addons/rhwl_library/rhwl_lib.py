@@ -72,7 +72,9 @@ class rhwl_lib(osv.osv):
         obj = self.browse(cr,uid,ids,context)
         picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",obj.name)])
         if not picking_id:
-            return
+            self.action_state_done(cr,uid,ids,context=context)
+            picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",obj.name)])
+
         value = {
             'domain': "[('id','in',[" + ','.join(map(str, picking_id)) + "])]",
             'view_type': 'form',
