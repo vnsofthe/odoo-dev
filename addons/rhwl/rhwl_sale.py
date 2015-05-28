@@ -131,7 +131,8 @@ class rhwl_sample_info(osv.osv):
         "lib_t13":fields.float("T13",digits=(12,8),readonly=True),
         "lib_t18":fields.float("T18",digits=(12,8),readonly=True),
         "lib_t21":fields.float("T21",digits=(12,8),readonly=True),
-        "lib_note":fields.text("Note",readonly=True)
+        "lib_note":fields.text("Note",readonly=True),
+        "has_invoice":fields.boolean(u"是否开发票"),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -146,7 +147,8 @@ class rhwl_sample_info(osv.osv):
         "yfjzycb": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
-        "urgency":lambda obj,cr,uid,context:"0"
+        "urgency":lambda obj,cr,uid,context:"0",
+        "has_invoice":False,
 
     }
     _sql_constraints = [
