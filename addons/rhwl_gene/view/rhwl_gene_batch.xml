@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_easy_genes_batch_view_tree">
+            <field name="name">rhwl.easy.genes.batch.view.tree</field>
+            <field name="model">rhwl.easy.genes.batch</field>
+            <field name="arch" type="xml">
+                <tree string="易感基因批次时间统计" >
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="qty"/>
+                    <field name="post_date"/>
+                    <field name="lib_date"/>
+                    <field name="express_days"/>
+                    <field name="dna_date"/>
+                    <field name="snp_date"/>
+                    <field name="dna_qty"/>
+                    <field name="dna_rate"/>
+                    <field name="library_days"/>
+                    <field name="library_result"/>
+                    <field name="send_date"/>
+                    <field name="real_date"/>
+                    <field name="all_days"/>
+
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_batch_search">
+            <field name="name">rhwl.easy.genes.batch.search</field>
+            <field name="model">rhwl.easy.genes.batch</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'name'}"/>
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_easy_genes_batch" model="ir.actions.act_window">
+            <field name="name">易感批次时效统计</field>
+            <field name="res_model">rhwl.easy.genes.batch</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_easy_genes_batch_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_easy_genes_batch" parent="menu_rhwl_easy_genes" name="样本批次追踪" sequence="13"
+                  action='action_easy_genes_batch' groups="rhwl_base_tjs"/>
+    </data>
+</openerp>

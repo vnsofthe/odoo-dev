@@ -25,6 +25,7 @@
              "view/rhwl_lib.xml",
              "view/rhwl_cron.xml",
              "view/rhwl_report_except.xml",
+             "view/rhwl_gene_batch.xml"
              ],
     "qweb":[],
     'demo': [],

@@ -699,7 +699,99 @@ class rhwl_report_except(osv.osv):
             if obj.name.state.encode("utf-8") in ('report','report_done',"result_done","deliver",'done'):
                 self.pool.get("rhwl.easy.genes").write(cr,uid,obj.name.id,{"state":"ok"},context=context)
 
+#批号时间段统计
+class rhwl_gene_batch(osv.osv):
+    _name = "rhwl.easy.genes.batch"
+    _order = "date desc"
 
+    def _get_genes(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for i in ids:
+            res[i]={}
+            obj = self.browse(cr,uid,i,context=context)
+            gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",obj.name)],context=context)
+            gene_obj = self.pool.get("rhwl.easy.genes").browse(cr,uid,gene_id[0],context=context)
+
+            res[i]["date"] = gene_obj.date
+            res[i]["qty"] = len(gene_id)
+
+            log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","in",gene_id),("data","=","DNA")],order="date desc",context=context)
+            if log_id:
+                log_id = log_id[0]
+                log_obj = self.pool.get("rhwl.easy.genes.log").browse(cr,uid,log_id,context=context)
+                res[i]["dna_date"]=log_obj.date
+            else:
+                res[i]["dna_date"]=None
+
+            log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","in",gene_id),("data","=","SNP")],order="date desc",context=context)
+            if log_id:
+                log_id = log_id[0]
+                log_obj = self.pool.get("rhwl.easy.genes.log").browse(cr,uid,log_id,context=context)
+                res[i]["snp_date"]=log_obj.date
+            else:
+                res[i]["snp_date"]=None
+
+            gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",obj.name),("state","=","dna_except")],context=context)
+            res[i]["dna_qty"] = len(gene_id)
+            res[i]["dna_rate"] = res[i]["dna_qty"]/res[i]["qty"]
+        return res
+
+    def _get_picking(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for i in ids:
+            res[i]={}
+            obj = self.browse(cr,uid,i,context=context)
+            line_id = self.pool.get("rhwl.genes.picking.line").search(cr,uid,[("batch_no","=",obj.name)],order="id desc",context=context)
+            if line_id:
+                line_id = line_id[0]
+                line_obj = self.pool.get("rhwl.genes.picking.line").browse(cr,uid,line_id,context=context)
+                res[i]["send_date"] = line_obj.picking_id.date
+                res[i]["real_date"] = line_obj.picking_id.real_date
+            else:
+                continue
+
+        return res
+
+    def _get_days(self,cr,uid,ids,field_names,arg,context=None):
+        res={}
+        for i in ids:
+            res[i]={}
+            obj = self.browse(cr,uid,i,context=context)
+            if obj.date and obj.lib_date:
+                res[i]["express_days"] = obj.lib_date - obj.date
+            if obj.lib_date and obj.snp_date:
+                res[i]["library_days"] = obj.snp_date - obj.lib_date
+                wd=obj.lib_date.weekdays()
+                if res[i]["library_days"]<=7-wd:
+                    res[i]["library_result"] = 3
+                elif res[i]["library_days"]<=(7-wd)+7:
+                    res[i]["library_result"] = 2
+                elif res[i]["library_days"]<=(7-wd)+14:
+                    res[i]["library_result"] = 1
+                else:
+                    res[i]["library_result"] = 0
+
+            if obj.real_date and obj.date:
+                res[i]["all_days"] = obj.real_date - obj.date
+        return res
+
+    _columns={
+        "name":fields.char(u"批次",required=True),
+        "date":fields.function(_get_genes,type="date",string=u"送检日期",store=True,multi="get_genes"),
+        "qty":fields.function(_get_genes,type="integer",string=u"送检数量",multi="get_genes"),
+        "post_date":fields.date(u'快递收件日期'),
+        "lib_date":fields.date(u'实验签收日期'),
+        "express_days":fields.function(_get_days,type="integer",string=u"收样天数",multi="get_days"),
+        "dna_date":fields.function(_get_genes,type="date",string=u"质检确认日期",multi="get_genes"),
+        "snp_date":fields.function(_get_genes,type="date",string=u"位点导入日期",multi="get_genes"),
+        "dna_qty":fields.function(_get_genes,type="integer",string=u"质检不合格数量",multi="get_genes"),
+        "dna_rate":fields.function(_get_genes,type="float",string=u"质检不合格比率",multi="get_genes"),
+        "library_days":fields.function(_get_days,type="integer",string=u"实验天数",multi="get_days"),
+        "library_result":fields.function(_get_days,type="integer",string=u"实验进度",multi="get_days"),
+        "send_date":fields.function(_get_picking,type="date",string=u"预计发货日期",multi="get_picking"),
+        "real_date":fields.function(_get_picking,type="date",string=u"实际发货日期",multi="get_picking"),
+        "all_days":fields.function(_get_days,type="integer",string=u"送货周期",multi="get_days")
+    }
 #疾病分类对象
 class rhwl_gene_disease_type(osv.osv):
     _name = "rhwl.gene.disease.type"
