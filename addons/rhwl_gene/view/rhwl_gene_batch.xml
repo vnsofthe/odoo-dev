@@ -12,15 +12,23 @@
                     <field name="post_date"/>
                     <field name="lib_date"/>
                     <field name="express_days"/>
+                    <button name="action_button"  string="合格" type="object" icon="STOCK_YES" attrs="{'invisible':[('express_days','&gt;',2)]}"/>
+                    <button name="action_button"  string="不合格" type="object" icon="STOCK_NO" attrs="{'invisible':[('express_days','&lt;=',2)]}"/>
                     <field name="dna_date"/>
                     <field name="snp_date"/>
                     <field name="dna_qty"/>
-                    <field name="dna_rate" widget="progressbar"/>
+                    <field name="dna_rate"/>
                     <field name="library_days"/>
-                    <field name="library_result"/>
+                    <field name="library_result" attrs="{'invisible':1}"/>
+                    <button name="action_button"  string="优" type="object" icon="STOCK_YES" attrs="{'invisible':[('library_result','!=',3)]}"/>
+                    <button name="action_button"  string="良" type="object" icon="STOCK_YES" attrs="{'invisible':[('library_result','!=',2)]}"/>
+                    <button name="action_button"  string="合格" type="object" icon="terp-face-plain" attrs="{'invisible':[('library_result','!=',1)]}"/>
+                    <button name="action_button"  string="不合格" type="object" icon="STOCK_NO" attrs="{'invisible':[('library_result','!=',0)]}"/>
                     <field name="send_date"/>
                     <field name="real_date"/>
                     <field name="all_days"/>
+                    <button name="action_button"  string="合格" type="object" icon="STOCK_YES" attrs="{'invisible':[('all_days','&gt;',30)]}"/>
+                    <button name="action_button"  string="不合格" type="object" icon="STOCK_NO" attrs="{'invisible':[('all_days','&lt;=',30)]}"/>
                 </tree>
             </field>
         </record>
