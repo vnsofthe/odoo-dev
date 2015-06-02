@@ -15,14 +15,46 @@
                     <field name="dna_date"/>
                     <field name="snp_date"/>
                     <field name="dna_qty"/>
-                    <field name="dna_rate"/>
+                    <field name="dna_rate" widget="progressbar"/>
                     <field name="library_days"/>
                     <field name="library_result"/>
                     <field name="send_date"/>
                     <field name="real_date"/>
                     <field name="all_days"/>
-
                 </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_batch_view_form">
+            <field name="name">rhwl.easy.genes.batch.view.form</field>
+            <field name="model">rhwl.easy.genes.batch</field>
+            <field name="arch" type="xml">
+                <form string="样本追踪">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="qty"/>
+                                <field name="post_date"/>
+                                <field name="lib_date"/>
+                                <field name="express_days" icon="STOCK_NO"/>
+                                <field name="dna_date"/>
+
+                            </group>
+                            <group>
+                                <field name="snp_date"/>
+                                <field name="dna_qty"/>
+                                <field name="dna_rate"/>
+                                <field name="library_days"/>
+                                <field name="library_result"/>
+                                <field name="send_date"/>
+                                <field name="real_date"/>
+                                <field name="all_days"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 

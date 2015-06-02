@@ -222,7 +222,7 @@ class rhwl_gene(osv.osv):
             val["log"] = [
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
         if val.has_key("img"):
-            log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","=",id),("data","=","expimg")])
+            log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","in",id),("data","=","expimg")])
             if log_id:
                 self.pool.get("rhwl.easy.genes.log").write(cr,uid,log_id,{"data":"expimg,1"},context=context)
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
@@ -703,53 +703,53 @@ class rhwl_report_except(osv.osv):
 #批号时间段统计
 class rhwl_gene_batch(osv.osv):
     _name = "rhwl.easy.genes.batch"
-    _order = "date desc"
+    _order = "name desc"
+
+    def str2date(self,str):
+        return datetime.datetime.strptime(str.split(" ")[0],"%Y-%m-%d")
 
     def _get_genes1(self,cr,uid,ids,field_names,arg,context=None):
-        res={}
+        res=dict.fromkeys(ids,{})
         genes_table = self.pool.get("rhwl.easy.genes")
         log_table = self.pool.get("rhwl.easy.genes.log")
+
         for i in ids:
-            res[i]={}
-            _logger.info("*"*40)
-            _logger.info(ids)
+            res[i] = dict.fromkeys(field_names,None)
             gene_id = genes_table.search(cr,uid,[("batch_id","=",i)],context=context)
+
             if not gene_id:continue
             gene_obj = genes_table.browse(cr,uid,gene_id[0],context=context)
 
-            res[i]["date"] = gene_obj.date
+            res[i]["date"] = self.str2date(gene_obj.date)
             res[i]["qty"] = len(gene_id)
 
             log_id = log_table.search(cr,uid,[("genes_id","in",gene_id),("data","=","DNA")],order="date desc",context=context)
             if log_id:
                 log_id = log_id[0]
                 log_obj = log_table.browse(cr,uid,log_id,context=context)
-                res[i]["dna_date"]=log_obj.date
-            else:
-                res[i]["dna_date"]=None
+                res[i]["dna_date"] = self.str2date(log_obj.date)
 
             log_id = log_table.search(cr,uid,[("genes_id","in",gene_id),("data","=","SNP")],order="date desc",context=context)
             if log_id:
                 log_id = log_id[0]
                 log_obj = log_table.browse(cr,uid,log_id,context=context)
-                res[i]["snp_date"]=log_obj.date
-            else:
-                res[i]["snp_date"]=None
+                res[i]["snp_date"] = self.str2date(log_obj.date)
 
             gene_id = genes_table.search(cr,uid,[("batch_id","=",i),("state","=","dna_except")],context=context)
             res[i]["dna_qty"] = len(gene_id)
-            res[i]["dna_rate"] = res[i]["dna_qty"]/res[i]["qty"]
+            res[i]["dna_rate"] = round((res[i]["dna_qty"]*1.0)/res[i]["qty"],4)*100
 
             cr.execute("select name,lib_date from rhwl_easy_genes_batch where id="+str(i))
 
             obj = cr.fetchall()
-            _logger.info(obj)
+
             batch_no,lib_date = obj[0]
+            if lib_date:lib_date = self.str2date(lib_date)
             if res[i]["date"] and lib_date:
-                res[i]["express_days"] = lib_date - res[i]["date"]
+                res[i]["express_days"] = (lib_date - res[i]["date"]).days
             if lib_date and res[i]["snp_date"]:
-                res[i]["library_days"] = res[i]["snp_date"] - lib_date
-                wd=lib_date.weekdays()
+                res[i]["library_days"] = (res[i]["snp_date"] - lib_date).days
+                wd=lib_date.weekday()
                 if res[i]["library_days"]<=7-wd:
                     res[i]["library_result"] = 3
                 elif res[i]["library_days"]<=(7-wd)+7:
@@ -762,10 +762,11 @@ class rhwl_gene_batch(osv.osv):
             if line_id:
                 line_id = line_id[0]
                 line_obj = self.pool.get("rhwl.genes.picking.line").browse(cr,uid,line_id,context=context)
-                res[i]["send_date"] = line_obj.picking_id.date
-                res[i]["real_date"] = line_obj.picking_id.real_date
+                res[i]["send_date"] = self.str2date(line_obj.picking_id.date)
+                res[i]["real_date"] = self.str2date(line_obj.picking_id.real_date)
                 if res[i]["date"]:
-                    res[i]["all_days"] = res[i]["real_date"] - res[i]["date"]
+                    res[i]["all_days"] = (res[i]["real_date"] - res[i]["date"]).days
+            _logger.warn(res)
         return res
 
     _columns={
@@ -778,7 +779,7 @@ class rhwl_gene_batch(osv.osv):
         "dna_date":fields.function(_get_genes1,type="date",string=u"质检确认日期",multi="get_genes1"),
         "snp_date":fields.function(_get_genes1,type="date",string=u"位点导入日期",multi="get_genes1"),
         "dna_qty":fields.function(_get_genes1,type="integer",string=u"质检不合格数量",multi="get_genes1"),
-        "dna_rate":fields.function(_get_genes1,type="float",string=u"质检不合格比率",multi="get_genes1"),
+        "dna_rate":fields.function(_get_genes1,type="float",string=u"质检不合格比率(%)",multi="get_genes1"),
         "library_days":fields.function(_get_genes1,type="integer",string=u"实验天数",multi="get_genes1"),
         "library_result":fields.function(_get_genes1,type="integer",string=u"实验进度",multi="get_genes1"),
         "send_date":fields.function(_get_genes1,type="date",string=u"预计发货日期",multi="get_genes1"),
