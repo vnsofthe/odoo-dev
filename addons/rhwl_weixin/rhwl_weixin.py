@@ -25,7 +25,8 @@ class rhwl_weixin(osv.osv):
         "checkDateTime":fields.datetime(u"验证码发送时间"),
         "sampleno":fields.char("sample No"),
         "is_jobmanager":fields.boolean(u"易感数据/报告数据交换通知"),
-        "is_notice":fields.boolean(u"易感信息状态通知")
+        "is_notice":fields.boolean(u"易感信息状态通知"),
+        "is_library":fields.boolean(u"实验进度通知")
     }
 
 class rhwl_config(osv.osv):

@@ -540,7 +540,13 @@ class rhwl_gene(osv.osv):
     def weixin_notice_template2(self,cr,uid,context=None):
         s_date,e_date = self.date_between(20)
 
-        ids = self.search(cr,uid,[("date",">=",s_date),("date","<=",e_date)],context=context)
+        idscount = self.search_count(cr,uid,[("date",">=",s_date),("date","<=",e_date),("cust_prop","in",["tjs","tjs_vip"])],context=context)
+        cr.execute("""with d as (select batch_no,state,count(*) as c from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') group by batch_no,state order by batch_no)
+                    select *
+                    from d dd
+                    where not exists(select * from d where state='done' and d.batch_no=dd.batch_no)""")
+
+
         v_count0=0
         v_count1=0
         v_count2=0
@@ -548,23 +554,23 @@ class rhwl_gene(osv.osv):
         v_count4=0
         v_count5 = 0
         dna_rate={}
-        for i in self.browse(cr,uid,ids,context=context):
-            if not dna_rate.has_key(i.batch_no):
-                dna_rate[i.batch_no]={"count":0,"except":0}
-            dna_rate[i.batch_no]["count"] =dna_rate[i.batch_no]["count"]+1
-            if i.state=='draft':
-                v_count0 += 1 #待收件
-            elif i.state in ['except','except_confirm','confirm']:
-                v_count1 += 1 #待检测
-            elif i.state in ['dna_ok','ok','report']:
-                v_count2 += 1 #待生成报告
-            elif i.state == 'dna_except':
-                v_count3 += 1 #质检异常
-                dna_rate[i.batch_no]["except"] = dna_rate[i.batch_no]["except"] +1
-            elif i.state in ['report_done',"result_done","deliver",]:
-                v_count4 += 1 #待送货
-            elif i.state in ['done']:
-                v_count5 += 1 #已完成
+        for i in cr.fetchall():
+            if not dna_rate.has_key(i[0]):
+                dna_rate[i[0]]={"count":0,"except":0}
+            dna_rate[i[0]]["count"] =dna_rate[i[0]]["count"]+i[2]
+            if i[1]=='draft':
+                v_count0 += i[2] #待收件
+            elif i[1] in ['except','except_confirm','confirm']:
+                v_count1 += i[2] #待检测
+            elif i[1] in ['dna_ok','ok','report']:
+                v_count2 += i[2] #待生成报告
+            elif i[1] == 'dna_except':
+                v_count3 += i[2] #质检异常
+                dna_rate[i[0]]["except"] = dna_rate[i[0]]["except"] + i[2]
+            elif i[1] in ['report_done',"result_done","deliver",]:
+                v_count4 += i[2] #待送货
+            elif i[1] in ['done']:
+                v_count5 += i[2] #已完成
         except_rate=[]
         for k,v in dna_rate.items():
             if v["except"]>0:
@@ -572,11 +578,31 @@ class rhwl_gene(osv.osv):
         js={
             "first":"易感样本状况统计：",
             "keyword1":"本期从(%s-%s)"%(s_date.strftime("%Y/%m/%d"),e_date.strftime("%Y/%m/%d")),
-            "keyword2":"待收件%s笔，待检测%s笔，等待报告产生%s笔，已出报告%s笔(质检不合格%s笔[%s]，待送货%s笔，已完成%s笔)。总计%s笔。" %(v_count0,v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4,v_count5,len(ids)),
+            "keyword2":"待收件%s笔，待检测%s笔，等待报告产生%s笔，已出报告%s笔(质检不合格%s笔[%s]，待送货%s笔)。本期总计%s笔。" %(v_count0,v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4,idscount),
             "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }
         self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_notice",context=context)
+
+    #样本实验进度微信提醒
+    def weixin_notice_template3(self,cr,uid,context=None):
+        cr.execute("""select date,count(*) c
+                      from rhwl_easy_genes
+                      where cust_prop in ('tjs','tjs_vip')
+                      and state in ('confirm','except_confirm')
+                      and date<=(now() - interval '7 day')::date group by date""")
+        res=[]
+        for i in cr.fetchall:
+            res.append("日期:"+str(i[0])+",样本数:"+str(i[1]))
+        if res:
+            js={
+                "first":"易感样本实验进度提醒：",
+                "keyword1":"7天之前送达样本",
+                "keyword2":";".join(res),
+                "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
+                "remark":"亲爱的实验同事，以上样本，须在本周日之前出结果，否则就会超出和客户约定的送货周期。收到本条消息时，请及时和运营部同事确认，谢谢。"
+            }
+            self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_library",context=context)
 
     #根据中间日期计算本周期的起迄日期
     def date_between(self,days=20):
