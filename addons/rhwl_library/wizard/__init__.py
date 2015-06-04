@@ -1,1 +1,2 @@
 import purchase_requisition_group
+import stock_picking

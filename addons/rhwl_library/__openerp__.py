@@ -19,7 +19,8 @@
                 ,"view/rhwl_lib.xml"
                 ,"view/library_request_sequence.xml"
                 ,"wizard/purchase_requisition_group.xml"
-                ,"report/report.xml"],
+                ,"report/report.xml"
+                ,"wizard/stock_picking.xml"],
     "qweb":[],
     'demo': [],
     'test': [],

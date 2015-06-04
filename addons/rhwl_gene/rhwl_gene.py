@@ -592,7 +592,7 @@ class rhwl_gene(osv.osv):
                       and state in ('confirm','except_confirm')
                       and date<=(now() - interval '7 day')::date group by date""")
         res=[]
-        for i in cr.fetchall:
+        for i in cr.fetchall():
             res.append("日期:"+str(i[0])+",样本数:"+str(i[1]))
         if res:
             js={
@@ -796,7 +796,7 @@ class rhwl_gene_batch(osv.osv):
                 res[i]["real_date"] = self.str2date(line_obj.picking_id.real_date)
                 if res[i]["date"] and res[i]["real_date"]:
                     res[i]["all_days"] = (res[i]["real_date"] - res[i]["date"]).days
-            _logger.warn(res)
+
         return res
 
     _columns={

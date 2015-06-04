@@ -28,7 +28,7 @@
             target="new"
             multi="True"
             key2="client_action_multi"
-            id="action_view_purchase_requisition_group"/>
+            id="action_view_purchase_group_group"/>
 
     </data>
 </openerp>

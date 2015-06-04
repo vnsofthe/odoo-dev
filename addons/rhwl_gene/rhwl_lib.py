@@ -76,7 +76,7 @@ class rhwl_lib(osv.osv_memory):
                         raise osv.except_osv(u"合并出错",u"样本编码%s，位点%s,有两个不同的结果[%s,%s]." %(no,sheet_header[c],val,data[no][sheet_header[c]]))
         os.remove(f1_name)
         os.remove(f2_name)
-        _logger.info(data)
+
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
         #写表头

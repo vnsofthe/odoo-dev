@@ -25,6 +25,7 @@
                             <field name="user_id"/>
                             <field name="is_jobmanager"/>
                             <field name="is_notice"/>
+                            <field name="is_library"/>
                         </group>
                     </sheet>
                 </form>
