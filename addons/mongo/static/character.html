@@ -49,11 +49,12 @@
     <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="js/vnsoft.js"></script>
     <script>
         $.ajax(
                 {
                     type: 'POST',
-                      url: "/web/api/mongo/character-get/",
+                      url: "/web/api/mongo/character-get/?dbport="+getUrlVar("dbport"),
                       data: {},
                       success: function(data){
                           $.each(data,function(k,v){
@@ -62,7 +63,7 @@
                           $(".btn-link").on("click",function(e){
                                 var t= e.target.parentElement.parentElement.childNodes[0].innerText;
 
-                               location.href="/mongo/static/character-edit.html?id="+ t
+                               location.href="/mongo/static/character-edit.html?dbport="+getUrlVar("dbport")+"&id="+ t
                             });
                       }
                 }
@@ -79,7 +80,7 @@
             $.ajax(
                 {
                     type: 'POST',
-                      url: "/web/api/mongo/character-get/?id="+id+"&cn="+cn+"&en="+en,
+                      url: "/web/api/mongo/character-get/?dbport="+getUrlVar("dbport")+"&id="+id+"&cn="+cn+"&en="+en,
                       data: {},
                       success: function(data){
                               $("table tbody").append("<tr><td>"+ id+"</td><td>"+ cn+"</td><td>"+en+"</td><td><button type=\"button\" class=\"btn btn-link\">编辑</button></td></tr>");

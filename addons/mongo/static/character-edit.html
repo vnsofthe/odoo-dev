@@ -58,6 +58,7 @@
               <div class="col-lg-10 col-md-9">
                   <form id="cn_pic_form" enctype="multipart/form-data" action="/web/api/mongo/character-pic/post/" method="POST">
                         <input type="text" name="cn_data_id" id="cn_data_id" style="display:none"/>
+                        <input type="text" name="dbport" id="dbport" style="display:none"/>
                         <input type="file" name="choosefile" id="choosefile" />
                   </form>
               </div>
@@ -106,6 +107,7 @@
     <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="js/jquery.form.js"></script>
     <script src="js/json2.js"></script>
+    <script src="js/vnsoft.js"></script>
     <script>
         function getUrlParameter(sParam)
         {
@@ -129,6 +131,7 @@
             $("#wait_ajax").remove();
             });
         $("#cn_data_id").val(decodeURIComponent(getUrlParameter("id")));
+        $("#dbport").val(getUrlVar("dbport"));
         $("#cn_pic_form").ajaxForm();
         $("#cn_submit").bind("click",function(e){
             if($("#choosefile").val().length>0){$("#cn_pic_form").ajaxSubmit();}
@@ -146,8 +149,8 @@
                             descriptionF:$("#cn_note_descriptionF").val()
                             }
                     }
-            para._id=decodeURIComponent(getUrlParameter("id"))
-
+            para._id=decodeURIComponent(getUrlParameter("id"));
+            para.dbport=getUrlVar("dbport");
             $.ajax({
                 type:"POST",
                 contentType: "application/json; charset=utf-8",   //内容类型
@@ -163,7 +166,7 @@
         $.ajax(
                 {
                     type: 'POST',
-                      url: "/web/api/mongo/character-detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
+                      url: "/web/api/mongo/character-detail/get/?dbport="+getUrlVar("dbport")+"&id="+decodeURIComponent(getUrlParameter("id")),
                       data: {},
                       success: function(data){
                               //console.log(data);

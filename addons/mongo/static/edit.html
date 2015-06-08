@@ -58,7 +58,9 @@
               <div class="col-lg-10 col-md-9">
                   <form id="cn_pic_form" enctype="multipart/form-data" action="/web/api/mongo/pic/post/" method="POST">
                         <input type="text" name="cn_data_id" id="cn_data_id" style="display:none"/>
+                        <input type="text" name="dbport" id="dbport" style="display:none"/>
                         <input type="file" name="choosefile" id="choosefile" />
+
                   </form>
               </div>
 
@@ -279,6 +281,7 @@
               <div class="col-lg-10 col-md-9">
                   <form id="en_pic_form" enctype="multipart/form-data" action="/web/api/mongo/pic/post/" method="POST">
                         <input type="text" name="en_data_id" id="en_data_id" style="display:none"/>
+                        <input type="text" name="en_dbport" id="en_dbport" style="display:none"/>
                         <input type="file" name="en_choosefile" id="en_choosefile" />
                   </form>
               </div>
@@ -473,6 +476,7 @@
     <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script src="js/jquery.form.js"></script>
     <script src="js/json2.js"></script>
+    <script src="js/vnsoft.js"></script>
     <script>
         function getUrlParameter(sParam)
         {
@@ -496,6 +500,7 @@
             $("#wait_ajax").remove();
             });
         $("#cn_data_id").val(decodeURIComponent(getUrlParameter("id")));
+        $("#dbport").val(decodeURIComponent(getUrlParameter("dbport")));
         $("#cn_pic_form").ajaxForm();
         $("#cn_submit").bind("click",function(e){
             if($("#choosefile").val().length>0){$("#cn_pic_form").ajaxSubmit();}
@@ -552,10 +557,11 @@
                                                     "function":compound[k].childNodes[1].childNodes[0].value
                                                     }
             });
+            para.dbport = getUrlVar("dbport");
             $.ajax({
                 type:"POST",
                 contentType: "application/json; charset=utf-8",   //内容类型
-                url:"/web/api/mongo/detail/post/",
+                url:"/web/api/mongo/detail/post/?dbport="+getUrlVar("dbport"),
                 data:JSON.stringify(para),
                 success:function(data){
                     alert("修改成功。");
@@ -574,10 +580,10 @@
         $.ajax(
                 {
                     type: 'POST',
-                      url: "/web/api/mongo/detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
+                      url: "/web/api/mongo/detail/get/?dbport="+getUrlVar("dbport")+"&id="+decodeURIComponent(getUrlParameter("id")),
                       data: {},
                       success: function(data){
-                              //console.log(data);
+                              console.log(data);
                               $("#cn_title").val(data.CN.title);
                               if(data.CN.desc!=undefined){
                                   $("#cn_desc_header").val(data.CN.desc.header);
@@ -618,10 +624,12 @@
                                   $("#cn_nutrition_description").val(data.CN.nutrition.description);
                                   $("#cn_nutrition_descriptionM").val(data.CN.nutrition.descriptionM);
                                   $("#cn_nutrition_descriptionF").val(data.CN.nutrition.descriptionF);
-
-                                  $.each(data.CN.nutrition.compound,function(k,v){
+                                  if(data.CN.nutrition.compound!=undefined){
+                                      $.each(data.CN.nutrition.compound,function(k,v){
                                       $("#cn_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
                                   });
+                                  }
+
                               }
                                 //console.log(data.CN.nutrition.compound)
 
@@ -636,6 +644,7 @@
     </script>
     <script>
         $("#en_data_id").val(decodeURIComponent(getUrlParameter("id")));
+        $("#en_dbport").val(decodeURIComponent(getUrlParameter("dbport")));
         $("#en_pic_form").ajaxForm();
         $("#en_submit").bind("click",function(e){
             if($("#en_choosefile").val().length>0){$("#en_pic_form").ajaxSubmit();}
@@ -692,10 +701,11 @@
                                                     "function":compound[k].childNodes[1].childNodes[0].value
                                                     }
             });
+            para.dbport = getUrlVar("dbport");
             $.ajax({
                 type:"POST",
                 contentType: "application/json; charset=utf-8",   //内容类型
-                url:"/web/api/mongo/detail/post/",
+                url:"/web/api/mongo/detail/post/?dbport="+getUrlVar("dbport"),
                 data:JSON.stringify(para),
                 success:function(data){
                     alert("修改成功。");
@@ -714,7 +724,7 @@
         $.ajax(
                 {
                     type: 'POST',
-                      url: "/web/api/mongo/detail/get/?id="+decodeURIComponent(getUrlParameter("id")),
+                      url: "/web/api/mongo/detail/get/?dbport="+getUrlVar("dbport")+"&id="+decodeURIComponent(getUrlParameter("id")),
                       data: {},
                       success: function(data){
                               //console.log(data);
@@ -758,9 +768,11 @@
                                   $("#en_nutrition_description").val(data.EN.nutrition.description);
                                   $("#en_nutrition_descriptionM").val(data.EN.nutrition.descriptionM);
                                   $("#en_nutrition_descriptionF").val(data.EN.nutrition.descriptionF);
-                                  $.each(data.EN.nutrition.compound,function(k,v){
-                                      $("#en_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\""+ v.name+"\"></td><td><input type=\"text\" class=\"form-control\" value=\""+ v.function+"\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
-                                  })
+                                  if(data.EN.nutrition.compound!=undefined) {
+                                      $.each(data.EN.nutrition.compound, function (k, v) {
+                                          $("#en_nutrition_table tbody").append("<tr><td><input type=\"text\" class=\"form-control\" value=\"" + v.name + "\"></td><td><input type=\"text\" class=\"form-control\" value=\"" + v.function + "\"></td><td><button class=\"btn btn-link\">删除</button></td></tr>");
+                                      })
+                                  }
                               }
                                 //console.log(data.EN.nutrition.compound)
 

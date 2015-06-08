@@ -19,10 +19,11 @@ class WebClient(http.Controller):
 
     @http.route('/web/api/mongo/character-get/', type='http', auth="public",website=True)
     def drugs_login(self,**kw):
-        conn = pymongo.Connection(self.DBIP,27017)
+        dbport = kw.get("dbport")
+        conn = pymongo.Connection(self.DBIP,int(dbport))
         db = conn.topic #连接库
         #db.authenticate("tage","123")
-        if not kw:
+        if not kw.has_key("id"):
             content = db.topic.find()
             res=[]
             #打印所有数据
@@ -37,7 +38,8 @@ class WebClient(http.Controller):
 
     @http.route('/web/api/mongo/character-detail/get/', type='http', auth="public")
     def drugs_detail_get(self,**kw):
-        conn = pymongo.Connection(self.DBIP,27017)
+        dbport = kw.get("dbport")
+        conn = pymongo.Connection(self.DBIP,int(dbport))
         db = conn.topic #连接库
         res=db.topic.find_one({"_id":kw.get("id").encode("utf-8")})
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
@@ -45,7 +47,7 @@ class WebClient(http.Controller):
 
     @http.route('/web/api/mongo/character-pic/post/', type='http', auth="public")
     def drugs_pic_post(self,**kw):
-
+        dbport = kw.get("dbport")
         #_logger.info(request.httprequest.files)
         if kw.get("choosefile"):
             key="CN"
@@ -61,7 +63,7 @@ class WebClient(http.Controller):
             fs=base64.encodestring(kw.get("choosefile").stream.read())
         else:
             fs=base64.encodestring(kw.get("en_choosefile").stream.read())
-        conn = pymongo.Connection(self.DBIP,27017)
+        conn = pymongo.Connection(self.DBIP,int(dbport))
         db = conn.topic #连接库
         res=db.topic.find_one({"_id":id})
         res[key]['pic']={"mimetype":mimetype,"base64":fs}
@@ -70,7 +72,8 @@ class WebClient(http.Controller):
 
     @http.route('/web/api/mongo/character-detail/post/', type='json', auth="public")
     def drugs_detail_post(self,**kw):
-        conn = pymongo.Connection(self.DBIP,27017)
+        dbport = request.jsonrequest.get("dbport")
+        conn = pymongo.Connection(self.DBIP,int(dbport))
         db = conn.topic #连接库
         res=db.topic.find_one({"_id":request.jsonrequest.get("_id").encode("utf-8")})
 

@@ -5,16 +5,73 @@
     <title>MongoDB Data</title>
 </head>
 <body>
-    <ul>
-        <li>
-            <a href="index.html">疾病维护</a>
-        </li>
-        <li>
-            <a href="drugs-index.html">药品维护</a>
-        </li>
-        <li>
-            <a href="character.html">性状维护</a>
-        </li>
-    </ul>
+    <H3>请选择数据库版本：
+        <select id="dbselect" onchange="dbchange();">
+            <option value="00000"> </option>
+            <option value="27017">当前版本</option>
+            <option value="27018">基础版本</option>
+            <option value="27019">泰济生版本</option>
+        </select>
+    </H3>
+
+    <div>
+        <div id="db27017">
+            <h3>当前版本</h3>
+            <ul>
+                <li>
+                    <a href="index.html?dbport=27017">疾病维护</a>
+                </li>
+                <li>
+                    <a href="drugs-index.html?dbport=27017">药品维护</a>
+                </li>
+                <li>
+                    <a href="character.html?dbport=27017">性状维护</a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="db27018">
+            <h3>基础版本</h3>
+            <ul>
+                <li>
+                    <a href="index.html?dbport=27018">疾病维护</a>
+                </li>
+                <li>
+                    <a href="drugs-index.html?dbport=27018">药品维护</a>
+                </li>
+                <li>
+                    <a href="character.html?dbport=27018">性状维护</a>
+                </li>
+            </ul>
+        </div>
+
+        <div id="db27019">
+            <h3>泰济生版本</h3>
+            <ul>
+                <li>
+                    <a href="index.html?dbport=27019">疾病维护</a>
+                </li>
+                <li>
+                    <a href="drugs-index.html?dbport=27019">药品维护</a>
+                </li>
+                <li>
+                    <a href="character.html?dbport=27019">性状维护</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function dbchange(){
+            document.getElementById("db27017").style.display ='none';
+            document.getElementById("db27018").style.display ='none';
+            document.getElementById("db27019").style.display ='none';
+            var obj=document.getElementById('dbselect');
+            var index=obj.selectedIndex; //序号，取当前选中选项的序号
+            var val = obj.options[index].value;
+            if(val!='00000'){document.getElementById('db'+val).style.display ='block';}
+        }
+        dbchange();
+    </script>
 </body>
 </html>

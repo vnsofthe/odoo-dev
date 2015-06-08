@@ -54,7 +54,9 @@ class stock_picking(osv.osv_memory):
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
         ws.col(1).width = 9000 #1000 = 3.715(Excel)
-
+        ws.col(2).width = 4500
+        ws.col(3).width = 4500
+        ws.col(7).width = 4500
         ws.write_merge(0,0,0,8,u"人和未来物资入库单",self.get_excel_style(18,xlwt.Alignment.HORZ_CENTER))
 
         rows=1
@@ -63,7 +65,7 @@ class stock_picking(osv.osv_memory):
             ws.write(rows,1,u"入库单号："+ i.name,self.get_excel_style(12))
             ws.write(rows,6,u"入库时间："+ i.date_done,self.get_excel_style(12))
             rows += 1
-            ws.write(rows,0,u"序号",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+            ws.write(rows,0,u"序号",self.get_excel_style(12,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.MEDIUM))
             ws.write(rows,1,u"产品",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
             ws.write(rows,2,u"品牌",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
             ws.write(rows,3,u"货号",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
@@ -75,7 +77,7 @@ class stock_picking(osv.osv_memory):
             rows += 1
             row_seq=1
             for j in i.pack_operation_ids:
-                ws.write(rows,0,row_seq,self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+                ws.write(rows,0,row_seq,self.get_excel_style(12,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.MEDIUM))
                 ws.write(rows,1,j.product_id.name,self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 ws.write(rows,2,j.product_id.brand if j.product_id.brand else "",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 ws.write(rows,3,j.product_id.default_code  if j.product_id.default_code else "",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
@@ -85,6 +87,7 @@ class stock_picking(osv.osv_memory):
                 ws.write(rows,7,_(j.location_dest_id.display_name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 ws.write(rows,8,_(j.product_id.categ_id.name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 rows += 1
+                row_seq += 1
 
             rows += 2
 
