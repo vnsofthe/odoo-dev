@@ -40,7 +40,7 @@
        <record id="sale_partner_saleman_rule" model="ir.rule">
             <field name="name">Access Own sale Partners</field>
             <field name="model_id" ref="model_res_partner"/>
-            <field name="domain_force">['|','|','|',('user_id','=',user.id),('parent_id.user_id','=',user.id),('zydb','=',user.id),'&amp;',('customer','=',False),('supplier','=',False)]</field>
+            <field name="domain_force">['|','|','|','|','|',('user_id','=',user.id),('parent_id.user_id','=',user.id),('zydb','=',user.id),('user_id.section_ids.user_id.id','=',user.id),('user_id.section_ids.parent_id.user_id.id','=',user.id),'&amp;',('customer','=',False),('supplier','=',False)]</field>
             <field name="groups" eval="[(4, ref('base.group_sale_salesman'))]"/>
             <field eval="1" name="perm_unlink"/>
             <field eval="1" name="perm_write"/>
@@ -71,7 +71,7 @@
         <record id="sampleone_salesman_rule" model="ir.rule">
             <field name="name">Access SampleOne Salesman</field>
             <field name="model_id" ref="model_sale_sampleone"/>
-            <field name="domain_force">['|','|','|',('receiv_user','=',user.id),('fzr','=',user.id),('cxyy.zydb','=',user.id),('cxyy.user_id','=',user.id)]</field>
+            <field name="domain_force">['|','|','|','|','|',('receiv_user','=',user.id),('fzr','=',user.id),('cxyy.zydb','=',user.id),('cxyy.user_id','=',user.id),('cxyy.user_id.section_ids.user_id.id','=',user.id),('cxyy.user_id.section_ids.parent_id.user_id.id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('base.group_sale_salesman'))]"/>
             <field eval="0" name="perm_unlink"/>
             <field eval="1" name="perm_write"/>
@@ -92,7 +92,7 @@
         <record id="sampleone_report_salesman_rule" model="ir.rule">
             <field name="name">Access SampleOne Report Salesman</field>
             <field name="model_id" ref="model_rhwl_sample_report"/>
-            <field name="domain_force">['|','|','|',('receiv_user','=',user.id),('cxyy.zydb','=',user.id),('cxyy.user_id','=',user.id)]</field>
+            <field name="domain_force">['|','|','|','|','|',('receiv_user','=',user.id),('cxyy.zydb','=',user.id),('cxyy.user_id','=',user.id),('cxyy.user_id.section_ids.user_id.id','=',user.id),('cxyy.user_id.section_ids.parent_id.user_id.id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('base.group_sale_salesman'))]"/>
             <field eval="0" name="perm_unlink"/>
             <field eval="0" name="perm_write"/>
@@ -123,7 +123,7 @@
         <record id="sampleone_reuse_salesman_rule" model="ir.rule">
             <field name="name">Access SampleOne reuse Salesman</field>
             <field name="model_id" ref="model_sale_sampleone_reuse"/>
-            <field name="domain_force">['|','|','|',('name.receiv_user','=',user.id),('name.fzr','=',user.id),('name.cxyy.zydb','=',user.id),('name.cxyy.user_id','=',user.id)]</field>
+            <field name="domain_force">['|','|','|','|','|',('name.receiv_user','=',user.id),('name.fzr','=',user.id),('name.cxyy.zydb','=',user.id),('name.cxyy.user_id','=',user.id),('name.cxyy.user_id.section_ids.user_id.id','=',user.id),('name.cxyy.user_id.section_ids.parent_id.user_id.id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('base.group_sale_salesman'))]"/>
             <field eval="0" name="perm_unlink"/>
             <field eval="1" name="perm_write"/>
@@ -153,7 +153,7 @@
         <record id="sampleone_exception_salesman_rule" model="ir.rule">
             <field name="name">Access SampleOne exception Salesman</field>
             <field name="model_id" ref="model_sale_sampleone_exception"/>
-            <field name="domain_force">['|','|','|',('name.receiv_user','=',user.id),('name.fzr','=',user.id),('name.cxyy.zydb','=',user.id),('name.cxyy.user_id','=',user.id)]</field>
+            <field name="domain_force">['|','|','|','|','|',('name.receiv_user','=',user.id),('name.fzr','=',user.id),('name.cxyy.zydb','=',user.id),('name.cxyy.user_id','=',user.id),('name.cxyy.user_id.section_ids.user_id.id','=',user.id),('name.cxyy.user_id.section_ids.parent_id.user_id.id','=',user.id)]</field>
             <field name="groups" eval="[(4, ref('base.group_sale_salesman'))]"/>
             <field eval="0" name="perm_unlink"/>
             <field eval="1" name="perm_write"/>

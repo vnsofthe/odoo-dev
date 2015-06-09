@@ -268,3 +268,9 @@ class rhwl_country_state_city_area(osv.osv):
         "city_id":fields.many2one("res.country.state.city",string="City"),
         "name": fields.char("Area",size=200)
     }
+
+class rhwl_user(osv.osv):
+    _inherit="res.users"
+    _columns={
+        'section_ids': fields.many2many('crm.case.section', 'sale_member_rel', 'member_id','section_id',  'Sale Teams'),
+    }
