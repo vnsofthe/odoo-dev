@@ -564,6 +564,15 @@ class rhwl_sample_info(osv.osv):
                 self.pool.get("sale.sampleone.reuse").write(cr,SUPERUSER_ID,reuse,{'state':'reuse'})
         self.create_sale_order(cr,uid,ids,context) #建立销售订单
 
+    def get_year_count(self,cr,uid,context=None):
+        ids = self.pool.get("res.partner").search(cr,uid,[("jnsjrs","!=",False)],context=context)
+        if ids:
+            self.pool.get("res.partner").write(cr,uid,ids,{"jnsjrs":0},context=context)
+
+        cr.execute("select cxyy,count(*) c from sale_sampleone where is_reused='0' and date_trunc('year',cx_date)::date = date_trunc('year',now())::date group by cxyy")
+        for i in cr.fetchall():
+            self.pool.get("res.partner").write(cr,uid,i[0],{"jnsjrs":i[1]},context=context)
+        cr.commit()
 
 class rhwl_sample_lims(osv.osv):
     _name = "sale.sampleone.lims"

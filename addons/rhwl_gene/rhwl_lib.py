@@ -8,7 +8,9 @@ import xlrd,os
 import datetime
 import logging
 import xlwt
-
+import zipfile
+import shutil
+import subprocess
 _logger = logging.getLogger(__name__)
 
 class rhwl_lib(osv.osv_memory):
@@ -108,3 +110,53 @@ class rhwl_lib(osv.osv_memory):
             'views': [(False, 'form')],
             'target': 'new',
         }
+
+class rhwl_analyze(osv.osv_memory):
+    _name = "rhwl.genes.analyze"
+    _columns = {
+        "zip":fields.binary(string=u"检测数据压缩包",required=True),
+        "excel":fields.binary(string=u"分析结果"),
+        "filename":fields.char("Name"),
+        "state":fields.selection([("draft","draft"),("done","done")],string="State"),
+    }
+    _defaults={
+        "state":"draft"
+    }
+
+    def action_analyze(self,cr,uid,id,context=None):
+        if context is None:
+            context = {}
+        obj = self.browse(cr, uid, id,context=context)
+
+        data_file = NamedTemporaryFile(delete=False)
+
+        try:
+            data_file.write(obj.zip.decode('base64'))
+            data_file.close()
+            if zipfile.is_zipfile(data_file.name):
+                dump_dir=data_file.name+"excel"
+                if not os.path.exists(dump_dir):
+                    os.mkdir(dump_dir)
+                dir_file=None
+                with zipfile.ZipFile(data_file.name, 'r') as z:
+                    # only extract known members!
+                    filestore = [m for m in z.namelist() if m.endswith('fsa')]
+                    z.extractall(dump_dir, filestore)
+                    for i in os.listdir(dump_dir):
+                        if os.path.isdir(os.path.join(dump_dir,i)):
+                            shutil.move(os.path.join(dump_dir,i),os.path.join("d:\\",i))
+                            dir_file=i
+                    os.remove(dump_dir)
+                    env = os.environ.copy()
+                    with open(os.devnull) as dn:
+                        rc = subprocess.call(("/home/rd/test/snp.sh",) + dir_file, env=env, stdout=dn, stderr=subprocess.STDOUT)
+                        if rc:
+                            raise Exception('Command Error.')
+            else:
+                os.unlink(data_file.name)
+                _logger.warning('File format is not ZIP')
+                raise Exception("File format is not ZIP")
+
+        finally:
+            if os.path.exists(data_file.name):os.unlink(data_file.name)
+        return True

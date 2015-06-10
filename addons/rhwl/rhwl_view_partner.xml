@@ -186,6 +186,8 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="jnsjrs"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="nextmonth"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <xpath expr="//field[@name='active']" position="after">
                         <field name="qyks"

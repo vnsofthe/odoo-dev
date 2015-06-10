@@ -28,6 +28,7 @@ class purchase_apply(osv.osv):
         "state":fields.selection([("draft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成"),("dept",u"部门批准"),("inspector",u"总监批准"),("quotation",u"询价确认"),("account",u"财务核准"),("chief",u"总裁批准")],u"状态"),
         "note":fields.text(u"备注"),
         "line":fields.one2many("purchase.order.apply.line","name","Detail"),
+        "log":fields.one2many("purchase.order.apply.log","app_id","Log",readonly=True),
     }
     _defaults={
         "date":fields.date.today,
@@ -41,8 +42,17 @@ class purchase_apply(osv.osv):
             context = {}
         if vals.get('name', '/') == '/':
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'purchase.apply') or '/'
+        vals["log"] = [[0, 0, {"note": u"新增", "data": "create"}]]
         return super(purchase_apply,self).create(cr,uid,vals,context)
 
+    def write(self, cr, uid, id, val, context=None):
+        if not context:
+            context={}
+        if val.has_key("state"):
+            sel = dict(fields.selection.reify(cr,uid,self,self._columns['state'],context=context))
+            val["log"] = [
+                [0, 0, {"note": u"状态变更为:" + sel.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
+        return super(purchase_apply, self).write(cr, uid, id, val, context=context)
 
     def action_confirm(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
@@ -64,7 +74,7 @@ class purchase_apply(osv.osv):
             raise osv.except_osv("错误","该申请单已经有生成招标询价单，不能重复生成。")
         line=[]
         sup={}
-        for i in obj.line:
+        for i in obj.line:#循环申请明细产品,如果产品有指定采购供应商，
             for j in i.product_id.seller_ids:
                 if j.min_qty>i.qty:continue
                 if sup.has_key(j.name.id):
@@ -74,30 +84,15 @@ class purchase_apply(osv.osv):
             val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_po_id.id,"apply_id":i.id}
             line.append(self.pool.get("purchase.requisition.line").create(cr,uid,val,context=context))
         req_id = self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
-        req_obj = self.pool.get("purchase.requisition").browse(cr,uid,req_id,context=context)
-        if sup:
-            line=[]
-            for k,v in sup.items():
-                pline=[]
-                pick = self.pool.get("purchase.order")._get_picking_in(cr,uid)
-                local = self.pool.get("purchase.order").onchange_picking_type_id(cr,uid,0,pick,context=context)
-                val = self.pool.get("purchase.order").onchange_partner_id(cr,uid,0,k,context=context).get("value")
-                val.update(local.get('value'))
-                val.update({'picking_type_id':pick,'partner_id':k,'origin':req_obj.name})
-                for j in v:
-                    detail_val = self.pool.get("purchase.order.line").onchange_product_id(cr, uid, 0, val.get("pricelist_id"),j[0], j[1], False, k,val.get("date_order"),val.get("fiscal_position"),val.get("date_planned"),False,False,'draft',context=context).get("value")
-                    detail_val.update({'product_id':j[0],'product_qty':j[1],'product_uom':j[2]})
-                    pline.append([0,0,detail_val])
 
-                val.update({'company_id':1,'order_line':pline})
-                line.append(self.pool.get("purchase.order").create(cr,uid,val,context=context))
-            self.pool.get("purchase.requisition").write(cr,uid,req_id,{'purchase_ids':[[6,False,line]]})
+
 
     def action_quotation(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
         req_id = self.pool.get("purchase.requisition").search(cr,uid,[('origin','=',obj.name),('state','=','open')],context=context)
         if not req_id:
             raise osv.except_osv("错误","该申请单对应的招标询价单没有关闭，不能确认。")
+
         self.write(cr, uid, ids, {'state': 'quotation'}, context=context)
 
     def action_dept(self, cr, uid, ids, context=None):
@@ -138,3 +133,18 @@ class purchase_apply_line(osv.osv):
             self.attribute = obj.attribute_value_ids
             self.uom_id = obj.uom_id
 
+class purchase_apply_log(osv.osv):
+    _name = "purchase.order.apply.log"
+    _order = "date desc"
+    _columns = {
+        "app_id": fields.many2one("purchase.order.apply", "Apply ID",select=True),
+        "date": fields.datetime(u"时间"),
+        "user_id": fields.many2one("res.users", u"操作人员"),
+        "note": fields.text(u"作业说明"),
+        "data": fields.char("Data")
+    }
+
+    _defaults = {
+        "date": fields.datetime.now,
+        "user_id": lambda obj, cr, uid, context: uid,
+    }

@@ -40,6 +40,7 @@ class rhwl_partner(osv.osv):
         "snwcrs": fields.integer(u'上年无创人数'),
         "jnmbrs": fields.integer(u'今年目标人数'),
         "jnsjrs": fields.integer(u'今年实际人数', readonly=True),
+        "nextmonth":fields.integer(u"下月目标人数"),
         "qyks": fields.selection([(u'产科', u'产科'), (u'妇产科', u'妇产科'), (u'遗传科', u'遗传科')], u"签约科室"),
         "jzds": fields.selection([(u'人和', u'人和'), (u'华大', u'华大'), (u'贝瑞', u'贝瑞'), (u'凡迪', u'凡迪'), ('0', u'其它')],
                                  u"客户占有"),

@@ -64,6 +64,15 @@
                             <page string="备注">
                                 <field name="note"/>
                             </page>
+                            <page string="日志">
+                                <field name="log">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="user_id"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
                         </notebook>
                     </sheet>
                 </form>

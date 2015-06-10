@@ -37,6 +37,41 @@
         </record>
 
         <menuitem id="menu_rhwl_easy_genes_lib" parent="menu_easy_genes_root" name="实验室" sequence="23"  />
-        <menuitem action="action_rhwl_genes_lib_merge" id="menu_rhwl_easy_genes_snpmerge" name="检测位点合并" parent="menu_rhwl_easy_genes_lib" groups="rhwl_base_library"/>
+        <menuitem action="action_rhwl_genes_lib_merge" id="menu_rhwl_easy_genes_snpmerge" name="检测位点合并" parent="menu_rhwl_easy_genes_lib" sequence="20" groups="rhwl_base_library"/>
+
+        <record id="view_rhwl_lib_analyze_wizard" model="ir.ui.view">
+            <field name="name">检测结果分析</field>
+            <field name="model">rhwl.genes.analyze</field>
+            <field name="arch" type="xml">
+                <form string="Excel Files">
+                    <field invisible="1" name="state"/>
+                    <field name="filename" invisible="1"/>
+                    <group states="draft">
+                        <field name="zip" filename="name"/>
+                    </group>
+                    <group states="done">
+                        <p>点击右边文件名下载：<field name="excel" readonly="1" filename="name"/></p>
+                    </group>
+                    <footer states="draft">
+                        <button name="action_analyze" string="数据分析" type="object"  class="oe_highlight" />
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                    <footer states="done">
+                        <button special="cancel" string="Close" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="action_rhwl_genes_lib_analyze" model="ir.actions.act_window">
+            <field name="name">检测结果分析</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.analyze</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_rhwl_genes_lib_analyze" id="menu_rhwl_easy_genes_analyze" name="检测结果分析" parent="menu_rhwl_easy_genes_lib" sequence="10" groups="rhwl_base_library"/>
+
     </data>
 </openerp>
