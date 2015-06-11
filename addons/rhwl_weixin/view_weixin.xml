@@ -26,6 +26,7 @@
                             <field name="is_jobmanager"/>
                             <field name="is_notice"/>
                             <field name="is_library"/>
+                            <field name="is_sampleresult"/>
                         </group>
                     </sheet>
                 </form>

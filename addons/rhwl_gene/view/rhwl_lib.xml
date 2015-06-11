@@ -47,10 +47,10 @@
                     <field invisible="1" name="state"/>
                     <field name="filename" invisible="1"/>
                     <group states="draft">
-                        <field name="zip" filename="name"/>
+                        <field name="zip" filename="filename"/>
                     </group>
                     <group states="done">
-                        <p>点击右边文件名下载：<field name="excel" readonly="1" filename="name"/></p>
+                        <p>点击右边文件名下载：<field name="excel" readonly="1" filename="filename"/></p>
                     </group>
                     <footer states="draft">
                         <button name="action_analyze" string="数据分析" type="object"  class="oe_highlight" />

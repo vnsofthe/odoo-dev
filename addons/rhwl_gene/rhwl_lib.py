@@ -144,14 +144,32 @@ class rhwl_analyze(osv.osv_memory):
                     z.extractall(dump_dir, filestore)
                     for i in os.listdir(dump_dir):
                         if os.path.isdir(os.path.join(dump_dir,i)):
-                            shutil.move(os.path.join(dump_dir,i),os.path.join("d:\\",i))
-                            dir_file=i
-                    os.remove(dump_dir)
+                            if os.path.exists(os.path.join("/data/odoo/library",i)):
+                                shutil.rmtree(os.path.join("/data/odoo/library",i))
+                            shutil.move(os.path.join(dump_dir,i),os.path.join("/data/odoo/library",i))
+                            dir_file=os.path.join("/data/odoo/library",i)
+                    os.removedirs(dump_dir)
                     env = os.environ.copy()
                     with open(os.devnull) as dn:
-                        rc = subprocess.call(("/home/rd/test/snp.sh",) + dir_file, env=env, stdout=dn, stderr=subprocess.STDOUT)
+                        rc = subprocess.call(("perl","/data/odoo/library/bin/creat.pl",dir_file,"/data/odoo/library/bin/"), env=env, stdout=dn, stderr=subprocess.STDOUT)
                         if rc:
                             raise Exception('Command Error.')
+                        for i in os.listdir(dir_file):
+                            if i.split(".")[-1]=="xls":
+                                 f=open(os.path.join(dir_file,i),'rb')
+                                 self.write(cr,uid,id,{"state":"done","filename":i,"excel": base64.encodestring(f.read())})
+                                 f.close()
+                                 break
+                        return {
+                                'type': 'ir.actions.act_window',
+                                'res_model': 'rhwl.genes.analyze',
+                                'view_mode': 'form',
+                                'view_type': 'form',
+                                'res_id': obj.id,
+                                'views': [(False, 'form')],
+                                'target': 'new',
+                            }
+
             else:
                 os.unlink(data_file.name)
                 _logger.warning('File format is not ZIP')

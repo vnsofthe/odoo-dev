@@ -349,11 +349,13 @@ class rhwl_sample_info(osv.osv):
         lims_email = config_obj.get_param(cr, uid, 'rhwl.lims.email', default='').encode('utf-8')
         lims_pwd = config_obj.get_param(cr, uid, 'rhwl.lims.pwd', default='').encode('utf-8')
         obj = self.browse(cr,uid,ids,context=context)
+        sample_result={"ok":[],"except":[]}
         for i in obj:
             t13=0.0
             t18=0.0
             t21=0.0
             libnote=""
+
             json = requests.post("http://10.0.0.2:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email="+lims_email+"&password="+lims_pwd)
             json = json.json()
             if json.get("haserror",False):
@@ -364,6 +366,8 @@ class rhwl_sample_info(osv.osv):
                 continue
             for dna in dnaExtractions:
                 timeGen = dna.get("timeCom",0)
+                if not timeGen:
+                    timeGen = dna.get("timeGen",0)
                 timeGen = time.localtime(float(str(timeGen)[:10])+28800)
                 timeGen = "%s/%s/%s %s:%s:%s" %(timeGen.tm_year,timeGen.tm_mon,timeGen.tm_mday,timeGen.tm_hour,timeGen.tm_min,timeGen.tm_sec)
                 lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timeGen)])
@@ -377,6 +381,9 @@ class rhwl_sample_info(osv.osv):
 
                 for lib in libraries:
                     timeGen = lib.get("timeCom",0)
+                    if not timeGen:
+                        timeGen = lib.get("timeGen",0)
+
                     timeGen = time.localtime(float(str(timeGen)[:10])+28800)
                     timeGen = "%s/%s/%s %s:%s:%s" %(timeGen.tm_year,timeGen.tm_mon,timeGen.tm_mday,timeGen.tm_hour,timeGen.tm_min,timeGen.tm_sec)
                     lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timeGen)])
@@ -390,7 +397,12 @@ class rhwl_sample_info(osv.osv):
                         continue
                     for r in runs:
                         if not r.has_key("lane"):continue
+                        if not r.has_key("data"):continue
+                        if not r["data"]:continue
+
                         timeGen = r["lane"].get("timeCom",0)
+                        if not timeGen:
+                            timeGen =  r["lane"].get("timeGen",0)
                         timeGen = time.localtime(float(str(timeGen)[:10])+28800)
                         timeGen = "%s/%s/%s %s:%s:%s" %(timeGen.tm_year,timeGen.tm_mon,timeGen.tm_mday,timeGen.tm_hour,timeGen.tm_min,timeGen.tm_sec)
                         lims_id = self.pool.get("sale.sampleone.lims").search(cr,uid,[("name","=",i.id),("timestr",'=',timeGen)])
@@ -401,11 +413,39 @@ class rhwl_sample_info(osv.osv):
                         t18 = float(r["data"]["chr18"])
                         t21 = float(r["data"]["chr21"])
                         libnote = r["data"]["state"] + "," +  r["data"]["result"]
-            self.write(cr,uid,i.id,{"lib_t13":t13,"lib_t18":t18,"lib_t21":t21,"lib_note":libnote})
+            if t13!=0 or t18!=0 or t21!=0:
+                self.write(cr,uid,i.id,{"lib_t13":t13,"lib_t18":t18,"lib_t21":t21,"lib_note":libnote})
+                stat = json["sample"].get("status")
+                if stat=="完成" or stat=="正常":
+                    if libnote.split(",")[-1] in ("正常","阴性"):
+                        self.action_check_ok(cr,uid,i.id,context=context)
+                        sample_result["ok"].append(i.name)
+                    else:
+                        self.action_check_except(cr,uid,i.id,context=context)
+                        sample_result["except"].append(i.name)
+        return sample_result
 
     def get_all_library(self, cr, user, context=None):
         ids = self.search(cr,user,[("state","=","done")])
-        self.action_get_library(cr,user,ids,context=context)
+        result = self.action_get_library(cr,user,ids,context=context)
+        if result['ok']:
+            js={
+                "first":"无创样本检测提醒：",
+                "keyword1":"检测结果正常样本合计"+str(len(result['ok'])),
+                "keyword2":",".join(result['ok']),
+                "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
+                "remark":"以上样本检测结果为正常，请即时发送短信通知。"
+            }
+            self.pool.get("rhwl.weixin.base").send_template2(cr,user,js,"is_sampleresult",context=context)
+        if result['except']:
+            js={
+                "first":"无创样本检测异常提醒：",
+                "keyword1":"检测结果阳性样本合计"+str(len(result['ok'])),
+                "keyword2":",".join(result['except']),
+                "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
+                "remark":"以上样本检测结果为阳性，请即时与送检医生联系，以便孕妇作进一步的检测。"
+            }
+            self.pool.get("rhwl.weixin.base").send_template2(cr,user,js,"is_sampleresult",context=context)
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
