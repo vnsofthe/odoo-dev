@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <menuitem id="menu_rhwl_sample_root" name="人和无创" sequence="20"  />
+
+        <menuitem id="menu_rhwl_sample_one" parent="menu_rhwl_sample_root" name="无创样本" sequence="10"  />
+
+        <menuitem id="menu_sale_sample" parent="menu_rhwl_sample_one" name="Sample Information" sequence="10"
+                  action='action_sale_sample' groups="base.group_sale_salesman,base.group_portal,rhwl_base_sample"/>
+        <menuitem id="menu_sale_sample_reuse" parent="menu_rhwl_sample_one" name="Again Blood" sequence="20"
+                  action='action_sale_sample_reuse' groups="base.group_sale_salesman,rhwl_base_sample"/>
+        <menuitem id="menu_sale_sample_exception" parent="menu_rhwl_sample_one" name="Excep Information" sequence="30"
+                  action='action_sale_sample_exception' groups="base.group_sale_salesman,rhwl_base_sample"/>
+        <menuitem id="menu_rhwl_sample_express" action='action_rhwl_sampleone_express' parent="menu_rhwl_sample_one" name="检测报告快递" sequence="50"  groups="rhwl_manager_sample"/>
+
+        <menuitem id="menu_rhwl_sample_two" parent="menu_rhwl_sample_root" name="数据接收" sequence="30"  />
+
+        <menuitem action="action_sale_sampleone_import_report" id="menu_sampleone_import" name="Import Sample Report" parent="menu_rhwl_sample_two" groups="rhwl_manager_sample"/>
+    </data>
+
+</openerp>

@@ -54,4 +54,4 @@ msgstr "本月"
 #: model:ir.ui.menu,name:rhwl.menu_sampleone_import
 #: model:ir.actions.act_window,name:rhwl.action_sale_sampleone_import_report
 msgid "Import Sample Report"
-msgstr "接收实验报告"
+msgstr "接收湘雅实验报告"

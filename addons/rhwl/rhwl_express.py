@@ -296,3 +296,19 @@ class rhwl_express_in(osv.osv):
         "out_flag": fields.boolean(u'发货')
     }
 
+class sale_express(osv.osv):
+    _name = 'rhwl.sampleone.express'
+    _columns={
+        "name":fields.char(u"快递单号",size=20,required=True),
+        "date":fields.date(u"发件日期",required=True),
+        "user_id":fields.many2one("res.users",string=u"发件人"),
+        "line":fields.one2many("rhwl.sampleone.express.line","name",string=u"样本明细"),
+    }
+
+class sale_express_line(osv.osv):
+    _name = "rhwl.sampleone.express.line"
+    _columns={
+        "name":fields.many2one("rhwl.sampleone.express",string=u"快递单号"),
+        "sample_id":fields.many2one("sale.sampleone",string=u"样本编号"),
+        "yfxm":fields.related("sample_id","yfxm",type="char",string=u"孕妇姓名",readonly=True)
+    }

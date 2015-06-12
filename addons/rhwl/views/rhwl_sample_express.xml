@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_sample_express_tree">
+            <field name="name">rhwl.sampleone.express.tree</field>
+            <field name="model">rhwl.sampleone.express</field>
+            <field name="arch" type="xml">
+
+                    <tree>
+                        <field name="name"/>
+                        <field name="date"/>
+                        <field name="user_id"/>
+                    </tree>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_sample_express_form">
+            <field name="name">rhwl.sampleone.express.form</field>
+            <field name="model">rhwl.sampleone.express</field>
+            <field name="arch" type="xml">
+
+                    <form>
+                        <sheet>
+                            <group>
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="user_id"/>
+                                <field name="line">
+                                    <tree string="样本明细" editable="top">
+                                        <field name="sample_id"/>
+                                        <field name="yfxm"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </sheet>
+                    </form>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_sampleone_express_search">
+            <field name="name">rhwl.sampleone.express.search</field>
+            <field name="model">rhwl.sampleone.express</field>
+            <field name="arch" type="xml">
+                <search string="Sample Express">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="line"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="发件人" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="发件日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_sampleone_express" model="ir.actions.act_window">
+            <field name="name">检测报告快递</field>
+            <field name="res_model">rhwl.sampleone.express</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+    </data>
+</openerp>

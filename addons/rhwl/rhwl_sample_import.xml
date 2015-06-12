@@ -27,6 +27,6 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem action="action_sale_sampleone_import_report" id="menu_sampleone_import" name="Import Sample Report" parent="base.menu_sales" groups="rhwl_manager_sample"/>
+
     </data>
 </openerp>
