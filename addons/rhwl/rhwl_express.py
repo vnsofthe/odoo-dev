@@ -298,15 +298,26 @@ class rhwl_express_in(osv.osv):
 
 class sale_express(osv.osv):
     _name = 'rhwl.sampleone.express'
+    def _get_url_express(self, cursor, user, ids, name, arg, context=None):
+        res = {}
+        default_url = "http://www.kuaidi100.com/chaxun?com=shunfeng&nu=%s"
+        for express in self.browse(cursor, user, ids, context=context):
+            res[express.id] = default_url % (express.name,)
+        return res
+
     _columns={
         "name":fields.char(u"快递单号",size=20,required=True),
         "date":fields.date(u"发件日期",required=True),
         "user_id":fields.many2one("res.users",string=u"发件人"),
+        'url_express': fields.function(
+            _get_url_express, method=True, type='char',
+            string='Link', readonly=1),
         "line":fields.one2many("rhwl.sampleone.express.line","name",string=u"样本明细"),
     }
 
 class sale_express_line(osv.osv):
     _name = "rhwl.sampleone.express.line"
+    _rec_name = "sample_id"
     _columns={
         "name":fields.many2one("rhwl.sampleone.express",string=u"快递单号"),
         "sample_id":fields.many2one("sale.sampleone",string=u"样本编号"),

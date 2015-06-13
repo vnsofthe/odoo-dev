@@ -26,6 +26,7 @@
                                 <field name="name"/>
                                 <field name="date"/>
                                 <field name="user_id"/>
+                                <field name="url_express" widget="url"/>
                                 <field name="line">
                                     <tree string="样本明细" editable="top">
                                         <field name="sample_id"/>
