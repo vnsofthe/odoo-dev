@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_99bill_mas_tree">
+            <field name="name">rhwl.99bill.mas.tree</field>
+            <field name="model">rhwl.99bill.mas</field>
+            <field name="arch" type="xml">
+                <tree string="POS">
+
+                    <field name="external_trace_no"/>
+                    <field name="amt"/>
+                    <field name="terminal_oper_id"/>
+                    <field name="terminal_id"/>
+                    <field name="authcode"/>
+                    <field name="rrn"/>
+                    <field name="txntime"/>
+                    <field name="response_code"/>
+                    <field name="response_message"/>
+                    <field name="card_type"/>
+                    <field name="issuer_id"/>
+                    <field name="issuer_id_view"/>
+                    <field name="txn_type"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_99bill_mas_search">
+            <field name="name">rhwl.99bill.mas.search</field>
+            <field name="model">rhwl.99bill.mas</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="external_trace_no" string="样本编号"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_99bill_mas" model="ir.actions.act_window">
+            <field name="name">POS交易</field>
+            <field name="res_model">rhwl.99bill.mas</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_99bill_mas" parent="account.menu_finance_bank_and_cash" name="POS交易" sequence="5"
+                  action='action_rhwl_99bill_mas' groups="account.group_account_user"/>
+    </data>
+</openerp>

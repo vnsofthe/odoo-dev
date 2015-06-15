@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rhwl_99bill_mas,access_rhwl_99bill_mas,model_rhwl_99bill_mas,,1,0,0,0

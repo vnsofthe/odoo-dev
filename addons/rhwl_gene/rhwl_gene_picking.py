@@ -617,7 +617,7 @@ class rhwl_picking(osv.osv):
                     w1.write(sheet_row,0,u"质检不合格",style)
                     w1.write(sheet_row,1,s.name,style6)
                     w1.write(sheet_row,2,s.cust_name,style)
-                    w1.write(sheet_row,3,u"女" if bl.genes_id.sex=="F" else u"男",style6)
+                    w1.write(sheet_row,3,u"女" if s.sex=="F" else u"男",style6)
                     w1.write(sheet_row,4,s.identity,style)
                     sheet_row += 1
 
