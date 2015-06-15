@@ -29,6 +29,36 @@
                 </data>
             </field>
         </record>
+        <record id="rhwl_view_warehouse_orderpoint_tree" model="ir.ui.view">
+            <field name="name">rhwl.view.warehouse.orderpoint.tree</field>
+            <field name="model">stock.warehouse.orderpoint</field>
+            <field name="inherit_id" ref="stock.view_warehouse_orderpoint_tree"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='product_min_qty']" position="before">
+                        <field name="min_work_days" />
+                    </xpath>
+                </data>
+            </field>
+        </record>
 
+        <record id="rhwl_view_procurement_filter" model="ir.ui.view">
+            <field name="name">rhwl.view.procurement.filter</field>
+            <field name="model">procurement.order</field>
+            <field name="inherit_id" ref="procurement.view_procurement_filter"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='product_id']" position="before">
+                        <separator/>
+                        <filter icon="terp-gnome-cpu-frequency-applet+" name="unnotice" string="未处理" domain="[('state','!=','cancel'), ('state', '!=', 'done')]" />
+                    </xpath>
+                </data>
+            </field>
+        </record>
+
+         <record id="procurement.procurement_exceptions" model="ir.actions.act_window">
+            <field name="context">{'search_default_unnotice':1}</field>
+             <field name="search_view_id" ref="rhwl_view_procurement_filter"/>
+         </record>
     </data>
 </openerp>
