@@ -7,7 +7,10 @@
             <field name="arch" type="xml">
                 <form string="Parameters">
                     <group>
-                        <field name="file_bin"/>
+                        <field name="file_bin" invisible="not context.get('file_type1',False)"/>
+                        <field name="file_bin2" invisible="(not context.get('file_type2',False)) and (not context.get('file_type4',False)) "/>
+                        <field name="file_bin3" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
+                        <field name="is_over" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
                     </group>
                     <footer>
                         <button name="import_report" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type1',False)"/>
@@ -56,7 +59,7 @@
         <menuitem action="action_rhwl_genes_import_report3" id="menu_rhwl_easy_genes_instance3" name="检测位点数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_library"/>
 
         <record id="action_rhwl_genes_import_report4" model="ir.actions.act_window">
-            <field name="name">接收风险分析数据</field>
+            <field name="name">接收质检/位点数据</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">rhwl.genes.import</field>
             <field name="view_type">form</field>
@@ -64,7 +67,7 @@
             <field name="context">{"file_type4":1}</field>
             <field name="target">new</field>
         </record>
-
+        <menuitem action="action_rhwl_genes_import_report4" id="menu_rhwl_easy_genes_instance4" name="质检/位点数据接收" parent="menu_rhwl_easy_genes_import" groups="rhwl_base_library"/>
 
     </data>
 </openerp>

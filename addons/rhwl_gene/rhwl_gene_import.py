@@ -12,7 +12,13 @@ _logger = logging.getLogger(__name__)
 class rhwl_import(osv.osv_memory):
     _name = 'rhwl.genes.import'
     _columns = {
-        "file_bin":fields.binary(string=u"文件名",required=True),
+        "file_bin":fields.binary(string=u"样本信息文件名"),
+        "file_bin2":fields.binary(string=u"质检结果文件"),
+        "file_bin3":fields.binary(string=u"位点结果文件"),
+        "is_over":fields.boolean(u"是否覆盖已转入数据?")
+    }
+    _defaults={
+        "is_over":False
     }
 
     def date_trun(self,val):
@@ -114,7 +120,7 @@ class rhwl_import(osv.osv_memory):
         fileobj.close()
         try:
             #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
-            b=this.file_bin.decode('base64')
+            b=this.file_bin2.decode('base64')
             f.write(b)
             f.close()
 
@@ -122,7 +128,7 @@ class rhwl_import(osv.osv_memory):
                 bk = xlrd.open_workbook(xlsname+".xls")
                 sh = bk.sheet_by_index(0)
             except:
-               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+               raise osv.except_osv(u"打开出错",u"请确认质检数据文件格式是否为正确的报告标准格式。")
             nrows = sh.nrows
             genes_ids=[]
             for i in range(2,nrows):
@@ -160,11 +166,13 @@ class rhwl_import(osv.osv_memory):
                     }
 
                 self.pool.get("rhwl.easy.genes.check").create(cr,uid,val,context=context)
+
                 if (t1<10 or t2<1.8 or t2>2 or t3<2 or t4>0.01):
-                    if obj_ids:
-                        self.pool.get("rhwl.easy.genes").action_state_dna(cr,uid,id,context=context)
+                    self.pool.get("rhwl.easy.genes").action_state_dna(cr,uid,id,context=context)
                 else:
-                    self.pool.get("rhwl.easy.genes").action_state_dnaok(cr,uid,id,context=context)
+                    genes_obj = self.pool.get("rhwl.easy.genes").browse(cr,uid,id,context=context)
+                    if genes_obj.state in ('except_confirm','confirm'):
+                        self.pool.get("rhwl.easy.genes").action_state_dnaok(cr,uid,id,context=context)
 
         finally:
             f.close()
@@ -177,22 +185,21 @@ class rhwl_import(osv.osv_memory):
         if context is None:
             context = {}
         this = self.browse(cr, uid, ids[0])
-
+        over_no=[] #记录重复转入的样本号
         fileobj = NamedTemporaryFile('w+',delete=True)
         xlsname =  fileobj.name
         f=open(xlsname+'.xls','wb')
         fileobj.close()
         try:
             #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
-            b=this.file_bin.decode('base64')
+            b=this.file_bin3.decode('base64')
             f.write(b)
             f.close()
-
             try:
                 bk = xlrd.open_workbook(xlsname+".xls")
                 sh = bk.sheet_by_index(0)
             except:
-               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+               raise osv.except_osv(u"打开出错",u"请确认位点数据文件格式是否为正确的报告标准格式。")
             nrows = sh.nrows
             ncols = sh.ncols
             snp={}
@@ -217,6 +224,7 @@ class rhwl_import(osv.osv_memory):
                 type_ids = self.pool.get("rhwl.easy.genes.type").search(cr,uid,[("genes_id","=",id[0])],context=context)
                 old_type={}
                 if type_ids:
+                    over_no.append(no)
                     for t in self.pool.get("rhwl.easy.genes.type").browse(cr,uid,type_ids,context=context):
                         old_type[t.snp]=t.typ
                 is_ok=True #判断全部位点是否有值
@@ -242,10 +250,16 @@ class rhwl_import(osv.osv_memory):
                 self.pool.get("rhwl.easy.genes").action_state_ok(cr,uid,id,context=context)
                 if type_ids:
                     self.pool.get("rhwl.easy.genes.type").write(cr,uid,type_ids,{"active":False},context=context)
-
+            if this.is_over==False and over_no:
+                raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点数据有重复。"%(','.join(over_no)))
 
         finally:
             f.close()
             os.remove(xlsname+'.xls')
 
+        return
+
+    def import_report4(self,cr,uid,ids,context=None):
+        self.import_report2(cr,uid,ids,context=context)
+        self.import_report3(cr,uid,ids,context=context)
         return
