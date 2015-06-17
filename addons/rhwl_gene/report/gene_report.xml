@@ -2,7 +2,7 @@
 <openerp>
     <data>
         <record id="rhwl_gene_dna_except_ids" model="ir.actions.report.xml">
-			<field name="name">质检异常报告</field>
+			<field name="name">DNA Except Report</field>
 			<field name="report_name">rhwl.gene.dna.except.ids</field>
 			<field name="model">rhwl.easy.genes</field>	<!-- Report will appear on 'Print' menu for partners. -->
 			<field name="auto" eval="False"/>

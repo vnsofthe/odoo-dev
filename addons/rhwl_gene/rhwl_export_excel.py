@@ -96,6 +96,23 @@ class rhwl_export_excel(osv.osv_memory):
                 f=open(image_file,'wb')
                 f.write(base64.decodestring(i.img_new))
                 f.close()
+            if i.state=="dna_except":
+                report_data = {'report_type':'pentaho'}
+                report_id = openerp.service.report.exp_report("dev",1,'rhwl.gene.dna.except.ids',[i.id],report_data)
+
+                report_struct = None
+                while True:
+                    report_struct = openerp.service.report.exp_report_get("dev", 1, report_id)
+                    if report_struct["state"]:
+                        break
+
+                    time.sleep(0.25)
+
+                rep = base64.b64decode(report_struct['result'])
+                image_file = os.path.join(os.path.join(xlsname,image_dir),i.name+i.cust_name+u".pdf")
+                f=open(image_file,'wb')
+                f.write(rep)
+                f.close()
 
             ws.write(rows,0,seq)
             ws.write(rows,1,i.name)
@@ -126,7 +143,7 @@ class rhwl_export_excel(osv.osv_memory):
         f=open(os.path.join(xlsname,file_str+u"邮寄样本问题反馈.zip"),'rb')
         id = self.create(cr,uid,{"state":"done","name":file_str+u"邮寄样本问题反馈.zip","file": base64.encodestring(f.read())})
         f.close()
-        os.system("rm -Rf "+xlsname)
+        #os.system("rm -Rf "+xlsname)
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'rhwl.gene.export.excel',
