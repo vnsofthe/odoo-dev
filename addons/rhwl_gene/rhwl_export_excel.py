@@ -29,7 +29,10 @@ from tempfile import NamedTemporaryFile
 import tempfile
 import openerp
 import logging
+import zipfile
+import subprocess
 
+_logger = logging.getLogger(__name__)
 class rhwl_export_excel(osv.osv_memory):
     _name = "rhwl.gene.export.excel"
     _description = "Rhwl Excel Report"
@@ -44,16 +47,17 @@ class rhwl_export_excel(osv.osv_memory):
     }
 
     def action_excel(self,cr,uid,ids,context=None):
-        if not context.get("active_id"):return
+        if not context.get("active_ids"):return
         fileobj = NamedTemporaryFile('w+',delete=True)
         xlsname =  fileobj.name
         fileobj.close()
         if not os.path.exists(xlsname):
             os.mkdir(xlsname)
 
-        ids=context.get("active_id")
+        ids=context.get("active_ids")
         if isinstance(ids,(list,tuple)):
             ids.sort()
+
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(u"样本问题反馈")
         ws.write(0,0,u"序号")
@@ -83,13 +87,14 @@ class rhwl_export_excel(osv.osv_memory):
                 ws.write(rows,0,str(int(old_date[1]))+u"月"+str(int(old_date[2]))+u"日")
                 rows += 1
                 seq = 1
-            image_dir=".".join([str(int(i)) for i in i.date.split("-")[1:]]) + u"日邮寄样本问题反馈图片"
-            if i.img_atta:
+            image_dir=".".join([str(int(k)) for k in i.date.split("-")[1:]]) + u"日邮寄样本问题反馈图片"
+
+            if i.img_new:
                 if not os.path.exists(os.path.join(xlsname,image_dir)):
                     os.mkdir(os.path.join(xlsname,image_dir))
                 image_file = os.path.join(os.path.join(xlsname,image_dir),i.name+i.cust_name+u".png")
                 f=open(image_file,'wb')
-                f.write(base64.decodestring(i.img_atta.datas))
+                f.write(base64.decodestring(i.img_new))
                 f.close()
 
             ws.write(rows,0,seq)
@@ -103,9 +108,9 @@ class rhwl_export_excel(osv.osv_memory):
             rows +=1
             seq += 1
             old_date=i.date
-            if not file_e:
-                file_e=i.date.split("-")
-                file_e=str(int(file_e[1]))+"."+str(int(file_e[2]))
+
+            file_e=i.date.split("-")
+            file_e=str(int(file_e[1]))+"."+str(int(file_e[2]))
 
         if file_s==file_e:
             file_str=file_s
@@ -113,13 +118,15 @@ class rhwl_export_excel(osv.osv_memory):
             file_str = file_s+"-"+file_e
 
         w.save(os.path.join(xlsname,file_str+u"邮寄样本问题反馈.xls"))
-        t=tempfile.TemporaryFile()
-        openerp.tools.osutil.zip_dir(xlsname, t, include_dir=False)
-        t.seek(0)
 
-        id = self.create(cr,uid,{"state":"done","name":file_str+u"邮寄样本问题反馈.zip","file": base64.encodestring(t.read())})
-        t.close()
-
+        os.system("cd "+xlsname+"/;zip -r "+os.path.join(xlsname,file_str+"邮寄样本问题反馈.zip")+" ./*")
+            #rc = subprocess.Popen(("zip","-r",,"./*"), cwd=xlsname,env=env, stdout=dn, stderr=subprocess.STDOUT)
+            #if rc:
+            #    raise Exception('ZIP Command Error.'+rc)
+        f=open(os.path.join(xlsname,file_str+u"邮寄样本问题反馈.zip"),'rb')
+        id = self.create(cr,uid,{"state":"done","name":file_str+u"邮寄样本问题反馈.zip","file": base64.encodestring(f.read())})
+        f.close()
+        os.system("rm -Rf "+xlsname)
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'rhwl.gene.export.excel',
@@ -130,6 +137,25 @@ class rhwl_export_excel(osv.osv_memory):
             'target': 'new',
             'name':u"导出样本问题反馈Excel"
         }
+
+    def zip_dir(self,path, stream, include_dir=True):      # TODO add ignore list
+        path = os.path.normpath(path)
+        len_prefix = len(os.path.dirname(path)) if include_dir else len(path)
+        if len_prefix:
+            len_prefix += 1
+
+        with zipfile.ZipFile(stream, 'w', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as zipf:
+            for dirpath, dirnames, filenames in os.walk(path):
+
+                for fname in filenames:
+
+                    bname, ext = os.path.splitext(fname)
+                    ext = ext or bname
+                    if ext not in ['.pyc', '.pyo', '.swp', '.DS_Store']:
+                        path = os.path.normpath(os.path.join(dirpath, fname))
+
+                        if os.path.isfile(path):
+                            zipf.write(path, path[len_prefix:].decode('utf-8'))
 
     def get_excel_style(self,font_size=10,horz=xlwt.Alignment.HORZ_LEFT,border=xlwt.Borders.NO_LINE):
         #18号字，加边框，水平靠右，垂直居中
