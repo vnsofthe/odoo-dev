@@ -30,6 +30,14 @@
             <field name="arch" type="xml">
                 <search string="Sale Sample">
                     <field name="external_trace_no" string="样本编号"/>
+                    <separator/>
+                    <filter string="当月" name="month" domain="[('txntime','&gt;=',time.strftime('%%Y-%%m-01'))]"/>
+                    <group expand="1" string="Group By">
+                        <filter string="交易日期" name="date_day" context="{'group_by':'txntime:day'}"/>
+                        <filter string="交易月份" name="date_mon" context="{'group_by':'txntime:month'}"/>
+                        <filter string="终端号" name="terminal_id" context="{'group_by':'terminal_id'}"/>
+                        <filter string="发卡行" name="issuer_id" context="{'group_by':'issuer_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>

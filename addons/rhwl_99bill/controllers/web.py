@@ -275,7 +275,7 @@ class WebClient(http.Controller):
                 "terminal_id":kw.get("terminalId"),
                 "terminal_oper_id":kw.get("terminalOperId"),
                 "txn_time":kw.get("txnTime",""),
-                "txntime":datetime.datetime.strptime(kw.get("txnTime","").encode('utf-8'),'%Y%m%d %H%M%S'),
+                "txntime":datetime.datetime.strptime(kw.get("txnTime","").encode('utf-8'),'%Y%m%d %H%M%S')+datetime.timedelta(hours=-8),
                 "short_pan":kw.get("shortPAN"),
                 "org_txn_type":kw.get("orgTxnType"),
                 "org_external_trace_no":kw.get("orgExternalTraceNo"),

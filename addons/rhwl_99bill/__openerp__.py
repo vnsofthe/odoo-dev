@@ -15,7 +15,7 @@
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
     'depends': ['vnsoft_base','web','rhwl','account'],
-    'data': ["rhwl_mas.xml","security/ir.model.access.csv"],
+    'data': ["rhwl_mas.xml","rhwl_pos.xml","security/ir.model.access.csv"],
     "qweb":[],
     'demo': [],
     'test': [],

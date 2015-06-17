@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_base_pos_tree">
+            <field name="name">rhwl.base.pos.tree</field>
+            <field name="model">rhwl.base.pos</field>
+            <field name="arch" type="xml">
+                <tree string="POS">
+
+                    <field name="provide"/>
+                    <field name="terminal_id"/>
+                    <field name="date"/>
+                    <field name="manage"/>
+                    <field name="user_id"/>
+                    <field name="date_out"/>
+                    <field name="partner"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_base_pos_form">
+            <field name="name">rhwl.base.pos.form</field>
+            <field name="model">rhwl.base.pos</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="provide"/>
+                                <field name="terminal_id"/>
+                                <field name="date"/>
+                                <field name="manage"/>
+                            </group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="date_out"/>
+                                <field name="partner"/>
+                                <field name="note"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_base_pos_search">
+            <field name="name">rhwl.base.pos.search</field>
+            <field name="model">rhwl.base.pos</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="terminal_id" string="终端编号"/>
+
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_base_pos" model="ir.actions.act_window">
+            <field name="name">POS机管理</field>
+            <field name="res_model">rhwl.base.pos</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_sample_config" parent="rhwl.menu_rhwl_sample_root" name="设置" sequence="80"  />
+
+        <menuitem action="action_rhwl_base_pos" id="menu_rhwl_base_pos" name="POS机管理" parent="menu_rhwl_sample_config" groups="rhwl.rhwl_pos_manager"/>
+
+    </data>
+</openerp>
