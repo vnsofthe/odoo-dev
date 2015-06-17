@@ -3,3 +3,4 @@ import rhwl_gene_import
 import controllers
 import rhwl_gene_picking
 import rhwl_lib
+import rhwl_export_excel

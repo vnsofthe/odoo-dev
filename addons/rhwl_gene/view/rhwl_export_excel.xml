@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_rhwl_gene_export_excel" model="ir.ui.view">
+            <field name="name">rhwl.gene.export.excel</field>
+            <field name="model">rhwl.gene.export.excel</field>
+            <field name="arch" type="xml">
+               <form string="Merge Requisition">
+                   <field invisible="1" name="state"/>
+                   <field invisible="1" name="name"/>
+                    <group states="draft">
+                        <separator string="确认导出所选择的这些数据吗?"/>
+                    </group>
+                    <group states="done">
+                        <p>点击右边文件名下载：<field name="file" readonly="1" filename="name"/></p>
+                    </group>
+                    <footer  states="draft">
+                        <button name="action_excel" string="导出" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                    <footer  states="done">
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="导出样本问题反馈Excel"
+            context="{'search_default_draft': 1}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.easy.genes"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_genes_export_excel"/>
+
+    </data>
+</openerp>
+

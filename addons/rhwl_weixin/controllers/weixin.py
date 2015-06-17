@@ -169,10 +169,10 @@ class weixin(http.Controller):
                     else:
                         return self.replyWeiXin(fromUser,toUser,u"您查询的样品编码在检测知情同意书上没有登记电话，不能发送验证码，请与送检医院查询结果。")
                 else:
-                    if re.search("[^0-9a-zA-Z]",content):
-                        return self.customer_service(fromUser,toUser)
-                    else:
-                        return self.replyWeiXin(fromUser,toUser,u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!")
+                    #if re.search("[^0-9a-zA-Z]",content):
+                    #    return self.customer_service(fromUser,toUser)
+                    #else:
+                    return self.replyWeiXin(fromUser,toUser,u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!")
             cr.commit()
 
     def send_photo_text(self,toUser,fromUser,articles):
