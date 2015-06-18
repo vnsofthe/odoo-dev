@@ -41,6 +41,7 @@
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="mobile"/>
                                 <field name="cust_prop" />
                                 <field name="except_note" />
                             </group>

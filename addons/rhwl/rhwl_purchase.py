@@ -81,7 +81,7 @@ class purchase_apply(osv.osv):
                     sup[j.name.id].append((i.product_id.id,i.qty,i.uom_po_id.id))
                 else:
                     sup[j.name.id]=[(i.product_id.id,i.qty,i.uom_po_id.id)]
-            val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_po_id.id,"apply_id":i.id}
+            val={'product_id':i.product_id.id,"product_qty":i.qty,"product_uom_id":i.uom_id.id,"apply_id":i.id}
             line.append(self.pool.get("purchase.requisition.line").create(cr,uid,val,context=context))
         req_id = self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
 

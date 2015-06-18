@@ -31,6 +31,7 @@ import openerp
 import logging
 import zipfile
 import subprocess
+import shutil
 
 _logger = logging.getLogger(__name__)
 class rhwl_export_excel(osv.osv_memory):
@@ -47,6 +48,112 @@ class rhwl_export_excel(osv.osv_memory):
     }
 
     def action_excel(self,cr,uid,ids,context=None):
+        if not context:
+            context={}
+        if context.get('func_name','')=='informat':
+            self.action_excel_informat(cr,uid,ids,context=context)
+        elif context.get('func_name','')=='dna':
+            self.action_excel_dna(cr,uid,ids,context=context)
+
+    def action_excel_dna(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+        if not os.path.exists(xlsname):
+            os.mkdir(xlsname)
+
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+
+        ws.col(0).width =3500 #1000 = 3.14(Excel)
+        ws.col(1).width = 4000
+
+
+        rows=0
+
+        old_date=""
+        file_s=""
+        file_e=""
+        for i in self.pool.get("rhwl.easy.genes").browse(cr,uid,ids,context=context):
+            if not file_s:
+                file_s=i.date.split("-")
+                file_s=str(int(file_s[1]))+"."+str(int(file_s[2]))
+
+            if i.date != old_date:
+                old_date = i.date.split("-")
+                ws.write_merge(rows,rows,0,4,".".join(old_date)+u"会员部送检样品质检不合格名单",style=self.get_excel_style(font_size=12))
+                rows += 1
+
+            image_dir=".".join(i.date.split("-")) + u"会员部送检样品质检不合格报告"
+            if not os.path.exists(os.path.join(xlsname,image_dir)):
+                os.mkdir(os.path.join(xlsname,image_dir))
+
+            if i.state=="dna_except":
+                report_data = {'report_type':'pentaho'}
+                report_id = openerp.service.report.exp_report("dev",1,'rhwl.gene.dna.except.ids',[i.id],report_data)
+
+                report_struct = None
+                while True:
+                    report_struct = openerp.service.report.exp_report_get("dev", 1, report_id)
+                    if report_struct["state"]:
+                        break
+
+                    time.sleep(0.25)
+
+                rep = base64.b64decode(report_struct['result'])
+                image_file = os.path.join(os.path.join(xlsname,image_dir),i.name+u"-"+i.cust_name+u".pdf")
+                f=open(image_file,'wb')
+                f.write(rep)
+                f.close()
+
+            ws.write(rows,0,i.name,style=self.get_excel_style(font_size=12))
+            ws.write(rows,1,i.cust_name,style=self.get_excel_style(font_size=12))
+            ws.write(rows,2,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=12))
+            ws.write(rows,3,True and i.identity or "",style=self.get_excel_style(font_size=12))
+
+            rows +=1
+
+            old_date=i.date
+
+            file_e=i.date.split("-")
+            file_e=str(int(file_e[1]))+"."+str(int(file_e[2]))
+
+        if file_s==file_e:
+            file_str=file_s
+        else:
+            file_str = file_s+"-"+file_e
+
+        w.save(os.path.join(xlsname,file_str+u"会员部送检样品质检不合格名单.xls"))
+
+        if not os.path.exists(u"/data/odoo/file/upload/样本质检异常"):
+            os.mkdir(u"/data/odoo/file/upload/样本质检异常")
+        t_dir=u"/data/odoo/file/upload/样本质检异常/"+file_str+u"会员部送检样品质检不合格名单及报告"
+        if not os.path.exists(t_dir):
+            os.mkdir(t_dir)
+
+        for i in os.listdir(xlsname):
+            shutil.move(os.path.join(xlsname,i.decode('utf-8')),os.path.join(t_dir,i.decode('utf-8')))
+
+        id = self.create(cr,uid,{"state":"done",})
+
+        os.system("rm -Rf "+xlsname)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'rhwl.gene.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出质检异常Excel"
+        }
+
+    def action_excel_informat(self,cr,uid,ids,context=None):
         if not context.get("active_ids"):return
         fileobj = NamedTemporaryFile('w+',delete=True)
         xlsname =  fileobj.name
@@ -60,18 +167,18 @@ class rhwl_export_excel(osv.osv_memory):
 
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(u"样本问题反馈")
-        ws.write(0,0,u"序号")
-        ws.write(0,1,u"基因样品编码"),
-        ws.write(0,2,u"姓名"),
-        ws.write(0,3,u"性别"),
-        ws.write(0,4,u"身份证号"),
-        ws.write(0,5,u"备注"),
-        ws.write(0,6,u"手机号"),
-        ws.write(0,7,u"会员部反馈")
+        ws.write(0,0,u"序号",style=self.get_excel_style(font_size=12))
+        ws.write(0,1,u"基因样品编码",style=self.get_excel_style(font_size=12)),
+        ws.write(0,2,u"姓名",style=self.get_excel_style(font_size=12)),
+        ws.write(0,3,u"性别",style=self.get_excel_style(font_size=12)),
+        ws.write(0,4,u"身份证号",style=self.get_excel_style(font_size=12)),
+        ws.write(0,5,u"备注",style=self.get_excel_style(font_size=12)),
+        ws.write(0,6,u"手机号",style=self.get_excel_style(font_size=12)),
+        ws.write(0,7,u"会员部反馈",style=self.get_excel_style(font_size=12))
         ws.col(1).width = 4500 #1000 = 3.14(Excel)
         ws.col(4).width = 7000
         ws.col(5).width = 8000
-
+        ws.col(6).width = 6000
         rows=1
         seq=1
         old_date=""
@@ -96,32 +203,15 @@ class rhwl_export_excel(osv.osv_memory):
                 f=open(image_file,'wb')
                 f.write(base64.decodestring(i.img_new))
                 f.close()
-            if i.state=="dna_except":
-                report_data = {'report_type':'pentaho'}
-                report_id = openerp.service.report.exp_report("dev",1,'rhwl.gene.dna.except.ids',[i.id],report_data)
 
-                report_struct = None
-                while True:
-                    report_struct = openerp.service.report.exp_report_get("dev", 1, report_id)
-                    if report_struct["state"]:
-                        break
-
-                    time.sleep(0.25)
-
-                rep = base64.b64decode(report_struct['result'])
-                image_file = os.path.join(os.path.join(xlsname,image_dir),i.name+i.cust_name+u".pdf")
-                f=open(image_file,'wb')
-                f.write(rep)
-                f.close()
-
-            ws.write(rows,0,seq)
-            ws.write(rows,1,i.name)
-            ws.write(rows,2,i.cust_name)
-            ws.write(rows,3,u"男" if i.sex==u"T" else u"女")
-            ws.write(rows,4,True and i.identity or "")
-            ws.write(rows,5,i.except_note)
-            ws.write(rows,6,True and i.mobile or "")
-            ws.write(rows,7,True and i.confirm_note or "")
+            ws.write(rows,0,seq,style=self.get_excel_style(font_size=12,horz=xlwt.Alignment.HORZ_CENTER))
+            ws.write(rows,1,i.name,style=self.get_excel_style(font_size=12))
+            ws.write(rows,2,i.cust_name,style=self.get_excel_style(font_size=12))
+            ws.write(rows,3,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=12))
+            ws.write(rows,4,True and i.identity or "",style=self.get_excel_style(font_size=12))
+            ws.write(rows,5,i.except_note,style=self.get_excel_style(font_size=12))
+            ws.write(rows,6,True and i.mobile or "",style=self.get_excel_style(font_size=12))
+            ws.write(rows,7,True and i.confirm_note or "",style=self.get_excel_style(font_size=12))
             rows +=1
             seq += 1
             old_date=i.date
@@ -136,14 +226,18 @@ class rhwl_export_excel(osv.osv_memory):
 
         w.save(os.path.join(xlsname,file_str+u"邮寄样本问题反馈.xls"))
 
-        os.system("cd "+xlsname+"/;zip -r "+os.path.join(xlsname,file_str+"邮寄样本问题反馈.zip")+" ./*")
-            #rc = subprocess.Popen(("zip","-r",,"./*"), cwd=xlsname,env=env, stdout=dn, stderr=subprocess.STDOUT)
-            #if rc:
-            #    raise Exception('ZIP Command Error.'+rc)
-        f=open(os.path.join(xlsname,file_str+u"邮寄样本问题反馈.zip"),'rb')
-        id = self.create(cr,uid,{"state":"done","name":file_str+u"邮寄样本问题反馈.zip","file": base64.encodestring(f.read())})
-        f.close()
-        #os.system("rm -Rf "+xlsname)
+        if not os.path.exists(u"/data/odoo/file/upload/样本问题反馈"):
+            os.mkdir(u"/data/odoo/file/upload/样本问题反馈")
+        t_dir=u"/data/odoo/file/upload/样本问题反馈/"+file_str+u"邮寄样本问题反馈"
+        if not os.path.exists(t_dir):
+            os.mkdir(t_dir)
+
+        for i in os.listdir(xlsname):
+            shutil.move(os.path.join(xlsname,i.decode('utf-8')),os.path.join(t_dir,i.decode('utf-8')))
+
+        id = self.create(cr,uid,{"state":"done",})
+
+        os.system("rm -Rf "+xlsname)
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'rhwl.gene.export.excel',

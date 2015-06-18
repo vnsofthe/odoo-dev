@@ -12,7 +12,7 @@
                         <separator string="确认导出所选择的这些数据吗?"/>
                     </group>
                     <group states="done">
-                        <p>点击右边文件名下载：<field name="file" readonly="1" filename="name"/></p>
+                        <separator string="数据已经导出，请从\\erp.genetalks.com\share网盘查看。"/>
                     </group>
                     <footer  states="draft">
                         <button name="action_excel" string="导出" type="object" class="oe_highlight"/>
@@ -27,7 +27,7 @@
         </record>
 
         <act_window name="导出样本问题反馈Excel"
-            context="{'search_default_draft': 1}"
+            context="{'func_name': 'informat'}"
             res_model="rhwl.gene.export.excel"
             src_model="rhwl.easy.genes"
             view_mode="form"
@@ -35,6 +35,16 @@
             multi="True"
             key2="client_action_multi"
             id="action_genes_export_excel"/>
+
+        <act_window name="导出质检异常Excel"
+            context="{'func_name': 'dna'}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.easy.genes"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_genes_export_dna_excel"/>
 
     </data>
 </openerp>

@@ -133,6 +133,7 @@ class rhwl_sample_info(osv.osv):
         "lib_t21":fields.float("T21",digits=(12,8),readonly=True),
         "lib_note":fields.text("Note",readonly=True),
         "has_invoice":fields.boolean(u"是否开发票"),
+        "has_sms":fields.boolean(u"短信已通知",readonly=True)
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -149,6 +150,7 @@ class rhwl_sample_info(osv.osv):
         "yfissgyr": lambda obj, cr, uid, context: "0",
         "urgency":lambda obj,cr,uid,context:"0",
         "has_invoice":False,
+        "has_sms":False
 
     }
     _sql_constraints = [
@@ -465,6 +467,7 @@ class rhwl_sample_info(osv.osv):
                 res = self.pool.get("res.company").send_sms(cr,uid,i.yftelno,str )
                 if res.split('/')[0]!="000":
                     raise osv.except_osv(u"错误",u"短信发送错误，"+res)
+                self.write(cr,uid,i.id,{"has_sms":True},context=context)
 
     def action_check_ok(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok","library_date":fields.date.today()}, context=context)

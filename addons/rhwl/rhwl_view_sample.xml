@@ -120,6 +120,7 @@
                                 <field name="is_free" colspan='2' attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="urgency"/>
                                 <field name="has_invoice"/>
+                                <field name="has_sms"/>
                             </group>
                             <group>
                                 <field name="receiv_user"/>
