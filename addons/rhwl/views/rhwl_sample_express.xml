@@ -23,17 +23,25 @@
                     <form>
                         <sheet>
                             <group>
-                                <field name="name"/>
-                                <field name="date"/>
-                                <field name="user_id"/>
-                                <field name="url_express" widget="url"/>
-                                <field name="line">
-                                    <tree string="样本明细" editable="top">
-                                        <field name="sample_id"/>
-                                        <field name="yfxm"/>
-                                    </tree>
-                                </field>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                </group>
+                                <group>
+                                    <field name="note"/>
+                                </group>
+
                             </group>
+                            <group>
+                                <field name="url_express" widget="url"/>
+                            </group>
+                             <field name="line">
+                                <tree string="样本明细" editable="top">
+                                    <field name="sample_id"/>
+                                    <field name="yfxm"/>
+                                </tree>
+                             </field>
                         </sheet>
                     </form>
 

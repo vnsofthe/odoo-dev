@@ -312,6 +312,7 @@ class sale_express(osv.osv):
         'url_express': fields.function(
             _get_url_express, method=True, type='char',
             string='Link', readonly=1),
+        "note":fields.text(u"备注"),
         "line":fields.one2many("rhwl.sampleone.express.line","name",string=u"样本明细"),
     }
 
