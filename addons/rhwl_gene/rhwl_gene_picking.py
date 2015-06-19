@@ -108,15 +108,17 @@ class rhwl_picking(osv.osv):
     def pdf_copy(self,cr,uid,pdf_path,files):
         u_count = 0
         t_count = 0
+        lines=[]
         for k,v in files.items():
             t_count += len(v)
             for i in v:
                 if os.path.exists(os.path.join(pdf_path,i[0])):
                     if (not os.path.exists(os.path.join(k,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(k,i[0])).st_size:
                         shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(k,i[0]))
-                    self.pool.get("rhwl.genes.picking.box.line").write(cr,uid,i[1],{"has_pdf":True})
-
+                    lines.append(i[1])
                     u_count += 1
+        if lines:
+            self.pool.get("rhwl.genes.picking.box.line").write(cr,uid,lines,{"has_pdf":True})
         return (t_count,u_count)
 
     #根据发货单，生成需要上传的目录结构，并复制pdf文件到相应的目录中。
@@ -289,7 +291,7 @@ class rhwl_picking(osv.osv):
                 f.close()
 
     def action_excel_upload(self,cr,uid,ids,context=None):
-        #self.excel_upload(cr,uid,ids,False,context=context)
+        self.excel_upload(cr,uid,ids,False,context=context)
         self.risk_excel(cr,uid,ids,context=context)
 
     #生成批次下的excel，方便印刷厂查阅
@@ -311,12 +313,24 @@ class rhwl_picking(osv.osv):
     #生成发货单Excel
     def excel_upload(self,cr,uid,ids,isvip=False,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
-        template = os.path.join(os.path.split(__file__)[0], "static/template.xlsx")
+        cust_path = os.path.join(upload_path,u"发货单及横版报告")
+        if not os.path.exists(cust_path):
+            os.mkdir(cust_path)
+
         obj = self.browse(cr,uid,ids,context=context)
+        datastr=obj.date.replace("/","").replace("-","")
+        cust_path = os.path.join(cust_path,datastr)
+        if not os.path.exists(cust_path):
+            os.mkdir(cust_path)
+
         if isvip:
-            excel_path = os.path.join(upload_path,obj.date.replace("/","").replace("-","")+"/"+obj.date.replace("/","").replace("-","")+"_vip.xls")
+            excel_path = os.path.join(upload_path,datastr+"/"+datastr+u"发货单_vip.xls")
+            cust_excel_path = os.path.join(cust_path,datastr+u"发货单_vip.xls")
         else:
-            excel_path = os.path.join(upload_path,obj.date.replace("/","").replace("-","")+"/"+obj.date.replace("/","").replace("-","")+".xls")
+            excel_path = os.path.join(upload_path,datastr+"/"+datastr+u"发货单.xls")
+            cust_excel_path = os.path.join(cust_path,datastr+u"发货单.xls")
+
+        delete_list={}
         #shutil.copy(template,excel_path)
         #11号字
         style = xlwt.XFStyle()
@@ -526,11 +540,12 @@ class rhwl_picking(osv.osv):
             excel_row += 1
             #处理批号明细
             if l.batch_kind=="normal":
-               w1 = w.add_sheet(u".".join(gene_obj.date.split("-")[1:])+u"会"+l.batch_no+u"批")
+               w1 = w.add_sheet(u".".join(gene_obj.date.split("-")[1:])+u"会"+l.batch_no+u"批",cell_overwrite_ok=True)
             elif l.batch_kind=="resend":
-               w1 = w.add_sheet(l.batch_no)
+               w1 = w.add_sheet(l.batch_no,cell_overwrite_ok=True)
             else:
-               w1 = w.add_sheet(l.batch_no)
+               w1 = w.add_sheet(l.batch_no,cell_overwrite_ok=True)
+            sheet_count=1
             #w1 = w.add_sheet(gene_obj.date)
             w1.col(0).width = 2960
             w1.col(1).width = 3160
@@ -576,6 +591,8 @@ class rhwl_picking(osv.osv):
                         w1.write(sheet_row,5,str(bl.genes_id.risk_count)+(u"(儿童)" if bl.genes_id.is_child else u""),style6)
                         w1.write(sheet_row,6,bl.genes_id.risk_text,style)
                     sheet_row += 1
+                    sheet_count +=1
+
             if l.batch_kind=="normal":
                 line_ids = self.pool.get("rhwl.genes.picking.line").search(cr,uid,[("picking_id","=",l.picking_id.id),("batch_kind","=","vip")],context=context)
                 for ll in self.pool.get("rhwl.genes.picking.line").browse(cr,uid,line_ids,context=context):
@@ -590,7 +607,8 @@ class rhwl_picking(osv.osv):
                                 w1.write(sheet_row,5,str(vip_bl.genes_id.risk_count)+(u"(儿童)" if vip_bl.genes_id.is_child else u""),style6)
                                 w1.write(sheet_row,6,vip_bl.genes_id.risk_text,style)
                                 sheet_row += 1
-
+                                sheet_count +=1
+            delete_list[w1.name] = sheet_count
 
 
             #统计质检不合格数据
@@ -633,7 +651,17 @@ class rhwl_picking(osv.osv):
         ws.write_merge(excel_row,excel_row,5,9,"",style3)
         ws.write_merge(excel_row+1,excel_row+1,0,4,u"收货人签字：",style4)
         ws.write_merge(excel_row+1,excel_row+1,5,9,u"收货日期：",style4)
+
+        w.save(cust_excel_path)
+
+        for s in w._Workbook__worksheets:
+            if not delete_list.get(s.name):continue
+            for r in range(1,delete_list.get(s.name)):
+                s.write(r-1,5,"")
+                s.write(r-1,6,"")
+                s.write(r-1,7,"")
         w.save(excel_path)
+
         if not isvip:
             self.excel_upload(cr,uid,ids,True,context=context)
 
@@ -653,9 +681,10 @@ class rhwl_picking(osv.osv):
     #创建发货单的横板excel表
     def risk_excel(self,cr,uid,id,context=None):
         upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        cust_path = os.path.join(upload_path,u"发货单及横版报告")
         obj = self.browse(cr,uid,id,context=context)
         d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
-        d_path=os.path.join(upload_path,d)
+        d_path=os.path.join(cust_path,d)
         w = xlwt.Workbook(encoding='utf-8')
         ws1 = w.add_sheet(u'总表')
         ws2 = w.add_sheet(u'儿童筛选')
