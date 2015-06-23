@@ -324,11 +324,11 @@ class rhwl_picking(osv.osv):
             os.mkdir(cust_path)
 
         if isvip:
-            excel_path = os.path.join(upload_path,datastr+"/"+datastr+u"发货单_vip.xls")
-            cust_excel_path = os.path.join(cust_path,datastr+u"发货单_vip.xls")
+            excel_path = os.path.join(upload_path,datastr+"/"+datastr+u"-发货单vip.xls")
+            cust_excel_path = os.path.join(cust_path,datastr+u"-发货单vip.xls")
         else:
-            excel_path = os.path.join(upload_path,datastr+"/"+datastr+u"发货单.xls")
-            cust_excel_path = os.path.join(cust_path,datastr+u"发货单.xls")
+            excel_path = os.path.join(upload_path,datastr+"/"+datastr+u"-发货单.xls")
+            cust_excel_path = os.path.join(cust_path,datastr+u"-发货单.xls")
 
         delete_list={}
         #shutil.copy(template,excel_path)

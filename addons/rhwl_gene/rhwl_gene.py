@@ -819,8 +819,10 @@ class rhwl_gene_batch(osv.osv):
     }
 
     def create(self,cr,uid,val,context=None):
-        id = super(rhwl_gene_batch,self).create(cr,uid,val,context=context)
         gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",val.get("name"))],context=context)
+        if not gene_id:
+            raise osv.except_osv(u"错误",u"批次错误，请输入正确的批次号。")
+        id = super(rhwl_gene_batch,self).create(cr,uid,val,context=context)
         self.pool.get("rhwl.easy.genes").write(cr,uid,gene_id,{"batch_id":id},context=context)
         return id
 

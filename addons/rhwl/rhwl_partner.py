@@ -163,8 +163,10 @@ class rhwl_partner(osv.osv):
         if not vals.get('partner_unid'):
             state_code=None
             city_code=None
-            if vals.get("use_parent_address"):
+
+            if not (vals.get("state_id") and vals.get("city_id")):
                 parent = self.pool.get("res.partner").browse(cr,uid,vals.get("parent_id"),context=context)
+                vals["state_id"] = parent.state_id.id
                 vals["city_id"] =parent.city_id.id
             if vals.get("state_id"):
                 state_code = self.pool.get("res.country.state").browse(cr,uid,vals.get("state_id")).code
@@ -274,4 +276,7 @@ class rhwl_user(osv.osv):
     _inherit="res.users"
     _columns={
         'section_ids': fields.many2many('crm.case.section', 'sale_member_rel', 'member_id','section_id',  'Sale Teams'),
+    }
+    _defaults={
+        "parent_id":1
     }

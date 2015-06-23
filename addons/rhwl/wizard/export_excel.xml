@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_sale_sampleone_export_excel" model="ir.ui.view">
+            <field name="name">sale.sampleone.export.excel</field>
+            <field name="model">sale.sample.export.excel</field>
+            <field name="arch" type="xml">
+               <form string="Merge Requisition">
+                   <field invisible="1" name="state"/>
+                   <field invisible="1" name="name"/>
+                    <group states="draft">
+                        <separator string="确认导出所选择的这些数据吗?"/>
+                    </group>
+                    <group states="done">
+                        <field name="file" filename="name" readonly="1"/>
+                    </group>
+                    <footer  states="draft">
+                        <button name="action_excel" string="导出" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                    <footer  states="done">
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="导出保险信息单Excel"
+            context="{'func_name': 'report1'}"
+            res_model="sale.sample.export.excel"
+            src_model="sale.sampleone"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_sale_sample_export_excel"/>
+
+        <act_window name="导出费用结算单Excel"
+            context="{'func_name': 'report2'}"
+            res_model="sale.sample.export.excel"
+            src_model="sale.sampleone"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_sale_sample_export_excel1"/>
+
+    </data>
+</openerp>
+
