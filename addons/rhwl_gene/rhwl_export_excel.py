@@ -139,7 +139,7 @@ class rhwl_export_excel(osv.osv_memory):
         for i in os.listdir(xlsname):
             if os.path.exists(os.path.join(t_dir,i.decode('utf-8'))):
                 if os.path.isdir(os.path.join(t_dir,i.decode('utf-8'))):
-                    os.system("rm -Rf "+os.path.join(t_dir,i.decode('utf-8')))
+                    shutil.rmtree(os.path.join(t_dir,i.decode('utf-8')))
                 else:
                     os.remove(os.path.join(t_dir,i.decode('utf-8')))
             shutil.move(os.path.join(xlsname,i.decode('utf-8')),os.path.join(t_dir,i.decode('utf-8')))
@@ -240,7 +240,7 @@ class rhwl_export_excel(osv.osv_memory):
         for i in os.listdir(xlsname):
             if os.path.exists(os.path.join(t_dir,i.decode('utf-8'))):
                 if os.path.isdir(os.path.join(t_dir,i.decode('utf-8'))):
-                    os.system("rm -Rf "+os.path.join(t_dir,i.decode('utf-8')))
+                    shutil.rmtree(os.path.join(t_dir,i.decode('utf-8')))
                 else:
                     os.remove(os.path.join(t_dir,i.decode('utf-8')))
             shutil.move(os.path.join(xlsname,i.decode('utf-8')),os.path.join(t_dir,i.decode('utf-8')))
