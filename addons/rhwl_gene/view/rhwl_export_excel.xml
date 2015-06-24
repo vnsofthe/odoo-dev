@@ -11,15 +11,18 @@
                     <group states="draft">
                         <separator string="确认导出所选择的这些数据吗?"/>
                     </group>
-                    <group states="done">
+                    <group states="netdisk">
                         <separator string="数据已经导出，请从\\erp.genetalks.com\share网盘查看。"/>
+                    </group>
+                    <group states="excel">
+                        <field name="file" filename="name" readonly="1"/>
                     </group>
                     <footer  states="draft">
                         <button name="action_excel" string="导出" type="object" class="oe_highlight"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel" />
                     </footer>
-                    <footer  states="done">
+                    <footer  states="netdisk,excel,done">
                         <button string="Cancel" class="oe_link" special="cancel" />
                     </footer>
                 </form>
@@ -46,6 +49,15 @@
             key2="client_action_multi"
             id="action_genes_export_dna_excel"/>
 
+        <act_window name="导出位点数据Excel"
+            context="{'func_name': 'snp'}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.easy.genes.batch"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_genes_export_snp_excel"/>
     </data>
 </openerp>
 

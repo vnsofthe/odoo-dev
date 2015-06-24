@@ -40,7 +40,7 @@ class rhwl_export_excel(osv.osv_memory):
     _columns={
         "file":fields.binary(u"文件"),
         "name":fields.char("File Name"),
-        "state":fields.selection([('draft','Draft'),('done','Done')],string="State"),
+        "state":fields.selection([('draft','Draft'),('netdisk','NetDisk'),('excel','Excel'),('done','Done')],string="State"),
     }
 
     _defaults={
@@ -51,9 +51,63 @@ class rhwl_export_excel(osv.osv_memory):
         if not context:
             context={}
         if context.get('func_name','')=='informat':
-            self.action_excel_informat(cr,uid,ids,context=context)
+            return self.action_excel_informat(cr,uid,ids,context=context)
         elif context.get('func_name','')=='dna':
-            self.action_excel_dna(cr,uid,ids,context=context)
+            return self.action_excel_dna(cr,uid,ids,context=context)
+        elif context.get('func_name','')=="snp":
+            return self.action_excel_snp(cr,uid,ids,context=context)
+
+    def action_excel_snp(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+        ws.write(0,0,u"姓名")
+        ws.write(0,1,u"性别")
+        ws.write(0,2,u"批次")
+        ws.write(0,3,u"体检编号")
+        header=[]
+
+        rows=1
+        for i in self.pool.get("rhwl.easy.genes.batch").browse(cr,uid,ids,context=context):
+            gene_ids = self.pool.get("rhwl.easy.genes").search(cr,uid,[("batch_no","=",i.name),("typ","!=",False)])
+            data = self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,gene_ids,context=context)
+            for k,v in data.items():
+                for k1,v1 in v.items():
+                    ws.write(rows,0,v1.get("cust_name"))
+                    ws.write(rows,1,u"男" if k=="M" else u"女")
+                    ws.write(rows,2,i.name)
+                    ws.write(rows,3,k1)
+                    if not header:
+                        header = v1.keys()
+                        header.remove("name")
+                        header.remove("cust_name")
+                        header.sort()
+                        for s in header:
+                            ws.write(0,header.index(s)+4,s)
+                    for s in header:
+                        ws.write(rows,header.index(s)+4,v1[s])
+                    rows+=1
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+        w.save(xlsname)
+        f=open(xlsname,'rb')
+        id=self.create(cr,uid,{"file":base64.encodestring(f.read()),"name":u"位点数据.xls","state":"excel"})
+        f.close()
+        os.remove(xlsname)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'rhwl.gene.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出位点数据Excel"
+        }
 
     def action_excel_dna(self,cr,uid,ids,context=None):
         if not context.get("active_ids"):return
@@ -86,7 +140,7 @@ class rhwl_export_excel(osv.osv_memory):
 
             if i.date != old_date:
                 old_date = i.date.split("-")
-                ws.write_merge(rows,rows,0,4,".".join(old_date)+u"会员部送检样品质检不合格名单",style=self.get_excel_style(font_size=12))
+                ws.write_merge(rows,rows,0,4,".".join(old_date)+u"会员部送检样品质检不合格名单",style=self.get_excel_style(font_size=11))
                 rows += 1
 
             image_dir=".".join(i.date.split("-")) + u"会员部送检样品质检不合格报告"
@@ -111,10 +165,10 @@ class rhwl_export_excel(osv.osv_memory):
                 f.write(rep)
                 f.close()
 
-            ws.write(rows,0,i.name,style=self.get_excel_style(font_size=12))
-            ws.write(rows,1,i.cust_name,style=self.get_excel_style(font_size=12))
-            ws.write(rows,2,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=12))
-            ws.write(rows,3,True and i.identity or "",style=self.get_excel_style(font_size=12))
+            ws.write(rows,0,i.name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,1,i.cust_name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,2,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=11))
+            ws.write(rows,3,True and i.identity or "",style=self.get_excel_style(font_size=11))
 
             rows +=1
 
@@ -144,7 +198,7 @@ class rhwl_export_excel(osv.osv_memory):
                     os.remove(os.path.join(t_dir,i.decode('utf-8')))
             shutil.move(os.path.join(xlsname,i.decode('utf-8')),os.path.join(t_dir,i.decode('utf-8')))
 
-        id = self.create(cr,uid,{"state":"done",})
+        id = self.create(cr,uid,{"state":"netdisk",})
 
         os.system("rm -Rf "+xlsname)
         return {
@@ -172,14 +226,14 @@ class rhwl_export_excel(osv.osv_memory):
 
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(u"样本问题反馈")
-        ws.write(0,0,u"序号",style=self.get_excel_style(font_size=12))
-        ws.write(0,1,u"基因样品编码",style=self.get_excel_style(font_size=12)),
-        ws.write(0,2,u"姓名",style=self.get_excel_style(font_size=12)),
-        ws.write(0,3,u"性别",style=self.get_excel_style(font_size=12)),
-        ws.write(0,4,u"身份证号",style=self.get_excel_style(font_size=12)),
-        ws.write(0,5,u"备注",style=self.get_excel_style(font_size=12)),
-        ws.write(0,6,u"手机号",style=self.get_excel_style(font_size=12)),
-        ws.write(0,7,u"会员部反馈",style=self.get_excel_style(font_size=12))
+        ws.write(0,0,u"序号",style=self.get_excel_style(font_size=11))
+        ws.write(0,1,u"基因样品编码",style=self.get_excel_style(font_size=11)),
+        ws.write(0,2,u"姓名",style=self.get_excel_style(font_size=11)),
+        ws.write(0,3,u"性别",style=self.get_excel_style(font_size=11)),
+        ws.write(0,4,u"身份证号",style=self.get_excel_style(font_size=11)),
+        ws.write(0,5,u"备注",style=self.get_excel_style(font_size=11)),
+        ws.write(0,6,u"手机号",style=self.get_excel_style(font_size=11)),
+        ws.write(0,7,u"会员部反馈",style=self.get_excel_style(font_size=11))
         ws.col(1).width = 4500 #1000 = 3.14(Excel)
         ws.col(4).width = 7000
         ws.col(5).width = 8000
@@ -209,14 +263,14 @@ class rhwl_export_excel(osv.osv_memory):
                 f.write(base64.decodestring(i.img_new))
                 f.close()
 
-            ws.write(rows,0,seq,style=self.get_excel_style(font_size=12,horz=xlwt.Alignment.HORZ_CENTER))
-            ws.write(rows,1,i.name,style=self.get_excel_style(font_size=12))
-            ws.write(rows,2,i.cust_name,style=self.get_excel_style(font_size=12))
-            ws.write(rows,3,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=12))
-            ws.write(rows,4,True and i.identity or "",style=self.get_excel_style(font_size=12))
-            ws.write(rows,5,i.except_note,style=self.get_excel_style(font_size=12))
-            ws.write(rows,6,True and i.mobile or "",style=self.get_excel_style(font_size=12))
-            ws.write(rows,7,True and i.confirm_note or "",style=self.get_excel_style(font_size=12))
+            ws.write(rows,0,seq,style=self.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_CENTER))
+            ws.write(rows,1,i.name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,2,i.cust_name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,3,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=11))
+            ws.write(rows,4,True and i.identity or "",style=self.get_excel_style(font_size=11))
+            ws.write(rows,5,i.except_note,style=self.get_excel_style(font_size=11))
+            ws.write(rows,6,True and i.mobile or "",style=self.get_excel_style(font_size=11))
+            ws.write(rows,7,True and i.confirm_note or "",style=self.get_excel_style(font_size=11))
             rows +=1
             seq += 1
             old_date=i.date
@@ -245,7 +299,7 @@ class rhwl_export_excel(osv.osv_memory):
                     os.remove(os.path.join(t_dir,i.decode('utf-8')))
             shutil.move(os.path.join(xlsname,i.decode('utf-8')),os.path.join(t_dir,i.decode('utf-8')))
 
-        id = self.create(cr,uid,{"state":"done",})
+        id = self.create(cr,uid,{"state":"netdisk",})
 
         os.system("rm -Rf "+xlsname)
         return {
