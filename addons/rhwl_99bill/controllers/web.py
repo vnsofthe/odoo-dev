@@ -287,6 +287,7 @@ class WebClient(http.Controller):
                 "txn_type":kw.get("txnType"),
                 "signature":kw.get("signature"),
             }
-            obj.create(cr,SUPERUSER_ID,val)
-            cr.commit()
+            if val.get("response_code")==u"00":
+                obj.create(cr,SUPERUSER_ID,val)
+                cr.commit()
         return "0"

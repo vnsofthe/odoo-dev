@@ -64,6 +64,11 @@
             <field name="arch" type="xml">
                 <search string="Gene">
                     <field name="name"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="领用人" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>

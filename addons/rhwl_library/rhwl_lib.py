@@ -9,6 +9,7 @@ import logging
 
 class rhwl_lib(osv.osv):
     _name="rhwl.library.request"
+    _order = "date desc"
     _columns={
         "name":fields.char("Name",size=15,readonly=True),
         "date":fields.date("Date"),

@@ -148,3 +148,21 @@ class purchase_apply_log(osv.osv):
         "date": fields.datetime.now,
         "user_id": lambda obj, cr, uid, context: uid,
     }
+
+class purchase_order(osv.osv):
+    _inherit = "purchase.order"
+
+    def wkf_confirm_order(self, cr, uid, ids, context=None):
+        if isinstance(ids,(long,int)):
+            ids = [ids]
+        for o in self.browse(cr,uid,ids,context=context):
+            if o.requisition_id:
+                no=o.requisition_id.origin
+                if no:
+                    apply_id = self.pool.get("purchase.order.apply").search(cr,uid,[("name","=",no)])
+                    if apply_id:
+                        apply_id = self.pool.get("purchase.order.apply").search(cr,uid,[("name","=",no),("state","=","chief")])
+                        if not apply_id:
+                            raise osv.except_osv("Error",u"该询价单由采购申请单产生，需要先审批采购申请单才可以确认询价单。")
+
+        return super(purchase_order,self).wkf_confirm_order(cr,uid,ids,context=context)
