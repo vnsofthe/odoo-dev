@@ -46,6 +46,15 @@
             key2="client_action_multi"
             id="action_sale_sample_export_excel1"/>
 
+        <act_window name="导出费用申请单"
+            context="{'func_name': 'report3'}"
+            res_model="sale.sample.export.excel"
+            src_model="purchase.order.apply"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_purchase_order_apply_export_excel"/>
     </data>
 </openerp>
 

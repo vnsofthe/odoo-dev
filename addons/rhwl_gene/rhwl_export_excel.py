@@ -64,10 +64,11 @@ class rhwl_export_excel(osv.osv_memory):
             ids.sort()
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
-        ws.write(0,0,u"姓名")
-        ws.write(0,1,u"性别")
-        ws.write(0,2,u"批次")
-        ws.write(0,3,u"体检编号")
+        ws.col(1).width =3500
+        ws.write(0,0,u"批次")
+        ws.write(0,1,u"基因编码")
+        ws.write(0,2,u"姓名")
+        ws.write(0,3,u"性别")
         header=[]
 
         rows=1
@@ -76,10 +77,11 @@ class rhwl_export_excel(osv.osv_memory):
             data = self.pool.get("rhwl.easy.genes").get_gene_type_list(cr,uid,gene_ids,context=context)
             for k,v in data.items():
                 for k1,v1 in v.items():
-                    ws.write(rows,0,v1.get("cust_name"))
-                    ws.write(rows,1,u"男" if k=="M" else u"女")
-                    ws.write(rows,2,i.name)
-                    ws.write(rows,3,k1)
+                    ws.write(rows,0,i.name)
+                    ws.write(rows,1,k1)
+                    ws.write(rows,2,v1.get("cust_name"))
+                    ws.write(rows,3,u"男" if k=="M" else u"女")
+
                     if not header:
                         header = v1.keys()
                         header.remove("name")
