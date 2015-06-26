@@ -235,7 +235,7 @@ class rhwl_import(osv.osv_memory):
                             old_type[snp.get(k)]=v
                         if v=="N/A":
                             v=old_type[snp.get(k)]
-                        if old_type[snp.get(k)] != v:
+                        if this.is_over==False and old_type[snp.get(k)] != v:
                             raise osv.except_osv(u"错误",u"基因样本编码[%s]位点[%s]原来的值为[%s],现在的值为[%s],请确认原因。"%(no,snp.get(k),old_type[snp.get(k)],v))
                     for s in list(v.replace("/","")):
                         if rhwl_gene_check.snp_check[snp.get(k)].count(s)==0:

@@ -101,6 +101,7 @@ class rhwl_gene(osv.osv):
         "risk_text": fields.function(_get_risk, type="char", string=u'高风险疾病', multi='risk'),
         "snp_name":fields.char("SNP File",size=20),
         "batch_id":fields.many2one("rhwl.easy.genes.batch","Batch_id"),
+        "export_img":fields.boolean("Export Img"),
         "A1":fields.function(_get_risk_detail,type="char",string="A1",multi="risk_detail"),
         "A2":fields.function(_get_risk_detail,type="char",string="A2",multi="risk_detail"),
         "A3":fields.function(_get_risk_detail,type="char",string="A3",multi="risk_detail"),
@@ -180,6 +181,7 @@ class rhwl_gene(osv.osv):
         "cust_prop": "tjs",
         "is_risk":False,
         "is_child":False,
+        "export_img":False,
     }
 
     def init(self, cr):
@@ -222,10 +224,11 @@ class rhwl_gene(osv.osv):
             val["log"] = [
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
         if val.has_key("img"):
-            log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","in",id),("data","=","expimg")])
-            if log_id:
-                self.pool.get("rhwl.easy.genes.log").write(cr,uid,log_id,{"data":"expimg,1"},context=context)
+            #log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","in",id),("data","=","expimg")])
+            #if log_id:
+            #    self.pool.get("rhwl.easy.genes.log").write(cr,uid,log_id,{"data":"expimg,1"},context=context)
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
+            val["export_img"]=False
             obj = self.browse(cr,SUPERUSER_ID,id,context=context)
             vals={
                 "name":obj.name,
@@ -237,9 +240,10 @@ class rhwl_gene(osv.osv):
                 "create_uid":SUPERUSER_ID,
                 "datas":val.get("img"),
             }
+            atta_obj = self.pool.get('ir.attachment')
             if obj.img_atta:
-                self.pool.get('ir.attachment').unlink(cr,SUPERUSER_ID,obj.img_atta.id)
-            atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,vals)
+                atta_obj.unlink(cr,SUPERUSER_ID,obj.img_atta.id)
+            atta_id = atta_obj.create(cr,SUPERUSER_ID,vals)
             val["img_atta"]=atta_id
             val.pop("img")
 
@@ -339,10 +343,10 @@ class rhwl_gene(osv.osv):
         d=os.path.join(upload_path,u"样本信息图片")
         if not os.path.exists(d):
             os.mkdir(d)
-        all_ids = self.search(cr,uid,[("cust_prop","in",["tjs","tjs_vip"])],context=context)
-        pic_ids = self.search(cr,uid,[("cust_prop","in",["tjs","tjs_vip"]),("log.data","=","expimg")],context=context)
-        for i in pic_ids:
-            all_ids.remove(i)
+        all_ids = self.search(cr,uid,[("cust_prop","in",["tjs","tjs_vip"]),("export_img","=",False)],context=context)
+        #pic_ids = self.search(cr,uid,[("cust_prop","in",["tjs","tjs_vip"]),("export_img","=",False)],context=context)
+        #for i in pic_ids:
+        #    all_ids.remove(i)
         filestore=tools.config.filestore(cr.dbname)
         for i in self.browse(cr,uid,all_ids,context=context):
             if not i.img_atta:continue
@@ -356,7 +360,7 @@ class rhwl_gene(osv.osv):
             att_obj = self.pool.get('ir.attachment').browse(cr,uid,i.img_atta.id,context=context)
             if (not os.path.exists(os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))) or os.stat(os.path.join(filestore,att_obj.store_fname)).st_size != os.stat(os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg")).st_size:
                 shutil.copy(os.path.join(filestore,att_obj.store_fname),os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))
-            self.write(cr,uid,i.id,{"log":[[0,0,{"note":u"图片导出","data":"expimg"}]]})
+            self.write(cr,uid,i.id,{"log":[[0,0,{"note":u"图片导出","data":"expimg"}]],"export_img":True})
 
     #导出样本位点数据到报告生成服务器
     def create_gene_type_file(self, cr, uid, ids, context=None):

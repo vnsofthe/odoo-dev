@@ -55,6 +55,16 @@
             multi="True"
             key2="client_action_multi"
             id="action_purchase_order_apply_export_excel"/>
+
+        <act_window name="导出对帐单Excel"
+            context="{'func_name': 'report4'}"
+            res_model="sale.sample.export.excel"
+            src_model="sale.sampleone"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_sale_sampleone_export_excel2"/>
     </data>
 </openerp>
 
