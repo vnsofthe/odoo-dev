@@ -237,7 +237,7 @@ class export_excel(osv.osv_memory):
                     rows+=1
         ws.write_merge(3,rows-1,0,0,u"费用明细",style=self.get_excel_style(horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN))
         ws.write(rows,0,u"总费用",style=self.get_excel_style(horz=xlwt.Alignment.HORZ_CENTER,blod=True,border=xlwt.Borders.THIN))
-        ws.write_merge(rows,rows,1,6,u"大写："+self.num2chn(total_amt),style=self.get_excel_style(border=xlwt.Borders.THIN))
+        ws.write_merge(rows,rows,1,6,u"大写："+self.num2chn(total_amt).decode("utf-8"),style=self.get_excel_style(border=xlwt.Borders.THIN))
         ws.write(rows,7,total_amt,style=self.get_excel_style(horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN))
         ws.write(rows,8,"",style=self.get_excel_style(horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN))
         ws.write(rows,9,"",style=self.get_excel_style(horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN))
@@ -321,6 +321,7 @@ class export_excel(osv.osv_memory):
             ws.write(rows,7,i.cxyy.hospital_price)
             ws.write(rows,8,i.cxyy.amt)
             ws.write(rows,9,payment_kind.get(i.cxyy.payment_kind.decode("utf-8")))
+            rows+=1
 
         w.save(xlsname)
         f=open(xlsname,'rb')
