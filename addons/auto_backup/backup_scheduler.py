@@ -95,6 +95,7 @@ class db_backup(osv.osv):
             raise
         for rec in confs:
             db_list = self.get_db_list(cr, user, [], rec.host, rec.port)
+            _logger.info(db_list)
             # Get UTC time
             curtime = datetime.datetime.strptime(datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
                                                  '%Y-%m-%d %H:%M:%S')
@@ -118,6 +119,7 @@ class db_backup(osv.osv):
                 bkp = ''
                 try:
                     bkp = execute(conn, 'dump', master_pass, rec.name)
+                    _logger.info("dump db length:"+str(len(bkp)))
                 except:
                     _logger.info('backup',
                                  "Could'nt backup database %s. Bad database administrator password for server running at http://%s:%s" % (
@@ -128,6 +130,7 @@ class db_backup(osv.osv):
                 fp = open(file_path, 'wb')
                 fp.write(bkp)
                 fp.close()
+                _logger.info("dump db to :"+file_path)
             else:
                 _logger.info('backup', "database %s doesn't exist on http://%s:%s" % (rec.name, rec.host, rec.port))
                 #logger.notifyChannel('backup', netsvc.LOG_INFO, "database %s doesn't exist on http://%s:%s" %(rec.name, rec.host, rec.port))
