@@ -249,6 +249,13 @@ class rhwl_gene(osv.osv):
 
         return super(rhwl_gene, self).write(cr, uid, id, val, context=context)
 
+    def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
+        if groupby.count("date")>0 and not orderby:
+            orderby="date desc"
+
+        res=super(rhwl_gene,self).read_group(cr,uid,domain,fields,groupby,offset,limit,context=context,orderby=orderby,lazy=lazy)
+        return res
+
     def unlink(self, cr, uid, ids, context=None):
         if isinstance(ids, (long, int)):
             ids = [ids]
