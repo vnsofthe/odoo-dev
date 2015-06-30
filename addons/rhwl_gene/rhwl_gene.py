@@ -249,6 +249,13 @@ class rhwl_gene(osv.osv):
 
         return super(rhwl_gene, self).write(cr, uid, id, val, context=context)
 
+    def read_group(self, cr, uid, domain, fields, groupby, offset=0, limit=None, context=None, orderby=False, lazy=True):
+        if groupby.count("date")>0 and not orderby:
+            orderby="date desc"
+
+        res=super(rhwl_gene,self).read_group(cr,uid,domain,fields,groupby,offset,limit,context=context,orderby=orderby,lazy=lazy)
+        return res
+
     def unlink(self, cr, uid, ids, context=None):
         if isinstance(ids, (long, int)):
             ids = [ids]
@@ -558,14 +565,17 @@ class rhwl_gene(osv.osv):
         v_count4=0
         v_count5 = 0
         dna_rate={}
+        not_dna_except={} #记录不报告质检比率的批次
         for i in cr.fetchall():
             if not dna_rate.has_key(i[0]):
                 dna_rate[i[0]]={"count":0,"except":0}
             dna_rate[i[0]]["count"] =dna_rate[i[0]]["count"]+i[2]
             if i[1]=='draft':
                 v_count0 += i[2] #待收件
+                not_dna_except[i[0]]=True
             elif i[1] in ['except','except_confirm','confirm']:
                 v_count1 += i[2] #待检测
+                not_dna_except[i[0]]=True
             elif i[1] in ['dna_ok','ok','report']:
                 v_count2 += i[2] #待生成报告
             elif i[1] == 'dna_except':
@@ -577,7 +587,7 @@ class rhwl_gene(osv.osv):
                 v_count5 += i[2] #已完成
         except_rate=[]
         for k,v in dna_rate.items():
-            if v["except"]>0:
+            if not not_dna_except.get(k,False):
                 except_rate.append(k.encode("utf-8")+"="+str(v["except"])+"/"+str(v["count"]))
         js={
             "first":"易感样本状况统计：",
