@@ -657,6 +657,7 @@ class rhwl_picking(osv.osv):
         for s in w._Workbook__worksheets:
             if not delete_list.get(s.name):continue
             for r in range(1,delete_list.get(s.name)):
+                s.write(r-1,4,"")
                 s.write(r-1,5,"")
                 s.write(r-1,6,"")
                 s.write(r-1,7,"")

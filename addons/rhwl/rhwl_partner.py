@@ -160,11 +160,12 @@ class rhwl_partner(osv.osv):
         return id
 
     def create(self, cr, uid, vals, context=None):
+        #_logger.error(vals)
         if not vals.get('partner_unid'):
             state_code=None
             city_code=None
 
-            if not (vals.get("state_id") and vals.get("city_id")):
+            if (not (vals.get("state_id") and vals.get("city_id"))) or vals.get("parent_id"):
                 parent = self.pool.get("res.partner").browse(cr,uid,vals.get("parent_id"),context=context)
                 vals["state_id"] = parent.state_id.id
                 vals["city_id"] =parent.city_id.id
