@@ -137,41 +137,27 @@
 
                         <notebook>
                             <page string="孕妇信息">
-                                <group col="8" string="孕妇填写">
-                                    <group>
+                                <group col="16" string="孕妇填写">
+                                    <group colspan="4">
                                         <field name="yfxm"/>
-                                        <field name="yfheight"/>
-                                        <field name="yftelno"/>
-                                        <field name="yfpostaddr"/>
-
-                                        <label for="yfzjmc" string="证件名称"/>
-                                        <div>
-                                            <field name="yfzjmc" width="90"/>
-                                            <field name="yfzjmc_no" placeholder="请输入证件号码"
-                                                   on_change="onchange_zjmcno(yfzjmc_no,yfzjmc)"/>
-                                        </div>
-
-
                                     </group>
-                                    <group>
+                                    <group colspan="4">
                                         <field name="yfage"/>
-
-                                        <field name="yfweight"/>
-
-                                        <field name="yfjjlltel"/>
-
-                                        <field name="yfpostno"/>
                                     </group>
-                                </group>
-                                <group col="18" string="医生填写">
+                                    <group colspan="4">
+                                        <field name="yfheight"/>
+                                    </group>
+                                    <group colspan="4">
+                                        <field name="yfweight"/>
+                                    </group>
 
-                                         <group colspan="5">
-                                             <field name="yflastyj"/>
-                                        </group>
-                                        <group  colspan="5">
-                                            <field name="yfyjzqtext"/>
-                                        </group>
-                                        <group colspan="8">
+                                    <group colspan="4">
+                                        <field name="birthday"/>
+                                    </group>
+                                    <group colspan="4">
+                                         <field name="yflastyj"/>
+                                    </group>
+                                    <group colspan="8" col="8">
                                             <label for="yfyzweek" string="孕周"/>
                                             <div class="address_format">
                                                 <field name="yfyzweek" class="oe_align_right oe_inline"
@@ -180,93 +166,97 @@
                                                 <field name="yfyzday" class="oe_align_right oe_inline" style="width: 10%%"/>
                                                 <label string="天" style="width: 10%%" class="oe_form_field"/>
                                             </div>
+                                    </group>
+
+                                    <group colspan="4">
+                                        <field name="yfzjmc"/>
+                                    </group>
+                                    <group colspan="12">
+                                        <field name="yfzjmc_no" placeholder="请输入证件号码"
+                                                   on_change="onchange_zjmcno(yfzjmc_no,yfzjmc)"/>
+                                    </group>
+
+
+                                </group>
+                                <group col="18" string="医生填写">
+                                    <group colspan="18">
+                                        <label for="yfycount" string="孕产史"/>
+                                        <div>
+                                            <label string="孕次数"/>
+                                            <field name="yfycount" style="width: 12%"/>
+                                            <label string="产次数"/>
+                                            <field name="yfzcount" style="width: 12%"/>
+                                            <label string="自然流产次数"/>
+                                            <field name="yfzrlccount" style="width: 12%"/>
+                                            <label for="yfissgyr" string="妊娠方式"/>
+                                            <field name="yfissgyr" style="width:12%%"/>
+                                            <field name="yfissgyrdate" style="width:20%%" placeholder="减胎日期" attrs="{'invisible':[('yfissgyr','!=','1')]}"/>
+                                        </div>
+                                    </group>
+                                    <group colspan="18" col="3">
+                                         <group colspan="1">
+                                            <field name="yfcsjc"/>
+                                             <field name="yfyczk"/>
+
+                                         </group>
+                                         <group colspan="2">
+                                            <field name="yfcsjctext" placeholder="超声检查异常说明" attrs="{'invisible':[('yfcsjc','!=','1')]}"/>
+                                             <field name="yfyczktext"  placeholder="其它说明"
+                                                       attrs="{'invisible':[('yfyczk','!=','3')]}"/>
+
+
+                                         </group>
+
+                                        <group colspan="1">
+
+                                            <field name="yfxqsc"/>
+
+                                        </group>
+                                        <group colspan="2">
+                                            <div attrs="{'invisible':[('yfxqsc','!=','1')]}">
+                                                <div>
+                                                    <label for="yfxqscsel" string="21-三体:1/" />
+                                                    <field name="yfxqscsel" style="width: 15%" />
+                                                    <label for="yfxqscsel1" string="18-三体:1/" />
+                                                    <field name="yfxqscsel1"  style="width: 15%"/>
+                                                    <label for="yfxqscsel2" string="13-三体:1/"/>
+                                                    <field name="yfxqscsel2"  style="width: 15%"/>
+                                                </div>
+                                            </div>
                                         </group>
 
-                                        <group colspan="18">
-                                            <label for="yfyczk" string="B超结果"/>
-                                            <div>
-                                                <field name="yfyczk" style="width:10%%"/>
-                                                <field name="yfyczktext"  style="width:40%%" placeholder="其它说明"
-                                                       attrs="{'invisible':[('yfyczk','!=','3')]}"/>
-                                            </div>
-                                            <label for="yfissgyr" string="妊娠方式"/>
-                                            <div>
-                                                <field name="yfissgyr" style="width:20%%"/>
-                                                 <field name="yfissgyrdate" style="width:40%%" placeholder="移植日期" attrs="{'invisible':[('yfissgyr','!=','1')]}"/>
-                                            </div>
-                                            <label for="yfxqsc" string="唐筛结果"/>
-                                            <div>
-                                                <field name="yfxqsc" style="width:20%%"/>
-                                                <div attrs="{'invisible':[('yfxqsc','!=','1')]}">
-                                                    <div>
-                                                        <label string="早筛："/>
-                                                        <field name="yfxqscfx" style="width:15%%"/>
-                                                        <label for="yfxqscsel" string="21-三体:1/" />
-                                                        <field name="yfxqscsel" style="width: 15%" />
-                                                        <label for="yfxqscsel1" string="18-三体:1/" />
-                                                        <field name="yfxqscsel1"  style="width: 15%"/>
-                                                        <label for="yfxqscsel2" string="13-三体:1/"/>
-                                                        <field name="yfxqscsel2"  style="width: 15%"/>
-                                                    </div>
-                                                    <div>
-                                                        <label string="中筛："/>
-                                                        <field name="yfxqscfx_m" style="width:15%%"/>
-                                                        <label for="yfxqscsel_m" string="21-三体:1/" />
-                                                        <field name="yfxqscsel_m" style="width: 15%" />
-                                                        <label for="yfxqscsel1_m" string="18-三体:1/" />
-                                                        <field name="yfxqscsel1_m"  style="width: 15%"/>
-                                                        <label for="yfxqscsel2_m" string="13-三体:1/"/>
-                                                        <field name="yfxqscsel2_m"  style="width: 15%"/>
+                                        <group colspan="1">
+                                            <field name="yfyyjrxccss"/>
+                                             <field name="yfzlfz"/>
+                                            <field name="yfynnytsx"/>
+                                            <field name="yfxbzl"/>
+                                        </group>
+                                        <group colspan="2">
+                                            <field name="yfyyjrxccssdate" attrs="{'invisible':[('yfyyjrxccss','!=','1')]}"/>
+                                             <field name="yfzlfzdate" attrs="{'invisible':[('yfzlfz','!=','1')]}"/>
+                                            <field name="yfynnytsxdate" attrs="{'invisible':[('yfynnytsx','!=','1')]}"/>
+                                            <field name="yfxbzldate" attrs="{'invisible':[('yfxbzl','!=','1')]}"/>
+                                        </group>
 
-                                                    </div>
-                                                    <label string="其它："/>
-                                                    <field name="yfxqscfxother" style="width:80%%"/>
-                                                </div>
-                                            </div>
-                                            <label for="yfycount" string="孕产史"/>
-                                            <div>
-                                                <label string="孕次数"/>
-                                                <field name="yfycount" style="width: 15%"/>
-                                                <label string="产次数"/>
-                                                <field name="yfzcount" style="width: 15%"/>
-                                                <label string="人流次数"/>
-                                                <field name="yfrlcount" style="width: 15%"/>
-                                                <label string="自然流产次数"/>
-                                                <field name="yfzrlccount" style="width: 15%"/>
-                                                <div>
-                                                    <label string="不良孕产史"/>
-                                                    <field name="yfblycstext" style="width:80%"/>
-                                                </div>
-                                            </div>
-                                            <label for="yfynnytsx" string="既往史"/>
-                                            <div>
-                                                <div class="oe_inline">
-
-                                                        <label for="yfynnytsx" string="输入异体血制品"/>
-                                                         <field name="yfynnytsx" placeholder=" " style="width:20%%"/>
-
-                                                         <label for="yfzlfz" string="移植手术"/>
-                                                        <field name="yfzlfz" placeholder=" " style="width:20%%" />
-
-                                                         <label for="yfxbzl" string="干细胞治疗"/>
-                                                          <field name="yfxbzl" placeholder=" " style="width:20%%" />
-                                                </div>
-
-                                                <div>
-                                                    <label string="日期"/>
-                                                    <field name="yfjwsdate" style="width:20%"/>
-                                                </div>
-                                            </div>
-                                            <field name="yfynnytsxtext"/>
-                                            <field name="yfjzycbtext"/>
-                                            <label for="yffqsfrsthx" string="夫妻双方染色体检查"/>
-                                            <div>
-                                                <field name="yffqsfrsthx" style="width:20%"/>
-                                                <field name="yffqsfrsthxtext" placeholder="夫妻双方染色体核型说明"
-                                                       attrs="{'invisible':[('yffqsfrsthx','!=','1')]}" style="width:60%"/>
-                                            </div>
+                                        <group colspan="3">
                                             <field name="yftsqkbz"/>
                                         </group>
+
+                                        <group colspan="1">
+                                            <field name="yftelno"/>
+                                        </group>
+                                        <group colspan="2">
+                                            <field name="yfjjlltel"/>
+                                        </group>
+
+                                        <group colspan="2">
+                                            <field name="yfpostaddr"/>
+                                        </group>
+                                        <group colspan="1">
+                                            <field name="yfpostno"/>
+                                        </group>
+
+                                    </group>
                                 </group>
                             </page>
                             <page string="实验历程">

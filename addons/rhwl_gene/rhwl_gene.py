@@ -74,7 +74,7 @@ class rhwl_gene(osv.osv):
         "batch_no": fields.char(u"批次",select=True),
         "name": fields.char(u"基因样本编号", required=True, size=10),
         "date": fields.date(u"送检日期", required=True),
-        "cust_name": fields.char(u"会员姓名", required=True, size=10),
+        "cust_name": fields.char(u"会员姓名", required=True, size=50),
         "sex": fields.selection([('T', u"男"), ('F', u"女")], u"性别", required=True),
         "identity": fields.char(u"身份证号", size=18),
         "mobile": fields.char(u"手机号码", size=15),
