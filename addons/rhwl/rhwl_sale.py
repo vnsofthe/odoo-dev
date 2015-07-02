@@ -687,6 +687,12 @@ class rhwl_reuse(osv.osv):
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel','notice_user':uid}, context=context)
 
+class rhwl_sale_order_line(osv.osv):
+    _inherit="sale.order.line"
+    def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
+        res = super(rhwl_sale_order_line,self)._prepare_order_line_invoice_line(cr,uid,line,account_id,context)
+        res["name"]=res["name"]+"["+line.order_id.client_order_ref+"]"
+        return res
 
 class rhwl_exception(osv.osv):
     _name = "sale.sampleone.exception"
