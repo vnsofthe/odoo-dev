@@ -22,6 +22,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         d={}
         for i in form:
             d[i]=form.getvalue(i)
+
         if not d.get("source_dir"):
             self.wfile.write("请指定来源数据文件夹。")
             return
@@ -40,11 +41,16 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 if len(l.split("_"))!=4:
                     self.wfile.write("文件名称格式不正确:"+os.path.join(p,l))
                     return
-                if not os.path.exists(os.path.join(d.get("target_dir"),l.split("_")[2])):
-                    os.mkdir(os.path.join(d.get("target_dir"),l.split("_")[2]))
-                if os.path.exists(os.path.join(os.path.join(d.get("target_dir"),l.split("_")[2]),l)):
-                    os.remove(os.path.join(os.path.join(d.get("target_dir"),l.split("_")[2]),l))
-                shutil.copy(os.path.join(p,l),os.path.join(os.path.join(d.get("target_dir"),l.split("_")[2]),l))
+                if d.get("data_format")=="wh":
+                    dname=l.split("_")[1]
+                else:
+                    dname=l.split("_")[2]
+
+                if not os.path.exists(os.path.join(d.get("target_dir"),dname)):
+                    os.mkdir(os.path.join(d.get("target_dir"),dname))
+                if os.path.exists(os.path.join(os.path.join(d.get("target_dir"),dname),l)):
+                    os.remove(os.path.join(os.path.join(d.get("target_dir"),dname),l))
+                shutil.copy(os.path.join(p,l),os.path.join(os.path.join(d.get("target_dir"),dname),l))
         SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self) 
  
 Handler = ServerHandler 

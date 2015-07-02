@@ -296,31 +296,26 @@ class export_excel(osv.osv_memory):
         if isinstance(ids,(list,tuple)):
             ids.sort()
         payment_kind = {'hospital':u"医院代收",'proxy':u'经销商代收','pos':u'POS机收费','cash':u'现金'}
-
+        excel_head=[u"样本编码",u"姓名",u"年龄",u"孕周",u"采血日期",u"采血医院",u"采血医生",u"是否重采血",u"是否免费",u"临床收费",u"结算金额",u"结算方式"]
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
-        ws.write(0,0,u"样本编码")
-        ws.write(0,1,u"姓名")
-        ws.write(0,2,u"采血日期")
-        ws.write(0,3,u"采血医院")
-        ws.write(0,4,u"采血医生")
-        ws.write(0,5,u"是否重采血")
-        ws.write(0,6,u"是否免费")
-        ws.write(0,7,u"临床收费")
-        ws.write(0,8,u"结算金额")
-        ws.write(0,9,u"结算方式")
+        for i in range(0,len(excel_head)):
+            ws.write(0,i,excel_head[i])
+
         rows=1
         for i in self.pool.get("sale.sampleone").browse(cr,uid,ids,context=context):
             ws.write(rows,0,i.name)
             ws.write(rows,1,i.yfxm)
-            ws.write(rows,2,i.cx_date)
-            ws.write(rows,3,i.cxyy.name)
-            ws.write(rows,4,i.cxys.name)
-            ws.write(rows,5,u"首次采血" if i.is_reused==u"0" else u"重采血")
-            ws.write(rows,6,u"是" if i.is_free==u"1" else u"否")
-            ws.write(rows,7,i.cxyy.hospital_price)
-            ws.write(rows,8,i.cxyy.amt)
-            ws.write(rows,9,payment_kind.get(i.cxyy.payment_kind.decode("utf-8")))
+            ws.write(rows,2,i.yfage)
+            ws.write(rows,3,"%sw+%s" %(str(i.yfyzweek),str(i.yfyzday)))
+            ws.write(rows,4,i.cx_date)
+            ws.write(rows,5,i.cxyy.name)
+            ws.write(rows,6,i.cxys.name)
+            ws.write(rows,7,u"首次采血" if i.is_reused==u"0" else u"重采血")
+            ws.write(rows,8,u"是" if i.is_free==u"1" else u"否")
+            ws.write(rows,9,i.cxyy.hospital_price)
+            ws.write(rows,10,i.cxyy.amt)
+            ws.write(rows,11,payment_kind.get(i.cxyy.payment_kind.decode("utf-8")))
             rows+=1
 
         w.save(xlsname)
