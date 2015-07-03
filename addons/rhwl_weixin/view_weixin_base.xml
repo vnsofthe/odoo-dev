@@ -6,9 +6,9 @@
             <field name="model">rhwl.weixin.base</field>
             <field name="arch" type="xml">
                 <tree string="WeiXin">
+                    <field name="name"/>
+                    <field name="original_id"/>
                     <field name="appid"/>
-                    <field name="appsecret"/>
-
                 </tree>
             </field>
         </record>
@@ -23,6 +23,10 @@
                     </header>
                     <sheet>
                         <group colspan="8">
+                            <field name="name"/>
+                            <field name="original_id"/>
+                            <field name="code"/>
+                            <field name="token_flag"/>
                             <field name="appid"/>
                             <field name="appsecret"/>
                             <field name="token"/>
@@ -31,7 +35,30 @@
                             <field name="ticket" />
                             <field name="ticket_create" />
                             <field name="ticket_expires" />
+                            <field name="welcome"/>
                         </group>
+                        <notebook>
+                            <page string="自定义菜单">
+                                <field name="menu">
+                                    <tree>
+                                        <field name="seq"/>
+                                        <field name="type"/>
+                                        <field name="name"/>
+                                        <field name="key"/>
+                                        <field name="url"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="关注用户">
+                                <field name="users">
+                                    <tree>
+                                        <field name="openid"/>
+                                        <field name="active"/>
+                                        <field name="user_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>

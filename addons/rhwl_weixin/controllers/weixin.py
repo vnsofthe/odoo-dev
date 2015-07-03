@@ -21,9 +21,9 @@ class weixin(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
     HOSTNAME="http://erp.genetalks.com"
 
-    def checkSignature(self,signature,timestamp,nonce):
+    def checkSignature(self,signature,timestamp,nonce,token):
         """检查是否微信官方通信请求。"""
-        token = 'vnsoft'
+        #token = 'vnsoft'
         #字典序排序
         list=[token,timestamp,nonce]
         list.sort()
@@ -38,6 +38,7 @@ class weixin(http.Controller):
     def msgProcess(self,msgdata):
         """处理消息接口内容"""
         #获取官方POST过来的数据
+        _logger.debug("weixin data:"+msgdata)
         if msgdata:
             try:
                 xml = etree.fromstring(msgdata)#进行XML解析
@@ -59,14 +60,10 @@ class weixin(http.Controller):
         if Event=='subscribe':#关注
             registry = RegistryManager.get(request.session.db)
             with registry.cursor() as cr:
-                user = registry.get('rhwl.weixin')
-                id = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser),('active','=',False)],context=self.CONTEXT)
-                if id:
-                    user.write(cr,SUPERUSER_ID,id,{"active":True},context=self.CONTEXT)
-                else:
-                    user.create(cr,SUPERUSER_ID,{'openid':fromUser,'active':True,'state':'draft'},context=self.CONTEXT)
-                cr.commit()
-            return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(北京)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
+                orig = registry.get("rhwl.weixin.base")
+                welcome = orig.action_subscribe(cr,toUser,fromUser)
+                return self.replyWeiXin(fromUser,toUser,welcome)
+            #return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(北京)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
         elif Event=="CLICK":
             key = xmlstr.find("EventKey").text
             if key=="ONLINE_QUERY":
@@ -106,7 +103,7 @@ class weixin(http.Controller):
         elif Event=="unsubscribe":
              registry = RegistryManager.get(request.session.db)
              with registry.cursor() as cr:
-                user = registry.get('rhwl.weixin')
+                orig = registry.get("rhwl.weixin.base")
                 id = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser)],context=self.CONTEXT)
                 if id:
                    user.write(cr,SUPERUSER_ID,id,{"active":False},context=self.CONTEXT)
@@ -243,7 +240,7 @@ class weixin(http.Controller):
     @http.route("/web/weixin/",type="http",auth="none")
     def rhwl_weixin(self,**kw):
         if kw.get('signature') and kw.get('timestamp') and kw.get('nonce'):#微信官网是否有转入验证信息
-            if self.checkSignature(kw.get('signature'),kw.get('timestamp'),kw.get('nonce')):
+            if self.checkSignature(kw.get('signature'),kw.get('timestamp'),kw.get('nonce'),kw.get('t')):
                 if kw.get('echostr'):#验证通过则返回传入的echostr
                     return kw.get('echostr')
             else:
@@ -278,7 +275,7 @@ class weixin(http.Controller):
         if kw:
             para.update(kw)
         url=para.get("url","").encode('utf-8')
-
+        code=para.get("code","").encode('utf-8')
         s='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
         noncestr=''.join([s[random.randrange(0,s.__len__()-1)] for i in range(1,21)])
         timestamp=time.time().__trunc__().__str__()
@@ -286,9 +283,9 @@ class weixin(http.Controller):
         registry = RegistryManager.get(request.session.db)
         with registry.cursor() as cr:
             b = registry.get('rhwl.weixin.base')
-            ids =b.search(cr,SUPERUSER_ID,[],limit=1)
+            ids =b.search(cr,SUPERUSER_ID,[("code","=",code)],limit=1)
             appid = b.browse(cr,SUPERUSER_ID,ids).appid
-            jsapi_ticket= b._get_ticket(cr,SUPERUSER_ID,self.CONTEXT)
+            jsapi_ticket= b._get_ticket(cr,SUPERUSER_ID,code,context=self.CONTEXT)
         str = "jsapi_ticket="+jsapi_ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url
         sha = hashlib.sha1(str)
         s = sha.hexdigest()

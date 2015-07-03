@@ -12,10 +12,12 @@ import json
 import logging
 
 _logger = logging.getLogger(__name__)
+MEMCAHCE={}
 class rhwl_weixin(osv.osv):
     _name = "rhwl.weixin"
 
     _columns = {
+        "base_id":fields.many2one("rhwl.weixin.base",u"公众号"),
         "openid":fields.char("openId",size=64,required=True,select=True),
         "active":fields.boolean("Active"),
         "user_id":fields.many2one("res.users",string=u"关联用户"),
@@ -30,10 +32,22 @@ class rhwl_weixin(osv.osv):
         "is_sampleresult":fields.boolean(u"无创检测结果通知"),
     }
 
+    def init(self, cr):
+        ids = self.search(cr,SUPERUSER_ID,[("base_id","=",False)])
+        if ids:
+            base_id = self.pool.get("rhwl.weixin.base").search(cr,SUPERUSER_ID,[])
+            if len(base_id)==1:
+                self.write(cr,SUPERUSER_ID,ids,{'base_id':base_id[0]})
+        cr.commit()
+
 class rhwl_config(osv.osv):
     _name = "rhwl.weixin.base"
 
     _columns = {
+        "name":fields.char("Name",size=20),
+        "original_id":fields.char("Original ID",size=20),
+        "code":fields.char("Code",size=10),
+        "token_flag":fields.char(u"Token(令牌)",size=10),
         "appid":fields.char("AppID"),
         "appsecret":fields.char("AppSecret"),
         "token":fields.char("Token",readonly=True),
@@ -42,18 +56,54 @@ class rhwl_config(osv.osv):
         "user_menu":fields.text("User Menu"),
         "ticket":fields.char("Ticket",readonly=True),
         "ticket_create":fields.datetime("TicketCreate",readonly=True),
-        "ticket_expires":fields.integer("Ticket Expires",readonly=True)
+        "ticket_expires":fields.integer("Ticket Expires",readonly=True),
+        "welcome":fields.text(),
+        "users":fields.one2many("rhwl.weixin","base_id",u"关注用户"),
+        "menu":fields.one2many("rhwl.weixin.usermenu","base_id",u"自定义菜单")
     }
 
-    def _get_ticket(self,cr,uid,context=None):
+    #用户关注时，记录用户的OpenId信息，并返回设置的欢迎文字
+    def action_subscribe(self,cr,original,fromUser):
+        if MEMCAHCE.has_key(original):
+            origId = MEMCAHCE[original]
+        else:
+            origId=self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
+            MEMCAHCE[original]=origId
+
+        user = self.pool.get('rhwl.weixin')
+
+        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser),('active','=',False)],context=self.CONTEXT)
+        if id:
+            user.write(cr,SUPERUSER_ID,id,{"active":True},context=self.CONTEXT)
+        else:
+            user.create(cr,SUPERUSER_ID,{"base_id":origId[0],'openid':fromUser,'active':True,'state':'draft'},context=self.CONTEXT)
+        cr.commit()
+        obj=self.browse(cr,SUPERUSER_ID,origId)
+        return obj.welcome
+
+    def action_unsubscribe(self,cr,original,fromUser):
+        if MEMCAHCE.has_key(original):
+            origId = MEMCAHCE[original]
+        else:
+            origId=self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
+            MEMCAHCE[original]=origId
+
+        user = self.pool.get('rhwl.weixin')
+        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser)],context=self.CONTEXT)
+        if id:
+           user.write(cr,SUPERUSER_ID,id,{"active":False},context=self.CONTEXT)
+        cr.commit()
+
+
+    def _get_ticket(self,cr,uid,val,valType="code",context=None):
         arg={
             "access_token":"",
             "type":"jsapi"
         }
-        ids = self.search(cr,uid,[],limit=1)
+        ids = self.search(cr,uid,[(valType,"=",val)],limit=1)
         obj = self.browse(cr,uid,ids,context=context)
         if not obj.ticket or (datetime.datetime.now() - datetime.datetime.strptime(obj.ticket_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.ticket_expires - 30):
-            arg['access_token'] = self._get_token(cr,uid,context=context)
+            arg['access_token'] = self._get_token(cr,uid,val,valType,obj,context=context)
             s=requests.post("https://api.weixin.qq.com/cgi-bin/ticket/getticket",params=arg)
             ref = s.content
             s.close()
@@ -66,14 +116,15 @@ class rhwl_config(osv.osv):
         elif obj.token:
             return obj.ticket.encode('utf-8')
 
-    def _get_token(self,cr,uid,context=None):
+    def _get_token(self,cr,uid,val,valType="code",obj=None,context=None):
         arg={
             "grant_type":"client_credential",
             "appid":"",
             "secret":"",
         }
-        ids = self.search(cr,uid,[],limit=1)
-        obj = self.browse(cr,uid,ids,context=context)
+        if not obj:
+            ids = self.search(cr,uid,[(valType,"=",val)],limit=1)
+            obj = self.browse(cr,uid,ids,context=context)
 
         if (not obj.token) or (datetime.datetime.now() - datetime.datetime.strptime(obj.token_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.expires_in - 30):
             arg["appid"]=obj.appid
@@ -93,7 +144,8 @@ class rhwl_config(osv.osv):
             return obj.token.encode('utf-8')
 
     def action_token(self,cr,uid,ids,context=None):
-        self._get_token(cr,uid,context)
+        for i in self.browse(cr,uid,ids,context=context):
+            self._get_token(cr,uid,None,None,i,context)
 
     def _get_menu_detail_json(self,cr,uid,ids,context=None):
         d={
@@ -119,11 +171,11 @@ class rhwl_config(osv.osv):
             if obj.type=="click":d["key"]=obj.key.encode('utf-8')
             return d
 
-    def _get_menu_json(self,cr,uid,context=None):
+    def _get_menu_json(self,cr,uid,id,context=None):
         m={
             "button":[],
         }
-        ids = self.pool.get("rhwl.weixin.usermenu").search(cr,uid,[],context=context)
+        ids = self.pool.get("rhwl.weixin.usermenu").search(cr,uid,[("base_id","=",id)],context=context)
         if not ids:
             raise osv.except_osv(u"错误",u"您还没有配置用户自定义菜单内容。")
 
@@ -138,8 +190,8 @@ class rhwl_config(osv.osv):
             "access_token":""
         }
         for i in self.browse(cr,uid,ids,context=context):
-            args["access_token"] = self._get_token(cr,uid,context)
-            i.user_menu = str(self._get_menu_json(cr,uid,context=context))
+            args["access_token"] = self._get_token(cr,uid,None,None,i,context)
+            i.user_menu = str(self._get_menu_json(cr,uid,i.id,context=context))
 
             s=requests.post("https://api.weixin.qq.com/cgi-bin/menu/create",
                             params=args,
@@ -158,7 +210,7 @@ class rhwl_config(osv.osv):
         json_dict["touser"]=obj.openid.encode('utf-8')
         if json_dict["url"]:
             json_dict["url"] += "?openid="+obj.openid.encode('utf-8')
-        token=self._get_token(cr,SUPERUSER_ID,context)
+        token=self._get_token(cr,SUPERUSER_ID,"RHWC",context=context)
         s=requests.post("https://api.weixin.qq.com/cgi-bin/message/template/send",
                             params={"access_token":token},
                             data=json.dumps(json_dict,ensure_ascii=False),
@@ -183,7 +235,7 @@ class rhwl_config(osv.osv):
         id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[(col,"=",True)])
         for i in id:
             obj = self.pool.get("rhwl.weixin").browse(cr,SUPERUSER_ID,i,context=context)
-            token=self._get_token(cr,SUPERUSER_ID,context)
+            token=self._get_token(cr,SUPERUSER_ID,"RHWC",context=context)
             template["touser"]=obj.openid.encode('utf-8')
 
             s=requests.post("https://api.weixin.qq.com/cgi-bin/message/template/send",
@@ -196,6 +248,7 @@ class rhwl_config(osv.osv):
 class rhwl_usermenu(osv.osv):
     _name = "rhwl.weixin.usermenu"
     _columns={
+        "base_id":fields.many2one("rhwl.weixin.base",u"公众号"),
         "type":fields.selection([("click","click"),("view","view")],"Type"),
         "name":fields.char("Name"),
         "key":fields.char("Key"),
@@ -204,6 +257,14 @@ class rhwl_usermenu(osv.osv):
         "seq":fields.integer("Seq"),
     }
     _order = "seq asc"
+
+    def init(self, cr):
+        ids = self.search(cr,SUPERUSER_ID,[("base_id","=",False)])
+        if ids:
+            base_id = self.pool.get("rhwl.weixin.base").search(cr,SUPERUSER_ID,[])
+            if len(base_id)==1:
+                self.write(cr,SUPERUSER_ID,ids,{'base_id':base_id[0]})
+        cr.commit()
 
 class rhwl_usermenu2(osv.osv):
     _name = "rhwl.weixin.usermenu2"

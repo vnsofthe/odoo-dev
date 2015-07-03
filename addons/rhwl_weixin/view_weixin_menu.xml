@@ -47,6 +47,19 @@
                                             <field name="key" attrs="{'readonly':[('type','!=','click')]}"/>
                                             <field name="url" attrs="{'readonly':[('type','!=','view')]}"/>
                                     </group>
+                                    <notebook>
+                                        <page string="图文菜单">
+                                            <field name="htmlmsg">
+                                                <tree>
+                                                    <field name="seq"/>
+                                                    <field name="title"/>
+                                                    <field name="description"/>
+                                                    <field name="picurl"/>
+                                                    <field name="url"/>
+                                                </tree>
+                                            </field>
+                                        </page>
+                                    </notebook>
                                 </sheet>
                             </form>
                         </field>
