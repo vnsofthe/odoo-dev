@@ -329,8 +329,9 @@ class rhwl_config(osv.osv):
                 raise osv.except_osv("错误"+str(res.get("errcode")),res.get("errmsg"))
 
     def send_template1(self,cr,uid,to_user,json_dict,context=None):
-        id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[("user_id","=",to_user)])
+        id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[("base_id.code","=","rhwc"),("user_id","=",to_user)])
         if not id:return
+        id=id[0]
         obj = self.pool.get("rhwl.weixin").browse(cr,SUPERUSER_ID,id)
         json_dict["touser"]=obj.openid.encode('utf-8')
         if json_dict["url"]:
