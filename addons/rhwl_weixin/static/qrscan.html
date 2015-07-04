@@ -100,7 +100,7 @@
 	$.ajax({
 		  type: 'POST',
 		  url: "/web/weixin/jsapi/",
-		  data: {"url":location.href.split('#')[0],"code":"rhwc"},
+		  data: {"url":location.href.split('#')[0],"code":$.getUrlVar('code')},
 		  success: function(data){
               wx.config({
                     debug: false,

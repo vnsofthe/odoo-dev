@@ -54,7 +54,7 @@
 <!--[if lte IE 8 ]>
 <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
 <![endif]-->
-<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script src="/rhwl_weixin/static/js/weixin-0.1.js"></script>
 <script>
   $(function() {
 
@@ -68,7 +68,7 @@
                   if(data.statu==200){
                       $.ajax({
                           type:"POST",
-                          url:"/web/weixin/bind/?openid="+$.getUrlVar('openid')+"&uid="+data.userid,
+                          url:"/web/weixin/bind/?code="+$.getUrlVar('code')+"&openid="+$.getUrlVar('openid')+"&uid="+data.userid,
                           data:{},
                           success:function(data){
                               alert("帐号绑定成功，请关闭此网页后，在微信菜单中重新点击进入。");

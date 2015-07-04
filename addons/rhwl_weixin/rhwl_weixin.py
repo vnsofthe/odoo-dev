@@ -10,9 +10,10 @@ import openerp.tools as tools
 import time
 import json
 import logging
-
+from openerp.addons.rhwl import rhwl_sale
+import random
 _logger = logging.getLogger(__name__)
-MEMCAHCE={}
+MEMCACHE={}
 class rhwl_weixin(osv.osv):
     _name = "rhwl.weixin"
 
@@ -40,6 +41,12 @@ class rhwl_weixin(osv.osv):
                 self.write(cr,SUPERUSER_ID,ids,{'base_id':base_id[0]})
         cr.commit()
 
+    def action_user_bind(self,cr,code,openid,uid):
+        base_obj = self.pool.get("rhwl.weixin.base")
+        id=base_obj.search(cr,SUPERUSER_ID,[("code","=",code)])
+        ids=self.search(cr,SUPERUSER_ID,[("base_id","=",id[0]),("openid","=",openid)])
+        self.write(cr,SUPERUSER_ID,ids,{"user_id":uid})
+
 class rhwl_config(osv.osv):
     _name = "rhwl.weixin.base"
 
@@ -57,43 +64,161 @@ class rhwl_config(osv.osv):
         "ticket":fields.char("Ticket",readonly=True),
         "ticket_create":fields.datetime("TicketCreate",readonly=True),
         "ticket_expires":fields.integer("Ticket Expires",readonly=True),
-        "welcome":fields.text(),
+        "welcome":fields.text("Welcome"),
         "users":fields.one2many("rhwl.weixin","base_id",u"关注用户"),
         "menu":fields.one2many("rhwl.weixin.usermenu","base_id",u"自定义菜单")
     }
 
+    def _get_memcache(self,key):
+        return MEMCACHE.get(key,None)
+
+    def _set_memcache(self,key,val):
+        MEMCACHE[key]=val
+
+    def _get_memcache_id(self,cr,original):
+        ids=self._get_memcache(original)
+        if not ids:
+            ids = self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
+            self._set_memcache(original,ids)
+        return ids
+
     #用户关注时，记录用户的OpenId信息，并返回设置的欢迎文字
     def action_subscribe(self,cr,original,fromUser):
-        if MEMCAHCE.has_key(original):
-            origId = MEMCAHCE[original]
-        else:
-            origId=self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
-            MEMCAHCE[original]=origId
-
+        origId=self._get_memcache_id(cr,original)
         user = self.pool.get('rhwl.weixin')
 
-        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser),('active','=',False)],context=self.CONTEXT)
+        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser),('active','=',False)])
+
         if id:
-            user.write(cr,SUPERUSER_ID,id,{"active":True},context=self.CONTEXT)
+            user.write(cr,SUPERUSER_ID,id,{"active":True})
         else:
-            user.create(cr,SUPERUSER_ID,{"base_id":origId[0],'openid':fromUser,'active':True,'state':'draft'},context=self.CONTEXT)
+
+            user.create(cr,SUPERUSER_ID,{"base_id":origId[0],'openid':fromUser,'active':True,'state':'draft'})
         cr.commit()
         obj=self.browse(cr,SUPERUSER_ID,origId)
         return obj.welcome
 
     def action_unsubscribe(self,cr,original,fromUser):
-        if MEMCAHCE.has_key(original):
-            origId = MEMCAHCE[original]
-        else:
-            origId=self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
-            MEMCAHCE[original]=origId
-
+        origId=self._get_memcache_id(cr,original)
         user = self.pool.get('rhwl.weixin')
-        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser)],context=self.CONTEXT)
+        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser)])
         if id:
-           user.write(cr,SUPERUSER_ID,id,{"active":False},context=self.CONTEXT)
+           user.write(cr,SUPERUSER_ID,id,{"active":False})
         cr.commit()
 
+    def action_event_clicked(self,cr,key,original,fromUser):
+        origId=self._get_memcache_id(cr,original)
+        obj=self.browse(cr,SUPERUSER_ID,origId)
+        if obj.code=="rhwc" and key=="ONLINE_QUERY":
+            return u"请您输入送检编号！"
+        articles=self._get_htmlmsg(cr,origId[0],key)
+
+        if articles[0]:
+            userid=self._get_userid(cr,origId[0],fromUser)
+            if not userid:
+                articles={
+                    "Title":"内部ERP帐号绑定",
+                    "Description":"您查阅的功能需要授权，请先进行内部ERP帐号绑定",
+                    "PicUrl":"/rhwl_weixin/static/img/logo1.png",
+                    "Url":"/rhwl_weixin/static/weixinbind.html"
+                    }
+                return (obj.code.encode("utf-8"),[articles,])
+            if articles[1]:
+                is_has_group=False
+
+                obj = self.pool.get("res.users")
+                for i in articles[1].split(","):
+                    is_has_group = obj.has_group(cr,userid,i)
+                    if is_has_group:break
+                if not is_has_group:
+                    articles={
+                        "Title":"访问权限不足",
+                        "Description":"您查阅的功能需要特别授权，请与管理员联系。",
+                        "PicUrl":"/rhwl_weixin/static/img/logo1.png",
+                        }
+                    return (obj.code.encode("utf-8"),[articles,])
+
+        if articles[2]:
+            return (obj.code.encode("utf-8"),articles[2])
+        else:
+            return u"此功能在开发中，敬请稍候！"
+
+    def action_text_input(self,cr,content,original,fromUser):
+        origId=self._get_memcache_id(cr,original)
+        obj=self.browse(cr,SUPERUSER_ID,origId)
+
+        if obj.code=="rhwc": #人和无创公众号
+            sample = self.pool.get("sale.sampleone")
+            user = self.pool.get('rhwl.weixin')
+
+            if content.isalnum() and len(content)==6:
+                id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),("active",'=',True),("state","=","process"),("checkNum","=",content)])
+                if not id:
+                    return u"请先输入样品编码。"
+                else:
+                    obj = user.browse(cr,SUPERUSER_ID,id)
+                    mindate = datetime.datetime.utcnow() - datetime.timedelta(minutes =5)
+                    if obj.checkDateTime < mindate.strftime("%Y-%m-%d %H:%M:%S"):
+                        return u"验证码已过期，请重新输入样品编码查询。"
+                    else:
+                        id = sample.search(cr,SUPERUSER_ID,[("name","=",obj.sampleno)])
+                        sample_obj = sample.browse(cr,SUPERUSER_ID,id)
+                        user.write(cr,SUPERUSER_ID,obj.id,{"state":"pass"})
+                        cr.commit()
+                        return u"您的样品编码"+obj.sampleno+u"目前进度为【"+rhwl_sale.rhwl_sale_state_select.get(sample_obj.check_state)+u"】,完成后详细的检测报告请与检测医院索取。"
+            else:
+                id = sample.search(cr,SUPERUSER_ID,[('name','=',content)])
+
+                if id:
+                    openid = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser)])
+                    obj = sample.browse(cr,SUPERUSER_ID,id)
+                    rand = random.randint(111111,999999)
+                    checkDateTime = datetime.datetime.utcnow()
+                    user.write(cr,SUPERUSER_ID,openid,{"telno":obj.yftelno,"state":"process","checkNum":rand,"checkDateTime":checkDateTime,"sampleno":content})
+                    cr.commit()
+                    if obj.yftelno:
+                        self.pool.get("res.company").send_sms(cr,SUPERUSER_ID,obj.yftelno,u"您查询样品检测结果的验证码为%s，请在五分钟内输入，如果不是您本人操作，请不用处理。" %(rand,))
+                        return u"验证码已经发送至检测知情同意书上登记的电话"+obj.yftelno[:3]+u"****"+obj.yftelno[-4:]+u"，请收到验证码后在五分钟内输入。"
+                    else:
+                        return u"您查询的样品编码在检测知情同意书上没有登记电话，不能发送验证码，请与送检医院查询结果。"
+                else:
+                    #if re.search("[^0-9a-zA-Z]",content):
+                    #    return self.customer_service(fromUser,toUser)
+                    #else:
+                    return u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!"
+
+        else:
+            return u"欢迎光临"
+
+    def _get_htmlmsg(self,cr,orig_id,key):
+        msg = self.pool.get("rhwl.weixin.usermenu2")
+
+        id = msg.search(cr,SUPERUSER_ID,[("parent.base_id.id","=",orig_id),("key","=",key)])
+        if not id:
+            return (False,"",None)
+        obj = msg.browse(cr,SUPERUSER_ID,id)
+        if not obj.htmlmsg:
+            return (obj.need_user,obj.groups,None)
+        articles=[]
+        for j in obj.htmlmsg:
+            val={
+                    "Title":j.title.encode("utf-8"),
+                    "Description":j.description.encode("utf-8"),
+                    "PicUrl":j.picurl.encode("utf-8"),
+                }
+            if j.url:
+                val["Url"]=j.url and j.url.encode("utf-8") or ""
+            articles.append(val)
+        return (obj.need_user,obj.groups,articles)
+
+    def _get_userid(self,cr,orig_id,openid):
+        weixin = self.pool.get("rhwl.weixin")
+
+        id = weixin.search(cr,SUPERUSER_ID,[("base_id","=",orig_id),('openid','=',openid)])
+        if id:
+            obj= weixin.browse(cr,SUPERUSER_ID,id)
+            return obj.user_id.id
+        return None
 
     def _get_ticket(self,cr,uid,val,valType="code",context=None):
         arg={
@@ -210,7 +335,7 @@ class rhwl_config(osv.osv):
         json_dict["touser"]=obj.openid.encode('utf-8')
         if json_dict["url"]:
             json_dict["url"] += "?openid="+obj.openid.encode('utf-8')
-        token=self._get_token(cr,SUPERUSER_ID,"RHWC",context=context)
+        token=self._get_token(cr,SUPERUSER_ID,"rhwc",context=context)
         s=requests.post("https://api.weixin.qq.com/cgi-bin/message/template/send",
                             params={"access_token":token},
                             data=json.dumps(json_dict,ensure_ascii=False),
@@ -235,7 +360,7 @@ class rhwl_config(osv.osv):
         id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[(col,"=",True)])
         for i in id:
             obj = self.pool.get("rhwl.weixin").browse(cr,SUPERUSER_ID,i,context=context)
-            token=self._get_token(cr,SUPERUSER_ID,"RHWC",context=context)
+            token=self._get_token(cr,SUPERUSER_ID,"rhwc",context=context)
             template["touser"]=obj.openid.encode('utf-8')
 
             s=requests.post("https://api.weixin.qq.com/cgi-bin/message/template/send",

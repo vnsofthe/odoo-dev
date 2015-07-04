@@ -38,7 +38,7 @@ class weixin(http.Controller):
     def msgProcess(self,msgdata):
         """处理消息接口内容"""
         #获取官方POST过来的数据
-        _logger.debug("weixin data:"+msgdata)
+
         if msgdata:
             try:
                 xml = etree.fromstring(msgdata)#进行XML解析
@@ -66,48 +66,20 @@ class weixin(http.Controller):
             #return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(北京)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
         elif Event=="CLICK":
             key = xmlstr.find("EventKey").text
-            if key=="ONLINE_QUERY":
-                return self.replyWeiXin(fromUser,toUser,u"请您输入送检编号！")
-            else:
-                articles=self._get_htmlmsg(key)
-                if articles[0]:
-                    userid=self._get_userid(fromUser)
-                    if not userid:
-                        articles={
-                            "Title":"内部ERP帐号绑定",
-                            "Description":"您查阅的功能需要授权，请先进行内部ERP帐号绑定",
-                            "PicUrl":"/rhwl_weixin/static/img/logo1.png",
-                            "Url":"/rhwl_weixin/static/weixinbind.html"
-                            }
-                        return self.send_photo_text(fromUser,toUser,[articles,])
-                    if articles[1]:
-                        registry = RegistryManager.get(request.session.db)
-                        is_has_group=False
-                        with registry.cursor() as cr:
-                            obj = registry.get("res.users")
-                            for i in articles[1].split(","):
-                                is_has_group = obj.has_group(cr,userid,i)
-                                if is_has_group:break
-                            if not is_has_group:
-                                articles={
-                                    "Title":"访问权限不足",
-                                    "Description":"您查阅的功能需要特别授权，请与管理员联系。",
-                                    "PicUrl":"/rhwl_weixin/static/img/logo1.png",
-                                    }
-                                return self.send_photo_text(fromUser,toUser,[articles,])
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                orig = registry.get("rhwl.weixin.base")
+                res=orig.action_event_clicked(cr,key,toUser,fromUser)
 
-                if articles[2]:
-                    return self.send_photo_text(fromUser,toUser,articles[2])
+                if isinstance(res,(list,tuple)):
+                    return self.send_photo_text(fromUser,toUser,res[0],res[1])
                 else:
-                    return self.replyWeiXin(fromUser,toUser,u"此功能在开发中，敬请稍候！")
+                    return self.replyWeiXin(fromUser,toUser,res)
         elif Event=="unsubscribe":
              registry = RegistryManager.get(request.session.db)
              with registry.cursor() as cr:
                 orig = registry.get("rhwl.weixin.base")
-                id = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser)],context=self.CONTEXT)
-                if id:
-                   user.write(cr,SUPERUSER_ID,id,{"active":False},context=self.CONTEXT)
-                cr.commit()
+                orig.action_unsubscribe(cr,toUser,fromUser)
              return self.replyWeiXin(fromUser,toUser,u"祝您生活愉快!")
         else:
             return ""
@@ -119,68 +91,30 @@ class weixin(http.Controller):
         content=xmlstr.find("Content").text#获得用户所输入的内容
 
         registry = RegistryManager.get(request.session.db)
-        sample = registry.get("sale.sampleone")
-        user = registry.get('rhwl.weixin')
-        ori_no={
-                '14a0260':'RHWL15000047',
-                '14a0264':'RHWL15000046',
-                '14a0263':'RHWL15000044',
-                '14a0257':'RHWL15000045',
-                'RHWL15000047':'14a0260',
-                'RHWL15000046':'14a0264',
-                'RHWL15000044':'14a0263',
-                'RHWL15000045':'14a0257'
-            }
+
         if content=="openid":
             return self.replyWeiXin(fromUser,toUser,fromUser)
-        if content.isalnum() and len(content)==6:
-            with registry.cursor() as cr:
-                id = user.search(cr,SUPERUSER_ID,[("active",'=',True),("state","=","process"),("checkNum","=",content)])
-                if not id:
-                    return self.replyWeiXin(fromUser,toUser,u"请先输入样品编码。")
-                else:
-                    obj = user.browse(cr,SUPERUSER_ID,id)
-                    mindate = datetime.datetime.utcnow() - datetime.timedelta(minutes =5)
-                    if obj.checkDateTime < mindate.strftime("%Y-%m-%d %H:%M:%S"):
-                        return self.replyWeiXin(fromUser,toUser,u"验证码已过期，请重新输入样品编码查询。")
-                    else:
-                        id = sample.search(cr,SUPERUSER_ID,[("name","=",obj.sampleno)])
-                        sample_obj = sample.browse(cr,SUPERUSER_ID,id)
-                        user.write(cr,SUPERUSER_ID,obj.id,{"state":"pass"})
-                        cr.commit()
-                        return self.replyWeiXin(fromUser,toUser,u"您的样品编码"+ori_no.get(obj.sampleno,obj.sampleno)+u"目前进度为【"+rhwl_sale.rhwl_sale_state_select.get(sample_obj.check_state)+u"】,完成后详细的检测报告请与检测医院索取。" )
-        else:
-            if ori_no.has_key(content):content=ori_no[content]
-            with registry.cursor() as cr:
-                id = sample.search(cr,SUPERUSER_ID,[('name','=',content)])
-                if id:
-                    openid = user.search(cr,SUPERUSER_ID,[('openid','=',fromUser)])
-                    obj = sample.browse(cr,SUPERUSER_ID,id)
-                    rand = random.randint(111111,999999)
-                    checkDateTime = datetime.datetime.utcnow()
-                    user.write(cr,SUPERUSER_ID,openid,{"telno":obj.yftelno,"state":"process","checkNum":rand,"checkDateTime":checkDateTime,"sampleno":content})
-                    cr.commit()
-                    if obj.yftelno:
-                        registry.get("res.company").send_sms(cr,SUPERUSER_ID,obj.yftelno,u"您查询样品检测结果的验证码为%s，请在五分钟内输入，如果不是您本人操作，请不用处理。" %(rand,))
-                        return self.replyWeiXin(fromUser,toUser,u"验证码已经发送至检测知情同意书上登记的电话"+obj.yftelno[:3]+u"****"+obj.yftelno[-4:]+u"，请收到验证码后在五分钟内输入。")
-                    else:
-                        return self.replyWeiXin(fromUser,toUser,u"您查询的样品编码在检测知情同意书上没有登记电话，不能发送验证码，请与送检医院查询结果。")
-                else:
-                    #if re.search("[^0-9a-zA-Z]",content):
-                    #    return self.customer_service(fromUser,toUser)
-                    #else:
-                    return self.replyWeiXin(fromUser,toUser,u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!")
-            cr.commit()
+        with registry.cursor() as cr:
+            orig = registry.get("rhwl.weixin.base")
+            res = orig.action_text_input(cr,content,toUser,fromUser)
+            return self.replyWeiXin(fromUser,toUser,res)
 
-    def send_photo_text(self,toUser,fromUser,articles):
+
+    def send_photo_text(self,toUser,fromUser,code,articles):
         #发送图文消息
         articlesxml=""
         for i in articles:
             itemxml=""
+
             for k,v in i.items():
+
                 if k=="Url" or k=="PicUrl":
                     if not v.startswith("http"): v = self.HOSTNAME+v
-                    if k=='Url':v = v+"?openid="+toUser
+                    if k=='Url':
+                        if v.count('?')>0:
+                            v = v+"&code="+code+"&openid="+toUser
+                        else:
+                            v = v+"?code="+code+"&openid="+toUser
 
                 itemxml +="<%s><![CDATA[%s]]></%s>" %(k,v,k)
             itemxml="<item>%s</item>" % (itemxml,)
@@ -199,43 +133,9 @@ class weixin(http.Controller):
         temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[transfer_customer_service]]></MsgType></xml>"
         return temp % (toUser,fromUser,time.time().__trunc__().__str__())
 
-    def _get_userid(self,openid):
-        registry = RegistryManager.get(request.session.db)
-        weixin = registry.get("rhwl.weixin")
 
-        with registry.cursor() as cr:
-            id = weixin.search(cr,SUPERUSER_ID,[('openid','=',openid)],context=self.CONTEXT)
-            if id:
-                obj= weixin.browse(cr,SUPERUSER_ID,id,context=self.CONTEXT)
-                return obj.user_id.id
-        return None
 
-    def _get_htmlmsg(self,key):
-        registry = RegistryManager.get(request.session.db)
-        msg = registry.get("rhwl.weixin.usermenu2")
-        with registry.cursor() as cr:
-            id = msg.search(cr,SUPERUSER_ID,[("key","=",key)])
-            if not id:
-                return (False,"",None)
-            obj = msg.browse(cr,SUPERUSER_ID,id)
-            if not obj.htmlmsg:
-                return (obj.need_user,obj.groups,None)
-            articles=[]
-            for j in obj.htmlmsg:
-                if j.url:
-                    articles.append({
-                        "Title":j.title.encode("utf-8"),
-                        "Description":j.description.encode("utf-8"),
-                        "PicUrl":j.picurl.encode("utf-8"),
-                        "Url":j.url and j.url.encode("utf-8") or ""
-                    })
-                else:
-                    articles.append({
-                        "Title":j.title.encode("utf-8"),
-                        "Description":j.description.encode("utf-8"),
-                        "PicUrl":j.picurl.encode("utf-8"),
-                    })
-            return (obj.need_user,obj.groups,articles)
+
 
     @http.route("/web/weixin/",type="http",auth="none")
     def rhwl_weixin(self,**kw):
@@ -259,9 +159,7 @@ class weixin(http.Controller):
             registry = RegistryManager.get(request.session.db)
             with registry.cursor() as cr:
                 obj = registry.get("rhwl.weixin")
-                id=obj.search(cr,SUPERUSER_ID,[("openid","=",para.get("openid"))])
-                obj.write(cr,SUPERUSER_ID,id,{"user_id":para.get("uid")})
-                cr.commit()
+                obj.action_user_bind(cr,para.get("code"),para.get("openid"),para.get("uid"))
                 response = request.make_response(json.dumps({"statu":200},ensure_ascii=False), [('Content-Type', 'application/json')])
         else:
             response = request.make_response(json.dumps({"statu":500},ensure_ascii=False), [('Content-Type', 'application/json')])
