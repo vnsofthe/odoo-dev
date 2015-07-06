@@ -18,6 +18,28 @@ class purchase_apply(osv.osv):
         obj=self.pool.get("hr.employee").browse(cr,uid,id,context=context)
         return obj.department_id.id
 
+    def _get_state(self,cr,uid,ids,field_names,arg,context=None):
+        res = dict.fromkeys(ids,{})
+        for i in self.browse(cr,uid,ids,context=context):
+            res[i.id] = dict.fromkeys(field_names,False)
+            if i.state!="confirm":continue
+            p_state='done'
+            p_uid = uid
+            for p in i.person:
+                if p_state=="done" and p_uid==uid and p.state=="draft":
+                    res[i.id]["is_cancel"]=True
+
+                if p_state=='done' and p.user_id.id == uid:
+                    res[i.id]["is_confirm"]=True
+                    res[i.id]["is_cancel"]=True
+                    continue
+
+                p_state = p.state
+                p_uid = p.user_id.id
+
+        return res
+
+
     _columns = {
         "name":fields.char(u"申请单号",size=20,readonly=True),
         "date":fields.date(u"申请日期",required=True,),
@@ -25,8 +47,11 @@ class purchase_apply(osv.osv):
         "user_id":fields.many2one("res.users",u"申请人",required=True,readonly=True),
         "need_date":fields.date(u"需求日期"),
         "reason":fields.char(u"申请事由"),
-        "state":fields.selection([("draft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成"),("dept",u"部门批准"),("inspector",u"总监批准"),("quotation",u"询价确认"),("account",u"财务核准"),("chief",u"总裁批准")],u"状态"),
+        "state":fields.selection([("draft",u"草稿"),("confirm",u"确认"),("refuse",u"退回"),("done",u"完成")],u"状态"),
         "note":fields.text(u"备注"),
+        "is_confirm":fields.function(_get_state,type="boolean",multi="getstate"),
+        "is_cancel":fields.function(_get_state,type="boolean",multi="getstate"),
+        "person":fields.one2many("purchase.order.apply.person","app_id",u"审核人员"),
         "line":fields.one2many("purchase.order.apply.line","name","Detail"),
         "log":fields.one2many("purchase.order.apply.log","app_id","Log",readonly=True),
     }
@@ -62,6 +87,8 @@ class purchase_apply(osv.osv):
             raise osv.except_osv("错误","申请单明细不能为空。")
         if obj.need_date <= obj.date:
             raise osv.except_osv("错误","计划需求日期必须大于申请单日期。")
+        if not obj.person:
+            raise osv.except_osv("错误","请设置申请单审核人员。")
         for i in obj.line:
             if i.qty<=0:
                 raise osv.except_osv("错误",u"产品[%s]的申请数量必须大于0"%(i.product_id.name,))
@@ -149,6 +176,17 @@ class purchase_apply_log(osv.osv):
         "user_id": lambda obj, cr, uid, context: uid,
     }
 
+class purchase_apply_person(osv.osv):
+    _name = "purchase.order.apply.person"
+
+    _columns={
+        "app_id": fields.many2one("purchase.order.apply", "Apply ID",select=True),
+        "sequence": fields.integer('Sequence'),
+        "user_id":fields.many2one("res.users", u"审核人员"),
+        "time":fields.datetime(u"时间",readonly=True),
+        "state":fields.selection([('draft',u'待处理'),('done',u'已审批'),('cancel',u'已退回')],"State",readonly=True),
+        "note":fields.char(u"备注",readonly=True)
+    }
 class purchase_order(osv.osv):
     _inherit = "purchase.order"
 

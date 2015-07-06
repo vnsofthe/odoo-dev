@@ -44,6 +44,7 @@
                             <group>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="need_date" attrs="{'readonly':[('state','!=','draft')]}"/>
+
                             </group>
                         </group>
                         <notebook>
@@ -57,6 +58,17 @@
                                         <field name="qty"/>
                                         <field name="uom_id"/>
                                         <field name="price"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="审核人员">
+                                <field name="person" attrs="{'readonly':[('state','!=','draft')]}">
+                                    <tree editable="bottom">
+
+                                        <field name="user_id"/>
+                                        <field name="time"/>
+                                        <field name="state"/>
                                         <field name="note"/>
                                     </tree>
                                 </field>
