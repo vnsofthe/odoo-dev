@@ -22,13 +22,10 @@
                 <form string="Purchase Apply">
                     <header>
                         <button name="action_confirm" states="draft" string="确认" type="object" groups="base.group_user"/>
-                        <button name="action_dept" states="confirm" string="部门批准" type="object" groups="base.group_user"/>
-                        <button name="action_quotation" states="dept" string="询价确认" type="object" groups="base.group_user"/>
-                        <button name="action_create_quotation" states="dept" string="生成招标/询价单" type="object" groups="base.group_user"/>
-                        <button name="action_inspector" states="quotation" string="总监批准" type="object" groups="base.group_user"/>
-                        <button name="action_account" states="inspector" string="财务核准" type="object" groups="base.group_user"/>
-                        <button name="action_chief" states="account" string="总裁批准" type="object" groups="base.group_user"/>
-                        <button name="action_refuse" states="confirm,dept,quotation,inspector,account" string="退回" type="object" groups="base.group_user"/>
+                        <button name="action_next"  string="审批" type="object" attrs="{'invisible':['|',('state','!=','confirm'),('is_confirm','=',False)]}"/>
+                        <button name="action_refuse"  string="退回" type="object" attrs="{'invisible':['|',('state','!=','confirm'),('is_cancel','=',False)]}" groups="base.group_user"/>
+
+                        <button name="action_create_quotation" states="confirm" string="生成招标/询价单" type="object" groups="purchase.group_purchase_user"/>
                         <button name="action_reset" states="refuse" string="重置草稿" type="object" groups="base.group_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,refuse"
                                statusbar_colors='{"refuse":"red","done":"blue"}' readonly="1"/>
@@ -42,6 +39,8 @@
                                 <field name="reason"/>
                             </group>
                             <group>
+                                <field name="is_confirm" attrs="{'invisible':1}"/>
+                                <field name="is_cancel" attrs="{'invisible':1}"/>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="need_date" attrs="{'readonly':[('state','!=','draft')]}"/>
 
@@ -65,10 +64,9 @@
                             <page string="审核人员">
                                 <field name="person" attrs="{'readonly':[('state','!=','draft')]}">
                                     <tree editable="bottom">
-
+                                        <field name="state"/>
                                         <field name="user_id"/>
                                         <field name="time"/>
-                                        <field name="state"/>
                                         <field name="note"/>
                                     </tree>
                                 </field>
@@ -123,6 +121,22 @@
 
         <menuitem action="action_purchase_order_apply" id="menu_purchase_order_apply" name="采购申请" parent="menu_rhwl_sample_purchase" />
 
+        <record model="ir.ui.view" id="purchase_order_apply_popup_view_form">
+            <field name="name">purchase.order.apply.popup.view.form</field>
+            <field name="model">purchase.order.apply.popup</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group cols="8">
+                        <field name="note"/>
+                    </group>
+                    <footer>
+                        <button string="确认" name="action_ok" type="object" class="oe_highlight"/>
+                        or
+                        <button string="取消" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
 
     </data>
 </openerp>

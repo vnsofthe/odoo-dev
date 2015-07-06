@@ -24,12 +24,12 @@ class purchase_apply(osv.osv):
             res[i.id] = dict.fromkeys(field_names,False)
             if i.state!="confirm":continue
             p_state='done'
-            p_uid = uid
+            p_uid = i.user_id.id
             for p in i.person:
                 if p_state=="done" and p_uid==uid and p.state=="draft":
                     res[i.id]["is_cancel"]=True
 
-                if p_state=='done' and p.user_id.id == uid:
+                if p_state=='done' and p.user_id.id == uid and p.state=="draft":
                     res[i.id]["is_confirm"]=True
                     res[i.id]["is_cancel"]=True
                     continue
@@ -93,6 +93,9 @@ class purchase_apply(osv.osv):
             if i.qty<=0:
                 raise osv.except_osv("错误",u"产品[%s]的申请数量必须大于0"%(i.product_id.name,))
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
+        pid = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",obj.id)])
+        if pid:
+            self.pool.get("purchase.order.apply.person").write(cr,uid,pid,{"state":"draft","time":None,"note":None})
 
     def action_create_quotation(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
@@ -112,8 +115,6 @@ class purchase_apply(osv.osv):
             line.append(self.pool.get("purchase.requisition.line").create(cr,uid,val,context=context))
         req_id = self.pool.get("purchase.requisition").create(cr,uid,{"scheduled_date":obj.need_date,"origin":obj.name,"line_ids":[[6,False,line]]},context=context)
 
-
-
     def action_quotation(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
         req_id = self.pool.get("purchase.requisition").search(cr,uid,[('origin','=',obj.name),('state','=','open')],context=context)
@@ -131,7 +132,31 @@ class purchase_apply(osv.osv):
     def action_chief(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'chief'}, context=context)
     def action_refuse(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'refuse'}, context=context)
+        if not context:
+            context = {}
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'res_model': 'purchase.order.apply.popup',
+            'view_mode': 'form',
+            'name': u"退回说明",
+            'target': 'new',
+            'context': {'button': 'cancel'},
+            'flags': {'form': {'action_buttons': False}}}
+
+    def action_next(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'res_model': 'purchase.order.apply.popup',
+            'view_mode': 'form',
+            'name': u"审批说明(可选）",
+            'target': 'new',
+            'context': {'button': 'done'},
+            'flags': {'form': {'action_buttons': False}}}
+
     def action_reset(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'draft'}, context=context)
 
@@ -145,8 +170,8 @@ class purchase_apply_line(osv.osv):
         "uom_id":fields.related("product_id","uom_id",type="many2one",obj="product.uom",string=u"计量单位",readonly=True),
         "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
         "qty":fields.float(u"数量",digits_compute=dp.get_precision('Product Unit of Measure'),required=True),
-        "price":fields.float(u"单价",digits_compute=dp.get_precision('Product Price')),
-        "price_purchase":fields.float(u"确认单价",digits_compute=dp.get_precision('Product Price')),
+        "price":fields.float(u"单价",digits_compute=dp.get_precision('Product Price'),readonly=True),
+        "price_purchase":fields.float(u"确认单价",digits_compute=dp.get_precision('Product Price'),readonly=True),
         "partner_id":fields.many2one("res.partner",u"供应商"),
         "note":fields.char(u"备注")
     }
@@ -187,6 +212,20 @@ class purchase_apply_person(osv.osv):
         "state":fields.selection([('draft',u'待处理'),('done',u'已审批'),('cancel',u'已退回')],"State",readonly=True),
         "note":fields.char(u"备注",readonly=True)
     }
+    _defaults={
+        "state":'draft',
+    }
+
+    def write(self,cr,uid,ids,val,context=None):
+        super(purchase_apply_person,self).write(cr,uid,ids,val,context=context)
+        obj = self.browse(cr,uid,ids,context=context)
+        if val.get("state")=="cancel":
+            self.pool.get("purchase.order.apply").write(cr,uid,obj.app_id.id,{"state":"refuse"})
+        elif val.get("state")=="done":
+            id = self.search(cr,uid,[("app_id","=",obj.app_id.id),("state","=","draft")])
+            if not id:
+                self.pool.get("purchase.order.apply").write(cr,uid,obj.app_id.id,{"state":"done"})
+
 class purchase_order(osv.osv):
     _inherit = "purchase.order"
 
@@ -199,8 +238,25 @@ class purchase_order(osv.osv):
                 if no:
                     apply_id = self.pool.get("purchase.order.apply").search(cr,uid,[("name","=",no)])
                     if apply_id:
-                        apply_id = self.pool.get("purchase.order.apply").search(cr,uid,[("name","=",no),("state","=","chief")])
+                        apply_id = self.pool.get("purchase.order.apply").search(cr,uid,[("name","=",no),("state","=","done")])
                         if not apply_id:
                             raise osv.except_osv("Error",u"该询价单由采购申请单产生，需要先审批采购申请单才可以确认询价单。")
 
         return super(purchase_order,self).wkf_confirm_order(cr,uid,ids,context=context)
+
+class purchase_apply_popup(osv.osv_memory):
+    _name = "purchase.order.apply.popup"
+    _columns = {
+        "note": fields.text(u"说明")
+    }
+
+    def action_ok(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids, context)
+        if not context:
+            context={}
+        if context.get("button")=="cancel" and not obj.note:
+            raise osv.except_osv("错误","退回时，必须说明原因。")
+
+        ids = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",context.get("active_id",0)),("user_id.id","=",uid)])
+        if ids:
+            self.pool.get("purchase.order.apply.person").write(cr,uid,ids,{"state":context.get("button"),"note":obj.note,"time":fields.datetime.now()})
