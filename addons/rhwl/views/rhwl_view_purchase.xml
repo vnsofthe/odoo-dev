@@ -25,7 +25,7 @@
                         <button name="action_next"  string="审批" type="object" attrs="{'invisible':['|',('state','!=','confirm'),('is_confirm','=',False)]}"/>
                         <button name="action_refuse"  string="退回" type="object" attrs="{'invisible':['|',('state','!=','confirm'),('is_cancel','=',False)]}" groups="base.group_user"/>
 
-                        <button name="action_create_quotation" states="confirm" string="生成招标/询价单" type="object" groups="purchase.group_purchase_user"/>
+                        <button name="action_create_quotation" states="confirm" string="生成招标/询价单" type="object" groups="purchase_requisition.group_purchase_requisition_user"/>
                         <button name="action_reset" states="refuse" string="重置草稿" type="object" groups="base.group_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done,refuse"
                                statusbar_colors='{"refuse":"red","done":"blue"}' readonly="1"/>

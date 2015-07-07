@@ -95,6 +95,18 @@ class purchase_apply(osv.osv):
         self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
         pid = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",obj.id)])
         if pid:
+            user = self.pool.get("res.users")
+            is_purchase=False
+            user_ids=[]
+            for i in self.pool.get("purchase.order.apply.person").browse(cr,uid,pid,context=context):
+                if user_ids.count(i.user_id.id)>0:
+                    raise osv.except_osv("错误","审批人员中，相同人员不可以重复设置。")
+                user_ids.append(i.user_id.id)
+                if user.has_group(cr,i.user_id.id,"purchase_requisition.group_purchase_requisition_user"):
+                    is_purchase=True
+                    break
+            if not is_purchase:
+                raise osv.except_osv("错误","审核人员中不包含采购招标人员，不可以确认。")
             self.pool.get("purchase.order.apply.person").write(cr,uid,pid,{"state":"draft","time":None,"note":None})
 
     def action_create_quotation(self, cr, uid, ids, context=None):
@@ -123,14 +135,6 @@ class purchase_apply(osv.osv):
 
         self.write(cr, uid, ids, {'state': 'quotation'}, context=context)
 
-    def action_dept(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'dept'}, context=context)
-    def action_inspector(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'inspector'}, context=context)
-    def action_account(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'account'}, context=context)
-    def action_chief(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'chief'}, context=context)
     def action_refuse(self, cr, uid, ids, context=None):
         if not context:
             context = {}
@@ -147,6 +151,13 @@ class purchase_apply(osv.osv):
     def action_next(self, cr, uid, ids, context=None):
         if not context:
             context = {}
+        pid = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",ids),("user_id","=",uid)])
+        obj = self.pool.get("purchase.order.apply.person").browse(cr,uid,pid,context=context)
+        if self.pool.get("res.users").has_group(cr,obj.user_id.id,"purchase_requisition.group_purchase_requisition_user"):
+            req_id = self.pool.get("purchase.requisition").search(cr,uid,[('origin','=',obj.app_id.name),('state','=','open')],context=context)
+            if not req_id:
+                raise osv.except_osv("错误","该申请单对应的招标询价单没有关闭，不能进行审批。")
+
         return {
             'type': 'ir.actions.act_window',
             'view_type': 'form',
