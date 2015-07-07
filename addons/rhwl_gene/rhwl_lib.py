@@ -116,7 +116,9 @@ class rhwl_analyze(osv.osv_memory):
     _columns = {
         "zip":fields.binary(string=u"检测数据压缩包",required=True),
         "excel":fields.binary(string=u"分析结果"),
+        "log":fields.binary(string=u"分析日志"),
         "filename":fields.char("Name"),
+        "log_filename":fields.char("Log Name"),
         "state":fields.selection([("draft","draft"),("done","done")],string="State"),
     }
     _defaults={
@@ -140,26 +142,40 @@ class rhwl_analyze(osv.osv_memory):
                 dir_file=None
                 with zipfile.ZipFile(data_file.name, 'r') as z:
                     # only extract known members!
-                    filestore = [m for m in z.namelist() if m.endswith('fsa')]
-                    z.extractall(dump_dir, filestore)
+                    filestore = [m for m in z.namelist() if m.endswith('fsa') or m.endswith('txt')]
+                    z.extractall(dump_dir, filestore) #解压缩文件到临时目录
                     for i in os.listdir(dump_dir):
                         if os.path.isdir(os.path.join(dump_dir,i)):
                             if os.path.exists(os.path.join("/data/odoo/library",i)):
-                                shutil.rmtree(os.path.join("/data/odoo/library",i))
-                            shutil.move(os.path.join(dump_dir,i),os.path.join("/data/odoo/library",i))
+                                #shutil.rmtree(os.path.join("/data/odoo/library",i))
+                                for p in os.listdir(os.path.join(dump_dir,i)):
+                                    if os.path.exists(os.path.join(os.path.join("/data/odoo/library",i),p)):
+                                        os.remove(os.path.join(os.path.join("/data/odoo/library",i),p))
+                                    shutil.move(os.path.join(os.path.join(dump_dir,i),p),os.path.join(os.path.join("/data/odoo/library",i),p))
+                                os.removedirs(os.path.join(os.path.join(dump_dir,i)))
+                            else:
+                                shutil.move(os.path.join(dump_dir,i),os.path.join("/data/odoo/library",i))
                             dir_file=os.path.join("/data/odoo/library",i)
-                    os.removedirs(dump_dir)
+                    if os.path.exists(dump_dir):os.removedirs(dump_dir)
                     env = os.environ.copy()
                     with open(os.devnull) as dn:
                         rc = subprocess.call(("perl","/data/odoo/library/bin/creat.pl",dir_file,"/data/odoo/library/bin/"), env=env, stdout=dn, stderr=subprocess.STDOUT)
                         if rc:
                             raise Exception('Command Error.')
+                        log_file=[]
                         for i in os.listdir(dir_file):
                             if i.split(".")[-1]=="xls":
                                  f=open(os.path.join(dir_file,i),'rb')
                                  self.write(cr,uid,id,{"state":"done","filename":i,"excel": base64.encodestring(f.read())})
                                  f.close()
-                                 break
+
+                            if i.split(".")[-1]=="log":
+                                f=open(os.path.join(dir_file,i),'r')
+                                log_file += [i.split(".")[0]+","+x for x in f.readlines()]
+                                f.close()
+                                os.remove(os.path.join(dir_file,i))
+                        if log_file:
+                            self.write(cr,uid,id,{"log_filename":"分析日志.txt","log": base64.encodestring("".join(log_file))})
                         return {
                                 'type': 'ir.actions.act_window',
                                 'res_model': 'rhwl.genes.analyze',
