@@ -48,7 +48,7 @@
                                    widget="radio"/>
                             <field name="zydb"
                                    attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
-                            <field name="proxy_partner"  attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}" options='{"no_open": True,"no_create":True}'/>
+                            <field name="proxy_partner"  attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}" options='{"no_create":True}'/>
                         </group>
                     </xpath>
 

@@ -6,7 +6,7 @@ from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 from openerp import tools, api
 import datetime
-
+import base64
 class purchase_apply(osv.osv):
     _name = "purchase.order.apply"
     _describe = "Purchase Apply"
@@ -51,6 +51,7 @@ class purchase_apply(osv.osv):
         "note":fields.text(u"备注"),
         "is_confirm":fields.function(_get_state,type="boolean",multi="getstate"),
         "is_cancel":fields.function(_get_state,type="boolean",multi="getstate"),
+        "attachment_id":fields.many2one("ir.attachment","Excel"),
         "person":fields.one2many("purchase.order.apply.person","app_id",u"审核人员"),
         "line":fields.one2many("purchase.order.apply.line","name","Detail"),
         "log":fields.one2many("purchase.order.apply.log","app_id","Log",readonly=True),
@@ -92,7 +93,7 @@ class purchase_apply(osv.osv):
         for i in obj.line:
             if i.qty<=0:
                 raise osv.except_osv("错误",u"产品[%s]的申请数量必须大于0"%(i.product_id.name,))
-        self.write(cr, uid, ids, {'state': 'confirm'}, context=context)
+
         pid = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",obj.id)])
         if pid:
             user = self.pool.get("res.users")
@@ -108,6 +109,9 @@ class purchase_apply(osv.osv):
             if not is_purchase:
                 raise osv.except_osv("错误","审核人员中不包含采购招标人员，不可以确认。")
             self.pool.get("purchase.order.apply.person").write(cr,uid,pid,{"state":"draft","time":None,"note":None})
+        if obj.attachment_id:
+            self.pool.get('ir.attachment').unlink(cr,SUPERUSER_ID,obj.attachment_id.id)
+        self.write(cr, uid, ids, {'state': 'confirm',"attachment_id":None}, context=context)
 
     def action_create_quotation(self, cr, uid, ids, context=None):
         obj = self.browse(cr,uid,ids,context=context)
@@ -153,7 +157,9 @@ class purchase_apply(osv.osv):
             context = {}
         pid = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",ids),("user_id","=",uid)])
         obj = self.pool.get("purchase.order.apply.person").browse(cr,uid,pid,context=context)
+        is_create_excel=False
         if self.pool.get("res.users").has_group(cr,obj.user_id.id,"purchase_requisition.group_purchase_requisition_user"):
+            is_create_excel=True
             req_id = self.pool.get("purchase.requisition").search(cr,uid,[('origin','=',obj.app_id.name),('state','=','open')],context=context)
             if not req_id:
                 raise osv.except_osv("错误","该申请单对应的招标询价单没有关闭，不能进行审批。")
@@ -165,11 +171,41 @@ class purchase_apply(osv.osv):
             'view_mode': 'form',
             'name': u"审批说明(可选）",
             'target': 'new',
-            'context': {'button': 'done'},
+            'context': {'button': 'done',"is_create_excel":is_create_excel},
             'flags': {'form': {'action_buttons': False}}}
 
     def action_reset(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'draft'}, context=context)
+
+    def create_excel_attachment(self,cr,uid,ids,context=None):
+        this = self.browse(cr,uid,ids,context=context)
+        if this.attachment_id:return
+
+        if not context:
+            context={}
+        if not isinstance(ids,(list,tuple)):
+            ids = [ids]
+        context["active_ids"]=ids
+        res = self.pool.get("sale.sample.export.excel").action_excel_apply(cr,uid,ids,context=context)
+        if not res.has_key("res_id"):raise osv.except_osv("error","Create Excel Error.")
+        obj = self.pool.get("sale.sample.export.excel").browse(cr,uid,res.has_key("res_id"),context=context)
+
+        vals={
+                "name":this.name,
+                "datas_fname":obj.name,
+                "description":obj.name,
+                "res_model":"purchase.order.apply",
+                "res_id":this.id,
+                "create_date":fields.datetime.now,
+                "create_uid":SUPERUSER_ID,
+                "datas":base64.decodestring(obj.file),
+            }
+        atta_obj = self.pool.get('ir.attachment')
+        if this.attachment_id:
+            atta_obj.unlink(cr,SUPERUSER_ID,this.attachment_id.id)
+        atta_id = atta_obj.create(cr,SUPERUSER_ID,vals)
+        self.write(cr,uid,this.id,{"attachment_id":atta_id})
+
 
 class purchase_apply_line(osv.osv):
     _name = "purchase.order.apply.line"
@@ -267,7 +303,8 @@ class purchase_apply_popup(osv.osv_memory):
             context={}
         if context.get("button")=="cancel" and not obj.note:
             raise osv.except_osv("错误","退回时，必须说明原因。")
-
+        if context.get("is_create_excel"):
+            self.pool.get("purchase.order.apply").create_excel_attachment(cr,uid,context.get("active_id",0))
         ids = self.pool.get("purchase.order.apply.person").search(cr,uid,[("app_id","=",context.get("active_id",0)),("user_id.id","=",uid)])
         if ids:
             self.pool.get("purchase.order.apply.person").write(cr,uid,ids,{"state":context.get("button"),"note":obj.note,"time":fields.datetime.now()})

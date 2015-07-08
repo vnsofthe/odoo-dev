@@ -18,16 +18,31 @@ class rhwl_lib(osv.osv_memory):
     _columns={
         "file1_bin":fields.binary(string=u"Excel文件1",required=True),
         "file2_bin":fields.binary(string=u"Excel文件2",required=True),
+        "file1_dir":fields.char(u"文件1分析文件夹"),
+        "file2_dir":fields.char(u"文件2分析文件夹"),
+        "sec_confirm":fields.boolean(u"以文件2结果为准"),
         "file_data":fields.binary(string=u"合并后文件"),
         "name":fields.char("Name"),
         "state":fields.selection([("draft","draft"),("done","done")],string="State"),
     }
     _defaults={
         "state":"draft",
-        "name":u"位点合并结果.xls"
+        "name":u"位点合并结果.xls",
+        "sec_confirm":False
+
     }
 
     def action_merge(self,cr,uid,id,context=None):
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, id,context=context)
+        if not (this.file1_dir and this.file2_dir):
+            return self.action_merge_1(cr,uid,id,context=context)
+        else:
+            return self.action_merge_2(cr,uid,id,context=context)
+
+    #处理两个excel结果的合并
+    def action_merge_1(self,cr,uid,id,context=None):
         if context is None:
             context = {}
         this = self.browse(cr, uid, id,context=context)
@@ -51,7 +66,7 @@ class rhwl_lib(osv.osv_memory):
                 bk = xlrd.open_workbook(f)
                 sh = bk.sheet_by_index(0)
             except:
-               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准Excel格式。")
             nrows = sh.nrows
             ncols = sh.ncols
             sheet_header={}
@@ -74,8 +89,11 @@ class rhwl_lib(osv.osv_memory):
                         data[no][sheet_header[c]]=""
                     if not data[no][sheet_header[c]]:
                         data[no][sheet_header[c]]=val
-                    if val and data[no][sheet_header[c]]!=val:
-                        raise osv.except_osv(u"合并出错",u"样本编码%s，位点%s,有两个不同的结果[%s,%s]." %(no,sheet_header[c],val,data[no][sheet_header[c]]))
+                    if this.sec_confirm and val:
+                        data[no][sheet_header[c]]=val
+                    else:
+                        if val and data[no][sheet_header[c]]!=val:
+                            raise osv.except_osv(u"合并出错",u"样本编码%s，位点%s,有两个不同的结果[%s,%s]." %(no,sheet_header[c],val,data[no][sheet_header[c]]))
         os.remove(f1_name)
         os.remove(f2_name)
 
@@ -101,6 +119,47 @@ class rhwl_lib(osv.osv_memory):
         self.write(cr,uid,id,{"state":"done","file_data": base64.encodestring(f.read())})
         f.close()
         os.remove(xlsname+".xls")
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'rhwl.genes.merge',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': this.id,
+            'views': [(False, 'form')],
+            'target': 'new',
+        }
+
+    #两个不同结果合并
+    def action_merge_2(self,cr,uid,id,context=None):
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, id,context=context)
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+        PDIR="/data/odoo/library"
+        if not os.path.exists(os.path.join(PDIR,this.file1_dir)):
+            raise osv.except_osv("Error","文件1所指定的文件夹不存在。")
+        if not os.path.exists(os.path.join(PDIR,this.file2_dir)):
+            raise osv.except_osv("Error","文件2所指定的文件夹不存在。")
+
+        f1=open(os.path.join(PDIR,xlsname+"1.txt"),'w')
+        f2=open(os.path.join(PDIR,xlsname+"2.txt"),'w')
+
+        f1.write(this.file1_bin.decode('base64'))
+        f1.close()
+        f2.write(this.file2_bin.decode('base64'))
+        f2.close()
+        env = os.environ.copy()
+        with open(os.path.join(PDIR,xlsname+"3.xls"),'w') as dn:
+            rc = subprocess.call(("perl","/data/odoo/library/bin/snpScan.merge.pl",os.path.join(PDIR,xlsname+"1.txt"),os.path.join(PDIR,xlsname+"2.txt"),os.path.join(PDIR,this.file1_dir),os.path.join(PDIR,this.file2_dir)), env=env, stdout=dn, stderr=subprocess.STDOUT)
+            if rc:
+                raise Exception('Command Error.')
+        #perl /data/odoo/library/bin/snpScan.merge.pl merge.test.1.txt merge.test.2.txt /data/odoo/library/bin/merge-test/1st /data/odoo/library/bin/merge-test/2nd
+        f=open(os.path.join(PDIR,xlsname+"3.xls"),'rb')
+        self.write(cr,uid,id,{"state":"done","file_data": base64.encodestring(f.read())})
+        f.close()
+        #os.remove(xlsname+".xls")
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'rhwl.genes.merge',

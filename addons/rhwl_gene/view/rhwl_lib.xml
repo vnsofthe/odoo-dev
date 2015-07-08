@@ -9,8 +9,15 @@
                     <field invisible="1" name="state"/>
                     <field name="name" invisible="1"/>
                     <group states="draft">
-                        <field name="file1_bin"/>
-                        <field name="file2_bin"/>
+                        <group>
+                            <field name="file1_bin"/>
+                            <field name="file2_bin"/>
+                            <field name="sec_confirm"/>
+                        </group>
+                        <group>
+                            <field name="file1_dir"/>
+                            <field name="file2_dir"/>
+                        </group>
                     </group>
                     <group states="done">
                         <p>点击右边文件名下载：<field name="file_data" readonly="1" filename="name"/></p>
