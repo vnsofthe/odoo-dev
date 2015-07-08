@@ -188,17 +188,17 @@ class purchase_apply(osv.osv):
         context["active_ids"]=ids
         res = self.pool.get("sale.sample.export.excel").action_excel_apply(cr,uid,ids,context=context)
         if not res.has_key("res_id"):raise osv.except_osv("error","Create Excel Error.")
-        obj = self.pool.get("sale.sample.export.excel").browse(cr,uid,res.has_key("res_id"),context=context)
+        obj = self.pool.get("sale.sample.export.excel").browse(cr,uid,res.get("res_id"),context=context)
 
         vals={
-                "name":this.name,
+                "name":obj.name,
                 "datas_fname":obj.name,
                 "description":obj.name,
                 "res_model":"purchase.order.apply",
                 "res_id":this.id,
                 "create_date":fields.datetime.now,
                 "create_uid":SUPERUSER_ID,
-                "datas":base64.decodestring(obj.file),
+                "datas":obj.file,
             }
         atta_obj = self.pool.get('ir.attachment')
         if this.attachment_id:
