@@ -56,6 +56,7 @@
                     <field name="log_filename" invisible="1"/>
                     <group states="draft">
                         <field name="zip" filename="filename"/>
+                        <field name="output_name" invisible ="not context.get('sanger')"/>
                     </group>
                     <group states="done">
                         <group>
@@ -81,8 +82,20 @@
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
+
         </record>
         <menuitem action="action_rhwl_genes_lib_analyze" id="menu_rhwl_easy_genes_analyze" name="检测结果分析" parent="menu_rhwl_easy_genes_lib" sequence="10" groups="rhwl_base_library"/>
+
+        <record id="action_rhwl_genes_lib_sanger1" model="ir.actions.act_window">
+            <field name="name">Sanger测序数据判读</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.analyze</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{"sanger":1}</field>
+        </record>
+        <menuitem action="action_rhwl_genes_lib_sanger1" id="menu_rhwl_genes_lib_sanger1" name="Sanger测序数据判读" parent="menu_rhwl_easy_genes_lib" sequence="20" groups="rhwl_base_library"/>
 
     </data>
 </openerp>

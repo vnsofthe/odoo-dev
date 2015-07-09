@@ -178,6 +178,7 @@ class rhwl_analyze(osv.osv_memory):
         "log":fields.binary(string=u"分析日志"),
         "filename":fields.char("Name"),
         "log_filename":fields.char("Log Name"),
+        "output_name":fields.char(u"输出文件名"),
         "state":fields.selection([("draft","draft"),("done","done")],string="State"),
     }
     _defaults={
@@ -185,6 +186,14 @@ class rhwl_analyze(osv.osv_memory):
     }
 
     def action_analyze(self,cr,uid,id,context=None):
+        if not context:
+            context={}
+        if not context.has_key("sanger"):
+            return self.action_analyze1(cr,uid,id,context=context)
+        else:
+            return self.action_analyze2(cr,uid,id,context=context)
+
+    def action_analyze1(self,cr,uid,id,context=None):
         if context is None:
             context = {}
         obj = self.browse(cr, uid, id,context=context)
@@ -235,6 +244,67 @@ class rhwl_analyze(osv.osv_memory):
                                 os.remove(os.path.join(dir_file,i))
                         if log_file:
                             self.write(cr,uid,id,{"log_filename":"分析日志.txt","log": base64.encodestring("".join(log_file))})
+                        return {
+                                'type': 'ir.actions.act_window',
+                                'res_model': 'rhwl.genes.analyze',
+                                'view_mode': 'form',
+                                'view_type': 'form',
+                                'res_id': obj.id,
+                                'views': [(False, 'form')],
+                                'target': 'new',
+                            }
+
+            else:
+                os.unlink(data_file.name)
+                _logger.warning('File format is not ZIP')
+                raise Exception("File format is not ZIP")
+
+        finally:
+            if os.path.exists(data_file.name):os.unlink(data_file.name)
+        return True
+
+    def action_analyze2(self,cr,uid,id,context=None):
+        if context is None:
+            context = {}
+        obj = self.browse(cr, uid, id,context=context)
+        if not obj.output_name:
+            raise osv.except_osv("Error","输出文件名不可以为空。")
+
+        data_file = NamedTemporaryFile(delete=False)
+
+        try:
+            data_file.write(obj.zip.decode('base64'))
+            data_file.close()
+            if zipfile.is_zipfile(data_file.name):
+                dump_dir=data_file.name+"_zip"
+                if not os.path.exists(dump_dir):
+                    os.mkdir(dump_dir)
+                dir_file=None
+                with zipfile.ZipFile(data_file.name, 'r') as z:
+                    # only extract known members!
+                    filestore = [m for m in z.namelist()]
+                    z.extractall(dump_dir, filestore) #解压缩文件到临时目录
+                    for i in os.listdir(dump_dir):
+                        ii = "sanger_"+i
+                        if os.path.isdir(os.path.join(dump_dir,i)):
+                            if os.path.exists(os.path.join("/data/odoo/library",ii)):
+                                shutil.rmtree(os.path.join("/data/odoo/library",ii))
+
+                            shutil.move(os.path.join(dump_dir,i),os.path.join("/data/odoo/library",ii))
+                            dir_file=os.path.join("/data/odoo/library",ii)
+                    if os.path.exists(dump_dir):os.removedirs(dump_dir)
+                    env = os.environ.copy()
+                    with open(os.devnull) as dn:
+                        rc = subprocess.call(("perl","/data/odoo/library/bin/Sanger.operation.pl",dir_file,obj.output_name), env=env, stdout=dn, stderr=subprocess.STDOUT)
+                        if rc:
+                            raise Exception('Command Error.')
+
+                        for i in os.listdir(dir_file):
+                            if i.split(".")[-1]=="xls":
+                                 f=open(os.path.join(dir_file,i),'rb')
+                                 self.write(cr,uid,id,{"state":"done","filename":i,"excel": base64.encodestring(f.read())})
+                                 f.close()
+
                         return {
                                 'type': 'ir.actions.act_window',
                                 'res_model': 'rhwl.genes.analyze',
