@@ -410,7 +410,7 @@ class rhwl_gene(osv.osv):
             "keyword3":fields.datetime.now(),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }
-        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_jobmanager",context=context)
+        self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_lib_import",context=context)
 
     #发送文件大小错误微信通知
     def pdf_size_error(self,cr,uid,file,lens,context=None):
@@ -550,9 +550,21 @@ class rhwl_gene(osv.osv):
     #样本状态数据微信通知
     def weixin_notice_template2(self,cr,uid,context=None):
         s_date,e_date = self.date_between(20)
+        #统计今日收样笔数
+        cr.execute("""select count(*) from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') and create_date::date = now()::date""")
+        for i in cr.fetchall():
+            today_count = i[0]
 
+        #下次送货数据
+        pick_count=0
+        pick_id = self.pool.get( "rhwl.genes.picking").search(cr,uid,[("date",">=",datetime.datetime.today()),("state","!=","done")],order="date",limit=1)
+        if pick_id:
+            pick_obj = self.pool.get( "rhwl.genes.picking").browse(cr,uid,pick_id,context=context)
+            pick_count = pick_obj.files
+
+        #本期样本笔数
         idscount = self.search_count(cr,uid,[("date",">=",s_date),("date","<=",e_date),("cust_prop","in",["tjs","tjs_vip"])],context=context)
-        cr.execute("""with d as (select batch_no,state,count(*) as c from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') group by batch_no,state order by batch_no)
+        cr.execute("""with d as (select batch_no,state,count(*) as c,date from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') group by batch_no,state,date order by batch_no)
                     select *
                     from d dd
                     where not exists(select * from d where state='done' and d.batch_no=dd.batch_no)""")
@@ -566,13 +578,22 @@ class rhwl_gene(osv.osv):
         v_count5 = 0
         dna_rate={}
         not_dna_except={} #记录不报告质检比率的批次
+        wait_receiv=[]
         for i in cr.fetchall():
             if not dna_rate.has_key(i[0]):
                 dna_rate[i[0]]={"count":0,"except":0}
             dna_rate[i[0]]["count"] =dna_rate[i[0]]["count"]+i[2]
             if i[1]=='draft':
-                v_count0 += i[2] #待收件
+                batch_id = self.pool.get("rhwl.easy.genes.batch").search(cr,uid,[("name","=",i[0]),("post_date","!=",False)])
+                if not batch_id:
+                    v_count0 += i[2] #待收件
+                    wait_receiv.append(i[2]+"/"+(i[3].split("-")[1:]))
                 not_dna_except[i[0]]=True
+
+                #样本是草稿，但如果已经设定实验收件日期，则数据归为实验中
+                batch_id = self.pool.get("rhwl.easy.genes.batch").search(cr,uid,[("name","=",i[0]),("lib_date","!=",False)])
+                if batch_id:
+                    v_count1 += i[2] #待检测
             elif i[1] in ['except','except_confirm','confirm']:
                 v_count1 += i[2] #待检测
                 not_dna_except[i[0]]=True
@@ -592,7 +613,7 @@ class rhwl_gene(osv.osv):
         js={
             "first":"易感样本状况统计：",
             "keyword1":"本期从(%s-%s)"%(s_date.strftime("%Y/%m/%d"),e_date.strftime("%Y/%m/%d")),
-            "keyword2":"待收件%s笔，待检测%s笔，等待报告产生%s笔，已出报告%s笔(质检不合格%s笔[%s]，待送货%s笔)。本期总计%s笔。" %(v_count0,v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4,idscount),
+            "keyword2":"今日送样%s,在途%s，实验中%s%s，排版中%s，已排版%s(质检不合格%s[%s]，待印刷%s,下次送货%s)。本期总计%s笔。" %(today_count,v_count0,v_count1,("["+",".join(wait_receiv)+"]" if wait_receiv else ""),v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4-pick_count,pick_count,idscount),
             "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }

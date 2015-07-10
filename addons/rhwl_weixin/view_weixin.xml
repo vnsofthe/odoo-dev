@@ -23,10 +23,12 @@
                              <field name="openid"/>
                             <field name="active"/>
                             <field name="user_id"/>
+                            <field name="is_lib_import"/>
                             <field name="is_jobmanager"/>
                             <field name="is_notice"/>
                             <field name="is_library"/>
                             <field name="is_sampleresult"/>
+                            <field name="is_test"/>
                         </group>
                     </sheet>
                 </form>

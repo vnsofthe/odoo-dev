@@ -294,7 +294,8 @@ class rhwl_analyze(osv.osv_memory):
                             dir_file=os.path.join("/data/odoo/library",ii)
                     if os.path.exists(dump_dir):os.removedirs(dump_dir)
                     env = os.environ.copy()
-                    with open(os.devnull) as dn:
+
+                    with open(os.path.join(dir_file,"out.log"),'w') as dn:
                         rc = subprocess.call(("perl","/data/odoo/library/bin/Sanger.operation.pl",dir_file,obj.output_name), env=env, stdout=dn, stderr=subprocess.STDOUT)
                         if rc:
                             raise Exception('Command Error.')

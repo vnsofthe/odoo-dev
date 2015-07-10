@@ -27,10 +27,12 @@ class rhwl_weixin(osv.osv):
         "checkNum":fields.char(u"验证码"),
         "checkDateTime":fields.datetime(u"验证码发送时间"),
         "sampleno":fields.char("sample No"),
-        "is_jobmanager":fields.boolean(u"易感数据/报告数据交换通知"),
-        "is_notice":fields.boolean(u"易感信息每日统计通知"),
-        "is_library":fields.boolean(u"实验进度催促通知"),
-        "is_sampleresult":fields.boolean(u"无创检测结果通知"),
+        "is_lib_import":fields.boolean(u"易感检测位点导入通知",help=u"易感样本实验导入位点通知。"),
+        "is_jobmanager":fields.boolean(u"易感报告接收通知",help=u"易感报告产生后，接收到ODOO中的笔数通知。"),
+        "is_notice":fields.boolean(u"易感信息每日统计通知",help=u"每日统计发送易感项目的各项指标数据。"),
+        "is_library":fields.boolean(u"实验进度催促通知",help=u"每周四统计预计出货样本数据。"),
+        "is_sampleresult":fields.boolean(u"无创检测结果通知",help=u"无创样本实验结果完成后通知。"),
+        "is_test":fields.boolean(u"测试通知")
     }
 
     def init(self, cr):
