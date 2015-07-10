@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <template id="assets_backend" name="rhwl_gene assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/rhwl_gene/static/js/rhwl_gene.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>
