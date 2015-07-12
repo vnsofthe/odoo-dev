@@ -162,12 +162,12 @@ class gene(http.Controller):
                         log_obj=log.browse(cr,SUPERUSER_ID,log_id[0],context=self.CONTEXT)
                         data["stateList"][0][1]="完成"
                         data["stateList"][0][2]=(datetime.datetime.strptime(log_obj.date,"%Y-%m-%d %H:%M:%S") + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S")
-                    log_id=log.search(cr,SUPERUSER_ID,[("genes_id","=",id[0]),("data","in",['dna_except','dna_ok','ok'])],order="date")
+                    log_id=log.search(cr,SUPERUSER_ID,[("genes_id","=",id[0]),("data","in",['dna_except','dna_ok','report','ok'])],order="date")
                     if log_id:
                         log_obj=log.browse(cr,SUPERUSER_ID,log_id[0],context=self.CONTEXT)
                         data["stateList"][1][1]="完成"
                         data["stateList"][1][2]=(datetime.datetime.strptime(log_obj.date,"%Y-%m-%d %H:%M:%S") + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S")
-                    log_id=log.search(cr,SUPERUSER_ID,[("genes_id","=",id[0]),("data","in",['report','report_done','result_done','deliver','done'])],order="date")
+                    log_id=log.search(cr,SUPERUSER_ID,[("genes_id","=",id[0]),("data","in",['report_done','result_done','deliver','done'])],order="date")
                     if log_id:
                         log_obj=log.browse(cr,SUPERUSER_ID,log_id[0],context=self.CONTEXT)
                         data["stateList"][2][1]="完成"

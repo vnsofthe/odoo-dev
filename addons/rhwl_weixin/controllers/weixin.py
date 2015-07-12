@@ -70,7 +70,7 @@ class weixin(http.Controller):
             with registry.cursor() as cr:
                 orig = registry.get("rhwl.weixin.base")
                 res=orig.action_event_clicked(cr,key,toUser,fromUser)
-
+                _logger.debug(res)
                 if isinstance(res,(list,tuple)):
                     return self.send_photo_text(fromUser,toUser,res[0],res[1])
                 else:

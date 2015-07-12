@@ -114,7 +114,7 @@ class rhwl_config(osv.osv):
         if obj.code=="rhwc" and key=="ONLINE_QUERY":
             return u"请您输入送检编号！"
         articles=self._get_htmlmsg(cr,origId[0],key)
-
+        _logger.debug(articles)
         if articles[0]:
             userid=self._get_userid(cr,origId[0],fromUser)
             if not userid:
@@ -128,9 +128,9 @@ class rhwl_config(osv.osv):
             if articles[1]:
                 is_has_group=False
 
-                obj = self.pool.get("res.users")
+                uobj = self.pool.get("res.users")
                 for i in articles[1].split(","):
-                    is_has_group = obj.has_group(cr,userid,i)
+                    is_has_group = uobj.has_group(cr,userid,i)
                     if is_has_group:break
                 if not is_has_group:
                     articles={
@@ -139,7 +139,7 @@ class rhwl_config(osv.osv):
                         "PicUrl":"/rhwl_weixin/static/img/logo1.png",
                         }
                     return (obj.code.encode("utf-8"),[articles,])
-
+        _logger.debug(articles[2])
         if articles[2]:
             return (obj.code.encode("utf-8"),articles[2])
         else:
