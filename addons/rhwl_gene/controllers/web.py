@@ -17,6 +17,22 @@ import os
 import openerp
 import openerp.tools.config as config
 _logger = logging.getLogger(__name__)
+content_m=[("前言",1,1),
+            ("致辞",2,2),
+            ("个人信息",3,3),
+            ["目录",
+                [
+                    ["关于您基因检测报告的说明",[("服务项目介绍",8,8),("检测报告解读示例",9,12)]],
+                    ["关于您健康综合评估和指导建议",
+                        [
+                            ["肿瘤专项相关疾病预防",
+                                [("肿瘤类疾病高危警示",14,14),("肿瘤类疾病易感性综合评估",15,16),("肿瘤类疾病环境风险因素分析与指导",17,18)]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+           ]
 
 class gene(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}

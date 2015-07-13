@@ -1,0 +1,141 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>易感样本查询</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="css/weixin.css">
+</head>
+<body>
+<div class="am-panel-group" id="accordion">
+    <div class="am-input-group">
+
+      <input type="text" class="am-form-field am-close" placeholder="请输入易感样本编号，如:2699993698" id="search-text"/>
+         <span class="am-input-group-btn">
+        <button class="am-btn am-btn-default" id="query" type="button"><span class="am-icon-search"></span> </button>
+      </span>
+    </div>
+    <hr data-am-widget="divider" style="" class="am-divider am-divider-default"/>
+
+    <section class="am-panel am-panel-primary">
+      <header class="am-panel-hd">
+        <h3 class="am-panel-title">样本编号：<span id="gene_name"></span></h3>
+      </header>
+      <div class="am-panel-bd">
+            <table class="am-table" id="table-status">
+                    <tr>
+                        <td class="status status-first-invisible">&nbsp;</td>
+                        <td>收件</td>
+                        <td>待处理</td>
+                    </tr>
+                    <tr>
+                        <td class="status status-second-invisible">&nbsp;</td>
+                        <td>出实验结果</td>
+                        <td>待处理</td>
+                    </tr>
+                    <tr >
+                        <td class="status status-end-invisible">&nbsp;</td>
+                        <td>出报告</td>
+                        <td>待处理</td>
+                    </tr>
+            </table>
+      </div>
+    </section>
+    <br>
+    <a id="download_pdf"  class="am-btn am-btn-block am-btn-success am-round am-disabled" href="">下载电子报告单</a>
+    <button type="button" id="preview_pdf" class="am-btn am-btn-block am-btn-success am-round am-disabled">在线阅读电子报告</button>
+
+</div>
+
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script>
+  $(function() {
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+
+    $('#query').bind("click",function(){
+         var val = $('#search-text').val();
+         if(val.trim()==""){
+             alert("请输入查询条件");
+             return false;
+         }else{
+
+            $.ajax({
+                  type: 'POST',
+                  url: "/web/api/genes/weixin/?openid="+$.getUrlVar('openid')+"&id="+val,
+                  data: {},
+                  success: function(data) {
+                      if(data.name==undefined){
+                          alert("无此样本编号。");
+                          return;
+                      }
+                      var t=$("#table-status tr");
+                      $(".am-panel-title span")[0].innerText=data.name;
+                      $.each(data.stateList,function(k,v){
+
+                          if(v[1]=="完成"){
+                              t[k].children[2].innerText=v[2]
+                              if(k==0){
+                                  $(t[k].children[0]).removeClass("status-first-invisible").addClass("status-first-active");
+                              }else if(k==2){
+                                  $(t[k].children[0]).removeClass("status-end-invisible").addClass("status-end-active");
+                                  $("#download_pdf").attr("href","/rhwl_gene/static/local/report/"+data.name+".pdf").removeClass("am-disabled");
+
+                                  $("#preview_pdf").removeClass("am-disabled");
+                              }else{
+                                  $(t[k].children[0]).removeClass("status-second-invisible").addClass("status-second-active");
+                              }
+                          }else{
+                              t[k].children[2].innerText=v[1]
+                              if(k==0){
+                                  $(t[k].children[0]).removeClass("status-first-active").addClass("status-first-invisible");
+                              }else if(k==2){
+                                  $(t[k].children[0]).removeClass("status-end-active").addClass("status-end-invisible");
+                                  $("#download_pdf").addClass("am-disabled");
+                                  $("#preview_pdf").addClass("am-disabled");
+                              }else{
+                                  $(t[k].children[0]).removeClass("status-second-active").addClass("status-second-invisible");
+                              }
+                          }
+                      })
+
+                  }
+            });
+
+         }});
+
+  });
+
+</script>
+</body>
+</html>
