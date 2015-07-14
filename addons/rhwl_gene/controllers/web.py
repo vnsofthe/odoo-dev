@@ -17,22 +17,12 @@ import os
 import openerp
 import openerp.tools.config as config
 _logger = logging.getLogger(__name__)
-content_m=[("前言",1,1),
-            ("致辞",2,2),
-            ("个人信息",3,3),
-            ["目录",
-                [
-                    ["关于您基因检测报告的说明",[("服务项目介绍",8,8),("检测报告解读示例",9,12)]],
-                    ["关于您健康综合评估和指导建议",
-                        [
-                            ["肿瘤专项相关疾病预防",
-                                [("肿瘤类疾病高危警示",14,14),("肿瘤类疾病易感性综合评估",15,16),("肿瘤类疾病环境风险因素分析与指导",17,18)]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-           ]
+content_m={"0":[("前言",1,1),("致辞",2,2),("个人信息",3,3),("目录",4)],
+           "4":[("关于您基因检测报告的说明",8),("关于您健康综合评估和指导建议",13)],
+           "8":[("服务项目介绍",8,8),("检测报告解读示例",9,12)],
+           "13":[("肿瘤专项相关疾病预防",14)],
+           "14":[("肿瘤类疾病高危警示",14,14),("肿瘤类疾病易感性综合评估",15,16),("肿瘤类疾病环境风险因素分析与指导",17,18)]
+}
 
 class gene(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
@@ -192,6 +182,25 @@ class gene(http.Controller):
         else:
             data=res
         _logger.error(data)
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/genes/weixin/content/",type="http",auth="none")
+    def _get_rhwl_api_weixin_content(self,**kw):
+        res = self.check_userinfo(kw)
+        data = {}
+        if res.get('statu')==200:
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                sample = registry.get("rhwl.easy.genes")
+                id = sample.search(cr,SUPERUSER_ID,[("name","=",res.get("params").get("id"))])
+                if id:
+                    obj=sample.browse(cr,SUPERUSER_ID,id)
+                    if obj.sex=="T":
+                        data = content_m.get(str(res.get("params").get("seq")))
+        else:
+            data=res
+
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 

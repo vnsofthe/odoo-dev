@@ -66,7 +66,7 @@
     </section>
     <br>
     <a id="download_pdf"  class="am-btn am-btn-block am-btn-success am-round am-disabled" href="">下载电子报告单</a>
-    <button type="button" id="preview_pdf" class="am-btn am-btn-block am-btn-success am-round am-disabled">在线阅读电子报告</button>
+    <a id="preview_pdf" class="am-btn am-btn-block am-btn-success am-round am-disabled" href="list_contents.html">在线阅读电子报告</a>
 
 </div>
 
@@ -111,7 +111,7 @@
                                   $(t[k].children[0]).removeClass("status-end-invisible").addClass("status-end-active");
                                   $("#download_pdf").attr("href","/rhwl_gene/static/local/report/"+data.name+".pdf").removeClass("am-disabled");
 
-                                  $("#preview_pdf").removeClass("am-disabled");
+                                  $("#preview_pdf").attr("href","list_contents.html?seq=0&openid="+$.getUrlVar('openid')+"&id="+data.name).removeClass("am-disabled");
                               }else{
                                   $(t[k].children[0]).removeClass("status-second-invisible").addClass("status-second-active");
                               }
