@@ -30,6 +30,18 @@
   <link rel="stylesheet" href="css/weixin.css">
 </head>
 <body>
+<header data-am-widget="header" class="am-header am-header-default">
+  <div class="am-header-left am-header-nav">
+
+    <a href="Javascript:history.go(-1);void(0);" class="">
+      <img class="am-header-icon-custom" src="data:image/svg+xml;charset=utf-8,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 12 20&quot;&gt;&lt;path d=&quot;M10,0l2,2l-8,8l8,8l-2,2L0,10L10,0z&quot; fill=&quot;%23fff&quot;/&gt;&lt;/svg&gt;"
+      alt="" />
+    </a>
+
+  </div>
+  <h1 class="am-header-title">报告目录</h1>
+
+</header>
 
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -44,6 +56,12 @@
     var OPENID=$.getUrlVar('openid');
     var GENE_ID=$.getUrlVar('id');
     var SEQ= $.getUrlVar("seq");
+    $(document).ajaxStart(function(){
+            $("<div id=\"wait_ajax\">数据加载中，请稍候......</div>").appendTo($("body"));
+            });
+        $(document).ajaxStop(function(){
+            $("#wait_ajax").remove();
+            });
 
   $(function() {
       //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
@@ -53,7 +71,7 @@
           data: {},
           success: function (data) {
               $.each(data,function(k,v){
-                   $("body").append("<img style=\"width:100%\" src=\""+v+"\"></img>")
+                   $("body").append("<img style=\"width:100%\" src=\""+v+"\"></img><hr data-am-widget=\"divider\" style=\"\" class=\"am-divider am-divider-default\"/>")
               })
           }
       });

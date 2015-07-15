@@ -30,6 +30,21 @@
   <link rel="stylesheet" href="css/weixin.css">
 </head>
 <body>
+<header data-am-widget="header" class="am-header am-header-default">
+  <div class="am-header-left am-header-nav">
+    <a href="#left-link" class="" id="home_link">
+      <i class="am-header-icon am-icon-home"></i>
+    </a>
+
+    <a href="Javascript:history.go(-1);void(0);" class="">
+      <img class="am-header-icon-custom" src="data:image/svg+xml;charset=utf-8,&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 12 20&quot;&gt;&lt;path d=&quot;M10,0l2,2l-8,8l8,8l-2,2L0,10L10,0z&quot; fill=&quot;%23fff&quot;/&gt;&lt;/svg&gt;"
+      alt="" />
+    </a>
+
+  </div>
+  <h1 class="am-header-title">报告目录</h1>
+</header>
+
 <nav data-am-widget="menu" class="am-menu  am-menu-stack">
   <a href="javascript: void(0)" class="am-menu-toggle">
     <i class="am-menu-toggle-icon am-icon-bars"></i>
@@ -65,7 +80,7 @@
             return "<li class=\"am-parent\"><a href=\"##\" class=\"\">"+item[0]+"</a><ul class=\"am-menu-sub am-collapse  am-avg-sm-1 \">"+sub_menu+"</ul></li>"
         }
     }
-
+    $("#home_link").attr("href","list_contents.html?seq=0&openid="+$.getUrlVar('openid')+"&id="+$.getUrlVar('id'));
   $(function() {
       //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 
@@ -76,7 +91,8 @@
           data: {},
           success: function (data) {
               var nav=$(".am-menu .am-menu-nav")
-              $.each(data,function(k,v){
+              $(".am-header-title")[0].innerText= data[0]
+              $.each(data[1],function(k,v){
                     if(v.length==3){
                         nav.append("<li class=\"\"><a href=\"genes_view.html?openid=" + OPENID + "&id=" + GENE_ID+"&ps="+v[1]+"&pe="+v[2]+"\" class=\"\">"+v[0]+"</a></li>")
                     }else if(v.length==2){

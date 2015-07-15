@@ -53,7 +53,22 @@
                     </tr>
                     <tr>
                         <td class="status status-second-invisible">&nbsp;</td>
+                        <td>送检</td>
+                        <td>待处理</td>
+                    </tr>
+                    <tr>
+                        <td class="status status-second-invisible">&nbsp;</td>
+                        <td>质检</td>
+                        <td>待处理</td>
+                    </tr>
+                    <tr>
+                        <td class="status status-second-invisible">&nbsp;</td>
                         <td>出实验结果</td>
+                        <td>待处理</td>
+                    </tr>
+                    <tr>
+                        <td class="status status-second-invisible">&nbsp;</td>
+                        <td>报告分析</td>
                         <td>待处理</td>
                     </tr>
                     <tr >
@@ -65,7 +80,9 @@
       </div>
     </section>
     <br>
+    <!--
     <a id="download_pdf"  class="am-btn am-btn-block am-btn-success am-round am-disabled" href="">下载电子报告单</a>
+    -->
     <a id="preview_pdf" class="am-btn am-btn-block am-btn-success am-round am-disabled" href="list_contents.html">在线阅读电子报告</a>
 
 </div>
@@ -107,7 +124,7 @@
                               t[k].children[2].innerText=v[2]
                               if(k==0){
                                   $(t[k].children[0]).removeClass("status-first-invisible").addClass("status-first-active");
-                              }else if(k==2){
+                              }else if(k==5){
                                   $(t[k].children[0]).removeClass("status-end-invisible").addClass("status-end-active");
                                   $("#download_pdf").attr("href","/rhwl_gene/static/local/report/"+data.name+".pdf").removeClass("am-disabled");
 
@@ -119,7 +136,7 @@
                               t[k].children[2].innerText=v[1]
                               if(k==0){
                                   $(t[k].children[0]).removeClass("status-first-active").addClass("status-first-invisible");
-                              }else if(k==2){
+                              }else if(k==5){
                                   $(t[k].children[0]).removeClass("status-end-active").addClass("status-end-invisible");
                                   $("#download_pdf").addClass("am-disabled");
                                   $("#preview_pdf").addClass("am-disabled");
