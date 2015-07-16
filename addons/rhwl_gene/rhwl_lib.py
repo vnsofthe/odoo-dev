@@ -36,10 +36,10 @@ class rhwl_lib(osv.osv_memory):
         if context is None:
             context = {}
         this = self.browse(cr, uid, id,context=context)
-        if not (this.file1_dir and this.file2_dir):
-            return self.action_merge_1(cr,uid,id,context=context)
-        else:
-            return self.action_merge_2(cr,uid,id,context=context)
+        #if not (this.file1_dir and this.file2_dir):
+        #    return self.action_merge_1(cr,uid,id,context=context)
+        #else:
+        return self.action_merge_2(cr,uid,id,context=context)
 
     #处理两个excel结果的合并
     def action_merge_1(self,cr,uid,id,context=None):
@@ -152,7 +152,7 @@ class rhwl_lib(osv.osv_memory):
         f2.close()
         env = os.environ.copy()
         with open(os.path.join(PDIR,xlsname+"3.xls"),'w') as dn:
-            rc = subprocess.call(("perl","/data/odoo/library/bin/snpScan.merge.pl",os.path.join(PDIR,xlsname+"1.txt"),os.path.join(PDIR,xlsname+"2.txt"),os.path.join(PDIR,this.file1_dir),os.path.join(PDIR,this.file2_dir)), env=env, stdout=dn, stderr=subprocess.STDOUT)
+            rc = subprocess.call(("perl","/data/odoo/library/bin/snpScan.merge.pl",os.path.join(PDIR,xlsname+"1.txt"),os.path.join(PDIR,xlsname+"2.txt")), env=env, stdout=dn, stderr=subprocess.STDOUT)
             if rc:
                 raise Exception('Command Error.')
         #perl /data/odoo/library/bin/snpScan.merge.pl merge.test.1.txt merge.test.2.txt /data/odoo/library/bin/merge-test/1st /data/odoo/library/bin/merge-test/2nd
