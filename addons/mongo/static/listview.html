@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>套餐详情</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div>
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+
+      </div>
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="js/vnsoft.js"></script>
+    <script>
+
+        $.ajax(
+                {
+                    type: 'POST',
+                      url: "/web/api/mongo/get_list/?lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc"),
+                      data: {},
+                      success: function(data){
+
+                          $.each(data,function(k,v){
+                                $(".nav-tabs").append("<li role=\"presentation\" "+(k==0?"class=\"active\"":"")+"><a href=\"#"+v[0]+"\" aria-controls=\""+v[0]+"\" role=\"tab\" data-toggle=\"tab\">"+v[1]+"</a></li>");
+                              $(".tab-content").append("<div role=\"tabpanel\" class=\"tab-pane"+(k==0?" active":"")+"\" id=\""+v[0]+"\">"+v[1]+"</div>")
+                          });
+
+
+                      }
+                }
+        );
+
+
+    </script>
+  </body>
+</html>

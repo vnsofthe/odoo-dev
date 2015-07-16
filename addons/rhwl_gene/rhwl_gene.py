@@ -587,7 +587,7 @@ class rhwl_gene(osv.osv):
                 batch_id = self.pool.get("rhwl.easy.genes.batch").search(cr,uid,[("name","=",i[0]),("post_date","!=",False)])
                 if not batch_id:
                     v_count0 += i[2] #待收件
-                    wait_receiv.append(i[2]+"/"+(i[3].split("-")[1:]))
+                    wait_receiv.append(str(i[2])+"/"+".".join((i[3].split("-")[1:])))
                 not_dna_except[i[0]]=True
 
                 #样本是草稿，但如果已经设定实验收件日期，则数据归为实验中
@@ -613,7 +613,7 @@ class rhwl_gene(osv.osv):
         js={
             "first":"易感样本状况统计：",
             "keyword1":"本期从(%s-%s)"%(s_date.strftime("%Y/%m/%d"),e_date.strftime("%Y/%m/%d")),
-            "keyword2":"今日送样%s,在途%s，实验中%s%s，排版中%s，已出报告%s(质检不合格%s[%s]，待印刷%s,下次送货%s)。本期总计%s笔。" %(today_count,v_count0,v_count1,("["+",".join(wait_receiv)+"]" if wait_receiv else ""),v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4-pick_count,pick_count,idscount),
+            "keyword2":"今日送样%s,在途%s%s，实验中%s，排版中%s，已出报告%s(质检不合格%s[%s]，待印刷%s,下次送货%s)。本期总计%s笔。" %(today_count,v_count0,("["+",".join(wait_receiv)+"]" if wait_receiv else ""),v_count1,v_count2,v_count4+v_count3+v_count5,v_count3,",".join(except_rate),v_count4-pick_count,pick_count,idscount),
             "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
             "remark":"以上数据仅供参考，详细情况请登录Odoo查询。"
         }

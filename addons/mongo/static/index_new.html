@@ -17,9 +17,10 @@
     <![endif]-->
   </head>
   <body>
-
-    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-
+    <div class="container" style="width:50%">
+        <h2>请选择下列套系、套餐：</h2>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        </div>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -66,7 +67,7 @@
                                               if(v2[2].length>0){
                                                   $("#collapse"+(k2+200)+">.panel-body").append("<ul class=\"list-group\"></ul>");
                                                   $.each(v2[2],function(k3,v3){
-                                                      $("#collapse"+(k2+200)+">.panel-body>.list-group").append("<li class=\"list-group-item\">"+v3[1]+"</li>")
+                                                      $("#collapse"+(k2+200)+">.panel-body>.list-group").append("<li class=\"list-group-item\"><a href=\"listview.html?lang="+v1[0]+"&id="+v2[0]+"&tc="+v3[0]+"\">"+v3[1]+"</a></li>")
                                                       //$("#collapse"+(k2+200)+">.panel-body").append(get_html((k3+300),"collapse"+(k2+100),v3[1],v3[1]));
                                                   })
                                               }

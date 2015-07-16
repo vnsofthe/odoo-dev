@@ -34,20 +34,15 @@ class WebClient(http.Controller):
 
         return self.COMMON
 
-
+    def _get_category_header(self,category,template):
+        for k,v in template.items():
+            if k=="disease":
+                return [[]]
     @http.route('/web/api/mongo/get_menu/', type='http', auth="public",website=True)
     def _get_menu(self,**kw):
         db = self._get_cursor()
         content = db.products.find()
         res=[]
-
-        """_id : "tjs_quantaoxi",
-            belongsto: "泰济生",
-            CN : {
-                name : "全套系",
-                sets : {
-                    yunmataocan : {
-                        name : "孕妈套餐","""
         """["泰济生","泰济生",[("CN","中文",[("tjs_quantaoxi","全套系",[("yunmataocan","孕妈套餐")])])]]"""
         languages = self._get_common().get("languages")
         val={}
@@ -73,6 +68,29 @@ class WebClient(http.Controller):
             for k1,v1 in val.get(k)["sub"].items():
                 lang.append((v1["id"],v1["name"],v1["sub"]))
             res.append((v["id"],v["name"],lang))
+
+        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/mongo/get_list/",type='http', auth="public",website=True)
+    def _get_list(self,**kw):
+        db = self._get_cursor()
+        content = db.products.find_one({"_id":kw.get("id").encode("utf-8")})
+        res=[]
+
+        category = self._get_common().get("category")
+        if category.has_key(kw.get("lang")):
+            key = category.get(kw.get("lang")).keys()
+            key.sort()
+
+            for i in key:
+                tc = content.get(i,{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{})
+                if tc.get("xmlmode"):#取套餐模板
+                    template = db.pagemodes.find_one({"_id":tc.get("xmlmode")})
+
+                else:
+                    continue
+                res.append([i,category.get(kw.get("lang")).get(i),[]])
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
