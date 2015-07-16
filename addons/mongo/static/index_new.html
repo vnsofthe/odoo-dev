@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>套餐维护</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="js/vnsoft.js"></script>
+    <script>
+        function get_html(id_name,parent_name,title,content){
+            return "<div class=\"panel panel-default\">"+
+                    "<div class=\"panel-heading\" role=\"tab\" id=\"heading"+id_name+"\">"+
+                    "<h4 class=\"panel-title\">"+
+                    "<a class=\"collapsed\" role=\"button\" data-toggle=\"collapse\" data-parent=\"#"+parent_name+"\" href=\"#collapse"+id_name+"\" aria-expanded=\"false\" aria-controls=\"collapse"+id_name+"\">"+
+                    title+
+                    "</a>"+
+                    "</h4>"+
+                    "</div>"+
+                    "<div id=\"collapse"+id_name+"\" class=\"panel-collapse collapse\" role=\"tabpanel\" aria-labelledby=\"heading"+id_name+"\">"+
+                    "<div class=\"panel-body\">"+
+                    content+
+                    "  </div>"+
+                    "</div>"+
+                    "</div>"
+        }
+        $.ajax(
+                {
+                    type: 'POST',
+                      url: "/web/api/mongo/get_menu/",
+                      data: {},
+                      success: function(data){
+                          //[["泰济生", "泰济生", [["EN", "英文", []], ["CN", "中文", [["tjs_quantaoxi", "全套系", [["yunmataocan", "孕妈套餐"]]]]]]]]
+                          $.each(data,function(k,v){
+                            $("#accordion").append(get_html(k,"accordion",v[0],""));
+                              if(v[2].length>0){
+                                  $.each(v[2],function(k1,v1){
+                                      if(v1[2].length==0){return;}
+                                      $("#collapse"+k+">.panel-body").append(get_html(k1+100,"collapse"+k,v1[1],""));
+
+                                      if(v1[2].length>0){
+
+                                          $.each(v1[2],function(k2,v2){
+
+                                              $("#collapse"+(k1+100)+">.panel-body").append(get_html(k2+200,"collapse"+(k1+100),v2[1],""));
+                                              if(v2[2].length>0){
+                                                  $("#collapse"+(k2+200)+">.panel-body").append("<ul class=\"list-group\"></ul>");
+                                                  $.each(v2[2],function(k3,v3){
+                                                      $("#collapse"+(k2+200)+">.panel-body>.list-group").append("<li class=\"list-group-item\">"+v3[1]+"</li>")
+                                                      //$("#collapse"+(k2+200)+">.panel-body").append(get_html((k3+300),"collapse"+(k2+100),v3[1],v3[1]));
+                                                  })
+                                              }
+                                          })
+                                      }
+                                  })
+                              }
+                          });
+
+                      }
+                }
+        );
+
+
+    </script>
+  </body>
+</html>
