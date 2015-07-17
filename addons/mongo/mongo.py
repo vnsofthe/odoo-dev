@@ -38,6 +38,7 @@ class WebClient(http.Controller):
         for k,v in template.items():
             if k=="disease":
                 return [[]]
+
     @http.route('/web/api/mongo/get_menu/', type='http', auth="public",website=True)
     def _get_menu(self,**kw):
         db = self._get_cursor()
@@ -75,22 +76,41 @@ class WebClient(http.Controller):
     @http.route("/web/api/mongo/get_list/",type='http', auth="public",website=True)
     def _get_list(self,**kw):
         db = self._get_cursor()
-        content = db.products.find_one({"_id":kw.get("id").encode("utf-8")})
+        content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
+        tc = content.get(kw.get("lang").encode("utf-8"),{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{}) #取指定套餐内容
+        template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
+        category = self._get_common().get("category")
         res=[]
 
-        category = self._get_common().get("category")
-        if category.has_key(kw.get("lang")):
-            key = category.get(kw.get("lang")).keys()
-            key.sort()
+        result={}
+        for k,v in content.get(kw.get("lang")).get("sets").get(kw.get("tc")).get("list").items():
+            if not result.has_key(v["category"]):
+                result[v["category"]]=[]
+            result[v["category"]].append([k,v["title"]])
 
-            for i in key:
-                tc = content.get(i,{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{})
-                if tc.get("xmlmode"):#取套餐模板
-                    template = db.pagemodes.find_one({"_id":tc.get("xmlmode")})
+        for i in template.get("region"):
+            res.append([i,category.get(kw.get("lang")).get(i),result[i]])
 
-                else:
-                    continue
-                res.append([i,category.get(kw.get("lang")).get(i),[]])
+        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/mongo/get_detail/",type='http', auth="public",website=True)
+    def _get_detail(self,**kw):
+        db = self._get_cursor()
+        content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
+        tc = content.get(kw.get("lang").encode("utf-8"),{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{}) #取指定套餐内容
+        template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
+        category = tc.get("list").get(kw.get("no").encode("utf-8")).get("category")
+        res=[]
+
+        #result={}
+        #for k,v in content.get(kw.get("lang")).get("sets").get(kw.get("tc")).get("list").items():
+        #    if not result.has_key(v["category"]):
+        #        result[v["category"]]=[]
+        #    result[v["category"]].append([k,v["title"]])
+
+        res = [template.get("itms").get(category),tc.get("list").get(kw.get("no").encode("utf-8"))]
+
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
