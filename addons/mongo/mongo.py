@@ -77,6 +77,7 @@ class WebClient(http.Controller):
     def _get_list(self,**kw):
         db = self._get_cursor()
         content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
+
         tc = content.get(kw.get("lang").encode("utf-8"),{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{}) #取指定套餐内容
         template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
         category = self._get_common().get("category")
@@ -111,6 +112,31 @@ class WebClient(http.Controller):
 
         res = [template.get("itms").get(category),tc.get("list").get(kw.get("no").encode("utf-8"))]
 
-
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/mongo/post_detail/",type="http",auth="public")
+    def _post_detail(self,**kw):
+        db = self._get_cursor()
+        content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
+
+        for k,v in kw.items():
+            if(k in ["lang","id","tc","no"]):continue
+            key=k.split("_")
+            if(len(key)==1):
+                if(key[0]=="pic"):
+                    mimetype=kw.get("pic").mimetype
+                    fs=base64.encodestring(kw.get("pic").stream.read())
+                    if not (mimetype and fs):continue
+                    if not isinstance(content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]],(dict,)):
+                        content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]={"base64":"","mimetype":""}
+                    content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]["base64"]=fs
+                    content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]["mimetype"]=mimetype
+                else:
+                    content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]=v
+            elif(len(key)==2):
+                content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]][key[1]]=v
+        db.products.update({"_id":kw.get("id").encode("utf-8")},content)
+
+        response = request.make_response("数据提交成功，<a href=\"javascript:history.back(-2);\">后退</a>")
         return response.make_conditional(request.httprequest)

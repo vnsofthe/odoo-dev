@@ -17,15 +17,18 @@
     <![endif]-->
   </head>
   <body>
+    <br>
+        <form enctype="multipart/form-data" action="/web/api/mongo/post_detail/" method="POST">
           <div class="container-fluid">
 
 
           </div>
-          <div>
-              <button id="cn_submit" type="button" class="btn btn-primary text-center">提交中文修改</button>
+          <br>
+          <div class="container">
+              <button type="submit" class="btn btn-primary">提交修改</button>
           </div>
           <br>
-
+        </form>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
@@ -51,15 +54,26 @@
                       success: function(data){
                           var t_data = data[0];
                           var d_data = data[1];
+                          $("form").attr("action","/web/api/mongo/post_detail/?lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")+"&no="+getUrlVar("no"));
                           $.each(t_data,function(k,v){
                               for(var p in v){
                                   if(p=="pic"){
-                                      $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label class=\"control-label\">"+v[p]+"</label></div>")
-                                      $(".container-fluid").append("<div class=\"col-lg-1 col-md-1\"><img id=\"display_pic\" width=\"100%\" height=\"100%\" src=\"\"/></div>")
-                                      $(".container-fluid").append("<div class=\"col-lg-10 col-md-9\"><input type=\"file\" name=\"pic\" id=\"pic\" /></div>")
+                                      $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label class=\"control-label\">"+v[p]+"</label></div>");
+                                      $(".container-fluid").append("<div class=\"col-lg-1 col-md-1\"><img id=\"display_pic\" width=\"100%\" height=\"100%\" src=\"\"/></div>");
+                                      $(".container-fluid").append("<div class=\"col-lg-10 col-md-9\"><input type=\"file\" name=\"pic\" id=\"pic\" /></div>");
+
+                                      $("#display_pic").prop("src", "data:" + d_data[p].mimetype + ";base64," + d_data[p].base64);
+                                  }else if(p=="sex"){
+                                      $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\"sex_B\" class=\"control-label\">适应性别</label></div>");
+                                      $(".container-fluid").append("<div class=\"col-lg-11 col-md-10 radio\">"+
+                                        "<label class=\"radio-inline\"><input type=\"radio\" name=\"sex\" id=\"sex_M\" value=\"M\">男</label>"+
+                                        "<label class=\"radio-inline\"><input type=\"radio\" name=\"sex\" id=\"sex_F\" value=\"F\">女</label>"+
+                                        "<label class=\"radio-inline\"><input type=\"radio\" name=\"sex\" id=\"sex_B\" value=\"B\">均可</label></div>");
+                                      $("#sex_"+d_data[p]).attr("checked",true);
                                   }else if(typeof v[p]=="string"){
                                       $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"\" class=\"control-label\">"+v[p]+"</label></div>")
-                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" id=\""+p+"\" value=\""+d_data[p]+"\"></div>")
+                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" name=\""+p+"\" id=\""+p+"\" ></div>");
+                                      $("#"+p).attr('value',d_data[p]);
                                   }else if(typeof v[p]=="object"){
                                       $.each(v[p],function(k1,v1){
                                           if(k1==0){
@@ -68,9 +82,9 @@
                                                 for(var p1 in v1){
                                                     $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"_"+p1+"\" class=\"control-label\">"+v1[p1]+"</label></div>")
                                                     if(p1.startsWith("description")){
-                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><textarea  class=\"form-control\" id=\""+p+"_"+p1+"\" rows=\"7\" value=\""+d_data[p][p1]+"\"></textarea></div>")
+                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><textarea  class=\"form-control\" name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\" rows=\"7\" >"+d_data[p][p1]+"</textarea></div>")
                                                     }else{
-                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" id=\""+p+"_"+p1+"\" value=\""+d_data[p][p1]+"\"></div>")
+                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\" value=\""+d_data[p][p1]+"\"></div>")
                                                     }
 
 
@@ -78,7 +92,7 @@
                                           }
                                       })
                                   }
-                                  console.log([p,v[p],(typeof v[p])]);
+
                               }
                           })
                       }
