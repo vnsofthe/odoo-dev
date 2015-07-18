@@ -1,0 +1,206 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>销售日报告</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="assets/css/amazeui.min.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="am-u-sm-centered am-u-md-centered am-u-lg-centered">
+    <div class="am-input-group am-form-field" >
+        请选择采血医院：
+        <select data-am-selected>
+
+        </select>
+    </div>
+    <div class="am-form-field am-u-sm-centered am-u-md-centered am-u-lg-centered">
+        <button id="btn_scanadd" class="am-btn am-btn-warning am-round am-disabled">扫码新增</button>
+        <button id="btn_inputadd" class="am-btn am-btn-warning am-round ">手工新增</button>
+        <button id="btn_submit" class="am-btn  am-btn-success am-round ">提交</button>
+    </div>
+    <div class="am-form-field">
+        <table id="lists" class="am-table am-table-striped am-table-hover">
+            <thead>
+                <tr>
+                    <td>样品编号</td>
+                    <td>孕妇姓名</td>
+                    <td> </td>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+
+ </div>
+
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+     var store = $.AMUI.store;
+  $(function() {
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+    wx.ready(function(){
+        $("#btn_scanadd").removeClass("am-disabled");
+    });
+    wx.error(function(res){
+        alert("配置扫码接口失败");
+    });
+	$.ajax({
+		  type: 'POST',
+		  url: "/web/weixin/jsapi/",
+		  data: {"url":location.href.split('#')[0],"code":$.getUrlVar('code')},
+		  success: function(data){
+              wx.config({
+                    debug: false,
+                    appId: data.appid,
+                    timestamp: data.timestamp,
+                    nonceStr: data.noncestr,
+                    signature: data.signature,
+                    jsApiList: ['scanQRCode']
+                });
+
+		  },
+          fail:function(res){
+              alert("配置JSAPI失败");
+          }
+		});
+
+    $.ajax({
+              type: 'POST',
+              url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid'),
+              data: {},
+              success: function(data){
+                  $.each(data,function(k,v){
+                    $("select").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
+                  })
+
+              },
+              fail:function(res){
+                  alert("获取采血医院信息失败。");
+              }
+            });
+
+    $("#lists tbody").on("click","tr",function(e){
+        if(e.target.className=="am-close"&& (e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") ){
+            $(e.currentTarget).remove();
+        }
+        //
+    });
+
+
+    $("#btn_scanadd").bind("click",function(e){
+        scan(set_lists,true);
+    });
+
+    $("#btn_inputadd").bind("click",function(e){
+        $("#lists tbody").append("<tr><td><input type=\"text\" value=\"RHWL\" style=\"width:100%\"></td><td><input type=\"text\" style=\"width:100%\"></td><td><button type=\"button\" class=\"am-close\">&times;</button></td></tr>");
+    });
+
+    $("#btn_submit").bind("click",function(e){
+
+        var lists=$("#lists tbody").children();
+
+        if(lists.length==0){
+            alert("样品个数不能为空。");
+            return false;
+        }
+        if($("select").val()==null){
+            alert("请选择采血医院。");
+            return false;
+        }
+        var demo={
+            parentID:$("select").val(),
+            datas:new Array()
+        }
+        $("#lists tbody tr").each(function(i){
+            var tmp={code:"",name:""};
+            $(this).children("td").each(function(i){
+
+                if(i==0){
+                    tmp.code=$(this).children()[0].value;
+                }else if(i==1){
+                    tmp.name=$(this).children()[0].value;
+                }
+            });
+
+            demo.datas[i]=tmp;
+        });
+        //alert(JSON.stringify(demos));
+        $.ajax({
+              type: 'POST',
+              url: "/web/api/rhwl/today/post/?openid="+$.getUrlVar('openid'),
+              data: {parentID:demo.parentID,datas:JSON.stringify(demo.datas)},
+              success: function(data){
+                  alert("单据提交成功。");
+                  location.reload();
+              },
+              fail:function(res){
+                  alert("单据提交失败。");
+              }
+            });
+    });
+
+    //设置样品扫码结果
+    function set_lists(t){
+
+        $("#lists tbody").append("<tr><td><input type=\"text\" value=\""+ t.split(",")[1]+"\" style=\"width:100%\"></td><td><input type=\"text\" style=\"width:100%\"><td><button type=\"button\" class=\"am-close\" >&times;</button></td></tr>");
+    }
+
+    function scan(f,is_continue){
+            wx.scanQRCode({
+                needResult:1,
+                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码
+                success: function (res) {
+                            var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                            if(result==undefined){
+
+                            }else{
+                                f(result);
+                            }
+                         },
+                complete:function(res){
+                    //scan(f,is_continue);
+                },
+                cancel:function(res){
+                    //
+                }
+            });
+    }
+    //init_lists();
+  });
+</script>
+</body>
+</html>

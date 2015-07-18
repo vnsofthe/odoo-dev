@@ -511,8 +511,55 @@ class WebClient(http.Controller):
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
+    @http.route("/web/api/rhwl/partner/get/",type="http",auth="public")
+    def _rhwl_partner_get(self,**kw):
+        res = self.check_userinfo(kw)
+        data = []
+        if res.get('statu')==200:
+            uid = res.get("userid")
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                obj = registry.get("res.partner")
+                ids = obj.search(cr,uid,[("sjjysj","!=",False)],context=self.CONTEXT)
+                for i in obj.browse(cr,uid,ids,context=self.CONTEXT):
+                    data.append((i.id,i.name))
+        else:
+            data = res
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
 
+    @http.route("/web/api/rhwl/today/post/",type="http",auth="none")
+    def app_deliver(self,**kw):
+        res = self.check_userinfo(kw)
+        data = {}
 
+        if res.get('statu')==200:
+            id = res.get("params").get("parentID")
+            detail = eval(res.get("params").get("datas"))
+            #[{ "code":"X140545" , "preCode":"X145655" },{ "code":"4X32871" , "preCode":"" },{ "code":"4Y45474" , "preCode":"" } ]}';
+            uid =  res.get("userid")
+            if id:
+                registry = RegistryManager.get(request.session.db)
+                with registry.cursor() as cr:
+                    obj = registry.get('sale.sampleone.days')
+                    dobj =registry.get("sale.sampleone.days.line")
+
+                    vals={
+                        "partner_id":id,
+                        "user_id":uid
+                    }
+                    mid = obj.create(cr,uid,vals,context=self.CONTEXT)
+                    did=[]
+                    for j in detail:
+                        did.append( dobj.create(cr,uid,{"parent_id":mid,"sample_no":j.get("code"),"name":j.get("name")},context=self.CONTEXT))
+                    obj.write(cr,uid,mid,{'detail_ids':[[6, False, did]]})
+                    data['statu'] = 200
+                    cr.commit()
+        else:
+            data = res
+
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
 """<?xml version='1.0' encoding='UTF-8'?>
 <Response service="RouteService">
 <Head>OK</Head><Body><RouteResponse mailno="106119552844">

@@ -10,6 +10,7 @@ from lxml import etree
 class rhwl_express(osv.osv):
     _inherit = "stock.picking.express"
     _rec_name = "num_express"
+    _order = "id desc"
     def _get_check_user(self, cr, uid, context=None):
         """判断用户是内部人员还是外部人员。"""
         if context is None:
@@ -298,6 +299,7 @@ class rhwl_express_in(osv.osv):
 
 class sale_express(osv.osv):
     _name = 'rhwl.sampleone.express'
+    _order = "id desc"
     def _get_url_express(self, cursor, user, ids, name, arg, context=None):
         res = {}
         default_url = "http://www.kuaidi100.com/chaxun?com=shunfeng&nu=%s"

@@ -636,6 +636,7 @@ class rhwl_reuse(osv.osv):
     _name = "sale.sampleone.reuse"
     _inherit = ['ir.needaction_mixin']
     _description = "样本信息重采血"
+    _order = "id desc"
 
     def _get_new_name(self, cr, uid, ids, prop, arg, context=None):
         if isinstance(ids, (list, tuple)) and not len(ids):
@@ -699,7 +700,7 @@ class rhwl_exception(osv.osv):
     _name = "sale.sampleone.exception"
     _inherit = ['ir.needaction_mixin']
     _description = "样本阳性跟踪"
-
+    _order = "id desc"
     _columns = {
         "name": fields.many2one("sale.sampleone", u"样本单号",ondelete="restrict"),
         "yfxm": fields.related('name', 'yfxm', type='char', string=u'孕妇姓名', readonly=1),
@@ -750,3 +751,24 @@ class rhwl_exception(osv.osv):
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+
+class rhwl_sale_days(osv.osv):
+    _name="sale.sampleone.days"
+
+    _columns={
+        "date":fields.date(u"日期",required=True),
+        "partner_id":fields.many2one("res.partner",u"采血医院",required=True),
+        "user_id":fields.many2one("res.users",u"销售员",required=True),
+        "line":fields.one2many("sale.sampleone.days.line","parent_id","Detail"),
+    }
+    _defaults={
+        "date":fields.date.today
+    }
+
+class rhwl_sale_days_line(osv.osv):
+    _name="sale.sampleone.days.line"
+    _columns={
+        "parent_id":fields.many2one("sale.sampleone.days","Parent"),
+        "sample_no":fields.char(u"样本编号",size=15),
+        "name":fields.char(u"孕妇姓名",size=20),
+    }
