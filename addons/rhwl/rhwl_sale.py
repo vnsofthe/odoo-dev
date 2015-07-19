@@ -755,11 +755,24 @@ class rhwl_exception(osv.osv):
 class rhwl_sale_days(osv.osv):
     _name="sale.sampleone.days"
 
+    def _get_counts(self, cr, uid, ids, prop, arg, context=None):
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return {}
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        obj = self.pool.get("sale.sampleone.days.line")
+        res = []
+        for i in ids:
+            c = obj.search_count(cr, uid, [('parent_id', '=', i)])
+            res.append((i,c))
+        return dict(res)
+
     _columns={
         "date":fields.date(u"日期",required=True),
         "partner_id":fields.many2one("res.partner",u"采血医院",required=True),
         "user_id":fields.many2one("res.users",u"销售员",required=True),
         "line":fields.one2many("sale.sampleone.days.line","parent_id","Detail"),
+        "detail_count":fields.function(_get_counts,type="integer",string=u"样本数量")
     }
     _defaults={
         "date":fields.date.today

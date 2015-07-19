@@ -519,5 +519,81 @@
             <field name="default" eval="False"/>
             <field name="description">样品确认</field>
         </record>
+
+        <record model="ir.ui.view" id="sale_sample_days_tree">
+            <field name="name">sale.sample.days.tree</field>
+            <field name="model">sale.sampleone.days</field>
+            <field name="arch" type="xml">
+                <tree string="Sample Days Report">
+                    <field name="date"/>
+                    <field name="partner_id"/>
+                    <field name="user_id"/>
+                    <field name="detail_count"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="sale_sample_reuse_form">
+            <field name="name">sale.sample.days.form</field>
+            <field name="model">sale.sampleone.days</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample">
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="date"/>
+                                <field name="partner_id"/>
+
+                            </group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="detail_count"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="样本明细">
+                                <field name="line">
+                                    <tree>
+                                        <field name="sample_no"/>
+                                         <field name="name"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="sale_sample_days_search">
+            <field name="name">sale.sample.days.search</field>
+            <field name="model">sale.sampleone.days</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="partner_id" />
+                    <seperaotr/>
+                    <group expand="0" string="分组">
+                        <filter string="销售人员" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="采血医院" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_sale_sample_days" model="ir.actions.act_window">
+            <field name="name">销售每日报告</field>
+            <field name="res_model">sale.sampleone.days</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
     </data>
 </openerp>

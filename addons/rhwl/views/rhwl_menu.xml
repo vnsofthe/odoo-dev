@@ -13,6 +13,7 @@
         <menuitem id="menu_sale_sample_exception" parent="menu_rhwl_sample_one" name="Excep Information" sequence="30"
                   action='action_sale_sample_exception' groups="base.group_sale_salesman,rhwl_base_sample"/>
         <menuitem id="menu_rhwl_sample_express" action='action_rhwl_sampleone_express' parent="menu_rhwl_sample_one" name="检测报告快递" sequence="50"  groups="rhwl_manager_sample"/>
+        <menuitem id="menu_sale_sample_days" action='action_sale_sample_days' parent="menu_rhwl_sample_one" name="销售每日报告" sequence="60"  groups="rhwl_manager_sample"/>
 
         <menuitem id="menu_rhwl_sample_two" parent="menu_rhwl_sample_root" name="数据接收" sequence="30"  />
 
