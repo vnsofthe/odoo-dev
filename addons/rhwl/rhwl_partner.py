@@ -138,9 +138,11 @@ class rhwl_partner(osv.osv):
                 partner = self.pool.get("res.company").browse(cr, uid, company, context=context)
 
                 if i.customer and i.is_company and i.sjjysj:
+                    stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
+                    stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
                     val = {
                         "name": i.name,
-                        "code": i.name,  # vals.get("partner_unid"),
+                        "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),
                         "partner_id": i.id,
                         "company_id": i.company_id.id,
                         "buy_to_resupply": False,

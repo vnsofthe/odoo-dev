@@ -608,7 +608,7 @@ class rhwl_picking(osv.osv):
                                 w1.write(sheet_row,6,vip_bl.genes_id.risk_text,style)
                                 sheet_row += 1
                                 sheet_count +=1
-            delete_list[w1.name] = sheet_count
+            delete_list[w1.name] = [sheet_count,0]
 
 
             #统计质检不合格数据
@@ -638,6 +638,7 @@ class rhwl_picking(osv.osv):
                     w1.write(sheet_row,3,u"女" if s.sex=="F" else u"男",style6)
                     w1.write(sheet_row,4,s.identity,style)
                     sheet_row += 1
+                    delete_list[w1.name][1] = delete_list[w1.name][1]+1
 
 
 
@@ -656,7 +657,12 @@ class rhwl_picking(osv.osv):
 
         for s in w._Workbook__worksheets:
             if not delete_list.get(s.name):continue
-            for r in range(1,delete_list.get(s.name)):
+            for r in range(1,delete_list.get(s.name)[0]+1):
+                s.write(r-1,4,"")
+                s.write(r-1,5,"")
+                s.write(r-1,6,"")
+                s.write(r-1,7,"")
+            for r in range(delete_list.get(s.name)[0]+3,delete_list.get(s.name)[0]+3+delete_list.get(s.name)[1]+1):
                 s.write(r-1,4,"")
                 s.write(r-1,5,"")
                 s.write(r-1,6,"")
