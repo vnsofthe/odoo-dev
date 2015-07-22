@@ -197,15 +197,16 @@ class gene(http.Controller):
             if kw.get("etx",""):
                 val["except_note"]=kw.get("etx")
 
-            obj.write(cr,request.uid,id,val,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
-            o=obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
-            if o.state=="draft":
-                if val.has_key("except_note"):
-                    obj.action_state_except(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
-                elif kw.get("is_confirm")=="true":
-                    obj.action_state_confirm(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+            obj.write(cr,request.uid,id,val,context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
+            if val.has_key("except_note") or kw.get("is_confirm")=="true":
+                o=obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+                if o.state=="draft":
+                    if val.has_key("except_note"):
+                        obj.action_state_except(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+                    elif kw.get("is_confirm")=="true":
+                        obj.action_state_confirm(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
 
-            cr.commit()
+
             return "OK"
 
     @http.route("/web/rhwl_gene/get/",type="http",auth="user")

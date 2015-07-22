@@ -229,20 +229,25 @@ class rhwl_gene(osv.osv):
             #    self.pool.get("rhwl.easy.genes.log").write(cr,uid,log_id,{"data":"expimg,1"},context=context)
             val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
             val["export_img"]=False
-            obj = self.browse(cr,SUPERUSER_ID,id,context=context)
+            if context.has_key("name"):
+                obj_name = context["name"]
+            else:
+                obj = self.browse(cr,SUPERUSER_ID,id,context=context)
+                obj_name = obj.name
+
             vals={
-                "name":obj.name,
-                "datas_fname":obj.name+".jpg",
-                "description":obj.name+" information to IMG",
+                "name":obj_name,
+                "datas_fname":obj_name+".jpg",
+                "description":obj_name+" information to IMG",
                 "res_model":"rhwl.easy.genes",
-                "res_id":obj.id,
+                "res_id":id,
                 "create_date":fields.datetime.now,
                 "create_uid":SUPERUSER_ID,
                 "datas":val.get("img"),
             }
             atta_obj = self.pool.get('ir.attachment')
-            if obj.img_atta:
-                atta_obj.unlink(cr,SUPERUSER_ID,obj.img_atta.id)
+            #if obj.img_atta:
+            #    atta_obj.unlink(cr,SUPERUSER_ID,obj.img_atta.id)
             atta_id = atta_obj.create(cr,SUPERUSER_ID,vals)
             val["img_atta"]=atta_id
             val.pop("img")
