@@ -54,6 +54,7 @@
                       success: function(data){
                           var t_data = data[0];
                           var d_data = data[1];
+
                           $("form").attr("action","/web/api/mongo/post_detail/?lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")+"&no="+getUrlVar("no"));
                           $.each(t_data,function(k,v){
                               for(var p in v){

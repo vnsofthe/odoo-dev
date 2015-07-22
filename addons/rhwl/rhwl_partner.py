@@ -155,7 +155,7 @@ class rhwl_partner(osv.osv):
                     val["default_resupply_wh_id"] = default_id[0]
                     val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
                     wh = stock_warehouse.search(cr, SUPERUSER_ID,
-                                                [('code', '=', i.name), ('partner_id', '=', i.id)],
+                                                [('partner_id', '=', i.id)],
                                                 context=context)
                     if not wh:
                         id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)

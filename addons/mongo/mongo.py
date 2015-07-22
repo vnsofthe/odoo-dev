@@ -79,17 +79,18 @@ class WebClient(http.Controller):
         content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
 
         tc = content.get(kw.get("lang").encode("utf-8"),{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{}) #取指定套餐内容
-        template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
+        #template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
         category = self._get_common().get("category")
         res=[]
 
         result={}
-        for k,v in content.get(kw.get("lang")).get("sets").get(kw.get("tc")).get("list").items():
-            if not result.has_key(v["category"]):
-                result[v["category"]]=[]
-            result[v["category"]].append([k,v["title"]])
+        for k,v in tc.get("list").items():
+            pd = db.prodata.find_one({"_id":v})
+            if not result.has_key(pd["category"]):
+                result[pd["category"]]=[]
+            result[pd["category"]].append([k,pd.get(kw.get("lang"))["title"]])
 
-        for i in template.get("region"):
+        for i in tc.get("region"):
             res.append([i,category.get(kw.get("lang")).get(i),result[i]])
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
@@ -100,8 +101,11 @@ class WebClient(http.Controller):
         db = self._get_cursor()
         content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
         tc = content.get(kw.get("lang").encode("utf-8"),{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{}) #取指定套餐内容
-        template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
-        category = tc.get("list").get(kw.get("no").encode("utf-8")).get("category")
+        no = tc.get("list").get(kw.get("no"))
+        pd = db.prodata.find_one({"_id":no})
+
+        template = db.pagemodes.find_one({"_id":pd.get("pagemode")}) # 取套餐模板
+
         res=[]
 
         #result={}
@@ -109,8 +113,9 @@ class WebClient(http.Controller):
         #    if not result.has_key(v["category"]):
         #        result[v["category"]]=[]
         #    result[v["category"]].append([k,v["title"]])
-
-        res = [template.get("itms").get(category),tc.get("list").get(kw.get("no").encode("utf-8"))]
+        data = pd.get(kw.get("lang").encode("utf-8"))
+        data["sex"] = pd.get("sex")
+        res = [template.get("itms"),data]
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
@@ -118,7 +123,10 @@ class WebClient(http.Controller):
     @http.route("/web/api/mongo/post_detail/",type="http",auth="public")
     def _post_detail(self,**kw):
         db = self._get_cursor()
-        content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
+        contents = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
+        no = contents.get(kw.get("lang")).get("sets").get(kw.get("tc")).get("list").get(kw.get("no"))
+
+        pd = db.prodata.find_one({"_id":no})
 
         for k,v in kw.items():
             if(k in ["lang","id","tc","no"]):continue
@@ -128,15 +136,17 @@ class WebClient(http.Controller):
                     mimetype=kw.get("pic").mimetype
                     fs=base64.encodestring(kw.get("pic").stream.read())
                     if not (mimetype and fs):continue
-                    if not isinstance(content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]],(dict,)):
-                        content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]={"base64":"","mimetype":""}
-                    content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]["base64"]=fs
-                    content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]["mimetype"]=mimetype
+                    if not isinstance(pd[kw.get("lang")][key[0]],(dict,)):
+                        pd[kw.get("lang")][key[0]]={"base64":"","mimetype":""}
+                    pd[kw.get("lang")][key[0]]["base64"]=fs
+                    pd[kw.get("lang")][key[0]]["mimetype"]=mimetype
+                elif(key[0]=="sex"):
+                    pd["sex"]=kw.get("sex")
                 else:
-                    content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]]=v
+                    pd[kw.get("lang")][key[0]]=v
             elif(len(key)==2):
-                content[kw.get("lang")]["sets"][kw.get("tc")]["list"][kw.get("no")][key[0]][key[1]]=v
-        db.products.update({"_id":kw.get("id").encode("utf-8")},content)
+                pd[kw.get("lang")][key[0]][key[1]]=v
+        db.prodata.update({"_id":no},pd)
 
         response = request.make_response("数据提交成功，<a href=\"javascript:history.back(-2);\">后退</a>")
         return response.make_conditional(request.httprequest)
