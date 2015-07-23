@@ -240,7 +240,7 @@ class rhwl_gene(osv.osv):
                 "datas_fname":obj_name+".jpg",
                 "description":obj_name+" information to IMG",
                 "res_model":"rhwl.easy.genes",
-                "res_id":id,
+                "res_id":id[0],
                 "create_date":fields.datetime.now,
                 "create_uid":SUPERUSER_ID,
                 "datas":val.get("img"),
@@ -789,7 +789,7 @@ class rhwl_gene_batch(osv.osv):
 
             res[i]["date"] = self.str2date(gene_obj.date)
             res[i]["qty"] = len(gene_id)
-
+            res[i]["imgs"] = genes_table.search_count(cr,uid,[("batch_id","=",i),("img_atta","!=",False)],context=context)
             log_id = log_table.search(cr,uid,[("genes_id","in",gene_id),("data","=","DNA")],order="date desc",context=context)
             if log_id:
                 log_id = log_id[0]
@@ -854,7 +854,8 @@ class rhwl_gene_batch(osv.osv):
         "library_result":fields.function(_get_genes1,type="integer",string=u"实验进度",multi="get_genes1"),
         "send_date":fields.function(_get_genes1,type="date",string=u"预计发货日期",multi="get_genes1"),
         "real_date":fields.function(_get_genes1,type="date",string=u"实际发货日期",multi="get_genes1"),
-        "all_days":fields.function(_get_genes1,type="integer",string=u"送货周期",multi="get_genes1")
+        "all_days":fields.function(_get_genes1,type="integer",string=u"送货周期",multi="get_genes1"),
+        "imgs":fields.function(_get_genes1,type="integer",string=u"已拍照数",multi="get_genes1"),
 
     }
 

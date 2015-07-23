@@ -58,6 +58,8 @@ class export_excel(osv.osv_memory):
             return self.action_excel_apply(cr,uid,ids,context=context)
         elif context.get('func_name','')=="report4":
             return self.action_excel_report4(cr,uid,ids,context=context)
+        elif context.get('func_name','')=="report5":
+            return self.action_excel_report5(cr,uid,ids,context=context)
 
     def action_excel_bx(self,cr,uid,ids,context=None):
         if not context.get("active_ids"):return
@@ -334,6 +336,48 @@ class export_excel(osv.osv_memory):
             'views': [(False, 'form')],
             'target': 'new',
             'name':u"导出对帐单Excel"
+        }
+
+    def action_excel_report5(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+
+        excel_head=[u"样本编码",u"T21",u"T18",u"T13"]
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+        for i in range(0,len(excel_head)):
+            ws.write(0,i,excel_head[i])
+
+        rows=1
+        for i in self.pool.get("sale.sampleone").browse(cr,uid,ids,context=context):
+            ws.write(rows,0,i.name)
+            ws.write(rows,1,i.lib_t21)
+            ws.write(rows,2,i.lib_t18)
+            ws.write(rows,3,i.lib_t13)
+
+            rows+=1
+
+        w.save(xlsname)
+        f=open(xlsname,'rb')
+
+        id = self.create(cr,uid,{"state":"done","file":base64.encodestring(f.read()),"name":u"样本检测结果.xls"})
+        f.close()
+        os.remove(xlsname)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.sample.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出实验结果"
         }
 
     def get_excel_style(self,font_size=10,horz=xlwt.Alignment.HORZ_LEFT,border=xlwt.Borders.NO_LINE,blod=False):

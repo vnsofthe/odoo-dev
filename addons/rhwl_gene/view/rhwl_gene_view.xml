@@ -136,6 +136,10 @@
 
                     <separator/>
                     <filter string="高风险名单" name="type_risk_high" domain="[('is_risk','=',True)]"/>
+
+                    <separator/>
+                    <filter string="未拍照" name="type_imgs" domain="[('img_atta','=',False)]"/>
+
                     <group expand="0" string="分组">
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                         <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>

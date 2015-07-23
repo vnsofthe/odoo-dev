@@ -9,6 +9,7 @@
                     <field name="name"/>
                     <field name="date"/>
                     <field name="qty"/>
+                    <field name="imgs"/>
                     <field name="post_date"/>
                     <field name="lib_date"/>
                     <field name="express_days"/>
@@ -46,6 +47,7 @@
                                 <field name="name"/>
                                 <field name="date"/>
                                 <field name="qty"/>
+                                <field name="imgs"/>
                                 <field name="post_date"/>
                                 <field name="lib_date"/>
                                 <field name="express_days" icon="STOCK_NO"/>
