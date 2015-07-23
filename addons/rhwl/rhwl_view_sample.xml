@@ -121,6 +121,7 @@
                                 <field name="urgency"/>
                                 <field name="has_invoice"/>
                                 <field name="has_sms"/>
+                                <field name="is_export"/>
                             </group>
                             <group>
                                 <field name="receiv_user"/>
@@ -406,6 +407,8 @@
                     <separator/>
                     <filter string="已完成检测" name="type_done" domain="[('state','=','checkok')]"/>
                     <filter string="未完成检测" name="type_doing" domain="[('state','!=','checkok')]"/>
+                    <separator/>
+                    <filter string="未导出结果" name="type_export" domain="[('is_export','=',False)]"/>
                     <group expand="0" string="分组">
                         <filter string="收样人员" icon="terp-partner" domain="[]" context="{'group_by':'receiv_user'}"/>
                         <filter string="样品区域(省)" icon="terp-partner" domain="[]" context="{'group_by':'state_id'}"/>

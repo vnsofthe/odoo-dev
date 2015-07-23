@@ -361,7 +361,7 @@ class export_excel(osv.osv_memory):
             ws.write(rows,3,i.lib_t13)
 
             rows+=1
-
+        self.pool.get("sale.sampleone").write(cr,uid,ids,{"is_export":True},context=context)
         w.save(xlsname)
         f=open(xlsname,'rb')
 

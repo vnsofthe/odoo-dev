@@ -137,7 +137,8 @@ class rhwl_sample_info(osv.osv):
         "lib_t21":fields.float("T21",digits=(12,8),readonly=True),
         "lib_note":fields.text("Note",readonly=True),
         "has_invoice":fields.boolean(u"是否开发票"),
-        "has_sms":fields.boolean(u"短信已通知",readonly=True)
+        "has_sms":fields.boolean(u"短信已通知",readonly=True),
+        "is_export":fields.boolean(u"结果是否导出",readonly=True)
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -154,7 +155,8 @@ class rhwl_sample_info(osv.osv):
         "yfissgyr": lambda obj, cr, uid, context: "0",
         "urgency":lambda obj,cr,uid,context:"0",
         "has_invoice":False,
-        "has_sms":False
+        "has_sms":False,
+        "is_export":False
 
     }
     _sql_constraints = [

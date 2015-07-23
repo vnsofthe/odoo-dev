@@ -44,7 +44,7 @@ def image_resize(f):
         targetImg = img.resize((width,height),Image.ANTIALIAS)
 
     os.remove(f)
-    new=f.split(".")[0]+".jpg"
+    new=".".join(f.split(".")[:-1])+".jpg"
     if f.split(".")[-1]=='gif':targetImg =targetImg.convert("RGB")
     targetImg.save(new, "jpeg")
     return new
@@ -54,15 +54,15 @@ def dict2file(pd,pm,lang):
     opt = etree.Element("opt")
     etree.SubElement(opt, "id").text=pd.get("_id")
     lang_element = etree.SubElement(opt, lang)
-
-    check_dir(pd["category"]+"/"+lang) #判断目录是否存在
+    check_dir(os.path.join(sys.argv[5],pd["category"]))
+    l_path = check_dir(os.path.join(os.path.join(sys.argv[5],pd["category"]),lang)) #判断目录是否存在
 
     for l in pm:
         for k,v in l.items():
             if k=="sex":
                 etree.SubElement(lang_element,k).text=str2trans(pd[k])
             elif k=="pic":
-                pic_path=pd["category"]+"/"+lang+"/pic"
+                pic_path= os.path.join(l_path,"pic")
                 check_dir(pic_path)
                 if  pd.get(lang).get("pic").get("base64"):
                     imgname= pic_path+"/section_"+pd.get("_id").replace("'","").replace("`","").replace(" ","")+"."+(pd.get(lang).get("pic").get("mimetype").split("/")[1])
@@ -81,7 +81,7 @@ def dict2file(pd,pm,lang):
                     if e.has_key("node"):continue
                     
                     etree.SubElement(ele,e.keys()[0]).text = str2trans(pd[lang][k].get(e.keys()[0],""))
-    xml_path=pd["category"]+"/"+lang+"/section"
+    xml_path= os.path.join(l_path,"section")
     check_dir(xml_path)
     f=open(xml_path+"/section_"+pd.get("_id").replace("'","").replace("`","").replace(" ","")+".xml","w")
     f.write(etree.tostring(opt, encoding="utf-8", method="xml"))
@@ -94,8 +94,8 @@ def check_dir(path_name):
     return path_name
 
 if __name__=="__main__":
-    if(len(sys.argv)!=5):
-        print "参数不正确。\n格式：命令 客户 语言 套系 套餐"
+    if(len(sys.argv)!=6):
+        print "参数不正确。\n格式：命令 客户 语言 套系 套餐 输出目录"
         sys.exit(-1)
 
     conn = pymongo.Connection("10.0.0.8",27021)
