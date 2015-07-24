@@ -71,7 +71,7 @@ class rhwl_import(osv.osv_memory):
                 idt=sh.cell_value(i-1,4)
                 val={
                     "date":date_col,
-                    "cust_name":sh.cell_value(i-1,1).replace(".","·").replace("▪","·"),
+                    "cust_name":sh.cell_value(i-1,1).encode("utf-8").replace(".","·").replace("▪","·"),
                     "sex": 'T' if sh.cell_value(i-1,2)==u"男" else 'F',
                     "name":sh.cell_value(i-1,3),
                     "identity":idt,

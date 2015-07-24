@@ -62,8 +62,10 @@
                                       $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label class=\"control-label\">"+v[p]+"</label></div>");
                                       $(".container-fluid").append("<div class=\"col-lg-1 col-md-1\"><img id=\"display_pic\" width=\"100%\" height=\"100%\" src=\"\"/></div>");
                                       $(".container-fluid").append("<div class=\"col-lg-10 col-md-9\"><input type=\"file\" name=\"pic\" id=\"pic\" /></div>");
+                                      if(d_data[p]!=undefined&&d_data[p].mimetype!=undefined&&d_data[p].base64!=undefined){
+                                          $("#display_pic").prop("src", "data:" + d_data[p].mimetype + ";base64," + d_data[p].base64);
+                                      }
 
-                                      $("#display_pic").prop("src", "data:" + d_data[p].mimetype + ";base64," + d_data[p].base64);
                                   }else if(p=="sex"){
                                       $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\"sex_B\" class=\"control-label\">适应性别</label></div>");
                                       $(".container-fluid").append("<div class=\"col-lg-11 col-md-10 radio\">"+
@@ -74,18 +76,24 @@
                                   }else if(typeof v[p]=="string"){
                                       $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"\" class=\"control-label\">"+v[p]+"</label></div>")
                                         $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" name=\""+p+"\" id=\""+p+"\" ></div>");
-                                      $("#"+p).attr('value',d_data[p]);
+                                      if(d_data[p]!=undefined){
+                                          $("#"+p).attr('value',d_data[p]);
+                                      }
                                   }else if(typeof v[p]=="object"){
                                       $.each(v[p],function(k1,v1){
                                           if(k1==0){
                                               $(".container-fluid").append("<div class=\"col-lg-12 col-md-12\"><h2>"+v[p][0]["node"]+"</h2></div>")
                                           }else{
                                                 for(var p1 in v1){
-                                                    $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"_"+p1+"\" class=\"control-label\">"+v1[p1]+"</label></div>")
+                                                    $(".container-fluid").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"_"+p1+"\" class=\"control-label\">"+v1[p1]+"</label></div>");
+                                                    var vv="";
+                                                    if(d_data[p]!=undefined&&d_data[p][p1]!=undefined){
+                                                        vv=d_data[p][p1];
+                                                    }
                                                     if(p1.startsWith("description")){
-                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><textarea  class=\"form-control\" name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\" rows=\"7\" >"+d_data[p][p1]+"</textarea></div>")
+                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><textarea  class=\"form-control\" name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\" rows=\"7\" >"+vv+"</textarea></div>")
                                                     }else{
-                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\" value=\""+d_data[p][p1]+"\"></div>")
+                                                        $(".container-fluid").append("<div class=\"col-lg-11 col-md-10\"><input type=\"text\" class=\"form-control\" name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\" value=\""+vv+"\"></div>")
                                                     }
 
 
