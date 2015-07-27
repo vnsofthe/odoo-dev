@@ -45,7 +45,9 @@
                       data: {},
                       success: function(data){
                             var tabActive="";
-                          $.each(data,function(k,v){
+                          console.log(data);
+                          document.title = data[0];
+                          $.each(data[1],function(k,v){
                               if(k==0){tabActive="#"+v[0];}
 
                                 $(".nav-tabs").append("<li role=\"presentation\" "+(k==0?"class=\"active\"":"")+"><a href=\"#"+v[0]+"\" aria-controls=\""+v[0]+"\" role=\"tab\" data-toggle=\"tab\">"+v[1]+"</a></li>");
@@ -54,15 +56,15 @@
                                   $.each(v[2],function(k1,v1){
                                       $("#"+v[0]+" table tbody").append("<tr><td>"+ v1[0]+"</td><td>"+ v1[1]+"</td><td><button type=\"button\" class=\"btn btn-link\">编辑</button></td></tr>");
                                   });
-                                  $(".btn-link").on("click",function(e){
-                                      var active_tab=$(".nav-tabs .active a");
-                                      document.cookie = "tabActive="+active_tab[0].hash;
-
-                                        var t= e.target.parentElement.parentElement.childNodes[0].innerText;
-                                      location.href="edit-new.html?no="+ t +"&lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")
-                                    });
                               }
                           });
+                          $(".btn-link").on("click",function(e){
+                              var active_tab=$(".nav-tabs .active a");
+                              document.cookie = "tabActive="+active_tab[0].hash;
+
+                                var t= e.target.parentElement.parentElement.childNodes[0].innerText;
+                              location.href="edit-new.html?no="+ t +"&lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")
+                            });
                           //获取cookie字符串
                             var strCookie=document.cookie;
                             //将多cookie切割为多个名/值对

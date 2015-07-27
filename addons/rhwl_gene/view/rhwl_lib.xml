@@ -10,9 +10,13 @@
                     <field name="name" invisible="1"/>
                     <group states="draft">
                         <group>
+                            <field name="action"/>
                             <field name="file1_bin"/>
                             <field name="file2_bin"/>
-                            <field name="sec_confirm"/>
+                            <field name="sec_confirm" attrs="{'invisible':[('action','=','1')]}"/>
+                        </group>
+                        <group>
+
                         </group>
                     </group>
                     <group states="done">

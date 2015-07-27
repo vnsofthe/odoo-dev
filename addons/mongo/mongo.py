@@ -93,7 +93,7 @@ class WebClient(http.Controller):
         for i in tc.get("region"):
             res.append([i,category.get(kw.get("lang")).get(i),result[i]])
 
-        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        response = request.make_response(json.dumps([tc["name"],res],ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
     @http.route("/web/api/mongo/get_detail/",type='http', auth="public",website=True)

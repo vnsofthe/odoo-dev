@@ -24,22 +24,23 @@ class rhwl_lib(osv.osv_memory):
         "file_data":fields.binary(string=u"合并后文件"),
         "name":fields.char("Name"),
         "state":fields.selection([("draft","draft"),("done","done")],string="State"),
+        "action":fields.selection([("1",u"片段分析"),("2",u"Sanger测序数据合并")],u"处理类型",required=True)
     }
     _defaults={
         "state":"draft",
         "name":u"位点合并结果.xls",
-        "sec_confirm":False
-
+        "sec_confirm":False,
+        "action":"1"
     }
 
     def action_merge(self,cr,uid,id,context=None):
         if context is None:
             context = {}
         this = self.browse(cr, uid, id,context=context)
-        #if not (this.file1_dir and this.file2_dir):
-        #    return self.action_merge_1(cr,uid,id,context=context)
-        #else:
-        return self.action_merge_2(cr,uid,id,context=context)
+        if this.action=="2":
+            return self.action_merge_1(cr,uid,id,context=context)
+        else:
+            return self.action_merge_2(cr,uid,id,context=context)
 
     #处理两个excel结果的合并
     def action_merge_1(self,cr,uid,id,context=None):
@@ -138,10 +139,10 @@ class rhwl_lib(osv.osv_memory):
         xlsname =  fileobj.name
         fileobj.close()
         PDIR="/data/odoo/library"
-        if not os.path.exists(os.path.join(PDIR,this.file1_dir)):
-            raise osv.except_osv("Error","文件1所指定的文件夹不存在。")
-        if not os.path.exists(os.path.join(PDIR,this.file2_dir)):
-            raise osv.except_osv("Error","文件2所指定的文件夹不存在。")
+        #if not os.path.exists(os.path.join(PDIR,this.file1_dir)):
+        #    raise osv.except_osv("Error","文件1所指定的文件夹不存在。")
+        #if not os.path.exists(os.path.join(PDIR,this.file2_dir)):
+        #    raise osv.except_osv("Error","文件2所指定的文件夹不存在。")
 
         f1=open(os.path.join(PDIR,xlsname+"1.txt"),'w')
         f2=open(os.path.join(PDIR,xlsname+"2.txt"),'w')

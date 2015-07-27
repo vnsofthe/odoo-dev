@@ -195,17 +195,19 @@ class rhwl_partner(osv.osv):
             return id
         partner = self.pool.get("res.company").browse(cr, uid, partner, context=context)
 
-
+        stock_warehouse = self.pool.get("stock.warehouse")
         if vals.get("customer") and vals.get("is_company") and vals.get("sjjysj"):
+            stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
+            stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
             val = {
                 "name": vals.get("name"),
-                "code": vals.get("name"),  # vals.get("partner_unid"),
+                "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),
                 "partner_id": id,
                 "company_id": vals.get("company_id"),
                 "buy_to_resupply": False,
                 "default_resupply_wh_id": 0,
               }
-            stock_warehouse = self.pool.get("stock.warehouse")
+
 
             default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', partner.partner_id.id)],
                                                 context=context)
@@ -214,7 +216,7 @@ class rhwl_partner(osv.osv):
             val["default_resupply_wh_id"] = default_id[0]
             val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
             wh = stock_warehouse.search(cr, SUPERUSER_ID,
-                                        [('code', '=', vals.get("name")), ('partner_id', '=', id)],
+                                        [('partner_id', '=', id)],
                                         context=context)
             if not wh:
                 id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
