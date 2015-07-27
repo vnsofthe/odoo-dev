@@ -29,7 +29,7 @@
                     <field name="real_date"/>
                     <field name="all_days"/>
                     <button name="action_button"  string="优秀" type="object" icon="STOCK_YES" attrs="{'invisible':[('all_days','&gt;',17)]}"/>
-                    <button name="action_button"  string="良好" type="object" icon="STOCK_YES" attrs="{'invisible':['|',('all_days','&lt;',17),('all_days','&gt;',24)]}"/>
+                    <button name="action_button"  string="良好" type="object" icon="STOCK_YES" attrs="{'invisible':['|',('all_days','&lt;',18),('all_days','&gt;',24)]}"/>
                     <button name="action_button"  string="合格" type="object" icon="terp-face-plain" attrs="{'invisible':['|',('all_days','&lt;',25),('all_days','&gt;',30)]}"/>
                     <button name="action_button"  string="不合格" type="object" icon="STOCK_NO" attrs="{'invisible':[('all_days','&lt;=',30)]}"/>
                 </tree>

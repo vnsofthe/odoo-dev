@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_genes_account_view_tree">
+            <field name="name">rhwl.genes.account.view.tree</field>
+            <field name="model">rhwl.genes.account</field>
+            <field name="arch" type="xml">
+                <tree string="易感对帐" >
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="count"/>
+                    <field name="start_dna"/>
+                    <field name="end_dna"/>
+                    <field name="except_count"/>
+                    <field name="real_count"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_account_view_form">
+            <field name="name">rhwl.genes.account.view.form</field>
+            <field name="model">rhwl.genes.account</field>
+            <field name="arch" type="xml">
+                <form string="易感对帐">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True" />
+                    </header>
+                    <sheet>
+                        <group col="9">
+                            <group colspan="3">
+                                <field name="start_date"/>
+                                <field name="start_dna"/>
+                                <field name="real_count"/>
+                            </group>
+                            <group  colspan="3">
+                                <field name="end_date"/>
+                                <field name="end_dna"/>
+                            </group>
+                            <group  colspan="3">
+                                <field name="count"/>
+                                <field name="except_count"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_account_search">
+            <field name="name">rhwl.genes.account.search</field>
+            <field name="model">rhwl.genes.account</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="start_date"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_genes_account" model="ir.actions.act_window">
+            <field name="name">易感对帐</field>
+            <field name="res_model">rhwl.genes.account</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_account_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_genes_account" parent="menu_rhwl_easy_genes" name="易感财务对帐" sequence="50"
+                  action='action_genes_account'  groups="rhwl_base_gene"/>
+    </data>
+</openerp>
