@@ -77,6 +77,6 @@
         </record>
 
         <menuitem id="menu_genes_account" parent="menu_rhwl_easy_genes" name="易感财务对帐" sequence="50"
-                  action='action_genes_account'  groups="rhwl_base_gene"/>
+                  action='action_genes_account'  groups="rhwl_base_gene,account.group_account_user"/>
     </data>
 </openerp>
