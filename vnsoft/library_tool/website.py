@@ -4,6 +4,8 @@ import SocketServer
 import cgi 
 import webbrowser
 import os,shutil
+import xlrd
+import xlwt
 
 PORT = 8800 
  
@@ -11,8 +13,15 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
  
     def do_GET(self): 
         SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self) 
- 
-    def do_POST(self): 
+
+    def do_POST(self):
+        page = self.path.split("?")[-1].split("=")[-1]
+        if page=="1":
+            self.do_page1()
+        elif page=="2":
+            self.do_page2()
+
+    def do_page1(self):
         form = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
@@ -20,6 +29,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                      'CONTENT_TYPE':self.headers['Content-Type'],
                      })
         d={}
+
         for i in form:
             d[i]=form.getvalue(i)
 
@@ -52,7 +62,68 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                     os.remove(os.path.join(os.path.join(d.get("target_dir"),dname),l))
                 shutil.copy(os.path.join(p,l),os.path.join(os.path.join(d.get("target_dir"),dname),l))
         SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self) 
- 
+
+    def do_page2(self):
+        form = cgi.FieldStorage(
+            fp=self.rfile,
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                     })
+        d={}
+
+        for i in form:
+            d[i]=form.getvalue(i)
+
+        if not d.get("source_dir"):
+            self.wfile.write("请指定Excel来源数据文件。")
+            return
+        source_file = d.get("source_dir")
+        if not os.path.exists(source_file):
+            self.wfile.write("指定的来源数据文件不存在。")
+            return
+        try:
+            bk = xlrd.open_workbook(source_file)
+            sh = bk.sheet_by_index(0)
+        except:
+           self.wfile.write("请确认文件格式是否为正确的报告标准格式。")
+           return
+
+        nrows = sh.nrows
+        ncols = sh.ncols
+        data={}
+        header_list=[]
+        for i in range(1,nrows):
+            k = sh.cell_value(i,5)
+            if isinstance(k,(float,)):
+                k = k.__trunc__()
+            if not data.has_key(k):
+                data[k]={}
+            k1 = sh.cell_value(i,4)
+            if isinstance(k1,(float,)):
+                k1 = k1.__trunc__()
+            if header_list.count(k1)==0:
+                header_list.append(k1)
+            data[k][k1] = sh.cell_value(i,8)
+
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+        header_list.sort()
+        ws.write(0,0,"Sample id")
+        col_count=1
+        for i in header_list:
+            ws.write(0,col_count,i)
+            col_count+=1
+
+        row_count=1
+        for k,v in data.items():
+            ws.write(row_count,0,str(k))
+            for i in header_list:
+                ws.write(row_count,header_list.index(i)+1,v.get(i,""))
+            row_count+=1
+        w.save(os.path.join(os.path.split(source_file)[0],u"芯片数据.xls"))
+        SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
+
 Handler = ServerHandler 
  
 httpd = SocketServer.TCPServer(("", PORT), Handler) 

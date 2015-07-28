@@ -1,21 +1,63 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh-cn">
 	<head>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-		<title>实验数据拆分工具</title>
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>实验专用实用工具集</title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
 	</head>
 	<body>
-		<form action="/" method="POST">
-            <h3>
-			<p>来源资料文件夹：<input type="text" name="source_dir" style="width:80%"></p>
-			<p>目的资料文件夹：<input type="text" name="target_dir" style="width:80%"></p>
-            <p>数据来源格式：
-                <select name="data_format" >
-                  <option value="wh">武汉</option>
-                  <option value="cs">长沙</option>
-                </select>
-            </p>
-			<button type="submit" style="font-size:20px">提交</button>
-            </h3>
-		</form>
+        <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#page1" aria-controls="page1" role="tab" data-toggle="tab">数据拆分工具</a></li>
+          <li role="presentation" ><a href="#page2" aria-controls="page2" role="tab" data-toggle="tab">芯片数据整理</a></li>
+
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="page1">
+                <form action="/?page=1" method="POST">
+                    <h3>
+                    <p>来源资料文件夹：<input type="text" name="source_dir" style="width:80%"></p>
+                    <p>目的资料文件夹：<input type="text" name="target_dir" style="width:80%"></p>
+                    <p>数据来源格式：
+                        <select name="data_format" >
+                          <option value="wh">武汉</option>
+                          <option value="cs">长沙</option>
+                        </select>
+                    </p>
+                    <button type="submit" style="font-size:20px">提交</button>
+                    </h3>
+                </form>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="page2">
+                <form action="/?page=2" method="POST">
+                    <h3>
+                    <p>Excel来源文件：<input type="text" name="source_dir" style="width:80%"></p>
+                    <button type="submit" style="font-size:20px">提交</button>
+                    </h3>
+                </form>
+            </div>
+
+      </div>
+
+
+
+            <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	</body>
 </html>
