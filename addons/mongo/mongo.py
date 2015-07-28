@@ -136,6 +136,8 @@ class WebClient(http.Controller):
                     mimetype=kw.get("pic").mimetype
                     fs=base64.encodestring(kw.get("pic").stream.read())
                     if not (mimetype and fs):continue
+                    if not pd[kw.get("lang")].has_key(key[0]):
+                        pd[kw.get("lang")][key[0]]={"base64":"","mimetype":""}
                     if not isinstance(pd[kw.get("lang")][key[0]],(dict,)):
                         pd[kw.get("lang")][key[0]]={"base64":"","mimetype":""}
                     pd[kw.get("lang")][key[0]]["base64"]=fs
@@ -145,6 +147,8 @@ class WebClient(http.Controller):
                 else:
                     pd[kw.get("lang")][key[0]]=v
             elif(len(key)==2):
+                if not pd[kw.get("lang")].has_key(key[0]):
+                    pd[kw.get("lang")][key[0]]={}
                 pd[kw.get("lang")][key[0]][key[1]]=v
         db.prodata.update({"_id":no},pd)
 
