@@ -51,23 +51,24 @@
                       url: "/web/api/mongo/get_menu/",
                       data: {},
                       success: function(data){
+
                           //[["泰济生", "泰济生", [["EN", "英文", []], ["CN", "中文", [["tjs_quantaoxi", "全套系", [["yunmataocan", "孕妈套餐"]]]]]]]]
                           $.each(data,function(k,v){
                             $("#accordion").append(get_html(k,"accordion",v[0],""));
                               if(v[2].length>0){
                                   $.each(v[2],function(k1,v1){
                                       if(v1[2].length==0){return;}
-                                      $("#collapse"+k+">.panel-body").append(get_html(k1+100,"collapse"+k,v1[1],""));
+                                      $("#collapse"+k+">.panel-body").append(get_html(k1+k+100,"collapse"+k,v1[1],""));
 
                                       if(v1[2].length>0){
 
                                           $.each(v1[2],function(k2,v2){
 
-                                              $("#collapse"+(k1+100)+">.panel-body").append(get_html(k2+200,"collapse"+(k1+100),v2[1],""));
+                                              $("#collapse"+(k1+k+100)+">.panel-body").append(get_html(k2+k1+k+200,"collapse"+(k1+k+100),v2[1],""));
                                               if(v2[2].length>0){
-                                                  $("#collapse"+(k2+200)+">.panel-body").append("<ul class=\"list-group\"></ul>");
+                                                  $("#collapse"+(k2+k1+k+200)+">.panel-body").append("<ul class=\"list-group\"></ul>");
                                                   $.each(v2[2],function(k3,v3){
-                                                      $("#collapse"+(k2+200)+">.panel-body>.list-group").append("<li class=\"list-group-item\"><a href=\"listview.html?lang="+v1[0]+"&id="+v2[0]+"&tc="+v3[0]+"\" target=\"_blank\">"+v3[1]+"</a></li>")
+                                                      $("#collapse"+(k2+k1+k+200)+">.panel-body>.list-group").append("<li class=\"list-group-item\"><a href=\"listview.html?lang="+v1[0]+"&id="+v2[0]+"&tc="+v3[0]+"\" target=\"_blank\">"+v3[1]+"</a></li>")
                                                       //$("#collapse"+(k2+200)+">.panel-body").append(get_html((k3+300),"collapse"+(k2+100),v3[1],v3[1]));
                                                   })
                                               }

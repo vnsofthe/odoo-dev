@@ -86,6 +86,7 @@ class WebClient(http.Controller):
         result={}
         for k,v in tc.get("list").items():
             pd = db.prodata.find_one({"_id":v})
+            if not pd:continue
             if not result.has_key(pd["category"]):
                 result[pd["category"]]=[]
             result[pd["category"]].append([k,pd.get(kw.get("lang"))["title"]])

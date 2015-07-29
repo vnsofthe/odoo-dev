@@ -45,7 +45,9 @@
             <div role="tabpanel" class="tab-pane" id="page2">
                 <form action="/?page=2" method="POST">
                     <h3>
-                    <p>Excel来源文件：<input type="text" name="source_dir" style="width:80%"></p>
+                    <p>Excel来源文件：<input type="text" name="source_dir" style="width:80%">
+                        <button onclick="sel_file('#page2 input');return false;">浏览</button>
+                    </p>
                     <button type="submit" style="font-size:20px">提交</button>
                     </h3>
                 </form>
@@ -59,5 +61,23 @@
         <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+        <script>
+            function sel_file(obj){
+                var el=$("#_ef");
+                if(el==undefined){
+                    var inputObj=document.createElement('input')
+                     inputObj.setAttribute('id','_ef');
+                     inputObj.setAttribute('type','file');
+                     //inputObj.setAttribute("style",'visibility:hidden');
+                     document.body.appendChild(inputObj);
+                }
+
+                 inputObj.click();
+
+                 $(obj).val($("#_ef").val() );
+                 //document.removeChild(document.getElementById("_ef"));
+            }
+
+        </script>
 	</body>
 </html>
