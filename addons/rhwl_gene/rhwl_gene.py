@@ -10,7 +10,7 @@ import os
 import shutil
 import re
 from openerp import tools
-
+from lxml import etree
 _logger = logging.getLogger(__name__)
 
 class rhwl_gene(osv.osv):
@@ -656,11 +656,7 @@ class rhwl_gene(osv.osv):
             e_date = today
         return s_date,e_date
 
-    def fields_view_get(self, cr, uid, view_id=None, view_type='form', context=None, toolbar=False, submenu=False):
-        if context is None:context = {}
-        res = super(rhwl_gene, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar,submenu=False)
-        _logger.info(res)
-        return res
+
 
 #样本对象操作日志
 class rhwl_gene_log(osv.osv):
