@@ -32,6 +32,7 @@ class rhwl_weixin(osv.osv):
         "is_notice":fields.boolean(u"易感信息每日统计通知",help=u"每日统计发送易感项目的各项指标数据。"),
         "is_library":fields.boolean(u"实验进度催促通知",help=u"每周四统计预计出货样本数据。"),
         "is_sampleresult":fields.boolean(u"无创检测结果通知",help=u"无创样本实验结果完成后通知。"),
+        "is_account":fields.boolean(u"易感对帐通知",help=u"易感项目每月对帐信息通知"),
         "is_test":fields.boolean(u"测试通知")
     }
 

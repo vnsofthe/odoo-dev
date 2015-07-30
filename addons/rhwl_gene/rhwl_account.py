@@ -39,3 +39,19 @@ class rhwl_account(osv.osv):
     _defaults={
         "state":"draft"
     }
+
+    def weixin_notice(self,cr,uid,context=None):
+        d=datetime.datetime.today()
+        dd=datetime.datetime(d.year,d.month,20)
+        ids = self.search(cr,uid,[("end_date","=",dd)],context=context)
+        if ids:
+            obj = self.browse(cr,uid,ids[0],context=context)
+            js={
+                "first":"易感样本对帐",
+                "keyword1":"%s月份"%(d.month),
+                "keyword2":"%s-%s日共计送检样本%s例，扣除DNA质检不合格样本%s例（%s-%s日送检），%s月实际对账数量为%s例。"%(".".join(obj.start_date.split("-")[1:]),".".join(obj.end_date.split("-")[1:]),obj.count,obj.except_count,".".join(obj.start_dna.split("-")[1:]),".".join(obj.end_dna.split("-")[1:]),d.month,obj.real_count),
+                "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
+                "remark":""
+            }
+
+            self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_account",context=context)
