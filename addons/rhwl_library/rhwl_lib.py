@@ -43,7 +43,7 @@ class rhwl_lib(osv.osv):
 
     def action_state_done(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
-        location_dest_id = self.pool.get("stock.location").search(cr,uid,[("usage","=","production")])
+        location_dest_id = self.pool.get("stock.location").search(cr,uid,[("usage","=","internal"),("loc_barcode","=","99")])
         wh = self.pool.get("stock.warehouse").search(cr,uid,[("partner_id","=",1)])
         picking_type = self.pool.get("stock.picking.type").search(cr,uid,[("warehouse_id","=",wh[0]),("code","=","internal")])
         val={
