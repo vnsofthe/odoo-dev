@@ -64,7 +64,7 @@ def dict2file(pd,pm,lang):
             elif k=="pic":
                 pic_path= os.path.join(l_path,"pic")
                 check_dir(pic_path)
-                if  pd.get(lang).get("pic").get("base64"):
+                if  pd.get(lang).get("pic",{}).get("base64"):
                     imgname= pic_path+"/section_"+pd.get("_id").replace("'","").replace("`","").replace(" ","")+"."+(pd.get(lang).get("pic").get("mimetype").split("/")[1])
                     fimg = open(imgname,"wb")
                     pic_base64 = pd.get(lang).get("pic").get("base64")
@@ -79,8 +79,7 @@ def dict2file(pd,pm,lang):
                 ele = etree.SubElement(lang_element,k)
                 for e in v:
                     if e.has_key("node"):continue
-                    
-                    etree.SubElement(ele,e.keys()[0]).text = str2trans(pd[lang][k].get(e.keys()[0],""))
+                    etree.SubElement(ele,e.keys()[0]).text = str2trans(pd.get(lang,{}).get(k,{}).get(e.keys()[0],""))
     xml_path= os.path.join(l_path,"section")
     check_dir(xml_path)
     f=open(xml_path+"/section_"+pd.get("_id").replace("'","").replace("`","").replace(" ","")+".xml","w")
