@@ -24,6 +24,16 @@ msgid "Note"
 msgstr "备注"
 
 #. module: rhwl_library
+#: field:rhwl.library.request,project:0
+msgid "Project"
+msgstr "项目"
+
+#. module: rhwl_library
+#: field:rhwl.library.request,is_rd:0
+msgid "R&D"
+msgstr "是否研发"
+
+#. module: rhwl_library
 #: field:rhwl.library.request,state:0
 msgid "State"
 msgstr "状态"

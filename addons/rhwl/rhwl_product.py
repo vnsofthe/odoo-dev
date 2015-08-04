@@ -55,10 +55,12 @@ class rhwl_product_template(osv.osv):
     _columns = {
         "brand":fields.related("product_variant_ids","brand",type="char",string=u"品牌",size=20),
         "product_no":fields.related("product_variant_ids","product_no",type="char",string=u"物品编码"),
+        "cost_allocation":fields.boolean(u"可跨月分摊"),
         "project_ids":fields.related("product_variant_ids","project_ids",type="one2many",relation="rhwl.product.project",string=u"项目耗用量")
     }
     _defaults={
         'purchase_requisition':True,
+        "cost_allocation":False,
     }
 
     def init(self,cr):
@@ -76,6 +78,8 @@ class rhwl_product_template(osv.osv):
             related_vals['product_no'] = vals['product_no']
         if vals.get("project_ids"):
             related_vals['project_ids'] = vals['project_ids']
+        if vals.get("cost_allocation"):
+            related_vals["cost_allocation"] = vals["cost_allocation"]
         if related_vals:
             self.write(cr, uid, product_template_id, related_vals, context=context)
 

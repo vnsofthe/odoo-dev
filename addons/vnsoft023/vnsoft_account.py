@@ -36,6 +36,6 @@ class vnsoft_partner(osv.osv):
         else:
             bank_ids = obj.bank_ids
 
-        if is_company and (not bank_ids):
-           raise osv.except_osv("Error",u"请设置银行帐号信息。")
+        #if is_company and (not bank_ids):
+        #   raise osv.except_osv("Error",u"请设置银行帐号信息。")
         return super(vnsoft_partner,self).write(cr,uid,ids,vals,context)

@@ -32,10 +32,12 @@
                             <group cols="4">
                                 <field name="name"/>
                                 <field name="date"/>
+                                <field name="project" attrs="{'required':True}" options="{'no_open':True,'no_create':True}"/>
                             </group>
                             <group cols="4">
                                 <field name="user_id"/>
                                 <field name="location_id"/>
+                                <field name="is_rd"/>
                             </group>
 
                         </group>

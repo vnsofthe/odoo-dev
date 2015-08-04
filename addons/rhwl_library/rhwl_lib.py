@@ -19,13 +19,16 @@ class rhwl_lib(osv.osv):
         "line":fields.one2many("rhwl.library.request.line","name","Line",readonly=True,states={'draft':[('readonly',False)]}),
         "note":fields.text("Note"),
         "active":fields.boolean("Active"),
+        "project":fields.many2one("res.company.project","Project"),
+        "is_rd":fields.boolean("R&D"),
     }
 
     _defaults={
         "state":'draft',
         "user_id":lambda obj,cr,uid,context=None:uid,
         "date":fields.date.today,
-        "active":True
+        "active":True,
+        "is_rd":False
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -51,7 +54,9 @@ class rhwl_lib(osv.osv):
             "min_date":fields.datetime.now(),
             "origin":obj.name,
             "picking_type_id":picking_type[0],
-            "move_lines":[]
+            "move_lines":[],
+            "project":obj.project.id,
+            "is_rd":obj.is_rd,
         }
         for l in obj.line:
             move_val={
@@ -120,6 +125,12 @@ class rhwl_lib_line(osv.osv):
             self.attribute = obj.attribute_value_ids
             self.uom_id = obj.uom_id
 
+class rhwl_stock(osv.osv):
+    _inherit = "stock.picking"
+    _columns = {
+        "project":fields.many2one("res.company.project","Project"),
+        "is_rd":fields.boolean("R&D"),
+    }
 class rhwl_purchase_requisition(osv.osv):
     _inherit="purchase.requisition"
 
