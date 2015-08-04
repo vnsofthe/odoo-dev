@@ -18,6 +18,11 @@
         <menuitem id="menu_rhwl_sample_two" parent="menu_rhwl_sample_root" name="数据接收" sequence="30"  />
 
         <menuitem action="action_sale_sampleone_import_report" id="menu_sampleone_import" name="Import Sample Report" parent="menu_rhwl_sample_two" groups="rhwl_manager_sample"/>
+
+        <menuitem id="menu_rhwl_sample_purchase" parent="rhwl.menu_rhwl_sample_root" name="采购" sequence="50"  />
+
+        <menuitem action="action_purchase_order_apply" id="menu_purchase_order_apply" name="采购申请" parent="menu_rhwl_sample_purchase" />
+
     </data>
 
 </openerp>
