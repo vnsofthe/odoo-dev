@@ -20,7 +20,9 @@
                 ,"view/library_request_sequence.xml"
                 ,"wizard/purchase_requisition_group.xml"
                 ,"report/report.xml"
-                ,"wizard/stock_picking.xml"],
+                ,"wizard/stock_picking.xml"
+                ,"view/rhwl_consump.xml"
+              ],
     "qweb":[],
     'demo': [],
     'test': [],

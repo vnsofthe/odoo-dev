@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_library_consump_view_tree">
+            <field name="name">rhwl.library.consump.view.tree</field>
+            <field name="model">rhwl.library.consump</field>
+            <field name="arch" type="xml">
+                <tree string="耗用单" >
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="project"/>
+                    <field name="is_rd"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_library_consump_view_form">
+            <field name="name">rhwl.library.consump.view.form</field>
+            <field name="model">rhwl.library.consump</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_state_confirm" string="确认" states="draft" type="object"/>
+                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object"/>
+                        <button name="action_state_done" string="产生耗用出库" states="confirm" type="object" groups="stock.group_stock_manager"/>
+                        <button name="action_view_picking" string="查看出库单" states="done" type="object" groups="stock.group_stock_manager"/>
+                        <field name="state" widget="statusbar" readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group colspan="8">
+                            <group cols="4">
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="project" attrs="{'required':True}" options="{'no_open':True,'no_create':True}"/>
+                            </group>
+                            <group cols="4">
+                                <field name="user_id"/>
+                                <field name="location_id"/>
+                                <field name="is_rd"/>
+                            </group>
+
+                        </group>
+                        <group cols="8">
+                                <field name="note"/>
+                            </group>
+                        <field name="line">
+                            <tree string="Line" editable="bottom">
+                                <field name="product_id"/>
+                                <field name="brand"/>
+                                <field name="default_code"/>
+                                <field name="uom_id"/>
+                                <field name="qty"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_library_consump_search">
+            <field name="name">rhwl.library.consump.search</field>
+            <field name="model">rhwl.library.consump</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="使用人" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_library_consump" model="ir.actions.act_window">
+            <field name="name">耗用单</field>
+            <field name="res_model">rhwl.library.consump</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_library_consump_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_rhwl_library_consump" parent="menu_rhwl_library_mgmt" name="实验耗用单" sequence="30"
+                  action='action_library_consump' groups="base.group_user"/>
+
+
+    </data>
+</openerp>

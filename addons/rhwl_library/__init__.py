@@ -1,2 +1,3 @@
 import rhwl_lib
 import wizard
+import rhwl_consump
