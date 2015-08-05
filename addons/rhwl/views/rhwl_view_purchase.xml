@@ -117,9 +117,7 @@
             </field>
         </record>
 
-         <menuitem id="menu_rhwl_sample_purchase" parent="rhwl.menu_rhwl_sample_root" name="采购" sequence="50"  />
 
-        <menuitem action="action_purchase_order_apply" id="menu_purchase_order_apply" name="采购申请" parent="menu_rhwl_sample_purchase" />
 
         <record model="ir.ui.view" id="purchase_order_apply_popup_view_form">
             <field name="name">purchase.order.apply.popup.view.form</field>
