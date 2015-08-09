@@ -7,6 +7,7 @@ import datetime
 import openerp
 import logging
 
+_logger = logging.getLogger(__name__)
 class rhwl_lib(osv.osv):
     _name="rhwl.library.request"
     _order = "date desc"
@@ -46,10 +47,20 @@ class rhwl_lib(osv.osv):
 
     def action_state_done(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
-        location_dest_id = self.pool.get("stock.location").search(cr,uid,[("usage","=","internal"),("loc_barcode","=","99")])
+        location_dest_id_99 = self.pool.get("stock.location").search(cr,uid,[("usage","=","internal"),("loc_barcode","=","99")])
+        location_dest_id_0 = self.pool.get("stock.location").search(cr,uid,[("usage","=","production")])
         wh = self.pool.get("stock.warehouse").search(cr,uid,[("partner_id","=",1)])
         picking_type = self.pool.get("stock.picking.type").search(cr,uid,[("warehouse_id","=",wh[0]),("code","=","internal")])
-        val={
+        val_99={
+            "partner_id":1,
+            "min_date":fields.datetime.now(),
+            "origin":obj.name,
+            "picking_type_id":picking_type[0],
+            "move_lines":[],
+            "project":obj.project.id,
+            "is_rd":obj.is_rd,
+        }
+        val_0={
             "partner_id":1,
             "min_date":fields.datetime.now(),
             "origin":obj.name,
@@ -65,13 +76,22 @@ class rhwl_lib(osv.osv):
             res=self.pool.get("stock.move").onchange_product_id(cr,uid,0,l.product_id.id)
             move_val.update(res["value"])
             move_val["product_uom_qty"]=l.qty
+            if l.product_id.cost_allocation:
+                move_val["location_dest_id"]=location_dest_id_99[0]
+            else:
+                move_val["location_dest_id"]=location_dest_id_0[0]
             move_val["location_id"]=obj.location_id.id
-            move_val["location_dest_id"]=location_dest_id[0]
+
             move_id = self.pool.get("stock.move").create(cr,uid,move_val,context=context)
-            val["move_lines"].append([4,move_id])
+            if l.product_id.cost_allocation:
+                val_99["move_lines"].append([4,move_id])
+            else:
+                val_0["move_lines"].append([4,move_id])
 
-
-        self.pool.get("stock.picking").create(cr,uid,val,context=context)
+        if val_99["move_lines"]:
+            self.pool.get("stock.picking").create(cr,uid,val_99,context=context)
+        if val_0["move_lines"]:
+            self.pool.get("stock.picking").create(cr,uid,val_0,context=context)
         self.write(cr,uid,ids,{"state":"done"},context=context)
 
     def action_view_picking(self,cr,uid,ids,context=None):
@@ -81,19 +101,18 @@ class rhwl_lib(osv.osv):
             self.action_state_done(cr,uid,ids,context=context)
             picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",obj.name)])
 
-        value = {
-            'domain': "[('id','in',[" + ','.join(map(str, picking_id)) + "])]",
-            'view_type': 'form',
-            'view_mode': 'form,tree',
-            'res_model': 'stock.picking',
-            'res_id': picking_id[0],
-            'view_id': False,
-            'context': context,
-            'type': 'ir.actions.act_window',
+        mod_obj = self.pool.get('ir.model.data')
+        dummy, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'stock', 'action_picking_tree'))
+        action = self.pool.get('ir.actions.act_window').read(cr, uid, action_id, context=context)
+        action['context'] = {}
+        if len(picking_id) > 1:
+            action['domain'] = "[('id','in',[" + ','.join(map(str, picking_id)) + "])]"
+        else:
+            res = mod_obj.get_object_reference(cr, uid, 'stock', 'view_picking_form')
+            action['views'] = [(res and res[1] or False, 'form')]
+            action['res_id'] = picking_id and picking_id[0] or False
 
-        }
-        return value
-
+        return action
 
 
 class rhwl_lib_line(osv.osv):
