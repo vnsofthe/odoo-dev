@@ -240,6 +240,11 @@ class rhwl_import(osv.osv_memory):
                     for s in list(v.replace("/","")):
                         if rhwl_gene_check.snp_check[snp.get(k)].count(s)==0:
                             raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
+                    if snp.get(k) in ('GSTM1','GSTT1') and len(v)!=1:
+                        raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
+                    if snp.get(k) not in ('GSTM1','GSTT1') and len(v)!=2:
+                        raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
+
                     val={
                         "genes_id":id[0],
                         "snp":snp.get(k),
