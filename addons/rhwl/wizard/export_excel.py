@@ -298,7 +298,7 @@ class export_excel(osv.osv_memory):
         if isinstance(ids,(list,tuple)):
             ids.sort()
         payment_kind = {'hospital':u"医院代收",'proxy':u'经销商代收','pos':u'POS机收费','cash':u'现金'}
-        excel_head=[u"样本编码",u"姓名",u"年龄",u"孕周",u"采血日期",u"采血医院",u"采血医生",u"是否重采血",u"是否免费",u"临床收费",u"结算金额",u"结算方式"]
+        excel_head=[u"样本编码",u"姓名",u"年龄",u"孕周",u"采血日期",u"采血医院",u"采血医生",u"是否重采血",u"是否免费",u"临床收费",u"结算金额",u"结算方式",u"手机号码"]
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
         for i in range(0,len(excel_head)):
@@ -318,6 +318,7 @@ class export_excel(osv.osv_memory):
             ws.write(rows,9,i.cxyy.hospital_price)
             ws.write(rows,10,i.cxyy.amt)
             ws.write(rows,11,payment_kind.get(i.cxyy.payment_kind.decode("utf-8")))
+            ws.write(rows,12,i.yftelno)
             rows+=1
 
         w.save(xlsname)

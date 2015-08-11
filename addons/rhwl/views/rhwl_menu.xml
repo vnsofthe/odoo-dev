@@ -23,6 +23,8 @@
 
         <menuitem action="action_purchase_order_apply" id="menu_purchase_order_apply" name="采购申请" parent="menu_rhwl_sample_purchase" />
 
+        <menuitem action="action_rhwl_material_cost" id="menu_rhwl_material_cost" name="物料月结" parent="account.menu_finance_periodical_processing" sequence="80" />
+
     </data>
 
 </openerp>

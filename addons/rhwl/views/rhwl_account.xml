@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_material_cost_tree">
+            <field name="name">rhwl.material.cost.tree</field>
+            <field name="model">rhwl.material.cost</field>
+            <field name="arch" type="xml">
+
+                    <tree>
+                        <field name="date"/>
+                        <field name="user_id"/>
+                        <field name="compute_date"/>
+                        <field name="state"/>
+                    </tree>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_material_cost_form">
+            <field name="name">rhwl.material.cost.form</field>
+            <field name="model">rhwl.material.cost</field>
+            <field name="arch" type="xml">
+
+                    <form>
+                        <header>
+                            <button name="action_confirm" states="draft" string="月结计算" type="object"/>
+                            <field name="state" widget="statusbar" readonly="1"/>
+                        </header>
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="date" attrs="{'readonly':[('state','=','done')]}"/>
+                                    <field name="user_id"/>
+                                </group>
+                                <group>
+                                    <field name="compute_date"/>
+                                </group>
+                            </group>
+
+                             <field name="line">
+                                <tree string="明细" >
+                                    <field name="data_kind"/>
+                                    <field name="product_id"/>
+                                    <field name="brand"/>
+                                    <field name="default_code"/>
+                                    <field name="attribute"/>
+                                    <field name="uom_id"/>
+                                    <field name="qty"/>
+                                    <field name="price"/>
+                                    <field name="amount"/>
+                                    <field name="project"/>
+                                    <field name="is_rd"/>
+                                </tree>
+                             </field>
+                        </sheet>
+                    </form>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_material_cost_search">
+            <field name="name">rhwl.material.cost.search</field>
+            <field name="model">rhwl.material.cost</field>
+            <field name="arch" type="xml">
+                <search string="Sample Express">
+                    <field name="date"/>
+                    <field name="user_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_material_cost" model="ir.actions.act_window">
+            <field name="name">物料月结</field>
+            <field name="res_model">rhwl.material.cost</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+    </data>
+</openerp>

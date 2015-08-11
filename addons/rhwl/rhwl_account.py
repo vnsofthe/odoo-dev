@@ -5,8 +5,9 @@ from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 from openerp import tools, api
 import datetime
+import logging
 
-
+_logger = logging.getLogger(__name__)
 class vnsoft_account(osv.osv):
     _inherit = "account.invoice"
 
@@ -16,16 +17,31 @@ class vnsoft_account(osv.osv):
 
 class rhwl_material(osv.osv):
     _name = "rhwl.material.cost"
+    _rec_name = "date"
+
+    def _check_date(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids[0], context=context)
+        if obj.date.split("-")[-1]!='01':
+            return False
+        return True
+
     _columns={
         "date":fields.date("Cost Date",required=True),
         "user_id":fields.many2one("res.users",string="User",readonly=True),
         "compute_date":fields.datetime("Compute Time",readonly=True),
         "state":fields.selection([("draft","Draft"),("done","Done")]),
+        "line":fields.one2many("rhwl.material.cost.line","parent_id",string="Detail",readonly=True)
     }
     _defaults={
         "user_id":lambda obj,cr,uid,context:uid,
         "state":"draft"
     }
+    _sql_constraints = [
+        ('rhwl_material_cost_uniq', 'unique(date)', u'成本日期不能重复!'),
+    ]
+    _constraints = [
+        (_check_date, u'成本日期只能是每月的1号。', ['date']),
+    ]
 
 class rhwl_material_line(osv.osv):
     _name="rhwl.material.cost.line"
@@ -41,4 +57,5 @@ class rhwl_material_line(osv.osv):
         'price': fields.float('Price',digits_compute= dp.get_precision('Product Price'), readonly=True,),
         "project":fields.many2one("res.company.project","Project"),
         "is_rd":fields.boolean("R&D"),
+        'amount': fields.float("Amt", digits_compute=dp.get_precision('Account')),
     }
