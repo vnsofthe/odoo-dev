@@ -43,6 +43,30 @@ class rhwl_material(osv.osv):
         (_check_date, u'成本日期只能是每月的1号。', ['date']),
     ]
 
+    def action_confirm(self,cr,uid,ids,context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+
+        #处理期初
+        begin_id = self.search(cr,uid,[("date","<",obj.date),("state","=","done")],context=context)
+        if begin_id:
+            begin_obj = self.browse(cr,uid,begin_id,context=context)
+            for d in begin_obj.line:
+                if d.data_kind != "end":continue
+                val={
+                    "parent_id":obj.id,
+                    "data_kind":"begin",
+                    "product_id":d.product_id.id,
+                    "qty":d.qty,
+                    "price":d.price,
+                    "amount":d.amount
+                }
+                self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+        #处理本期
+
+        #更新计算时间
+        self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)
+        pass
+
 class rhwl_material_line(osv.osv):
     _name="rhwl.material.cost.line"
     _columns={
