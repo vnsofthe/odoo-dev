@@ -35,7 +35,7 @@
     <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="js/vnsoft.js"></script>
+    <script src="/mongo/static/js/vnsoft.js"></script>
     <script>
 
         $.ajax(
@@ -63,7 +63,7 @@
                               document.cookie = "tabActive="+active_tab[0].hash;
 
                                 var t= e.target.parentElement.parentElement.childNodes[0].innerText;
-                              location.href="edit-new.html?no="+ t +"&lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")
+                              location.href="edit/?no="+ t +"&lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")
                             });
                           //获取cookie字符串
                             var strCookie=document.cookie;

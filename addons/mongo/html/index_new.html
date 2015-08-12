@@ -27,7 +27,7 @@
     <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    <script src="js/vnsoft.js"></script>
+    <script src="/mongo/static/js/vnsoft.js"></script>
     <script>
         function get_html(id_name,parent_name,title,content){
             return "<div class=\"panel panel-default\">"+
@@ -66,7 +66,7 @@
                                               if(v2[2].length>0){
                                                   $("#collapse"+k+"_"+k1+"_"+k2+">.panel-body").append("<ul class=\"list-group\"></ul>");
                                                   $.each(v2[2],function(k3,v3){
-                                                      $("#collapse"+k+"_"+k1+"_"+k2+">.panel-body>.list-group").append("<li class=\"list-group-item\"><a href=\"listview.html?lang="+v1[0]+"&id="+v2[0]+"&tc="+v3[0]+"\" target=\"_blank\">"+v3[1]+"</a></li>")
+                                                      $("#collapse"+k+"_"+k1+"_"+k2+">.panel-body>.list-group").append("<li class=\"list-group-item\"><a href=\"listview/?lang="+v1[0]+"&id="+v2[0]+"&tc="+v3[0]+"\" target=\"_blank\">"+v3[1]+"</a></li>")
                                                       //$("#collapse"+(k2+200)+">.panel-body").append(get_html((k3+300),"collapse"+(k2+100),v3[1],v3[1]));
                                                   });
 

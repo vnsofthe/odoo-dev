@@ -13,6 +13,8 @@ import datetime
 import logging
 import pymongo
 import base64
+import os
+
 _logger = logging.getLogger(__name__)
 
 class WebClient(http.Controller):
@@ -38,6 +40,30 @@ class WebClient(http.Controller):
         for k,v in template.items():
             if k=="disease":
                 return [[]]
+
+    @http.route("/web/mongo/index/",type="http",auth="user")
+    def index(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/index_new.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
+    @http.route("/web/mongo/index/listview/",type="http",auth="user")
+    def index_list(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/listview.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
+    @http.route("/web/mongo/index/listview/edit/",type="http",auth="user")
+    def index_list_edit(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/edit-new.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
 
     @http.route('/web/api/mongo/get_menu/', type='http', auth="public",website=True)
     def _get_menu(self,**kw):
