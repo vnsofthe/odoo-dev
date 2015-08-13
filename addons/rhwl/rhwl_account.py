@@ -62,6 +62,8 @@ class rhwl_material(osv.osv):
                 }
                 self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
         #处理本期
+        period_ids = self.pool.get("account.period").search(cr,SUPERUSER_ID,[("date_start",">=",obj.date),("date_stop","<=",obj.date)],context=context)
+        invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("state","not in",["draft","cancel"]),("period_id","in",period_ids),('type','=','in_invoice')],context=context)
 
         #更新计算时间
         self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)
