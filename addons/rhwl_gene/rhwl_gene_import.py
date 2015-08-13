@@ -75,7 +75,7 @@ class rhwl_import(osv.osv_memory):
                     "sex": 'T' if sh.cell_value(i-1,2)==u"男" else 'F',
                     "name":sh.cell_value(i-1,3),
                     "identity":idt,
-                    "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) else False,
+                    "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False,
                     "receiv_date":self.datetime_trun(sh.cell_value(i-1,5))
                 }
                 if idt and len(idt)==18:

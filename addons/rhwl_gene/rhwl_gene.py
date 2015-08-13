@@ -220,6 +220,16 @@ class rhwl_gene(osv.osv):
     def write(self, cr, uid, id, val, context=None):
         if not context:
             context={}
+        if val.get("state","") in ("except_confirm","confirm"):
+            obj = self.browse(cr,SUPERUSER_ID,id,context=context)
+            if obj.identity and len(obj.identity)==18:
+                try:
+                    birthday = datetime.datetime.strptime(obj.identity[6:14],"%Y-%m-%d")
+                    day = datetime.datetime.today() - birthday
+                    if day.days<0 or day.days>54750:
+                        raise osv.except_osv(u"错误",u"身份证号码中的年月日不在合理范围。")
+                except:
+                    raise osv.except_osv(u"错误",u"身份证号码中的年月日格式错误。")
         if val.has_key("state"):
             val["log"] = [
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
