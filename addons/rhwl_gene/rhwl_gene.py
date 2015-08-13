@@ -224,7 +224,7 @@ class rhwl_gene(osv.osv):
             obj = self.browse(cr,SUPERUSER_ID,id,context=context)
             if obj.identity and len(obj.identity)==18:
                 try:
-                    birthday = datetime.datetime.strptime(obj.identity[6:14],"%Y-%m-%d")
+                    birthday = datetime.datetime.strptime(obj.identity[6:14],"%Y%m%d")
                     day = datetime.datetime.today() - birthday
                     if day.days<0 or day.days>54750:
                         raise osv.except_osv(u"错误",u"身份证号码中的年月日不在合理范围。")
