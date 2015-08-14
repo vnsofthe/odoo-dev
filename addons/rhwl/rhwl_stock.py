@@ -133,3 +133,16 @@ class rhwl_order(osv.osv):
                 except Exception:
                     pass
         return {}
+
+class stock_quant(osv.osv):
+    _inherit="stock.quant"
+
+    def write(self,cr,uid,ids,val,context=None):
+        res = super(stock_quant,self).write(cr,uid,ids,val,context=context)
+        if val.has_key("cost"):
+            move_ids = []
+            for i in self.browse(cr,SUPERUSER_ID,ids,context=context):
+                for j in i.history_ids:
+                    move_ids.append(j.id)
+            self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"price_unit":val.get("cost")},context=context)
+        return res

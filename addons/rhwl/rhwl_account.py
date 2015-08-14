@@ -46,6 +46,10 @@ class rhwl_material(osv.osv):
     def action_confirm(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
 
+        #删除原有的期初数据
+        old_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","begin")],context=context)
+        if old_ids:
+            self.pool.get("rhwl.material.cost.line").unlink(cr,uid,old_ids)
         #处理期初
         begin_id = self.search(cr,uid,[("date","<",obj.date),("state","=","done")],context=context)
         if begin_id:
@@ -61,9 +65,28 @@ class rhwl_material(osv.osv):
                     "amount":d.amount
                 }
                 self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
-        #处理本期
-        period_ids = self.pool.get("account.period").search(cr,SUPERUSER_ID,[("date_start",">=",obj.date),("date_stop","<=",obj.date)],context=context)
+        #处理本期采购入库
+        supplier_location_id = self.pool.get("stock.location").search(cr,SUPERUSER_ID,[("usage","=","supplier")],context=context)
+        period_ids = self.pool.get("account.period").search(cr,SUPERUSER_ID,[("date_stop",">=",obj.date),("date_start","<=",obj.date)],context=context)
+        #取得会计期间所有已收到的供应商发票资料。
+
         invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("state","not in",["draft","cancel"]),("period_id","in",period_ids),('type','=','in_invoice')],context=context)
+        invoice_line_ids = self.pool.get("account.invoice.line").search(cr,SUPERUSER_ID,[("invoice_id","in",invoice_ids)],context=context)
+        purchase_line_ids = self.pool.get("purchase.order.line").search(cr,SUPERUSER_ID,[("invoice_lines","in",invoice_line_ids)],context=context)
+        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("purchase_line_id","in",purchase_line_ids)],context=context)
+
+        if move_ids:
+            for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
+                val={
+                    "parent_id":obj.id,
+                    "data_kind":"this",
+                    "product_id":i.product_id.id,
+                    "qty":i.product_qty,
+                    "price":i.price_unit,
+                    "amount":i.product_qty *i.price_unit ,
+                    "move_type":"in"
+                }
+                self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
 
         #更新计算时间
         self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)
@@ -84,4 +107,5 @@ class rhwl_material_line(osv.osv):
         "project":fields.many2one("res.company.project","Project"),
         "is_rd":fields.boolean("R&D"),
         'amount': fields.float("Amt", digits_compute=dp.get_precision('Account')),
+        "move_type":fields.selection([('in','in'),('out','out')],string="Move Type")
     }
