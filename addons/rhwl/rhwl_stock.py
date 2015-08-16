@@ -35,6 +35,10 @@ class rhwl_move(osv.osv):
     _inherit = "stock.move"
     _columns={
         "express_no":fields.many2one("stock.picking.express",string=u"快递单"),
+        "cost_mark":fields.integer("Cost Mark"),
+    }
+    _defaults={
+        "cost_mark":0
     }
 
 class rhwl_warehouse_orderpoint(osv.osv):
@@ -146,3 +150,12 @@ class stock_quant(osv.osv):
                     move_ids.append(j.id)
             self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"price_unit":val.get("cost")},context=context)
         return res
+
+class stock_picking(osv.osv):
+    _inherit="stock.picking"
+    _columns={
+        "cost_mark":fields.integer("Cost Mark"),
+    }
+    _defaults={
+        "cost_mark":0,
+    }

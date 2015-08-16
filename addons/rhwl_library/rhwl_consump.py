@@ -70,6 +70,7 @@ class rhwl_library_consump(osv.osv):
             res=self.pool.get("stock.move").onchange_product_id(cr,uid,0,l.product_id.id)
             move_val.update(res["value"])
             move_val["product_uom_qty"]=l.qty
+            move_val["product_uos_qty"]=l.qty
             move_val["location_id"]=obj.location_id.id
             move_val["location_dest_id"]=location_dest_id[0]
             move_id = self.pool.get("stock.move").create(cr,uid,move_val,context=context)
@@ -103,7 +104,7 @@ class rhwl_library_consump_line(osv.osv):
     _name = "rhwl.library.consump.line"
     _columns={
         "name":fields.many2one("rhwl.library.consump","Name"),
-        "product_id":fields.many2one("product.product","Product",required=True,domain=[("landed_cost_ok","=",True)]),
+        "product_id":fields.many2one("product.product","Product",required=True,domain=[("cost_allocation","=",True)]),
         "brand":fields.related("product_id","brand",type="char",string=u"品牌",readonly=True),
         "default_code":fields.related("product_id","default_code",type="char",string=u"货号",readonly=True),
         "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),

@@ -76,6 +76,7 @@ class rhwl_lib(osv.osv):
             res=self.pool.get("stock.move").onchange_product_id(cr,uid,0,l.product_id.id)
             move_val.update(res["value"])
             move_val["product_uom_qty"]=l.qty
+            move_val["product_uos_qty"]=l.qty
             if l.product_id.cost_allocation:
                 move_val["location_dest_id"]=location_dest_id_99[0]
             else:

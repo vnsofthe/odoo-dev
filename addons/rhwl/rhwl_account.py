@@ -47,9 +47,14 @@ class rhwl_material(osv.osv):
         obj = self.browse(cr,uid,ids,context=context)
 
         #删除原有的期初数据
-        old_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","begin")],context=context)
+        old_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id)],context=context)
         if old_ids:
             self.pool.get("rhwl.material.cost.line").unlink(cr,uid,old_ids)
+        #删除原有的出入库数据
+        old_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("cost_mark","=",obj.id)])
+        if old_ids:
+            self.pool.get("stock.move").write(cr,SUPERUSER_ID,old_ids,{"cost_mark":0})
+
         #处理期初
         begin_id = self.search(cr,uid,[("date","<",obj.date),("state","=","done")],context=context)
         if begin_id:
@@ -67,13 +72,14 @@ class rhwl_material(osv.osv):
                 self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
         #处理本期采购入库
         supplier_location_id = self.pool.get("stock.location").search(cr,SUPERUSER_ID,[("usage","=","supplier")],context=context)
-        period_ids = self.pool.get("account.period").search(cr,SUPERUSER_ID,[("date_stop",">=",obj.date),("date_start","<=",obj.date)],context=context)
+        production_location_id = self.pool.get("stock.location").search(cr,SUPERUSER_ID,[("usage","=","production")],context=context)
+        period_ids = self.pool.get("account.period").search(cr,SUPERUSER_ID,[("date_stop",">=",obj.date),("date_start","<=",obj.date),("special","=",False)],context=context)
+        period_obj = self.pool.get("account.period").browse(cr,SUPERUSER_ID,period_ids,context=context)
         #取得会计期间所有已收到的供应商发票资料。
-
         invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("state","not in",["draft","cancel"]),("period_id","in",period_ids),('type','=','in_invoice')],context=context)
         invoice_line_ids = self.pool.get("account.invoice.line").search(cr,SUPERUSER_ID,[("invoice_id","in",invoice_ids)],context=context)
         purchase_line_ids = self.pool.get("purchase.order.line").search(cr,SUPERUSER_ID,[("invoice_lines","in",invoice_line_ids)],context=context)
-        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("purchase_line_id","in",purchase_line_ids)],context=context)
+        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("purchase_line_id","in",purchase_line_ids),("cost_mark","=",0)],context=context)
 
         if move_ids:
             for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
@@ -87,6 +93,62 @@ class rhwl_material(osv.osv):
                     "move_type":"in"
                 }
                 self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+            #已经作过入库的资料进行标识
+            self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"cost_mark":obj.id},context=context)
+        #领料统计
+        picking_ids=[]
+        request_ids = self.pool.get("rhwl.library.request").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
+        for i in request_ids:
+            request_obj = self.pool.get("rhwl.library.request").browse(cr,SUPERUSER_ID,i,context=context)
+            picking_ids_1 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",request_obj.name)],context=context)
+            if picking_ids_1:
+                picking_ids = picking_ids + picking_ids_1
+
+        consump_ids = self.pool.get("rhwl.library.consump").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
+        for i in consump_ids:
+            consump_obj = self.pool.get("rhwl.library.consump").browse(cr,SUPERUSER_ID,i,context=context)
+            picking_ids_2 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",consump_obj.name)],context=context)
+            if picking_ids_2:
+                picking_ids = picking_ids + picking_ids_2
+
+        for p in self.pool.get("stock.picking").browse(cr,SUPERUSER_ID,picking_ids,context=context):
+            move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_dest_id","in",production_location_id),("picking_id","=",p.id),("state","=","done"),("cost_mark","=",0)],context=context)
+            if move_ids:
+                for m in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
+                    #检查领用出库单对应的采购是否已经确认发票
+                    p_ids=[]
+                    for q in m.quant_ids:
+                        for h in q.history_ids:
+                            if h.location_id.id==supplier_location_id[0] and h.purchase_line_id != False and h.state=="done":
+                                p_ids.append(h.purchase_line_id.id)
+                    if p_ids:
+                        il_ids=[]
+
+                        for l in self.pool.get("purchase.order.line").browse(cr,SUPERUSER_ID,p_ids,context=context):
+
+                            if not l.invoice_lines.id:
+                                il_ids=[]
+                                break
+                            for il in l.invoice_lines:
+                                il_ids.append(il.id)
+                        if il_ids:
+                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.state","in",["draft","cancel"])],context=context)>0:
+                                continue
+
+                        for mq in m.quant_ids:
+                            val={
+                                "parent_id":obj.id,
+                                "data_kind":"this",
+                                "product_id":mq.product_id.id,
+                                "qty":mq.qty,
+                                "price":mq.cost,
+                                "amount":mq.qty *mq.cost ,
+                                "move_type":"out",
+                                "project":p.project.id,
+                                "is_rd":p.is_rd
+                            }
+                            self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                        self.pool.get("stock.move").write(cr,SUPERUSER_ID,m.id,{"cost_mark":obj.id},context=context)
 
         #更新计算时间
         self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)
@@ -95,7 +157,7 @@ class rhwl_material(osv.osv):
 class rhwl_material_line(osv.osv):
     _name="rhwl.material.cost.line"
     _columns={
-        "parent_id":fields.many2one("rhwl.material.cost","Parent"),
+        "parent_id":fields.many2one("rhwl.material.cost","Parent",ondelete="cascade"),
         "data_kind":fields.selection([("begin","Begin"),("this","This"),("end","End")],string="Data Kind"),
         "product_id":fields.many2one("product.product","Product",required=True),
         "brand":fields.related("product_id","brand",type="char",string=u"品牌",readonly=True),

@@ -40,16 +40,18 @@
                              <field name="line">
                                 <tree string="明细" >
                                     <field name="data_kind"/>
+                                    <field name="move_type"/>
                                     <field name="product_id"/>
                                     <field name="brand"/>
                                     <field name="default_code"/>
-                                    <field name="attribute"/>
+                                    <field name="attribute" widget="many2many_tags"/>
                                     <field name="uom_id"/>
                                     <field name="qty"/>
                                     <field name="price"/>
                                     <field name="amount"/>
                                     <field name="project"/>
                                     <field name="is_rd"/>
+
                                 </tree>
                              </field>
                         </sheet>
