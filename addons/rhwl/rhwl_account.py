@@ -29,7 +29,7 @@ class rhwl_material(osv.osv):
         "date":fields.date("Cost Date",required=True),
         "user_id":fields.many2one("res.users",string="User",readonly=True),
         "compute_date":fields.datetime("Compute Time",readonly=True),
-        "state":fields.selection([("draft","Draft"),("done","Done")]),
+        "state":fields.selection([("draft","Draft"),("done","Done")],string="State"),
         "line":fields.one2many("rhwl.material.cost.line","parent_id",string="Detail",readonly=True)
     }
     _defaults={
@@ -149,6 +149,55 @@ class rhwl_material(osv.osv):
                             }
                             self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
                         self.pool.get("stock.move").write(cr,SUPERUSER_ID,m.id,{"cost_mark":obj.id},context=context)
+
+        #期末结算
+        begin_detail_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","begin")],context=context)
+        this_detail_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","this")],context=context)
+        for b in self.pool.get("rhwl.material.cost.line").browse(cr,uid,begin_detail_ids,context=context):
+            temp_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","this"),("product_id","=",b.product_id.id),("price","=",b.price)],context=context)
+            v={"qty":0,"amt":0}
+            for t in self.pool.get("rhwl.material.cost.line").browse(cr,uid,temp_ids,context=context):
+                if t.move_type=="in":
+                    v["qty"] += t.qty
+                    v["amt"] += t.amount
+                elif t.move_type=="out":
+                    v["qty"] -= t.qty
+                    v["amt"] -= t.amount
+                this_detail_ids.remove(t.id)
+            val={
+                "parent_id":obj.id,
+                "data_kind":"end",
+                "product_id":b.product_id.id,
+                "qty":b.qty + v["qty"],
+                "price":b.price,
+                "amount":b.amount + v["amt"]
+            }
+            self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+        #处理有本期，没有期初的资料。
+        if this_detail_ids:
+            v={}
+            for t in self.pool.get("rhwl.material.cost.line").browse(cr,uid,this_detail_ids,context=context):
+                if not v.has_key(t.product_id.id):
+                    v[t.product_id.id]={}
+                if not v[t.product_id.id].has_key(t.price):
+                    v[t.product_id.id][t.price]={"qty":0,"amt":0}
+                if t.move_type=="in":
+                    v[t.product_id.id][t.price]["qty"] = v[t.product_id.id][t.price]["qty"] + t.qty
+                    v[t.product_id.id][t.price]["amt"] = v[t.product_id.id][t.price]["amt"] + t.amount
+                elif t.move_type=="out":
+                    v[t.product_id.id][t.price]["qty"] = v[t.product_id.id][t.price]["qty"] - t.qty
+                    v[t.product_id.id][t.price]["amt"] = v[t.product_id.id][t.price]["amt"] - t.amount
+            for k1,v1 in v.items():
+                for k2,v2 in v1.items():
+                    val={
+                        "parent_id":obj.id,
+                        "data_kind":"end",
+                        "product_id":k1,
+                        "qty":v2["qty"],
+                        "price":k2,
+                        "amount":v2["amt"]
+                    }
+                    self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
 
         #更新计算时间
         self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)

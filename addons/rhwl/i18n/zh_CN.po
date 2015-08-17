@@ -55,3 +55,103 @@ msgstr "本月"
 #: model:ir.actions.act_window,name:rhwl.action_sale_sampleone_import_report
 msgid "Import Sample Report"
 msgstr "接收湘雅实验报告"
+
+#. module: rhwl
+#: field:rhwl.material.cost,date:0
+msgid "Cost Date"
+msgstr "成本年月"
+
+#. module: rhwl
+#: field:rhwl.material.cost,user_id:0
+msgid "User"
+msgstr "作业人员"
+
+#. module: rhwl
+#: field:rhwl.material.cost,compute_date:0
+msgid "Compute Time"
+msgstr "计算时间"
+
+#. module: rhwl
+#: field:rhwl.material.cost,state:0
+msgid "State"
+msgstr "状态"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,data_kind:0
+msgid "Data Kind"
+msgstr "资料类别"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,move_type:0
+msgid "Move Type"
+msgstr "出入库类型"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,product_id:0
+msgid "Product"
+msgstr "产品"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,uom_id:0
+msgid "Unit"
+msgstr "单位"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,qty:0
+msgid "Qty"
+msgstr "数量"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,price:0
+msgid "Price"
+msgstr "单价"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,project:0
+msgid "Project"
+msgstr "项目"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,is_rd:0
+msgid "R&D"
+msgstr "研发？"
+
+#. module: rhwl
+#: field:rhwl.material.cost.line,amount:0
+msgid "Amt"
+msgstr "金额"
+
+#. module: rhwl
+#: selection:rhwl.material.cost,state:0
+msgid "Draft"
+msgstr "草稿"
+
+#. module: rhwl
+#: selection:rhwl.material.cost,state:0
+msgid "Done"
+msgstr "完成"
+
+#. module: rhwl
+#: selection:rhwl.material.cost.line,data_kind:0
+msgid "Begin"
+msgstr "期初"
+
+#. module: rhwl
+#: selection:rhwl.material.cost.line,data_kind:0
+msgid "This"
+msgstr "本期"
+
+#. module: rhwl
+#: selection:rhwl.material.cost.line,data_kind:0
+msgid "End"
+msgstr "期末"
+
+#. module: rhwl
+#: selection:rhwl.material.cost.line,move_type:0
+msgid "in"
+msgstr "购进"
+
+#. module: rhwl
+#: selection:rhwl.material.cost.line,move_type:0
+msgid "out"
+msgstr "耗用"
