@@ -30,7 +30,7 @@ class rhwl_material(osv.osv):
         "user_id":fields.many2one("res.users",string="User",readonly=True),
         "compute_date":fields.datetime("Compute Time",readonly=True),
         "state":fields.selection([("draft","Draft"),("done","Done")],string="State"),
-        "line":fields.one2many("rhwl.material.cost.line","parent_id",string="Detail",readonly=True)
+        "line":fields.one2many("rhwl.material.cost.line","parent_id",string="Detail")
     }
     _defaults={
         "user_id":lambda obj,cr,uid,context:uid,
@@ -214,7 +214,7 @@ class rhwl_material_line(osv.osv):
         "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
         "uom_id":fields.related("product_id","uom_id",type="many2one",obj="product.uom",string="Unit",readonly=True),
         "qty":fields.float("Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True,),
-        'price': fields.float('Price',digits_compute= dp.get_precision('Product Price'), readonly=True,),
+        'price': fields.float('Price',digits_compute= dp.get_precision('Product Price'),),
         "project":fields.many2one("res.company.project","Project"),
         "is_rd":fields.boolean("R&D"),
         'amount': fields.float("Amt", digits_compute=dp.get_precision('Account')),
