@@ -18,7 +18,7 @@ class rhwl_library_consump(osv.osv):
         "state":fields.selection([("draft","Draft"),("confirm","Confirm"),("done","Done"),("cancel","Cancel")],"State"),
         "note":fields.text("Note"),
         "active":fields.boolean("Active"),
-        "project":fields.many2one("res.company.project","Project"),
+        "project":fields.many2one("res.company.project","Project",required=True),
         "is_rd":fields.boolean("R&D"),
         "line":fields.one2many("rhwl.library.consump.line","name","Detail",readonly=True,states={'draft':[('readonly',False)]})
     }

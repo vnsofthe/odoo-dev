@@ -25,7 +25,7 @@ class rhwl_sample_info(osv.osv):
     _description = "样品信息表"
     # _inherit = "sale.order"
     _inherit = ['mail.thread', 'ir.needaction_mixin']
-    _order = "cx_date desc"
+    _order = "id desc,cx_date desc"
     _track = {
         'state': {
             'rhwl.mt_sample_cancel': lambda self, cr, uid, obj, ctx=None: obj.state in ['cancel'],

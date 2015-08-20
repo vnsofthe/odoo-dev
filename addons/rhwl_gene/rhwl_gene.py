@@ -388,7 +388,7 @@ class rhwl_gene(osv.osv):
     def create_gene_type_file(self, cr, uid, ids, context=None):
         self.pool.get("rhwl.genes.picking").export_box_genes(cr,uid,context=context) #先导出已经分箱的样本
         self.export_genes_img(cr,uid,context=context) #导出图片信息
-        ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], order="sex,name",context=context)
+        ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], order="sex,name",limit=200,context=context)
         if not ids:return
 
         if isinstance(ids, (long, int)):

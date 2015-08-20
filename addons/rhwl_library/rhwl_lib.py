@@ -20,7 +20,7 @@ class rhwl_lib(osv.osv):
         "line":fields.one2many("rhwl.library.request.line","name","Line",readonly=True,states={'draft':[('readonly',False)]}),
         "note":fields.text("Note"),
         "active":fields.boolean("Active"),
-        "project":fields.many2one("res.company.project","Project"),
+        "project":fields.many2one("res.company.project","Project",required=True),
         "is_rd":fields.boolean("R&D"),
     }
 
