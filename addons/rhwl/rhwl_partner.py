@@ -78,7 +78,7 @@ class rhwl_partner(osv.osv):
         for i in ids:
             self.write(cr,SUPERUSER_ID,i,{"partner_unid":str(i)})
         cr.execute("""update res_partner
-                    set partner_unid = partner_unid||'-'||id
+                    set partner_unid = partner_unid||'_'||id
                     where partner_unid in (select partner_unid from res_partner group by partner_unid having count(*)>1)""")
         #cr.execute("ALTER TABLE res_partner DROP constraint res_partner_partner_unid_uniq")
         cr.commit()
