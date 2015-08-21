@@ -81,6 +81,7 @@
                                         <field name="number_seq_ori"/>
                                         <field name="out_flag"/>
                                         <field name="in_flag"/>
+                                        <field name="invoice"/>
                                     </tree>
                                 </field>
                             </page>

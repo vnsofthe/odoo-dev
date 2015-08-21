@@ -266,11 +266,13 @@ class WebClient(http.Controller):
 
     @http.route("/web/crmapp/deliver/",type="http",auth="none")
     def app_deliver(self,**kw):
+
         res = self.check_userinfo(kw)
         data = {}
 
         if res.get('statu')==200:
             id = res.get("params").get("packageID")
+            parent_id = int(res.get("params").get("parentID"))
             detail = eval(res.get("params").get("demos"))
             #[{ "code":"X140545" , "preCode":"X145655" },{ "code":"4X32871" , "preCode":"" },{ "code":"4Y45474" , "preCode":"" } ]}';
             uid =  res.get("userid")
@@ -282,14 +284,14 @@ class WebClient(http.Controller):
                     userobj = registry.get("res.users")
                     partnerobj = registry.get("res.partner")
                     uobj = userobj.browse(cr,SUPERUSER_ID,uid,self.CONTEXT)
-                    partnerid = uobj.partner_id.parent_id.id
+
                     vals={
                         "num_express":id,
                         "product_qty":detail.__len__(),
                         "receiv_real_qty":0,
-                        "deliver_user":partnerobj.get_Contact_person(cr,SUPERUSER_ID,partnerid,self.CONTEXT),
-                        "deliver_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,partnerid,self.CONTEXT),
-                        "deliver_partner":partnerid,
+                        "deliver_user":uid,
+                        "deliver_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,parent_id,self.CONTEXT),
+                        "deliver_partner":parent_id,
                         "receiv_partner":1,
                         "receiv_user":partnerobj.get_Contact_person(cr,SUPERUSER_ID,1,self.CONTEXT),
                         "receiv_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,1,self.CONTEXT),
@@ -297,7 +299,7 @@ class WebClient(http.Controller):
                     mid = express.create(cr,uid,vals,context=self.CONTEXT)
                     did=[]
                     for j in detail:
-                        did.append( dobj.create(cr,uid,{"parent_id":mid,"number_seq":j.get("code"),"number_seq_ori":j.get("preCode"),"out_flag":True},context=self.CONTEXT))
+                        did.append( dobj.create(cr,uid,{"parent_id":mid,"number_seq":j.get("code"),"number_seq_ori":j.get("preCode"),"out_flag":True,"invoice":j.get("inv")},context=self.CONTEXT))
                     express.write(cr,uid,mid,{'detail_ids':[[6, False, did]]})
                     express.action_send(cr,uid,mid,context=self.CONTEXT)
                     data['statu'] = 200
@@ -529,7 +531,7 @@ class WebClient(http.Controller):
         return response.make_conditional(request.httprequest)
 
     @http.route("/web/api/rhwl/today/post/",type="http",auth="none")
-    def app_deliver(self,**kw):
+    def app_today_deliver(self,**kw):
         res = self.check_userinfo(kw)
         data = {}
 

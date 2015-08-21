@@ -86,7 +86,7 @@ class rhwl_express(osv.osv):
         return False
 
     def _get_product_id(self, cr, uid, context=None):
-        product_id = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True), ("active", "=", True)],
+        product_id = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True), ("active", "=", True),("default_code","=","P001")],
                                                              context=context)
         if isinstance(product_id, (list, tuple)):
             product_id = product_id[0]
@@ -294,7 +294,8 @@ class rhwl_express_in(osv.osv):
         'number_seq': fields.char(u"样品编号", size=20),
         'number_seq_ori': fields.char(u"原样品编号", size=20),
         "in_flag": fields.boolean(u"收货"),
-        "out_flag": fields.boolean(u'发货')
+        "out_flag": fields.boolean(u'发货'),
+        "invoice":fields.boolean(u"是否开票"),
     }
 
 class sale_express(osv.osv):

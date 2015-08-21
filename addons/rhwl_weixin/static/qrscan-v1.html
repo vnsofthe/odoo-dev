@@ -196,7 +196,7 @@
             return false;
         }
         var demo={
-            parentID:$("select").val(),
+            parentID:parseInt($("select").val()),
             packageID:no,
             demo:new Array()
         }
@@ -208,12 +208,12 @@
                 }else if(i==1&&$(this).text().indexOf(" ")>0){
                     tmp.preCode=$(this).text().split(" ")[0];
                 }else if(i==2){
-                    tmp.inv=$(this).children()[0].checked;
+                    tmp.inv=($(this).children()[0].checked?1:0);
                 }
             });
             demo.demo[i]=tmp;
         });
-        console.log(demo);
+
         $.ajax({
               type: 'POST',
               url: "/web/crmapp/deliver/?openid="+$.getUrlVar('openid'),
