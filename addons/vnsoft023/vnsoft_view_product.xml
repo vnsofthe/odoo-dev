@@ -81,6 +81,7 @@
                     <xpath expr="//form/sheet/h1/field[@name='name']" position="after">
                         <div class="oe_right oe_button_box" name="button_box">
                             <button name="do_create_purchase" string="生成采购单" type="object"/>
+                            <button name="do_open_purchase" string="打开采购单" type="object"/>
                         </div>
                     </xpath>
             </field>

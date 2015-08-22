@@ -51,12 +51,6 @@ class vnsoft_sale_order(osv.osv):
 
     def do_create_purchase(self,cr,uid,ids,context=None):
         res=self.browse(cr,uid,ids,context=context)
-        res_id=[]
-        detail_id = self.pool.get("purchase.order").search(cr,uid,[('origin','=',res.name)],context=context)
-        if detail_id:
-            result = self.pool.get("product.template")._get_act_window_dict(cr, uid, 'purchase.purchase_rfq', context=context)
-            result['domain'] = "[('id','in',[" + ','.join(map(str, detail_id)) + "])]"
-            return result
 
         #for i in res.order_line:
             #res_id.append(self.pool.get("sale.order.purchase").create(cr,uid,{"name":res.id,"product_id":i.product_id.id},context=context))
@@ -68,6 +62,15 @@ class vnsoft_sale_order(osv.osv):
                 'target': 'new',
                 'context':{"id":res.id},
                 'flags': {'form': {'action_buttons': False}}}
+
+    def do_open_purchase(self,cr,uid,ids,context=None):
+        res=self.browse(cr,uid,ids,context=context)
+        res_id=[]
+        detail_id = self.pool.get("purchase.order").search(cr,uid,[('origin','=',res.name)],context=context)
+        if detail_id:
+            result = self.pool.get("product.template")._get_act_window_dict(cr, uid, 'purchase.purchase_rfq', context=context)
+            result['domain'] = "[('id','in',[" + ','.join(map(str, detail_id)) + "])]"
+            return result
 
     def IIf(self, b, s1, s2):
        if b:
