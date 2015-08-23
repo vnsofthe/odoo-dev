@@ -167,10 +167,13 @@ class Scanner(Thread):
                 try:
                     device.ungrab() 
                 except Exception as e:
+                    device = None
                     self.set_status('error',str(e))
             else:
                 time.sleep(5)   # wait until a suitable device is plugged
                 device = self.get_device()
+                if not device:
+                    continue
 
             try:
                 device.grab()
@@ -204,12 +207,12 @@ class Scanner(Thread):
             except Exception as e:
                 self.set_status('error',str(e))
 
-s = Scanner()
-
-hw_proxy.drivers['scanner'] = s
+scanner_thread = None
+if evdev:
+    scanner_thread = Scanner()
+    hw_proxy.drivers['scanner'] = scanner_thread
 
 class ScannerDriver(hw_proxy.Proxy):
     @http.route('/hw_proxy/scanner', type='json', auth='none', cors='*')
     def scanner(self):
-        return s.get_barcode()
-
+        return scanner_thread.get_barcode() if scanner_thread else None

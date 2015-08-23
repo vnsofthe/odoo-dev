@@ -15,6 +15,7 @@ import simplejson
 import logging
 _logger = logging.getLogger(__name__)
 
+TIMEOUT = 20
 
 class google_service(osv.osv_memory):
     _name = 'google.service'
@@ -31,7 +32,7 @@ class google_service(osv.osv_memory):
         data = werkzeug.url_encode(data)
         try:
             req = urllib2.Request("https://accounts.google.com/o/oauth2/token", data, headers)
-            content = urllib2.urlopen(req).read()
+            content = urllib2.urlopen(req, timeout=TIMEOUT).read()
         except urllib2.HTTPError:
             error_msg = "Something went wrong during your token generation. Maybe your Authorization Code is invalid or already expired"
             raise self.pool.get('res.config.settings').get_config_warning(cr, _(error_msg), context=context)
@@ -148,7 +149,7 @@ class google_service(osv.osv_memory):
                 raise ('Method not supported [%s] not in [GET, POST, PUT, PATCH or DELETE]!' % (type))
             req.get_method = lambda: type.upper()
 
-            request = urllib2.urlopen(req)
+            request = urllib2.urlopen(req, timeout=TIMEOUT)
             status = request.getcode()
 
             if int(status) in (204, 404):  # Page not found, no response
@@ -162,13 +163,13 @@ class google_service(osv.osv_memory):
             except:
                 pass
         except urllib2.HTTPError, e:
-            if e.code in (400, 401, 410):
-                raise e
-            elif e.code in (204, 404):
+            if e.code in (204, 404):
                 status = e.code
                 response = ""
             else:
                 _logger.exception("Bad google request : %s !" % e.read())
+                if e.code in (400, 401, 410):
+                    raise e
                 raise self.pool.get('res.config.settings').get_config_warning(cr, _("Something went wrong with your request to google"), context=context)
         return (status, response, ask_time)
 
