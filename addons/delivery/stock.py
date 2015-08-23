@@ -34,8 +34,9 @@ class stock_picking(osv.osv):
             total_weight = total_weight_net = 0.00
 
             for move in picking.move_lines:
-                total_weight += move.weight
-                total_weight_net += move.weight_net
+                if move.state != 'cancel':
+                    total_weight += move.weight
+                    total_weight_net += move.weight_net
 
             res[picking.id] = {
                                 'weight': total_weight,
@@ -57,12 +58,12 @@ class stock_picking(osv.osv):
         'weight': fields.function(_cal_weight, type='float', string='Weight', digits_compute= dp.get_precision('Stock Weight'), multi='_cal_weight',
                   store={
                  'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['move_lines'], 40),
-                 'stock.move': (_get_picking_line, ['picking_id', 'product_id','product_uom_qty','product_uom'], 40),
+                 'stock.move': (_get_picking_line, ['state', 'picking_id', 'product_id','product_uom_qty','product_uom'], 40),
                  }),
         'weight_net': fields.function(_cal_weight, type='float', string='Net Weight', digits_compute= dp.get_precision('Stock Weight'), multi='_cal_weight',
                   store={
                  'stock.picking': (lambda self, cr, uid, ids, c={}: ids, ['move_lines'], 40),
-                 'stock.move': (_get_picking_line, ['picking_id', 'product_id','product_uom_qty','product_uom'], 40),
+                 'stock.move': (_get_picking_line, ['state', 'picking_id', 'product_id','product_uom_qty','product_uom'], 40),
                  }),
         'carrier_tracking_ref': fields.char('Carrier Tracking Ref', copy=False),
         'number_of_packages': fields.integer('Number of Packages', copy=False),
@@ -80,6 +81,7 @@ class stock_picking(osv.osv):
         """
         carrier_obj = self.pool.get('delivery.carrier')
         grid_obj = self.pool.get('delivery.grid')
+        currency_obj = self.pool.get('res.currency')
         if not picking.carrier_id or \
             any(inv_line.product_id.id == picking.carrier_id.product_id.id
                 for inv_line in invoice.invoice_line):
@@ -95,6 +97,9 @@ class stock_picking(osv.osv):
         price = grid_obj.get_price_from_picking(cr, uid, grid_id,
                 invoice.amount_untaxed, picking.weight, picking.volume,
                 quantity, context=context)
+        if invoice.company_id.currency_id.id != invoice.currency_id.id:
+            price = currency_obj.compute(cr, uid, invoice.company_id.currency_id.id, invoice.currency_id.id,
+                price, context=dict(context or {}, date=invoice.date_invoice))
         account_id = picking.carrier_id.product_id.property_account_income.id
         if not account_id:
             account_id = picking.carrier_id.product_id.categ_id\
