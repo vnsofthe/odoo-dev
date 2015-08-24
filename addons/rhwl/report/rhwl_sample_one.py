@@ -26,7 +26,8 @@ class rhwl_sample_report(osv.osv):
         "check_state": fields.selection(
             [('get', u'已接收'), ('library', u'已进实验室'), ('pc', u'已上机'), ('reuse', u'需重采血'), ('ok', u'检验结果正常'),
              ('except', u'检验结果阳性')], u'检验状态'),
-        "amt":fields.float("Amt")
+        "amt":fields.float("Amt"),
+        "sale_user":fields.many2one('res.users', string=u'销售人员'),
     }
 
     def _select(self):
@@ -44,7 +45,8 @@ class rhwl_sample_report(osv.osv):
                     a.is_reused as is_reused,
                     a.is_free as is_free,
                     a.check_state as check_state,
-                    c.price_unit * c.product_uom_qty as amt
+                    c.price_unit * c.product_uom_qty as amt,
+                    b.user_id as sale_user
         """
         return select_str
 

@@ -155,12 +155,14 @@
                     <xpath expr="//page[@name='sales_purchases']//field[@name='supplier']" position="attributes">
                         <attribute name="attrs">{'invisible':['|',('customer','=',True),('supplier','=',True)]}</attribute>
                     </xpath>
+                    <!--
                     <xpath expr="//field[@name='property_stock_supplier']" position="attributes">
                         <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
                     </xpath>
                     <xpath expr="//field[@name='property_stock_customer']" position="attributes">
                         <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
                     </xpath>
+                    -->
                     <xpath expr="//field[@name='notify_email']" position="attributes">
                         <attribute name="attrs">{'invisible':[('customer','=',True)]}</attribute>
                     </xpath>

@@ -299,7 +299,7 @@
             <field name="name">sale.sample.reuse.form</field>
             <field name="model">sale.sampleone.reuse</field>
             <field name="arch" type="xml">
-                <form string="Sale Sample">
+                <form string="Sale Sample ReUse">
                     <header>
                         <button name="action_done" states="draft" string="已通知" type="object"
                                 groups="base.group_user" class="oe_highlight"/>
@@ -330,10 +330,8 @@
                             <page string="孕妇说明及备注">
                                 <field name="note"/>
                             </page>
-
                         </notebook>
                     </sheet>
-
                 </form>
             </field>
         </record>
@@ -535,7 +533,7 @@
                 </tree>
             </field>
         </record>
-        <record model="ir.ui.view" id="sale_sample_reuse_form">
+        <record model="ir.ui.view" id="sale_sample_days_form">
             <field name="name">sale.sample.days.form</field>
             <field name="model">sale.sampleone.days</field>
             <field name="arch" type="xml">

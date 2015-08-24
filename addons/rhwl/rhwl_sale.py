@@ -637,7 +637,7 @@ class rhwl_sample_lims(osv.osv):
 class rhwl_reuse(osv.osv):
     _name = "sale.sampleone.reuse"
     _inherit = ['ir.needaction_mixin']
-    _description = "样本信息重采血"
+
     _order = "id desc"
 
     def _get_new_name(self, cr, uid, ids, prop, arg, context=None):

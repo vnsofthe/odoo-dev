@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_genes_base_customer_view_tree">
+            <field name="name">rhwl.genes.base.customer.view.tree</field>
+            <field name="model">rhwl.genes.base.customer</field>
+            <field name="arch" type="xml">
+                <tree string="易感客户" >
+
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_base_customer_view_form">
+            <field name="name">rhwl.genes.base.customer.view.form</field>
+            <field name="model">rhwl.genes.base.customer</field>
+            <field name="arch" type="xml">
+                <form string="易感客户">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="code"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="语言分类">
+                                <field name="detail">
+                                    <tree editable="TOP">
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_base_customer_search">
+            <field name="name">rhwl.genes.base.customer.search</field>
+            <field name="model">rhwl.genes.base.customer</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_genes_base_customer" model="ir.actions.act_window">
+            <field name="name">易感客户信息</field>
+            <field name="res_model">rhwl.genes.base.customer</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_base_customer_view_tree"/>
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_genes_base_customer" parent="menu_rhwl_easy_genes_disease" name="客户信息维护" sequence="20"
+                  action='action_genes_base_customer' groups="rhwl_base_tjs"/>
+
+        <record model="ir.ui.view" id="rhwl_genes_base_set_view_tree">
+            <field name="name">rhwl.genes.base.set.view.tree</field>
+            <field name="model">rhwl.genes.base.set</field>
+            <field name="arch" type="xml">
+                <tree string="易感套系" >
+                    <field name="parent_id"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_base_set_view_form">
+            <field name="name">rhwl.genes.base.set.view.form</field>
+            <field name="model">rhwl.genes.base.set</field>
+            <field name="arch" type="xml">
+                <form string="易感套系">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="parent_id"/>
+                                <field name="name"/>
+                                <field name="code"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="套餐分类">
+                                <field name="detail">
+                                    <tree editable="TOP">
+                                        <field name="name"/>
+                                        <field name="code"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_base_set_search">
+            <field name="name">rhwl.genes.base.set.search</field>
+            <field name="model">rhwl.genes.base.set</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_genes_base_set" model="ir.actions.act_window">
+            <field name="name">易感套餐信息</field>
+            <field name="res_model">rhwl.genes.base.set</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_base_set_view_tree"/>
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_genes_base_set" parent="menu_rhwl_easy_genes_disease" name="套餐信息维护" sequence="30"
+                  action='action_genes_base_set' groups="rhwl_base_tjs"/>
+    </data>
+</openerp>
