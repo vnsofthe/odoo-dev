@@ -167,7 +167,7 @@ class rhwl_import(osv.osv_memory):
 
                 self.pool.get("rhwl.easy.genes.check").create(cr,uid,val,context=context)
 
-                if (t1<10 or t2<1.8 or t2>2 or t3<2 or t4>0.01):
+                if (t4>0.01):
                     self.pool.get("rhwl.easy.genes").action_state_dna(cr,uid,id,context=context)
                 else:
                     genes_obj = self.pool.get("rhwl.easy.genes").browse(cr,uid,id,context=context)
