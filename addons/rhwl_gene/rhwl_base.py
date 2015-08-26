@@ -11,6 +11,7 @@ import shutil
 import re
 from openerp import tools
 from lxml import etree
+from openerp.osv import osv, fields, expression
 _logger = logging.getLogger(__name__)
 
 class rhwl_base(osv.osv):
@@ -85,3 +86,46 @@ class rhwl_base_package(osv.osv):
     _sql_constraints = [
         ('rhwl_genes_base_package_code_uniq', 'unique(parent_id,code)', u'代号不能重复!'),
     ]
+
+    def name_get(self, cr, user, ids, context=None):
+        if context is None:
+            context = {}
+        if isinstance(ids, (int, long)):
+            ids = [ids]
+        if not len(ids):
+            return []
+        res=[]
+        for i in self.browse(cr,user,ids,context=context):
+            parent_name="%s(%s) / %s(%s) / %s(%s)" % (i.parent_id.parent_id.parent_id.name,i.parent_id.parent_id.parent_id.code,i.parent_id.parent_id.name,i.parent_id.parent_id.code,i.parent_id.name,i.parent_id.code,)
+            res.append((i.id,parent_name+" / "+i.name+"("+i.code+")"))
+        return res
+
+    def name_search(self, cr, uid, name, args=None, operator='ilike', context=None, limit=100):
+        if not args:
+            args = []
+        if not context:
+            context = {}
+        if name:
+            # Be sure name_search is symetric to name_get
+            categories = name.split(' / ')
+            parents = list(categories)
+            child = parents.pop()
+            domain = [('name', operator, child)]
+            if parents:
+                names_ids = self.name_search(cr, uid, ' / '.join(parents), args=args, operator='ilike', context=context, limit=limit)
+                category_ids = [name_id[0] for name_id in names_ids]
+                if operator in expression.NEGATIVE_TERM_OPERATORS:
+                    category_ids = self.search(cr, uid, [('id', 'not in', category_ids)])
+                    domain = expression.OR([[('parent_id', 'in', category_ids)], domain])
+                else:
+                    domain = expression.AND([[('parent_id', 'in', category_ids)], domain])
+                for i in range(1, len(categories)):
+                    domain = [[('name', operator, ' / '.join(categories[-1 - i:]))], domain]
+                    if operator in expression.NEGATIVE_TERM_OPERATORS:
+                        domain = expression.AND(domain)
+                    else:
+                        domain = expression.OR(domain)
+            ids = self.search(cr, uid, expression.AND([domain, args]), limit=limit, context=context)
+        else:
+            ids = self.search(cr, uid, args, limit=limit, context=context)
+        return self.name_get(cr, uid, ids, context)
