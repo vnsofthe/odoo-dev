@@ -56,7 +56,8 @@ class rhwl_product_template(osv.osv):
         "brand":fields.related("product_variant_ids","brand",type="char",string=u"品牌",size=20),
         "product_no":fields.related("product_variant_ids","product_no",type="char",string=u"物品编码"),
         "cost_allocation":fields.boolean(u"可跨月分摊"),
-        "project_ids":fields.related("product_variant_ids","project_ids",type="one2many",relation="rhwl.product.project",string=u"项目耗用量")
+        "project_ids":fields.related("product_variant_ids","project_ids",type="one2many",relation="rhwl.product.project",string=u"项目耗用量"),
+        'uol_id': fields.many2one('product.uom', 'Unit of Library',),
     }
     _defaults={
         'purchase_requisition':True,
