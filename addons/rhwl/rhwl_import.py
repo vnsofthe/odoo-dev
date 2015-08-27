@@ -91,7 +91,8 @@ class rhwl_import(osv.osv):
             attribute_id = product_attribute.create(cr,uid,{"name":"规格"},context=context)
         else:
             attribute_id = attribute_id[0]
-
+        template_ids = product_template.search(cr,uid,[("type","=","product"),'|',("default_code","=",False),("default_code","!=","P001")])
+        product_template.write(cr,uid,template_ids,{"active":False})
         for i in self.browse(cr,uid,ids,context=context):
             categ_id = self.check_product_category(cr,uid,i.col1,i.col2,context)
             template_id = product_template.search(cr,uid,[("name","=",i.col11),("description","=",i.col5)])

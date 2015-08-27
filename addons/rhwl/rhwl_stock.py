@@ -148,6 +148,7 @@ class stock_quant(osv.osv):
             for i in self.browse(cr,SUPERUSER_ID,ids,context=context):
                 for j in i.history_ids:
                     move_ids.append(j.id)
+            move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("id","in",move_ids)])
             self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"price_unit":val.get("cost")},context=context)
         return res
 
