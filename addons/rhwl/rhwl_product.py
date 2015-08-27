@@ -13,6 +13,7 @@ class rhwl_product_product(osv.osv):
         "brand":fields.char(u"品牌",size=20),
         "product_no":fields.char(u"物品编码",size=20),
         "project_ids":fields.one2many("rhwl.product.project","product_id",u"项目耗用量"),
+        'uol_id': fields.many2one('product.uom', 'Unit of Library',),
     }
 
     _default = {
@@ -22,7 +23,7 @@ class rhwl_product_product(osv.osv):
 class rhwl_product_project(osv.osv):
     _name = "rhwl.product.project"
     _columns={
-        "product_id":fields.many2one("product.product","Product"),
+        "product_id":fields.many2one("product.product","Product",ondelete="cascade"),
         "project_id":fields.many2one("res.company.project","Project",ondelete="restrict"),
         "sample_count":fields.float(u"可做样品数",digits_compute=dp.get_precision('Product Price')),
     }
@@ -81,6 +82,8 @@ class rhwl_product_template(osv.osv):
             related_vals['project_ids'] = vals['project_ids']
         if vals.get("cost_allocation"):
             related_vals["cost_allocation"] = vals["cost_allocation"]
+        if vals.get("uol_id"):
+            related_vals["uol_id"] = vals["uol_id"]
         if related_vals:
             self.write(cr, uid, product_template_id, related_vals, context=context)
 

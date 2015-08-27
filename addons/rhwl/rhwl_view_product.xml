@@ -10,6 +10,7 @@
                     <xpath expr="//field[@name='list_price']" position="after">
                         <field name="brand" />
                         <field name="cost_allocation"/>
+                        <field name="uol_id" attrs="{'invisible':[('cost_allocation','=',False)]}"/>
                     </xpath>
                     <xpath expr="//field[@name='default_code']" position="before">
                         <field name="product_no" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>
@@ -47,6 +48,7 @@
                 <data>
                     <xpath expr="//field[@name='lst_price']" position="after">
                         <field name="cost_allocation"/>
+                        <field name="uol_id"/>
                     </xpath>
                     <xpath expr="//field[@name='default_code']" position="before">
                         <field name="product_no"/>
