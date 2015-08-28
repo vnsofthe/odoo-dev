@@ -204,6 +204,38 @@ class rhwl_material(osv.osv):
         self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)
         pass
 
+    def _get_data_dict(self,cr,uid,id,context=None):
+        data={}
+        project_count = []
+        obj = self.browse(cr,uid,id,context=context)
+        for i in obj.line:
+            project_id = i.project and i.project.id or 0
+            if not data.has_key(i.product_id.categ_id.parent_id.id):
+                data[i.product_id.categ_id.parent_id.id]={}
+            if not data[i.product_id.categ_id.parent_id.id].has_key(i.product_id.categ_id.id):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id]={}
+            if not data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id].has_key(i.product_id.id):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id]={}
+            if not data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id].has_key(i.price):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]={}
+            if not data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price].has_key("begin"):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["begin"]=[]
+            if not data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price].has_key("end"):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["end"]=[]
+            if not data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price].has_key("this"):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["this"]={"in":[],"out":{}}
+
+            if i.data_kind in ("begin","end"):
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price][i.data_kind].append(i.id)
+            if i.data_kind=="this" and i.move_type=="in":
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["this"]["in"].append(i.id)
+            if i.data_kind=="this" and i.move_type=="out":
+                if not data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["this"]["out"].has_key(project_id):
+                    data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["this"]["out"][project_id]=[]
+                if project_count.count(project_id) == 0:project_count.append(project_id)
+                data[i.product_id.categ_id.parent_id.id][i.product_id.categ_id.id][i.product_id.id][i.price]["this"]["out"][project_id].append(i.id)
+        return len(project_count),data
+
 class rhwl_material_line(osv.osv):
     _name="rhwl.material.cost.line"
     _columns={

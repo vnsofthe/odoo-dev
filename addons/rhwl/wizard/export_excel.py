@@ -32,7 +32,7 @@ import logging
 import zipfile
 import subprocess
 import shutil
-
+from openerp import SUPERUSER_ID
 _logger = logging.getLogger(__name__)
 class export_excel(osv.osv_memory):
     _name = "sale.sample.export.excel"
@@ -60,6 +60,8 @@ class export_excel(osv.osv_memory):
             return self.action_excel_report4(cr,uid,ids,context=context)
         elif context.get('func_name','')=="report5":
             return self.action_excel_report5(cr,uid,ids,context=context)
+        elif context.get('func_name','')=="report6":
+            return self.action_excel_report6(cr,uid,ids,context=context)
 
     def action_excel_bx(self,cr,uid,ids,context=None):
         if not context.get("active_ids"):return
@@ -380,6 +382,156 @@ class export_excel(osv.osv_memory):
             'target': 'new',
             'name':u"导出实验结果"
         }
+
+    def action_excel_report6(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+        ids = ids[0]
+        mat_cost_obj = self.pool.get("rhwl.material.cost").browse(cr,SUPERUSER_ID,ids,context=context)
+        #cate_obj = self.pool.get("product.category")
+        #pcate_id = cate_obj.search(cr,uid,[("parent_id.id","=",1),("name","=","实验用品")])
+
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+
+        ws.write_merge(1,4,0,0,u"序号")
+        ws.write_merge(1,4,1,1,u"类别")
+        ws.write_merge(1,4,2,2,u"分类")
+        ws.write_merge(1,4,3,3,u"代码")
+        ws.write_merge(1,4,4,4,u"名称")
+        ws.write_merge(1,4,5,5,u"货号")
+        ws.write_merge(1,4,6,6,u"规格")
+        ws.write_merge(1,2,7,9,u"期初")
+        ws.write_merge(3,4,7,7,u"数量")
+        ws.write_merge(3,4,8,8,u"单价（元）")
+        ws.write_merge(3,4,9,9,u"价值（元）")
+        ws.write_merge(2,2,10,12,u"入库")
+        ws.write_merge(3,4,10,10,u"数量")
+        ws.write_merge(3,4,11,11,u"单价（元）")
+        ws.write_merge(3,4,12,12,u"价值（元）")
+        rows=5
+
+        project_count,data = self.pool.get("rhwl.material.cost")._get_data_dict(cr,SUPERUSER_ID,ids,context)
+        ws.write_merge(0,0,0,12+project_count*3+6,u"人和未来生物科技（长沙）有限公司%s年%s月原材料、低值易耗品、包装物成本计算表"%(mat_cost_obj.date.split("-")[0],mat_cost_obj.date.split("-")[1]))
+
+        ws.write_merge(1,1,10,10+project_count*3+6-1,u"本期")
+        ws.write_merge(2,2,13,13+project_count*3-1,u"耗用")
+        ws.write_merge(2,2,13+project_count*3,13+project_count*3+2,u"本期成本")
+        ws.write_merge(3,4,13+project_count*3,13+project_count*3,u"数量")
+        ws.write_merge(3,4,13+project_count*3+1,13+project_count*3+1,u"单价（元）")
+        ws.write_merge(3,4,13+project_count*3+2,13+project_count*3+2,u"价值（元）")
+
+        ws.write_merge(1,2,13+project_count*3+3,13+project_count*3+3+2,u"期末")
+        ws.write_merge(3,4,13+project_count*3+3,13+project_count*3+3,u"数量")
+        ws.write_merge(3,4,13+project_count*3+4,13+project_count*3+4,u"单价（元）")
+        ws.write_merge(3,4,13+project_count*3+5,13+project_count*3+5,u"价值（元）")
+
+        project_col={}
+        for k,v in data.items():
+            for k1,v1 in v.items():
+                for k2,v2 in v1.items():
+                    for k3,v3 in v2.items():
+                        total_qty = 0
+                        total_amt = 0
+                        detail_obj = None
+
+                        if v3.get("begin"):
+                            for line in self.pool.get("rhwl.material.cost.line").browse(cr,SUPERUSER_ID,v3.get("begin"),context=context):
+                                total_qty += line.qty
+                                total_amt += line.amount
+                                detail_obj = line
+                            ws.write(rows,7,total_qty)
+                            ws.write(rows,8,k3)
+                            ws.write(rows,9,total_amt)
+
+                        total_qty = 0
+                        total_amt = 0
+                        if v3.get("this").get("in"):
+                            for line in self.pool.get("rhwl.material.cost.line").browse(cr,SUPERUSER_ID,v3.get("this").get("in"),context=context):
+                                total_qty += line.qty
+                                total_amt += line.amount
+                                detail_obj = line
+                            ws.write(rows,10,total_qty)
+                            ws.write(rows,11,k3)
+                            ws.write(rows,12,total_amt)
+
+                        total_qty_s = 0
+                        total_amt_s = 0
+                        for k4,v4 in v3.get("this").get("out").items():
+                            if not project_col.has_key(k4):
+                                project_col[k4] = len(project_col.keys())*3 + 13
+                                ws.write(4,project_col[k4],u"数量")
+                                ws.write(4,project_col[k4]+1,u"单价（元）")
+                                ws.write(4,project_col[k4]+2,u"价值（元）")
+                                if k4==0:
+                                    ws.write_merge(3,3,project_col[k4],project_col[k4]+2,u"其它")
+                                else:
+                                    project_obj = self.pool.get("res.company.project").browse(cr,SUPERUSER_ID,k4,context=context)
+                                    ws.write_merge(3,3,project_col[k4],project_col[k4]+2,project_obj.name)
+                            total_qty = 0
+                            total_amt = 0
+                            for line in self.pool.get("rhwl.material.cost.line").browse(cr,SUPERUSER_ID,v4,context=context):
+                                total_qty += line.qty
+                                total_amt += line.amount
+                                detail_obj = line
+
+                                total_qty_s += total_qty
+                                total_amt_s += total_amt
+                            ws.write(rows,project_col[k4],total_qty)
+                            ws.write(rows,project_col[k4] + 1,k3)
+                            ws.write(rows,project_col[k4] + 2,total_amt)
+
+                        #本期成本
+                        if total_qty_s:
+                            ws.write(rows,13+project_count*3,total_qty_s)
+                            ws.write(rows,13+project_count*3+1,k3)
+                            ws.write(rows,13+project_count*3+2,total_amt_s)
+
+                        if v3.get("end"):
+                            total_qty = 0
+                            total_amt = 0
+                            for line in self.pool.get("rhwl.material.cost.line").browse(cr,SUPERUSER_ID,v3.get("end"),context=context):
+                                total_qty += line.qty
+                                total_amt += line.amount
+                                detail_obj = line
+                            ws.write(rows,13+project_count*3+3,total_qty)
+                            ws.write(rows,13+project_count*3+4,k3)
+                            ws.write(rows,13+project_count*3+5,total_amt)
+
+                        ws.write(rows,1,detail_obj.product_id.categ_id.parent_id.name)
+                        ws.write(rows,2,detail_obj.product_id.categ_id.name)
+                        ws.write(rows,4,detail_obj.product_id.name)
+                        ws.write(rows,5,detail_obj.product_id.default_code or "")
+
+                        attribute_name=[]
+                        for avl in detail_obj.product_id.attribute_value_ids:
+                            attribute_name.append(avl.name)
+                        ws.write(rows,6,",".join(attribute_name))
+
+                        rows += 1
+        w.save(xlsname)
+        f=open(xlsname,'rb')
+
+        id = self.create(cr,uid,{"state":"done","file":base64.encodestring(f.read()),"name":mat_cost_obj.date+u"成本计算表.xls"})
+        f.close()
+        os.remove(xlsname)
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.sample.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出成本计算表"
+        }
+
 
     def get_excel_style(self,font_size=10,horz=xlwt.Alignment.HORZ_LEFT,border=xlwt.Borders.NO_LINE,blod=False):
         #18号字，加边框，水平靠右，垂直居中

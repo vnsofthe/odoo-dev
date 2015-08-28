@@ -75,6 +75,15 @@
             multi="True"
             key2="client_action_multi"
             id="action_sale_sampleone_export_excel3"/>
+
+        <act_window name="导出成本计算表"
+            context="{'func_name': 'report6'}"
+            res_model="sale.sample.export.excel"
+            src_model="rhwl.material.cost"
+            view_mode="form"
+            target="new"
+            id="action_rhwl_material_cost_excel"/>
+
     </data>
 </openerp>
 
