@@ -249,3 +249,23 @@ class vnsoft_partner(osv.osv):
     _columns = {
         "tax_no":fields.char(u"税号",size=30)
     }
+
+class vnsoft_picking(osv.osv):
+    _inherit="stock.picking"
+
+    def _get_client_order_ref(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for sale in self.browse(cr, uid, ids, context=context):
+            if not sale.group_id:
+                res[sale.id] = None
+                continue
+            so_id =  self.pool.get('sale.order').search(cr, uid, [('procurement_group_id', '=', sale.group_id.id)], context=context)
+            if so_id:
+                res[sale.id] = so_id[0]
+            else:
+                res[sale.id]=None
+        return res
+
+    _columns={
+        "client_order_ref":fields.function(_get_client_order_ref,type='many2one', relation='sale.order',string="Client Order Ref")
+    }
