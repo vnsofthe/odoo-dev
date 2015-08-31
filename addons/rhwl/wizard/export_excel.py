@@ -395,41 +395,46 @@ class export_excel(osv.osv_memory):
         mat_cost_obj = self.pool.get("rhwl.material.cost").browse(cr,SUPERUSER_ID,ids,context=context)
         #cate_obj = self.pool.get("product.category")
         #pcate_id = cate_obj.search(cr,uid,[("parent_id.id","=",1),("name","=","实验用品")])
-
+        header_style = self.get_excel_style(font_size=12,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN,blod=False)
+        content_style = self.get_excel_style(font_size=10,border=xlwt.Borders.THIN,blod=False)
+        content_style_num = self.get_excel_style(font_size=10,horz=xlwt.Alignment.HORZ_RIGHT,border=xlwt.Borders.THIN,blod=False)
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
+        ws.col(1).width = 4000
+        ws.col(4).width = 9000
+        ws.col(5).width = 4000
 
-        ws.write_merge(1,4,0,0,u"序号")
-        ws.write_merge(1,4,1,1,u"类别")
-        ws.write_merge(1,4,2,2,u"分类")
-        ws.write_merge(1,4,3,3,u"代码")
-        ws.write_merge(1,4,4,4,u"名称")
-        ws.write_merge(1,4,5,5,u"货号")
-        ws.write_merge(1,4,6,6,u"规格")
-        ws.write_merge(1,2,7,9,u"期初")
-        ws.write_merge(3,4,7,7,u"数量")
-        ws.write_merge(3,4,8,8,u"单价（元）")
-        ws.write_merge(3,4,9,9,u"价值（元）")
-        ws.write_merge(2,2,10,12,u"入库")
-        ws.write_merge(3,4,10,10,u"数量")
-        ws.write_merge(3,4,11,11,u"单价（元）")
-        ws.write_merge(3,4,12,12,u"价值（元）")
+        ws.write_merge(1,4,0,0,u"序号",style=header_style)
+        ws.write_merge(1,4,1,1,u"类别",style=header_style)
+        ws.write_merge(1,4,2,2,u"分类",style=header_style)
+        ws.write_merge(1,4,3,3,u"代码",style=header_style)
+        ws.write_merge(1,4,4,4,u"名称",style=header_style)
+        ws.write_merge(1,4,5,5,u"货号",style=header_style)
+        ws.write_merge(1,4,6,6,u"规格",style=header_style)
+        ws.write_merge(1,2,7,9,u"期初",style=header_style)
+        ws.write_merge(3,4,7,7,u"数量",style=header_style)
+        ws.write_merge(3,4,8,8,u"单价（元）",style=header_style)
+        ws.write_merge(3,4,9,9,u"价值（元）",style=header_style)
+        ws.write_merge(2,2,10,12,u"入库",style=header_style)
+        ws.write_merge(3,4,10,10,u"数量",style=header_style)
+        ws.write_merge(3,4,11,11,u"单价（元）",style=header_style)
+        ws.write_merge(3,4,12,12,u"价值（元）",style=header_style)
         rows=5
 
         project_count,data = self.pool.get("rhwl.material.cost")._get_data_dict(cr,SUPERUSER_ID,ids,context)
-        ws.write_merge(0,0,0,12+project_count*3+6,u"人和未来生物科技（长沙）有限公司%s年%s月原材料、低值易耗品、包装物成本计算表"%(mat_cost_obj.date.split("-")[0],mat_cost_obj.date.split("-")[1]))
+        ws.write_merge(0,0,0,12+project_count*3+6,u"人和未来生物科技（长沙）有限公司%s年%s月原材料、低值易耗品、包装物成本计算表"%(mat_cost_obj.date.split("-")[0],mat_cost_obj.date.split("-")[1]),style=self.get_excel_style(font_size=12,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN,blod=True))
 
-        ws.write_merge(1,1,10,10+project_count*3+6-1,u"本期")
-        ws.write_merge(2,2,13,13+project_count*3-1,u"耗用")
-        ws.write_merge(2,2,13+project_count*3,13+project_count*3+2,u"本期成本")
-        ws.write_merge(3,4,13+project_count*3,13+project_count*3,u"数量")
-        ws.write_merge(3,4,13+project_count*3+1,13+project_count*3+1,u"单价（元）")
-        ws.write_merge(3,4,13+project_count*3+2,13+project_count*3+2,u"价值（元）")
+        ws.write_merge(1,1,10,10+project_count*3+6-1,u"本期",style=header_style)
+        ws.write_merge(2,2,13,13+project_count*3-1,u"耗用",style=header_style)
+        ws.write_merge(2,2,13+project_count*3,13+project_count*3+2,u"本期成本",style=header_style)
+        ws.write_merge(3,4,13+project_count*3,13+project_count*3,u"数量",style=header_style)
+        ws.write_merge(3,4,13+project_count*3+1,13+project_count*3+1,u"单价（元）",style=header_style)
+        ws.write_merge(3,4,13+project_count*3+2,13+project_count*3+2,u"价值（元）",style=header_style)
 
-        ws.write_merge(1,2,13+project_count*3+3,13+project_count*3+3+2,u"期末")
-        ws.write_merge(3,4,13+project_count*3+3,13+project_count*3+3,u"数量")
-        ws.write_merge(3,4,13+project_count*3+4,13+project_count*3+4,u"单价（元）")
-        ws.write_merge(3,4,13+project_count*3+5,13+project_count*3+5,u"价值（元）")
+        ws.write_merge(1,2,13+project_count*3+3,13+project_count*3+3+2,u"期末",style=header_style)
+        ws.write_merge(3,4,13+project_count*3+3,13+project_count*3+3,u"数量",style=header_style)
+        ws.write_merge(3,4,13+project_count*3+4,13+project_count*3+4,u"单价（元）",style=header_style)
+        ws.write_merge(3,4,13+project_count*3+5,13+project_count*3+5,u"价值（元）",style=header_style)
 
         project_col={}
         for k,v in data.items():
@@ -439,15 +444,19 @@ class export_excel(osv.osv_memory):
                         total_qty = 0
                         total_amt = 0
                         detail_obj = None
-
+                        project_line = []
                         if v3.get("begin"):
                             for line in self.pool.get("rhwl.material.cost.line").browse(cr,SUPERUSER_ID,v3.get("begin"),context=context):
                                 total_qty += line.qty
                                 total_amt += line.amount
                                 detail_obj = line
-                            ws.write(rows,7,total_qty)
-                            ws.write(rows,8,k3)
-                            ws.write(rows,9,total_amt)
+                            ws.write(rows,7,total_qty,style=content_style_num)
+                            ws.write(rows,8,k3,style=content_style_num)
+                            ws.write(rows,9,total_amt,style=content_style_num)
+                        else:
+                            ws.write(rows,7,"-",style=content_style_num)
+                            ws.write(rows,8,"-",style=content_style_num)
+                            ws.write(rows,9,"-",style=content_style_num)
 
                         total_qty = 0
                         total_amt = 0
@@ -456,23 +465,27 @@ class export_excel(osv.osv_memory):
                                 total_qty += line.qty
                                 total_amt += line.amount
                                 detail_obj = line
-                            ws.write(rows,10,total_qty)
-                            ws.write(rows,11,k3)
-                            ws.write(rows,12,total_amt)
+                            ws.write(rows,10,total_qty,style=content_style_num)
+                            ws.write(rows,11,k3,style=content_style_num)
+                            ws.write(rows,12,total_amt,style=content_style_num)
+                        else:
+                            ws.write(rows,10,"-",style=content_style_num)
+                            ws.write(rows,11,"-",style=content_style_num)
+                            ws.write(rows,12,"-",style=content_style_num)
 
                         total_qty_s = 0
                         total_amt_s = 0
                         for k4,v4 in v3.get("this").get("out").items():
                             if not project_col.has_key(k4):
                                 project_col[k4] = len(project_col.keys())*3 + 13
-                                ws.write(4,project_col[k4],u"数量")
-                                ws.write(4,project_col[k4]+1,u"单价（元）")
-                                ws.write(4,project_col[k4]+2,u"价值（元）")
+                                ws.write(4,project_col[k4],u"数量",style=header_style)
+                                ws.write(4,project_col[k4]+1,u"单价（元）",style=header_style)
+                                ws.write(4,project_col[k4]+2,u"价值（元）",style=header_style)
                                 if k4==0:
-                                    ws.write_merge(3,3,project_col[k4],project_col[k4]+2,u"其它")
+                                    ws.write_merge(3,3,project_col[k4],project_col[k4]+2,u"其它",style=header_style)
                                 else:
                                     project_obj = self.pool.get("res.company.project").browse(cr,SUPERUSER_ID,k4,context=context)
-                                    ws.write_merge(3,3,project_col[k4],project_col[k4]+2,project_obj.name)
+                                    ws.write_merge(3,3,project_col[k4],project_col[k4]+2,project_obj.name,style=header_style)
                             total_qty = 0
                             total_amt = 0
                             for line in self.pool.get("rhwl.material.cost.line").browse(cr,SUPERUSER_ID,v4,context=context):
@@ -482,16 +495,27 @@ class export_excel(osv.osv_memory):
 
                                 total_qty_s += total_qty
                                 total_amt_s += total_amt
-                            ws.write(rows,project_col[k4],total_qty)
-                            ws.write(rows,project_col[k4] + 1,k3)
-                            ws.write(rows,project_col[k4] + 2,total_amt)
+                            ws.write(rows,project_col[k4],total_qty,style=content_style_num)
+                            ws.write(rows,project_col[k4] + 1,k3,style=content_style_num)
+                            ws.write(rows,project_col[k4] + 2,total_amt,style=content_style_num)
+
+                            project_line.append(project_col[k4])#记录当前行产品有在几个项目耗用。
+                        #如果该产品在某些项目没有领用，则将栏位赋为空。
+                        for p in range(0,project_count):
+                            if project_line.count(13+p*3)>0:continue
+                            ws.write(rows,13+p*3,"-",style=content_style_num)
+                            ws.write(rows,13+p*3 + 1,"-",style=content_style_num)
+                            ws.write(rows,13+p*3 + 2,"-",style=content_style_num)
 
                         #本期成本
                         if total_qty_s:
-                            ws.write(rows,13+project_count*3,total_qty_s)
-                            ws.write(rows,13+project_count*3+1,k3)
-                            ws.write(rows,13+project_count*3+2,total_amt_s)
-
+                            ws.write(rows,13+project_count*3,total_qty_s,style=content_style_num)
+                            ws.write(rows,13+project_count*3+1,k3,style=content_style_num)
+                            ws.write(rows,13+project_count*3+2,total_amt_s,style=content_style_num)
+                        else:
+                            ws.write(rows,13+project_count*3,"-",style=content_style_num)
+                            ws.write(rows,13+project_count*3+1,"-",style=content_style_num)
+                            ws.write(rows,13+project_count*3+2,"-",style=content_style_num)
                         if v3.get("end"):
                             total_qty = 0
                             total_amt = 0
@@ -499,19 +523,20 @@ class export_excel(osv.osv_memory):
                                 total_qty += line.qty
                                 total_amt += line.amount
                                 detail_obj = line
-                            ws.write(rows,13+project_count*3+3,total_qty)
-                            ws.write(rows,13+project_count*3+4,k3)
-                            ws.write(rows,13+project_count*3+5,total_amt)
+                            ws.write(rows,13+project_count*3+3,total_qty,style=content_style_num)
+                            ws.write(rows,13+project_count*3+4,k3,style=content_style_num)
+                            ws.write(rows,13+project_count*3+5,total_amt,style=content_style_num)
 
-                        ws.write(rows,1,detail_obj.product_id.categ_id.parent_id.name)
-                        ws.write(rows,2,detail_obj.product_id.categ_id.name)
-                        ws.write(rows,4,detail_obj.product_id.name)
-                        ws.write(rows,5,detail_obj.product_id.default_code or "")
-
+                        ws.write(rows,1,detail_obj.product_id.categ_id.parent_id.name,style=content_style)
+                        ws.write(rows,2,detail_obj.product_id.categ_id.name,style=content_style)
+                        ws.write(rows,3,detail_obj.product_id.product_no or "",style=content_style)
+                        ws.write(rows,4,detail_obj.product_id.name,style=content_style)
+                        ws.write(rows,5,detail_obj.product_id.default_code or "",style=content_style)
+                        ws.write(rows,0,rows-4,style=content_style)
                         attribute_name=[]
                         for avl in detail_obj.product_id.attribute_value_ids:
                             attribute_name.append(avl.name)
-                        ws.write(rows,6,",".join(attribute_name))
+                        ws.write(rows,6,",".join(attribute_name),style=content_style)
 
                         rows += 1
         w.save(xlsname)

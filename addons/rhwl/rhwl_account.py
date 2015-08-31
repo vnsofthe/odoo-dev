@@ -60,7 +60,7 @@ class rhwl_material(osv.osv):
         if begin_id:
             begin_obj = self.browse(cr,uid,begin_id,context=context)
             for d in begin_obj.line:
-                if d.data_kind != "end":continue
+                if d.data_kind != "end" or (d.qty==0 and d.amount==0):continue
                 val={
                     "parent_id":obj.id,
                     "data_kind":"begin",
