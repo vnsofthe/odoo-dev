@@ -425,7 +425,8 @@ class export_excel(osv.osv_memory):
         ws.write_merge(0,0,0,12+project_count*3+6,u"人和未来生物科技（长沙）有限公司%s年%s月原材料、低值易耗品、包装物成本计算表"%(mat_cost_obj.date.split("-")[0],mat_cost_obj.date.split("-")[1]),style=self.get_excel_style(font_size=12,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN,blod=True))
 
         ws.write_merge(1,1,10,10+project_count*3+6-1,u"本期",style=header_style)
-        ws.write_merge(2,2,13,13+project_count*3-1,u"耗用",style=header_style)
+        if project_count>0:
+            ws.write_merge(2,2,13,13+project_count*3-1,u"耗用",style=header_style)
         ws.write_merge(2,2,13+project_count*3,13+project_count*3+2,u"本期成本",style=header_style)
         ws.write_merge(3,4,13+project_count*3,13+project_count*3,u"数量",style=header_style)
         ws.write_merge(3,4,13+project_count*3+1,13+project_count*3+1,u"单价（元）",style=header_style)
