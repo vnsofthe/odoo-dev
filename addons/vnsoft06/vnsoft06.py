@@ -3,7 +3,9 @@
 from openerp import tools
 from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
+import logging
 
+_logger = logging.getLogger(__name__)
 class rhwl_sample_report(osv.osv):
     _name = "vnsoft.stock.move.input"
     _description = "Stock Move for Supplier"

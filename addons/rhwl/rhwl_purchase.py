@@ -7,6 +7,9 @@ import openerp.addons.decimal_precision as dp
 from openerp import tools, api
 import datetime
 import base64
+import logging
+
+_logger = logging.getLogger(__name__)
 class purchase_apply(osv.osv):
     _name = "purchase.order.apply"
     _describe = "Purchase Apply"
@@ -290,6 +293,18 @@ class purchase_order(osv.osv):
                             raise osv.except_osv("Error",u"该询价单由采购申请单产生，需要先审批采购申请单才可以确认询价单。")
 
         return super(purchase_order,self).wkf_confirm_order(cr,uid,ids,context=context)
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, group_id, context=None):
+        price = order_line.price_unit
+        if order_line.taxes_id:
+            for t in order_line.taxes_id:
+                if t.price_include:
+                    order_line.price_unit = order_line.price_subtotal / order_line.product_qty
+                    break
+                break
+        res = super(purchase_order,self)._prepare_order_line_move(cr,uid,order,order_line,picking_id,group_id,context=context)
+        order_line.price_unit = price
+        return res
 
 class purchase_apply_popup(osv.osv_memory):
     _name = "purchase.order.apply.popup"
