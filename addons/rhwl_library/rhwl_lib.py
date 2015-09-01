@@ -128,9 +128,9 @@ class rhwl_lib_line(osv.osv):
         "qty":fields.float("Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True,),
         "real_qty":fields.float("Real Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True ),
     }
-    _sql_constraints = [
-        ('rhwl_lib_request_line_uniq', 'unique(name,product_id)', u'明细清单中相同产品不能重复!'),
-    ]
+    #_sql_constraints = [
+    #    ('rhwl_lib_request_line_uniq', 'unique(name,product_id)', u'明细清单中相同产品不能重复!'),
+    #]
 
     _defaults={
         "qty":0,

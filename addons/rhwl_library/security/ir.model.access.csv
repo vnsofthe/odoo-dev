@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_rhwl_library_request,access_rhwl_library_request,model_rhwl_library_request,,1,1,1,0
 access_rhwl_library_request_line,access_rhwl_library_request_line,model_rhwl_library_request_line,,1,1,1,0
+access_rhwl_library_consump_line,access_rhwl_library_consump_line,model_rhwl_library_consump_line,,1,1,1,0
+access_rhwl_library_consump,access_rhwl_library_consump,model_rhwl_library_consump,,1,1,1,0
