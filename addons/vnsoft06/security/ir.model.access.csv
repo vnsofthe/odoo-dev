@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_vnsoft_stock_move_input,access_vnsoft_stock_move_input,model_vnsoft_stock_move_input,,1,0,0,0

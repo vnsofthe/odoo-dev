@@ -106,11 +106,13 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 header_list.append(k1)
             data[k][k1] = sh.cell_value(i,8)
 
+
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
         header_list.sort()
         ws.write(0,0,"Sample id")
-        col_count=1
+        ws.write(0,1,"Unknown Count")
+        col_count=2
         for i in header_list:
             ws.write(0,col_count,i)
             col_count+=1
@@ -118,8 +120,12 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         row_count=1
         for k,v in data.items():
             ws.write(row_count,0,str(k))
+            u_count = 0
             for i in header_list:
-                ws.write(row_count,header_list.index(i)+1,v.get(i,""))
+                ws.write(row_count,header_list.index(i)+2,v.get(i,""))
+                if v.get(i,"")=="U":
+                    u_count += 1
+            ws.write(row_count,1,str(u_count))
             row_count+=1
         w.save(os.path.join(os.path.split(source_file)[0],u"芯片数据.xls"))
         SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
