@@ -24,6 +24,7 @@
                     <form>
                         <header>
                             <button name="action_confirm" states="draft" string="月结计算" type="object"/>
+                            <button name="action_done" states="draft" string="完成" type="object"/>
                             <field name="state" widget="statusbar" readonly="1"/>
                         </header>
                         <sheet>

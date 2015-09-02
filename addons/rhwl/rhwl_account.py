@@ -43,6 +43,9 @@ class rhwl_material(osv.osv):
         (_check_date, u'成本日期只能是每月的1号。', ['date']),
     ]
 
+    def action_done(self,cr,uid,ids,context=None):
+        self.write(cr,uid,ids,{'state':'done'})
+
     def action_confirm(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
 
