@@ -220,7 +220,7 @@ class rhwl_gene(osv.osv):
     def write(self, cr, uid, id, val, context=None):
         if not context:
             context={}
-        if val.get("state","") in ("confirm"):
+        if val.get("state","") in ("confirm",):
             obj = self.browse(cr,SUPERUSER_ID,id,context=context)
             identity = val.get("identity",obj.identity)
             if identity and len(identity)==18:
