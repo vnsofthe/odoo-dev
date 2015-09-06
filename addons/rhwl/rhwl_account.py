@@ -128,7 +128,7 @@ class rhwl_material(osv.osv):
                     il_ids=[]
 
                     for l in self.pool.get("purchase.order.line").browse(cr,SUPERUSER_ID,p_ids,context=context):
-                        if not l.invoice_lines.id:
+                        if not l.invoice_lines:
                             il_ids=[]
                             break
                         for il in l.invoice_lines:
