@@ -98,6 +98,29 @@ class rhwl_material(osv.osv):
                 self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
             #已经作过入库的资料进行标识
             self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"cost_mark":obj.id},context=context)
+
+        #处理上月已经接收发票，但本月才入库的库存移动
+        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("cost_mark","=",0),("purchase_line_id","!=",False),("date",">=",period_obj.date_start),("date","<=",period_obj.date_stop)],context=context)
+        if move_ids:
+            for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
+                if not i.purchase_line_id.invoice_lines:continue
+                for inv in i.purchase_line_id.invoice_lines:
+                    if inv.invoice_id.type=="in_invoice" and (not inv.invoice_id.state in ("draft","cancel")):
+                        if inv.invoice_id.period_id.date_stop < period_obj.date_start:
+                            val={
+                                "parent_id":obj.id,
+                                "data_kind":"this",
+                                "product_id":i.product_id.id,
+                                "qty":i.product_qty,
+                                "price":i.price_unit,
+                                "amount":i.product_qty *i.price_unit ,
+                                "move_type":"in"
+                            }
+                            self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                            self.pool.get("stock.move").write(cr,SUPERUSER_ID,i.id,{"cost_mark":obj.id},context=context)
+                            break
+
+
         #领料统计
         picking_ids=[]
         request_ids = self.pool.get("rhwl.library.request").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
@@ -140,6 +163,7 @@ class rhwl_material(osv.osv):
                         continue
 
                 for mq in m.quant_ids:
+                    if mq.qty<0:continue
                     val={
                         "parent_id":obj.id,
                         "data_kind":"this",
