@@ -100,7 +100,7 @@ class rhwl_material(osv.osv):
             self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"cost_mark":obj.id},context=context)
 
         #处理上月已经接收发票，但本月才入库的库存移动
-        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("cost_mark","=",0),("purchase_line_id","!=",False),("date",">=",period_obj.date_start),("date","<=",period_obj.date_stop)],context=context)
+        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("cost_mark","=",0),("purchase_line_id","!=",False),("date",">=",period_obj.date_start),("date","<=",period_obj.date_stop),("state","=","done")],context=context)
         if move_ids:
             for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
                 if not i.purchase_line_id.invoice_lines:continue
