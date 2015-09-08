@@ -495,8 +495,8 @@ class export_excel(osv.osv_memory):
                                 total_amt += line.amount
                                 detail_obj = line
 
-                                total_qty_s += total_qty
-                                total_amt_s += total_amt
+                            total_qty_s += total_qty
+                            total_amt_s += total_amt
                             ws.write(rows,project_col[k4],total_qty,style=content_style_num)
                             ws.write(rows,project_col[k4] + 1,k3,style=content_style_num)
                             ws.write(rows,project_col[k4] + 2,total_amt,style=content_style_num)
@@ -536,10 +536,10 @@ class export_excel(osv.osv_memory):
                         ws.write(rows,5,detail_obj.product_id.default_code or "",style=content_style)
                         ws.write(rows,7,detail_obj.product_id.uom_id.name or "",style=content_style)
                         ws.write(rows,0,rows-4,style=content_style)
-                        attribute_name=[]
-                        for avl in detail_obj.product_id.attribute_value_ids:
-                            attribute_name.append(avl.name)
-                        ws.write(rows,6,",".join(attribute_name),style=content_style)
+                        attribute_name=",".join([v.name for v in detail_obj.product_id.attribute_value_ids])
+                        if not attribute_name:
+                            attribute_name = ",".join([v.name for v in detail_obj.product_id.product_tmpl_id.attribute_line_ids.value_ids])
+                        ws.write(rows,6,attribute_name,style=content_style)
 
                         rows += 1
         w.save(xlsname)
