@@ -233,6 +233,17 @@ class rhwl_material(osv.osv):
 
     def _get_data_dict(self,cr,uid,id,context=None):
         data={}
+        """{
+            大类别：{
+                        小类别：{
+                                    产品：{
+                                            单价：{
+                                                    类别：[]
+                                                   }
+                                            }
+                                    }
+                        }
+            }"""
         project_count = []
         obj = self.browse(cr,uid,id,context=context)
         for i in obj.line:

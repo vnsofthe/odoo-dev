@@ -439,6 +439,11 @@ class export_excel(osv.osv_memory):
         ws.write_merge(3,4,14+project_count*3+5,14+project_count*3+5,u"价值（元）",style=header_style)
 
         project_col={}
+        total_begin_amount=0
+        total_this_in_amount=0
+        total_this_out_amount={}
+        total_this_out_all_amount=0
+        total_end_amount=0
         for k,v in data.items():
             for k1,v1 in v.items():
                 for k2,v2 in v1.items():
@@ -455,6 +460,7 @@ class export_excel(osv.osv_memory):
                             ws.write(rows,8,total_qty,style=content_style_num)
                             ws.write(rows,9,k3,style=content_style_num)
                             ws.write(rows,10,total_amt,style=content_style_num)
+                            total_begin_amount += total_amt
                         else:
                             ws.write(rows,8,"-",style=content_style_num)
                             ws.write(rows,9,"-",style=content_style_num)
@@ -470,6 +476,7 @@ class export_excel(osv.osv_memory):
                             ws.write(rows,11,total_qty,style=content_style_num)
                             ws.write(rows,12,k3,style=content_style_num)
                             ws.write(rows,13,total_amt,style=content_style_num)
+                            total_this_in_amount += total_amt
                         else:
                             ws.write(rows,11,"-",style=content_style_num)
                             ws.write(rows,12,"-",style=content_style_num)
@@ -501,6 +508,10 @@ class export_excel(osv.osv_memory):
                             ws.write(rows,project_col[k4] + 1,k3,style=content_style_num)
                             ws.write(rows,project_col[k4] + 2,total_amt,style=content_style_num)
 
+                            if not total_this_out_amount.has_key(k4):
+                                total_this_out_amount[k4]=0
+                            total_this_out_amount[k4] += total_amt
+
                             project_line.append(project_col[k4])#记录当前行产品有在几个项目耗用。
                         #如果该产品在某些项目没有领用，则将栏位赋为空。
                         for p in range(0,project_count):
@@ -514,6 +525,7 @@ class export_excel(osv.osv_memory):
                             ws.write(rows,14+project_count*3,total_qty_s,style=content_style_num)
                             ws.write(rows,14+project_count*3+1,k3,style=content_style_num)
                             ws.write(rows,14+project_count*3+2,total_amt_s,style=content_style_num)
+                            total_this_out_all_amount += total_amt_s
                         else:
                             ws.write(rows,14+project_count*3,"-",style=content_style_num)
                             ws.write(rows,14+project_count*3+1,"-",style=content_style_num)
@@ -528,6 +540,7 @@ class export_excel(osv.osv_memory):
                             ws.write(rows,14+project_count*3+3,total_qty,style=content_style_num)
                             ws.write(rows,14+project_count*3+4,k3,style=content_style_num)
                             ws.write(rows,14+project_count*3+5,total_amt,style=content_style_num)
+                            total_end_amount += total_amt
 
                         ws.write(rows,1,detail_obj.product_id.categ_id.parent_id.name,style=content_style)
                         ws.write(rows,2,detail_obj.product_id.categ_id.name,style=content_style)
@@ -542,6 +555,23 @@ class export_excel(osv.osv_memory):
                         ws.write(rows,6,attribute_name,style=content_style)
 
                         rows += 1
+        ws.write_merge(rows,rows,0,7,u"合计",style=header_style)
+        ws.write(rows,8,"-",style=content_style_num)
+        ws.write(rows,9,"-",style=content_style_num)
+        ws.write(rows,10,total_begin_amount,style=content_style_num)
+        ws.write(rows,11,"-",style=content_style_num)
+        ws.write(rows,12,"-",style=content_style_num)
+        ws.write(rows,13,total_this_in_amount,style=content_style_num)
+        for k9,v9 in total_this_out_amount.items():
+            ws.write(rows,project_col[k9],"-",style=content_style_num)
+            ws.write(rows,project_col[k9] + 1,"-",style=content_style_num)
+            ws.write(rows,project_col[k9] + 2,v9,style=content_style_num)
+        ws.write(rows,14+project_count*3,"-",style=content_style_num)
+        ws.write(rows,14+project_count*3+1,"-",style=content_style_num)
+        ws.write(rows,14+project_count*3+2,total_this_out_all_amount,style=content_style_num)
+        ws.write(rows,14+project_count*3+3,"-",style=content_style_num)
+        ws.write(rows,14+project_count*3+4,"-",style=content_style_num)
+        ws.write(rows,14+project_count*3+5,total_end_amount,style=content_style_num)
         w.save(xlsname)
         f=open(xlsname,'rb')
 
