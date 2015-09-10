@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_genes_ys_view_tree">
+            <field name="name">rhwl.genes.ys.view.tree</field>
+            <field name="model">rhwl.genes.ys</field>
+            <field name="arch" type="xml">
+                <tree string="叶酸" >
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="cust_name"/>
+                    <field name="sex"/>
+                    <field name="identity"/>
+                    <field name="hospital"/>
+                    <field name="doctor"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_ys_view_form">
+            <field name="name">rhwl.genes.ys.view.form</field>
+            <field name="model">rhwl.genes.ys</field>
+            <field name="arch" type="xml">
+                <form string="样本信息">
+                    <header>
+                        <button name="action_state_confirm" string="样本确认" states="draft,img" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,img,confirm,report,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group col="9">
+                            <group colspan="9">
+                                <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="hospital" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="sex" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="doctor" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="age" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="contact" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="room" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="cust_pinying" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            </group>
+
+                            <group colspan="9">
+                                <field name="identity" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            </group>
+                            <group colspan="9">
+                                <label for="state_id" string="联系地址"/>
+                                <div class="address_format">
+                                    <field name="state_id" class="oe_no_button" placeholder="State" style="width: 15%%"
+                                           options='{"no_open": True}' />
+                                    <field name="city_id" placeholder="City" style="width: 15%%" options='{"no_open": True}'/>
+                                    <field name="area_id" domain="[('city_id','=',city_id)]" placeholder="Area"
+                                       style="width: 15%%" options='{"no_open": True}'/>
+                                    <field name="address" placeholder="address" style="width: 55%%"/>
+                                </div>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="日志">
+                                <field name="log" attrs="{'readonly':True}">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="user_id"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="备注">
+                                <field name="note"/>
+                            </page>
+                            <page string="图片">
+                                <field name="img_new" widget="image" options="{'size':[800,640]}"/>
+                            </page>
+
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_genes_ys_search">
+            <field name="name">rhwl.genes.ys.search</field>
+            <field name="model">rhwl.genes.ys</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <field name="cust_name"/>
+                    <field name="identity"/>
+                    <field name="note"/>
+                    <separator/>
+
+                    <filter string="草稿" name="type_draft" domain="[('state','=','draft')]"/>
+
+                    <separator/>
+                    <filter string="未拍照" name="type_imgs" domain="[('img_atta','=',False)]"/>
+
+                    <group expand="0" string="分组">
+                        <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_genes_ys" model="ir.actions.act_window">
+            <field name="name">易感样本信息</field>
+            <field name="res_model">rhwl.genes.ys</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_ys_view_tree"/>
+            <field name="context">{'search_default_type_draft':1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_genes_ys_root" name="叶酸耳聋" sequence="25"  />
+        <menuitem id="menu_rhwl_genes_ys" parent="menu_genes_ys_root" name="叶酸" sequence="10"  />
+
+        <menuitem id="menu_easy_genes" parent="menu_rhwl_genes_ys" name="样本信息维护" sequence="10"
+                  action='action_genes_ys' />
+
+
+    </data>
+</openerp>
