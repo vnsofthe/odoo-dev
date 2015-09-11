@@ -9,8 +9,8 @@ import requests
 import logging
 
 class rhwl_ys(osv.osv):
-    _name="rhwl.genes.ys"
-    _description = "叶酸项目信息维护"
+    _name="rhwl.genes.el"
+    _description = "耳聋项目信息维护"
     _columns={
         "name": fields.char(u"样品编号", required=True, size=20),
         "hospital":fields.many2one('res.partner', string=u'送检医院',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
@@ -20,8 +20,15 @@ class rhwl_ys(osv.osv):
         "cust_name":fields.char(u"客户姓名", required=True, size=20),
         "cust_pinying":fields.char(u"客户姓名(拼音)", size=20),
         "sex":fields.selection([("F",u"女"),("M",u"男")],string=u"性别",required=True),
+        "birthday":fields.date(u"出生日期"),
+        "fdjfr":fields.selection([("M",u"父亲"),("F",u"母亲")],string=u"法定监护人"),
+        "fdjfr_name":fields.char(u"法定监护人姓名",size=20),
         "age":fields.integer(u"年龄(周岁)"),
-        "mingzhu":fields.char(u"民族",size=20),
+        "is_jksc":fields.boolean(u"健康筛查"),
+        "is_both":fields.boolean(u"父母均为耳聋患者"),
+        "is_father":fields.boolean(u"父亲耳聋"),
+        "is_mother":fields.boolean(u"母亲耳聋"),
+        "is_brother":fields.boolean(u"父母健康、兄弟姐妹有耳聋"),
         "tel":fields.char(u"联系电话",size=20),
         "contact":fields.char(u"紧急联系人",size=20),
         "contact_tel":fields.char(u"紧急联系人电话",size=20),
@@ -35,11 +42,11 @@ class rhwl_ys(osv.osv):
         "state":fields.selection([("draft",u"草稿"),("img",u"拍照"),("confirm",u"确认"),("library",u"实验完成"),("report",u"生成报告中"),("done",u"完成"),("cancel",u"取消"),("error",u"重做")],string=u"状态"),
         "img_atta":fields.many2one("ir.attachment","IMG"),
         "img_new":fields.related("img_atta","datas",type="binary"),
-        "log":fields.one2many("rhwl.genes.ys.log","parent_id",string=u"日志",readonly=True),
-        "snp": fields.one2many("rhwl.genes.ys.snp", "parent_id", "SNP"),
+        "log":fields.one2many("rhwl.genes.el.log","parent_id",string=u"日志",readonly=True),
+        "snp": fields.one2many("rhwl.genes.el.snp", "parent_id", "SNP"),
     }
     _sql_constraints = [
-        ('rhwl_genes_ys_uniq', 'unique(name)', u'样本编号不能重复!'),
+        ('rhwl_genes_el_uniq', 'unique(name)', u'样本编号不能重复!'),
     ]
     _defaults={
         "state":"draft",
@@ -94,7 +101,7 @@ class rhwl_ys(osv.osv):
             "name":obj_name,
             "datas_fname":obj_name+".jpg",
             "description":obj_name+" information to IMG",
-            "res_model":"rhwl.genes.ys",
+            "res_model":"rhwl.genes.el",
             "res_id":id[0],
             "create_date":fields.datetime.now,
             "create_uid":SUPERUSER_ID,
@@ -107,10 +114,10 @@ class rhwl_ys(osv.osv):
         return self.write(cr,uid,id,val,context=context)
 
 class rhwl_log(osv.osv):
-    _name = "rhwl.genes.ys.log"
+    _name = "rhwl.genes.el.log"
     _order = "date desc"
     _columns = {
-        "parent_id": fields.many2one("rhwl.genes.ys", "Parent ID",select=True),
+        "parent_id": fields.many2one("rhwl.genes.el", "Parent ID",select=True),
         "date": fields.datetime(u"时间"),
         "user_id": fields.many2one("res.users", u"操作人员"),
         "note": fields.text(u"作业说明"),
@@ -124,9 +131,9 @@ class rhwl_log(osv.osv):
 
 #疾病位点数据对象
 class rhwl_ys_snp(osv.osv):
-    _name = "rhwl.genes.ys.snp"
+    _name = "rhwl.genes.el.snp"
     _columns = {
-        "parent_id": fields.many2one("rhwl.genes.ys", "Parent ID",select=True),
+        "parent_id": fields.many2one("rhwl.genes.el", "Parent ID",select=True),
         "snp": fields.char("SNP", size=20),
         "typ": fields.char("Type", size=10),
         "active": fields.boolean("Active"),

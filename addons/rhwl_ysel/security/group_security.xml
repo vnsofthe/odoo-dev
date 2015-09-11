@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.module.category" id="module_category_rhwl_gene_ys">
+            <field name="name">叶酸耳聋</field>
+            <field name="description">叶酸耳聋</field>
+            <field name="sequence">35</field>
+        </record>
+        <record id="rhwl_genes_ys_base" model="res.groups">
+            <field name="name">一般用户</field>
+            <field name="category_id" ref="module_category_rhwl_gene_ys"/>
+            <field name="comment">一般用户</field>
+        </record>
+        <record id="rhwl_genes_ys_manage" model="res.groups">
+            <field name="name">管理用户</field>
+            <field name="category_id" ref="module_category_rhwl_gene_ys"/>
+            <field name="comment">管理用户</field>
+            <field name="implied_ids" eval="[(4, ref('rhwl_genes_ys_base'))]"/>
+        </record>
+
+    </data>
+</openerp>

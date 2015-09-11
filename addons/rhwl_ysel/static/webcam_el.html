@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	  <meta name="description" content="">
+	  <meta name="keywords" content="">
+	  <meta name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	  <title>WebCam</title>
+
+	  <!-- Set render engine for 360 browser -->
+	  <meta name="renderer" content="webkit">
+	  <!-- No Baidu Siteapp-->
+	  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+	  
+	  <!-- Add to homescreen for Chrome on Android -->
+	  <meta name="mobile-web-app-capable" content="yes">
+	  
+	  <!-- Add to homescreen for Safari on iOS -->
+	  <meta name="apple-mobile-web-app-capable" content="yes">
+	  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+	  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+	  
+	  <!-- Tile icon for Win8 (144x144 + tile color) -->
+	  
+	  <meta name="msapplication-TileColor" content="#0e90d2">
+	  <link rel="stylesheet" href="/rhwl_ysel/static/assets/css/amazeui.min.css">
+        <link rel="stylesheet" href="/rhwl_ysel/static/assets/css/app.css">
+	</head>
+	<body>
+    <div class="am-g">
+          <div class="am-u-lg-6 am-u-md-6">
+              <h2>耳聋样本图像采集系统</h2>
+          </div>
+          <div id="ajax_wait" class="am-u-lg-6 am-u-md-6">
+
+          </div>
+
+    </div>
+
+    <form class="am-form am-form-horizontal">
+        <div class="am-form-group">
+            <label for="doc-ipt-3" class="am-u-sm-1 am-form-label">样本编码</label>
+            <div class="am-u-sm-2">
+                <input type="text" id="doc-ipt-3" autofocus="autofocus" onkeypress="if(event.keyCode==13||event.which==13){get_detail();$('#btn_cam').focus();return false;}" placeholder="扫描样本编码">
+            </div>
+            <div class="am-checkbox am-u-sm-2">
+              <label>
+                <input type="checkbox" id="chk_confirm"> 提交时同步进行确认
+              </label>
+            </div>
+            <div class="am-u-sm-1">
+                <button type="button" id="form_submit" class="am-btn am-btn-primary">提交</button>
+            </div>
+            <div class="am-u-sm-1 ">
+                <button  type="button" id="btn_cam" onclick="take_snapshot()" class="am-btn am-btn-warning">拍照</button>
+            </div>
+            <div class="am-u-sm-1 am-u-end">
+                <button  type="button" onclick="delete_img()" class="am-btn am-btn-danger">全部取消</button>
+            </div>
+
+        </div>
+    </form>
+    <div class="am-g">
+        <div class="am-u-lg-4 am-u-md-6">
+            <label>图像预览</label>
+            <div id="my_camera" style="width:320px; height:240px;"></div>
+        </div>
+        <div class="am-u-lg-8 am-u-md-6">
+            <table class="am-table" id="detail">
+                <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>送检医院</th>
+                        <th>送检医生</th>
+                        <th>采样日期</th>
+                        <th>姓名</th>
+                        <th>身份证号</th>
+                        <th>手机号</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="am-g">
+          <div class="am-u-lg-6 am-u-md-6">
+              图片一
+          </div>
+    </div>
+    <div class="am-g">
+          <div class="am-u-lg-6 am-u-md-6">
+              <div id="my_result0" style="width:100%"></div>
+          </div>
+
+    </div>
+
+    <!--在这里编写你的代码-->
+    <!--[if (gte IE 9)|!(IE)]><!-->
+    <script src="/rhwl_ysel/static/assets/js/jquery.min.js"></script>
+    <script src="/rhwl_ysel/static/assets/js/amazeui.min.js"></script>
+    <!--<![endif]-->
+    <!--[if lte IE 8 ]>
+    <script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+    <![endif]-->
+	<script type="text/javascript" src="/rhwl_ysel/static/js/webcam.min.js"></script>
+    <script>
+        $(document).ajaxStart(function(){
+            $("<div id=\"wait_ajax\">数据加载中，请稍候......</div>").prependTo($("#ajax_wait"));
+            });
+        $(document).ajaxStop(function(){
+            $("#wait_ajax").remove();
+            });
+    </script>
+    <script>
+		Webcam.set({
+			width: 320,
+			height: 240,
+			dest_width: 2592,
+			dest_height: 1944,
+			image_format: 'jpeg',
+			jpeg_quality: 90,
+			force_flash: false,
+			flip_horiz: false
+		});
+        Webcam.attach( '#my_camera' );
+
+        function delete_img(){
+            document.getElementById('my_result0').innerHTML="";
+
+            $('#btn_cam').focus();
+            return false;
+        }
+
+        function take_snapshot() {
+            Webcam.snap( function(data_uri) {
+                document.getElementById('my_result0').innerHTML = '<img id="img0" style="width:100%;" src="'+data_uri+'"/>';
+                $("#form_submit").focus()
+            return false;
+            } );
+        }
+        function get_detail(){
+            var id=$("#doc-ipt-3").val();
+            $.ajax({
+                  type: 'POST',
+                  url: "/web/rhwl_el/get/",
+                  data: {no:id},
+                  success: function(data){
+
+                      $("#detail tbody tr").remove();
+                      $("#detail tbody").append("<tr><td>"+data.name+"</td><td>"+data.hospital+"</td><td>"+data.doctor+"</td><td>"+data.date+"</td><td>"+data.cust_name+"</td><td>"+data.identity+"</td><td>"+data.tel+"</td></tr>");
+                  }
+                });
+        }
+        $(function(){
+            $("#form_submit").bind("click",function(e){
+                var img1=$('#img0');
+
+                var id=$("#doc-ipt-3").val();
+                var is_chk=$("#chk_confirm");
+
+                if(id==""){
+                    alert("请扫描样品编码。");
+                    $("#doc-ipt-3").focus();
+                    return false
+                }
+                $.ajax({
+                  type: 'POST',
+                  url: "/web/api/rhwl_el/pic/",
+                  data: {img1:img1[0].src,no:id,is_confirm:is_chk[0].checked},
+                  success: function(data){
+                      if(data=="NO_DATA_FOUND"){
+                          alert("样本编码在数据库不存在，请确认。");
+                          return false;
+                      }
+                      $("#doc-ipt-3").val("");
+
+                      delete_img();
+                      $("#doc-ipt-3").focus();
+                  }
+                });
+
+                return false;
+            });
+        });
+
+    </script>
+
+    </body>
+</html>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rhwl_genes_ys,access_rhwl_genes_ys,model_rhwl_genes_ys,rhwl_genes_ys_base,1,1,1,0
+access_rhwl_genes_ys_log,access_rhwl_genes_ys_log,model_rhwl_genes_ys_log,rhwl_genes_ys_base,1,1,1,0
+access_rhwl_genes_ys_snp,access_rhwl_genes_ys_snp,model_rhwl_genes_ys_snp,rhwl_genes_ys_base,1,1,1,0
+access_rhwl_genes_el,access_rhwl_genes_el,model_rhwl_genes_el,rhwl_genes_ys_base,1,1,1,0
+access_rhwl_genes_el_log,access_rhwl_genes_el_log,model_rhwl_genes_el_log,rhwl_genes_ys_base,1,1,1,0
+access_rhwl_genes_el_snp,access_rhwl_genes_el_snp,model_rhwl_genes_el_snp,rhwl_genes_ys_base,1,1,1,0

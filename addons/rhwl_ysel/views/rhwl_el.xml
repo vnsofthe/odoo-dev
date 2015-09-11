@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="rhwl_genes_ys_view_tree">
-            <field name="name">rhwl.genes.ys.view.tree</field>
-            <field name="model">rhwl.genes.ys</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_view_tree">
+            <field name="name">rhwl.genes.el.view.tree</field>
+            <field name="model">rhwl.genes.el</field>
             <field name="arch" type="xml">
-                <tree string="叶酸" >
+                <tree string="耳聋" >
                     <field name="name"/>
                     <field name="date"/>
                     <field name="cust_name"/>
@@ -18,9 +18,9 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="rhwl_genes_ys_view_form">
-            <field name="name">rhwl.genes.ys.view.form</field>
-            <field name="model">rhwl.genes.ys</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_view_form">
+            <field name="name">rhwl.genes.el.view.form</field>
+            <field name="model">rhwl.genes.el</field>
             <field name="arch" type="xml">
                 <form string="样本信息">
                     <header>
@@ -37,12 +37,14 @@
                                 <field name="hospital" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="fdjfr" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="3">
                                 <field name="doctor" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                <field name="age" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="birthday" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="fdjfr_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="contact" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="3">
@@ -63,6 +65,27 @@
                                     <field name="address" placeholder="address" style="width: 55%%"/>
                                 </div>
                             </group>
+
+                            <group colspan="9">
+                                <label for="is_jksc" string="患者主诉"/>
+                                <div >
+                                    <label string="健康筛查" for="is_jksc"/>
+                                    <field name="is_jksc"  style="width: 8%%" />
+
+                                    <label string="父母均为耳聋患者" for="is_both"/>
+                                    <field name="is_both"  style="width: 10%%" />
+
+                                    <label string="父亲耳聋" for="is_father"/>
+                                    <field name="is_father" style="width: 8%%" />
+
+                                    <label string="母亲耳聋" for="is_mother"/>
+                                    <field name="is_mother"  style="width: 8%%"/>
+
+                                    <label string="父母健康、兄弟姐妹有耳聋" for="is_brother"/>
+                                    <field name="is_brother"  style="width: 66%%"/>
+                                </div>
+                            </group>
+
                         </group>
                         <notebook>
                             <page string="日志">
@@ -94,9 +117,9 @@
             </field>
         </record>
 
-        <record model="ir.ui.view" id="rhwl_genes_ys_search">
-            <field name="name">rhwl.genes.ys.search</field>
-            <field name="model">rhwl.genes.ys</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_search">
+            <field name="name">rhwl.genes.el.search</field>
+            <field name="model">rhwl.genes.el</field>
             <field name="arch" type="xml">
                 <search string="Gene">
                     <field name="name"/>
@@ -118,12 +141,12 @@
             </field>
         </record>
 
-        <record id="action_genes_ys" model="ir.actions.act_window">
-            <field name="name">叶酸样本信息</field>
-            <field name="res_model">rhwl.genes.ys</field>
+        <record id="action_genes_el" model="ir.actions.act_window">
+            <field name="name">耳聋样本信息</field>
+            <field name="res_model">rhwl.genes.el</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="rhwl_genes_ys_view_tree"/>
+            <field name="view_id" ref="rhwl_genes_el_view_tree"/>
             <field name="context">{'search_default_type_draft':1}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
@@ -134,20 +157,20 @@
             </field>
         </record>
 
-        <menuitem id="menu_genes_ys_root" name="叶酸耳聋" sequence="25"  />
-        <menuitem id="menu_rhwl_genes_ys" parent="menu_genes_ys_root" name="叶酸" sequence="10"  />
 
-        <menuitem id="menu_easy_genes_ys" parent="menu_rhwl_genes_ys" name="样本信息维护" sequence="10"
-                  action='action_genes_ys' />
+        <menuitem id="menu_rhwl_genes_el" parent="menu_genes_ys_root" name="耳聋" sequence="10"  />
+
+        <menuitem id="menu_easy_genes_el" parent="menu_rhwl_genes_el" name="样本信息维护" sequence="10"
+                  action='action_genes_el' />
 
 
-        <record model="ir.actions.act_url" id="action_genes_ys_image">
+        <record model="ir.actions.act_url" id="action_genes_el_image">
             <field name="name">Images</field>
-            <field name="url">/web/rhwl_ys/images/</field>
+            <field name="url">/web/rhwl_el/images/</field>
             <field name="target">new</field>
         </record>
-        <menuitem id="menu_genes_ys_image" parent="menu_rhwl_genes_ys" name="样本图像采集" sequence="20"
-                  action='action_genes_ys_image' groups="rhwl_genes_ys_base"/>
+        <menuitem id="menu_genes_el_image" parent="menu_rhwl_genes_el" name="样本图像采集" sequence="20"
+                  action='action_genes_el_image' groups="rhwl_genes_ys_base"/>
 
     </data>
 </openerp>

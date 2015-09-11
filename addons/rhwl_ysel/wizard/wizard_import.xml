@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_rhwl_genes_ys_import_wizard" model="ir.ui.view">
+            <field name="name">UpLoad Report</field>
+            <field name="model">rhwl.genes.ys.import</field>
+            <field name="arch" type="xml">
+                <form string="Parameters">
+                    <group>
+                        <field name="file_bin" />
+                    </group>
+                    <footer>
+                        <button name="import_report" string="导入" type="object"  class="oe_highlight" invisible="not context.get('import_ys',False)"/>
+                        <button name="import_report_el" string="导入" type="object"  class="oe_highlight" invisible="not context.get('import_el',False)"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+
+        <record id="action_rhwl_genes_ys_import" model="ir.actions.act_window">
+            <field name="name">接收叶酸检测位点数据</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.ys.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{"import_ys":1}</field>
+        </record>
+        <menuitem action="action_rhwl_genes_ys_import" id="menu_rhwl_genes_ys_import" name="检测位点数据接收" parent="menu_rhwl_genes_ys"  sequence="30" groups="rhwl_genes_ys_base"/>
+
+        <record id="action_rhwl_genes_el_import" model="ir.actions.act_window">
+            <field name="name">接收耳聋检测位点数据</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.ys.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{"import_el":1}</field>
+        </record>
+        <menuitem action="action_rhwl_genes_el_import" id="menu_rhwl_genes_el_import" name="检测位点数据接收" parent="menu_rhwl_genes_el"  sequence="30" groups="rhwl_genes_ys_base"/>
+
+
+    </data>
+</openerp>
