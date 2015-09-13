@@ -126,14 +126,14 @@ class rhwl_material(osv.osv):
         request_ids = self.pool.get("rhwl.library.request").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
         for i in request_ids:
             request_obj = self.pool.get("rhwl.library.request").browse(cr,SUPERUSER_ID,i,context=context)
-            picking_ids_1 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",request_obj.name)],context=context)
+            picking_ids_1 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",request_obj.name),("state","=","done")],context=context)
             if picking_ids_1:
                 picking_ids = picking_ids + picking_ids_1
 
         consump_ids = self.pool.get("rhwl.library.consump").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
         for i in consump_ids:
             consump_obj = self.pool.get("rhwl.library.consump").browse(cr,SUPERUSER_ID,i,context=context)
-            picking_ids_2 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",consump_obj.name)],context=context)
+            picking_ids_2 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",consump_obj.name),("state","=","done")],context=context)
             if picking_ids_2:
                 picking_ids = picking_ids + picking_ids_2
 
@@ -164,6 +164,10 @@ class rhwl_material(osv.osv):
 
                 for mq in m.quant_ids:
                     if mq.qty<0:continue
+                    is_purchase=False
+                    for h in mq.history_ids:
+                        if h.purchase_line_id:is_purchase=True
+                    if not is_purchase:continue
                     val={
                         "parent_id":obj.id,
                         "data_kind":"this",
