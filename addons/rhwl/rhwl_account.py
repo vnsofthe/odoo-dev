@@ -81,7 +81,7 @@ class rhwl_material(osv.osv):
         #取得会计期间所有已收到的供应商发票资料。
         invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("state","not in",["draft","cancel"]),("period_id","in",period_ids),('type','=','in_invoice')],context=context)
         invoice_line_ids = self.pool.get("account.invoice.line").search(cr,SUPERUSER_ID,[("invoice_id","in",invoice_ids)],context=context)
-        purchase_line_ids = self.pool.get("purchase.order.line").search(cr,SUPERUSER_ID,[("invoice_lines","in",invoice_line_ids)],context=context)
+        purchase_line_ids = self.pool.get("purchase.order.line").search(cr,SUPERUSER_ID,[("invoice_lines","in",invoice_line_ids),("order_id.state","not in",["draft","cancel","sent","bid","confirmed"])],context=context)
         move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("purchase_line_id","in",purchase_line_ids),("cost_mark","=",0),("state","=","done")],context=context)
 
         if move_ids:
@@ -95,6 +95,7 @@ class rhwl_material(osv.osv):
                     "amount":i.product_qty *i.price_unit ,
                     "move_type":"in"
                 }
+
                 self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
             #已经作过入库的资料进行标识
             self.pool.get("stock.move").write(cr,SUPERUSER_ID,move_ids,{"cost_mark":obj.id},context=context)
@@ -116,6 +117,7 @@ class rhwl_material(osv.osv):
                                 "amount":i.product_qty *i.price_unit ,
                                 "move_type":"in"
                             }
+
                             self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
                             self.pool.get("stock.move").write(cr,SUPERUSER_ID,i.id,{"cost_mark":obj.id},context=context)
                             break
