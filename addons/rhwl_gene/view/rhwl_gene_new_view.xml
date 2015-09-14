@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_view_tree">
+            <field name="name">rhwl.easy.genes.new.view.tree</field>
+            <field name="model">rhwl.easy.genes.new</field>
+            <field name="arch" type="xml">
+                <tree string="易感基因" >
+                    <field name="date"/>
+                    <field name="name"/>
+                    <field name="cust_name"/>
+                    <field name="sex"/>
+                    <field name="identity"/>
+                    <field name="batch_no"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_view_form">
+            <field name="name">rhwl.easy.genes.new.view.form</field>
+            <field name="model">rhwl.easy.genes.new</field>
+            <field name="arch" type="xml">
+                <form string="样本信息">
+                    <header>
+                        <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="mobile"/>
+
+                            </group>
+                            <group>
+                                <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="birthday" attrs="{'readonly':[('state','!=','draft')]}"/>
+
+                                <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
+
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="日志">
+                                <field name="log" attrs="{'readonly':True}">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="user_id"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="备注">
+                                <field name="note"/>
+                            </page>
+                            <page string="图片">
+                                <field name="img_new" widget="image" options="{'size':[800,640]}"/>
+                            </page>
+                            <page string="质检数据">
+                                <field name="dns_chk" attrs="{'readonly':True}">
+                                    <tree>
+                                        <field name="date"/>
+                                        <field name="dna_date"/>
+                                        <field name="concentration"/>
+                                        <field name="lib_person"/>
+                                        <field name="od260_280"/>
+                                        <field name="od260_230"/>
+                                        <field name="chk_person"/>
+                                        <field name="data_loss"/>
+                                        <field name="loss_person"/>
+                                        <field name="loss_date"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="位点数据">
+                                <field name="typ" attrs="{'readonly':True}">
+                                    <tree>
+                                        <field name="snp"/>
+                                        <field name="typ"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_search">
+            <field name="name">rhwl.easy.genes.new.search</field>
+            <field name="model">rhwl.easy.genes.new</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <field name="batch_no"/>
+                    <field name="cust_name"/>
+                    <field name="identity"/>
+                    <field name="note"/>
+                    <separator/>
+
+                    <filter string="草稿" name="type_draft" domain="[('state','=','draft')]"/>
+                    <filter string="信息异常" name="type_except" domain="[('state','=','except')]"/>
+                    <filter string="DNA质检异常" name="type_dnaexcept" domain="[('state','=','dna_except')]"/>
+                    <filter string="DNA质检合格" name="type_dnaok" domain="[('state','=','dna_ok')]"/>
+                    <filter string="检测完成" name="type_ok" domain="[('state','=','ok')]"/>
+                    <filter string="生成报告中" name="type_report" domain="[('state','=','report')]"/>
+                    <filter string="报告已生成" name="type_report_done" domain="[('state','=','report_done')]"/>
+
+                    <separator/>
+                    <filter string="未拍照" name="type_imgs" domain="[('img_atta','=',False)]"/>
+
+                    <group expand="0" string="分组">
+                        <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
+                        <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_easy_genes_new" model="ir.actions.act_window">
+            <field name="name">新易感样本信息</field>
+            <field name="res_model">rhwl.easy.genes.new</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_easy_genes_new_view_tree"/>
+            <field name="context">{'search_default_type_draft':1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_easy_genes_new" parent="menu_easy_genes_root" name="新易感基因" sequence="5"  />
+
+        <menuitem id="menu_easy_genes_new" parent="menu_rhwl_easy_genes_new" name="样本信息维护" sequence="10"
+                  action='action_easy_genes_new' groups="rhwl_base_tjs"/>
+
+        <record model="ir.actions.act_url" id="action_easy_genes_new_image">
+            <field name="name">Gene Images</field>
+            <field name="url">/web/rhwl_gene_new/images/</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_easy_genes_new_image" parent="menu_rhwl_easy_genes_new" name="样本图像采集" sequence="12"
+                  action='action_easy_genes_new_image' groups="rhwl_base_gene"/>
+
+    </data>
+</openerp>

@@ -30,8 +30,11 @@
                     </header>
                     <sheet>
                         <group col="9">
-                            <group colspan="9">
+                            <group colspan="6">
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="batch_no" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="3">
                                 <field name="hospital" attrs="{'readonly':[('state','not in',['draft'])]}"/>
@@ -70,19 +73,19 @@
                                 <label for="is_jksc" string="患者主诉"/>
                                 <div >
                                     <label string="健康筛查" for="is_jksc"/>
-                                    <field name="is_jksc"  style="width: 8%%" />
+                                    <field name="is_jksc"  style="width: 5%%" />
 
                                     <label string="父母均为耳聋患者" for="is_both"/>
-                                    <field name="is_both"  style="width: 10%%" />
+                                    <field name="is_both"  style="width: 5%%" />
 
                                     <label string="父亲耳聋" for="is_father"/>
-                                    <field name="is_father" style="width: 8%%" />
+                                    <field name="is_father" style="width: 5%%" />
 
                                     <label string="母亲耳聋" for="is_mother"/>
-                                    <field name="is_mother"  style="width: 8%%"/>
+                                    <field name="is_mother"  style="width: 5%%"/>
 
                                     <label string="父母健康、兄弟姐妹有耳聋" for="is_brother"/>
-                                    <field name="is_brother"  style="width: 66%%"/>
+                                    <field name="is_brother"  style="width: 5%%"/>
                                 </div>
                             </group>
 

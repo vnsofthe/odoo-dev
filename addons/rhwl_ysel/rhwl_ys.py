@@ -11,8 +11,10 @@ import logging
 class rhwl_ys(osv.osv):
     _name="rhwl.genes.ys"
     _description = "叶酸项目信息维护"
+    _order = "date desc"
     _columns={
         "name": fields.char(u"样品编号", required=True, size=20),
+        "batch_no":fields.char(u"批次",size=10),
         "hospital":fields.many2one('res.partner', string=u'送检医院',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "doctor":fields.many2one('res.partner', string=u'送检医生',domain="[('is_company', '=', False), ('customer', '=', True),('parent_id','=',hospital)]"),
         "room":fields.char(u"科室",size=20),

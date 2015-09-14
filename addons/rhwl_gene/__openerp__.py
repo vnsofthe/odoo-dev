@@ -29,7 +29,8 @@
              "view/rhwl_export_excel.xml",
              "view/rhwl_gene.xml",
              "view/rhwl_gene_account.xml",
-             "view/rhwl_base.xml"
+             "view/rhwl_base.xml",
+             "view/rhwl_gene_new_view.xml"
              ],
     "qweb":[],
     'demo': [],
