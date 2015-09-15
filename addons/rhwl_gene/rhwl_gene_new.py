@@ -54,12 +54,12 @@ class rhwl_gene(osv.osv):
         "name_pinying":fields.char(u"姓名(拼音)",size=20),
         "sex": fields.selection([('M', u"男"), ('F', u"女")], u"性别", required=True),
         "height":fields.integer(u"身高cm"),
-        "width":fields.float(u"体重kg",digits=1),
+        "width":fields.float(u"体重kg"),
         "mingzhu":fields.char(u"民族",size=20),
         "identity": fields.char(u"身份证号", size=18),
         "mobile": fields.char(u"手机号码", size=15),
         "contact":fields.char(u"紧急联系人",size=20),
-        "contact_tel":fields.char(u"紧急联系人电话",size=20),
+        "contact_tel":fields.char(u"联系人电话",size=20),
         "Permanent_city":fields.char(u"常住城市",size=20),
         "state_id": fields.many2one("res.country.state",string=u'省'),
         "city_id": fields.many2one("res.country.state.city",string=u'市',domain="[('state_id','=',state_id)]"),
@@ -79,7 +79,14 @@ class rhwl_gene(osv.osv):
         "typ": fields.one2many("rhwl.easy.genes.new.type", "genes_id", "Type"),
         "dns_chk": fields.one2many("rhwl.easy.genes.new.check", "genes_id", "DNA_Check"),
         "export_img":fields.boolean("Export Img"),
-
+        "q1_0":fields.boolean(u"无"),
+        "q1_1":fields.boolean(u"肿瘤"),
+        "q1_2":fields.boolean(u"糖尿病"),
+        "q1_3":fields.boolean(u"呼吸性疾病"),
+        "q1_4":fields.boolean(u"心脑血管疾病"),
+        "q1_5":fields.boolean(u"消化道溃疡"),
+        "q1_6":fields.boolean(u"妇科病"),
+        "q1_7":fields.boolean(u"过敏史"),
     }
     _sql_constraints = [
         ('rhwl_easy_genes_name_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -90,6 +97,14 @@ class rhwl_gene(osv.osv):
         "is_risk":False,
         "is_child":False,
         "export_img":False,
+        "q1_0":False,
+        "q1_1":False,
+        "q1_2":False,
+        "q1_3":False,
+        "q1_4":False,
+        "q1_5":False,
+        "q1_6":False,
+        "q1_7":False,
     }
 
 

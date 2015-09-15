@@ -27,21 +27,84 @@
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
-                        <group>
-                            <group>
+                        <group col="16">
+                            <group colspan="8">
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
-                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="mobile"/>
-
                             </group>
-                            <group>
+                            <group colspan="8">
+                                <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+
+                            <group colspan="4">
+                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="width" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="birthday" attrs="{'readonly':[('state','!=','draft')]}"/>
-
-                                <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group  colspan="4">
+                                <field name="name_pinying" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="contact" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                            </group>
+                            <group colspan="4">
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="mobile"/>
+                                <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                            </group>
+                            <group colspan="4">
+                                <field name="height" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="birthday" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="Permanent_city" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="16">
+                                <label for="state_id" string="报告书邮寄地址"/>
+                                <div class="address_format">
+                                    <field name="state_id" class="oe_no_button" placeholder="State" style="width: 15%%"
+                                           options='{"no_open": True}' />
+                                    <field name="city_id" placeholder="City" style="width: 15%%" options='{"no_open": True}'/>
+                                    <field name="area_id" domain="[('city_id','=',city_id)]" placeholder="Area"
+                                       style="width: 15%%" options='{"no_open": True}'/>
+                                    <field name="address" placeholder="address" style="width: 55%%"/>
+                                </div>
+                            </group>
+                            <group colspan="5">
+                                <field name="email" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="5">
+                                <field name="weixin" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="6">
+                                <field name="hospital" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="16">
+                                <field name="package_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="16">
+                                <label for="q1_0" string="您目前或曾患下列哪些疾病？"/>
+                               <div >
+                                    <label string="无" for="q1_0"/>
+                                    <field name="q1_0"  style="width: 90%%" />
 
+                                    <label string="肿瘤" for="q1_1" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_1"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                    <label string="糖尿病" for="q1_2" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_2" style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                    <label string="呼吸性疾病" for="q1_3" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_3"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                    <label string="心脑血管疾病" for="q1_4" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_4"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                   <label string="消化道溃疡" for="q1_5" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_5"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                   <label string="妇科病" for="q1_6" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_6"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                   <label string="过敏史" for="q1_7" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                    <field name="q1_7"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                </div>
                             </group>
                         </group>
                         <notebook>
