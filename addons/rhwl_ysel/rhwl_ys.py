@@ -17,6 +17,7 @@ class rhwl_ys(osv.osv):
         "batch_no":fields.char(u"批次",size=10),
         "hospital":fields.many2one('res.partner', string=u'送检医院',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "doctor":fields.many2one('res.partner', string=u'送检医生',domain="[('is_company', '=', False), ('customer', '=', True),('parent_id','=',hospital)]"),
+        "user_id":fields.many2one("res.users",string=u"销售员",),
         "room":fields.char(u"科室",size=20),
         "date":fields.date(u"采样日期", required=True),
         "cust_name":fields.char(u"客户姓名", required=True, size=20),
@@ -47,6 +48,11 @@ class rhwl_ys(osv.osv):
         "state":"draft",
         "sex":"F"
     }
+
+    @api.onchange("hospital")
+    def onchange_hospital(self):
+        if self.hospital:
+            self.user_id = self.hospital.user_id
 
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
