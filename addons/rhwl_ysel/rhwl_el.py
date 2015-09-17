@@ -7,7 +7,8 @@ import openerp.addons.decimal_precision as dp
 import datetime,time
 import requests
 import logging
-
+import os
+REMOTE_SERVER_PATH=""
 class rhwl_ys(osv.osv):
     _name="rhwl.genes.el"
     _description = "耳聋项目信息维护"
@@ -120,6 +121,42 @@ class rhwl_ys(osv.osv):
         val["img_atta"]=atta_id
         val["state"]="img"
         return self.write(cr,uid,id,val,context=context)
+
+    def get_snp(self,cr,uid,ids,context=None):
+        data={}
+        for i in self.browse(cr,uid,ids,context=context):
+            data[i.name]={}
+            for s in i.snp:
+                data[i.name][s.snp] = s.typ
+
+        return data
+
+    def export_snp(self,cr,uid,ids,context=None):
+        ids = self.search(cr, uid, [("state", "=", "library"),("snp","!=",False)], order="name",limit=200,context=context)
+        if not ids:return
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        data = self.get_snp(cr,uid,ids,context=context)
+        snp_name = "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        fpath = os.path.join(os.path.split(__file__)[0], REMOTE_SERVER_PATH)
+        fname = os.path.join(fpath, snp_name + ".txt")
+        header=[]
+        f = open(fname, "w+")
+
+
+        for k,v in data.items():
+            line_row=[k,v["cust_name"]]
+            if not header:
+                header = v.keys()
+                header.remove("cust_name")
+                header.sort()
+                f.write("编号\t姓名\t" + "\t".join(header) + '\n')
+            for i in header:
+                line_row.append(data[k][i])
+            f.write("\t".join(line_row) + '\n')
+        f.close()
+
+        self.write(cr,uid,ids,{"state":"report"},context=context)
 
 class rhwl_log(osv.osv):
     _name = "rhwl.genes.el.log"

@@ -44,7 +44,7 @@
         <button id="btn_add" class="am-btn am-btn-warning am-round am-disabled">扫码</button>
         <button id="btn_inputadd" class="am-btn am-btn-warning am-round ">手录</button>
         <button id="btn_submit" class="am-btn  am-btn-success am-round ">提交</button>
-        <button id="btn_draft" class="am-btn  am-btn-success am-round ">草稿</button>
+        <button id="btn_draft" class="am-btn  am-btn-default am-round ">草稿</button>
     </div>
     <div class="am-form-field">
         <table id="lists" class="am-table am-table-striped am-table-hover">
@@ -202,6 +202,7 @@
             list_contant += tmp.code+","+tmp.preCode+","+tmp.inv+";"
         });
         store.set("list_contant", list_contant);
+        alert("已保存至草稿。");
     });
 
     $("#btn_submit").bind("click",function(e){
