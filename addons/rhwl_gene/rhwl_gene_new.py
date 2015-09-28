@@ -70,6 +70,17 @@ class rhwl_gene(osv.osv):
         "hospital":fields.many2one('res.partner', string=u'送检医院',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "birthday": fields.date(u"出生日期"),
         "receiv_date": fields.datetime(u"接收时间"),
+        "is_reuse":fields.boolean(u"重采"),
+        "is_single_post":fields.boolean(u"单独邮寄"),
+        "is_free":fields.boolean(u"免费"),
+        "urgency":fields.selection([("0",u"正常"),("1",u"加急")],u"紧急程度"),
+        "has_sms":fields.boolean(u"短信已通知",readonly=True),
+        "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True),
+        "has_invoice":fields.boolean(u"是否开发票"),
+        "except_note": fields.text(u"信息异常内容"),
+        "confirm_note": fields.text(u"信息异常反馈"),
+        "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性",required=True),
+        "prop_note":fields.char(u"其它说明",size=20),
         "package_id":fields.many2one("rhwl.genes.base.package",string="套餐", required=True,ondelete="restrict"),
         "state": fields.selection(STATE_SELECT_LIST, u"状态"),
         "note": fields.text(u"备注"),
@@ -153,7 +164,7 @@ class rhwl_gene(osv.osv):
     ]
     _defaults = {
         "state": 'draft',
-        "cust_prop": "tjs",
+        "cust_prop": "hospital",
         "is_risk":False,
         "is_child":False,
         "export_img":False,
@@ -227,6 +238,10 @@ class rhwl_gene(osv.osv):
         "q12_5":False,
     }
 
+    def create(self, cr, uid, val, context=None):
+        val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
+
+        return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):
         if not context:

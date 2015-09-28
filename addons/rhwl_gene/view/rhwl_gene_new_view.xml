@@ -31,29 +31,45 @@
                             <group colspan="8">
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
-                            <group colspan="8">
+                            <group colspan="4">
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="4">
+                                <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
 
                             <group colspan="4">
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="width" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="is_reuse" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="has_invoice" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                             </group>
                             <group  colspan="4">
                                 <field name="name_pinying" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="contact" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="is_single_post" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="has_sms" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                             </group>
                             <group colspan="4">
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="mobile"/>
                                 <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="is_free" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="hospital_seq" attrs="{'readonly':1}"/>
                             </group>
                             <group colspan="4">
                                 <field name="height" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="birthday" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="Permanent_city" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="urgency" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <label for="cust_prop" string="客户属性"/>
+                                <div>
+                                    <field name="cust_prop" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                    <field name="prop_note" attrs="{'invisible':[('cust_prop','not in',['other'])],'required':[('cust_prop','in',['other'])]}"/>
+                                </div>
+
                             </group>
                             <group colspan="16">
                                 <label for="state_id" string="报告书邮寄地址"/>
@@ -381,6 +397,13 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="异常说明">
+                                <label for="except_note" string="异常说明"/>
+                                <field name="except_note"/>
+                                <label for="confirm_note" string="异常反馈"/>
+                                <field name="confirm_note"/>
+                            </page>
+
                         </notebook>
                     </sheet>
                 </form>
@@ -435,7 +458,8 @@
             </field>
         </record>
 
-        <menuitem id="menu_rhwl_easy_genes_new" parent="menu_easy_genes_root" name="新易感基因" sequence="5"  />
+        <menuitem id="menu_easy_genes_new_root" name="新易感基因" sequence="25"  />
+        <menuitem id="menu_rhwl_easy_genes_new" parent="menu_easy_genes_new_root" name="新易感基因" sequence="5"  />
 
         <menuitem id="menu_easy_genes_new" parent="menu_rhwl_easy_genes_new" name="样本信息维护" sequence="10"
                   action='action_easy_genes_new' groups="rhwl_base_tjs"/>
