@@ -59,7 +59,7 @@ class rhwl_material(osv.osv):
             self.pool.get("stock.move").write(cr,SUPERUSER_ID,old_ids,{"cost_mark":0})
 
         #处理期初
-        begin_id = self.search(cr,uid,[("date","<",obj.date),("state","in",["done","draft"])],order="date desc",limit=1,context=context)
+        begin_id = self.search(cr,uid,[("date","<",obj.date),("state","in",["done",])],order="date desc",limit=1,context=context)
         if begin_id:
             begin_obj = self.browse(cr,uid,begin_id,context=context)
             for d in begin_obj.line:
@@ -159,7 +159,7 @@ class rhwl_material(osv.osv):
                         for il in l.invoice_lines:
                             il_ids.append(il.id)
                     if il_ids:
-                        if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.state","in",["draft","cancel"])],context=context)>0:
+                        if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),'|',("invoice_id.state","in",["draft","cancel"]),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:
                             continue
                     else:
                         continue
