@@ -22,6 +22,8 @@
             <field name="arch" type="xml">
                 <form string="样本信息">
                     <header>
+                        <button name="action_state_except" string="信息异常反馈" states="draft" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_except_confirm" string="信息异常确认" states="except" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
@@ -29,7 +31,7 @@
                     <sheet>
                         <group col="16">
                             <group colspan="8">
-                                <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="name" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                             </group>
                             <group colspan="4">
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
@@ -39,24 +41,24 @@
                             </group>
 
                             <group colspan="4">
-                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="width" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="is_reuse" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="has_invoice" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="width" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="identity" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="is_reuse" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="has_invoice" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                             </group>
                             <group  colspan="4">
-                                <field name="name_pinying" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="contact" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="is_single_post" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="has_sms" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="name_pinying" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="contact" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="is_single_post" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="has_sms" attrs="{'readonly':1}"/>
                             </group>
                             <group colspan="4">
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="mobile"/>
-                                <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="is_free" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="is_free" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                                 <field name="hospital_seq" attrs="{'readonly':1}"/>
                             </group>
                             <group colspan="4">
@@ -75,11 +77,11 @@
                                 <label for="state_id" string="报告书邮寄地址"/>
                                 <div class="address_format">
                                     <field name="state_id" class="oe_no_button" placeholder="State" style="width: 15%%"
-                                           options='{"no_open": True}' />
-                                    <field name="city_id" placeholder="City" style="width: 15%%" options='{"no_open": True}'/>
+                                           options='{"no_open": True}' attrs="{'required':[('is_single_post','=',True)]}"/>
+                                    <field name="city_id" placeholder="City" style="width: 15%%" options='{"no_open": True}' attrs="{'required':[('is_single_post','=',True)]}"/>
                                     <field name="area_id" domain="[('city_id','=',city_id)]" placeholder="Area"
-                                       style="width: 15%%" options='{"no_open": True}'/>
-                                    <field name="address" placeholder="address" style="width: 55%%"/>
+                                       style="width: 15%%" options='{"no_open": True}' attrs="{'required':[('is_single_post','=',True)]}"/>
+                                    <field name="address" placeholder="address" style="width: 55%%" attrs="{'required':[('is_single_post','=',True)]}"/>
                                 </div>
                             </group>
                             <group colspan="5">

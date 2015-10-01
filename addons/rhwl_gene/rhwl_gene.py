@@ -920,5 +920,6 @@ class rhwl_gene_popup(osv.osv_memory):
         if not context:
             context={}
         context["user_id"]=uid
-        self.pool.get("rhwl.easy.genes").write(cr, SUPERUSER_ID, context.get("active_id", 0),
+        tab = context.get("tab","rhwl.easy.genes")
+        self.pool.get(tab).write(cr, SUPERUSER_ID, context.get("active_id", 0),
                                                {col: obj.note, "state": s.get(col)},context=context)

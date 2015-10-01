@@ -47,7 +47,7 @@ class rhwl_gene(osv.osv):
 
 
     _columns = {
-        "batch_no": fields.char(u"批次",select=True),
+        "batch_no": fields.char(u"批次",select=True,help=u"实验位点导入时会自动产生。"),
         "name": fields.char(u"基因样本编号", required=True, size=10),
         "date": fields.date(u"送检日期", required=True),
         "cust_name": fields.char(u"会员姓名", required=True, size=50),
@@ -67,7 +67,7 @@ class rhwl_gene(osv.osv):
         "address":fields.char(u"详细地址",size=100),
         "email":fields.char(u"电子邮箱",size=50),
         "weixin":fields.char(u"微信号",size=20),
-        "hospital":fields.many2one('res.partner', string=u'送检医院',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
+        "hospital":fields.many2one('res.partner', string=u'送检机构',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "birthday": fields.date(u"出生日期"),
         "receiv_date": fields.datetime(u"接收时间"),
         "is_reuse":fields.boolean(u"重采"),
@@ -280,6 +280,31 @@ class rhwl_gene(osv.osv):
                                                   context=context)
         return super(rhwl_gene, self).unlink(cr, uid, ids, context=context)
 
+    def action_state_except(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'res_model': 'rhwl.easy.genes.popup',
+            'view_mode': 'form',
+            'name': u"异常说明",
+            'target': 'new',
+            'context': {'col': 'except_note',"tab":"rhwl.easy.genes.new"},
+            'flags': {'form': {'action_buttons': False}}}
+
+    def action_state_except_confirm(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'res_model': 'rhwl.easy.genes.popup',
+            'view_mode': 'form',
+            'name': u"确认说明",
+            'target': 'new',
+            'context': {'col': 'confirm_note',"tab":"rhwl.easy.genes.new"},
+            'flags': {'form': {'action_buttons': False}}}
 
     def action_state_confirm(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {"state": "confirm"})
