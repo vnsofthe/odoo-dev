@@ -59,7 +59,9 @@ class rhwl_express(osv.osv):
             val['value']['deliver_partner']=res[0]
         elif colname=="receiv_addr":
             val['value']['receiv_partner']=res[0]
-
+            u = self.pool.get("res.users").browse(cr,uid,user,context=context)
+            val['value']['receiv_user_text']=u.name
+            val['value']['mobile']=u.mobile
         return val
 
     def get_num_express(self, cr, uid, ids, deliver, context=None):
@@ -207,6 +209,9 @@ class rhwl_express(osv.osv):
         "receiv_addr1":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr1"),
         "receiv_addr2":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr2"),
         "express_type":fields.selection([("1",u"标准快递"),("11",u"医药常温"),("12",u"医药温控")],string=u"快递类型",required=True),
+        "mobile": fields.char(u"手机号码", size=20),
+        "receive_type":fields.selection([("internal",u"内部人员"),("external",u"外部人员")],string=u"收件方类型"),
+        "receiv_user_text":fields.char(u"收货人员",size=20),
     }
 
     _defaults = {
@@ -217,7 +222,8 @@ class rhwl_express(osv.osv):
         "deliver_id": _get_first_deliver,
         "product_id": _get_product_id,
         "num_express": lambda obj,cr, uid,context: "0000000000",
-        "express_type":lambda obj,cr,uid,context:"11"
+        "express_type":lambda obj,cr,uid,context:"11",
+        "receive_type":"internal"
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -297,6 +303,11 @@ class rhwl_express_in(osv.osv):
         "out_flag": fields.boolean(u'发货'),
         "invoice":fields.boolean(u"是否开票"),
     }
+
+    def confirm_receive(self,cr,uid,no,context=None):
+        id = self.search(cr,uid,[("number_seq","=",no)],context=context)
+        if id:
+            self.write(cr,uid,{"in_flag":True},context=context)
 
 class sale_express(osv.osv):
     _name = 'rhwl.sampleone.express'

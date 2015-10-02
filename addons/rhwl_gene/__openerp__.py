@@ -30,7 +30,8 @@
              "view/rhwl_gene.xml",
              "view/rhwl_gene_account.xml",
              "view/rhwl_base.xml",
-             "view/rhwl_gene_new_view.xml"
+             "view/rhwl_gene_new_view.xml",
+             "view/rhwl_gene_new_picking.xml"
              ],
     "qweb":[],
     'demo': [],

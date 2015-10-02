@@ -242,9 +242,23 @@ class rhwl_gene(osv.osv):
         "q12_5":False,
     }
 
+    def _get_hospital_seq(self,cr,uid,hospital,context=None):
+        hospital_obj = self.pool.get("res.partner").browse(cr,uid,hospital,context)
+        cr.execute("select hospital_seq from rhwl_easy_genes_new where hospital_seq like '%s' order by id desc " % ("YG"+hospital_obj.partner_unid + '-%',))
+        max_id=""
+        for unid in cr.fetchall():
+            max_id = unid[0]
+            break
+        if max_id:
+            max_id = max_id.split('-')[0]+'-'+str(int(max_id.split('-')[1])+1)
+        else:
+            max_id = "YG"+hospital_obj.partner_unid+'-1'
+        return max_id
+
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
-
+        val["hospital_seq"] = self._get_hospital_seq(cr,uid,val["hospital"],context)
+        self.pool.get("stock.picking.express.detail").confirm_receive(cr,uid,val["name"],context=context)
         return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):
@@ -524,3 +538,38 @@ class rhwl_gene_type(osv.osv):
         "active": True
     }
 
+class rhwl_reuse(osv.osv):
+    _name = "rhwl.easy.genes.new.reuse"
+    _inherit = ['ir.needaction_mixin']
+
+    _order = "id desc"
+
+    _columns = {
+        "name": fields.many2one("rhwl.easy.genes.new", u"样本单号",required=True,ondelete="restrict"),
+        "cust_name": fields.related('name', 'cust_name', type='char', string=u'客户姓名', readonly=1),
+        "date": fields.related('name', 'date', type='char', string=u'送检日期', readonly=1),
+        "mobile": fields.related('name', 'mobile', type='char', string=u'手机号码', readonly=1),
+        "hospital": fields.related('name', 'hospital', relation="res.partner", type='many2one', string=u'送检机构', readonly=1,store=True),
+        "notice_user": fields.many2one("res.users", u"通知人员"),
+        "notice_date": fields.date(u"通知日期"),
+        "reuse_note": fields.char(u"重采原因", size=200),
+        "note": fields.text(u"客户说明及备注"),
+        "state": fields.selection(
+            [("draft", u"未通知"), ("done", u"已通知"), (u"重复通知", u"重复通知"), ("cancel", u"客户放弃"), ("reuse", u"已重采血")], u"状态"),
+    }
+    _sql_constraints = [
+        ('rhwl_easy_genes_new_name_uniq', 'unique(name)', u'样品编号不能重复!'),
+    ]
+    _defaults = {
+        "state": lambda obj, cr, uid, context: "draft",
+    }
+
+    def _needaction_domain_get(self, cr, uid, context=None):
+        #user = self.pool.get("res.users").browse(cr, uid, uid)
+        return [('state','=','draft')]
+
+    def action_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done','notice_user':uid}, context=context)
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel','notice_user':uid}, context=context)

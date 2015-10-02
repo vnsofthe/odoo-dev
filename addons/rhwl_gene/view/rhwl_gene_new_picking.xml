@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_genes_new_picking_view_tree">
+            <field name="name">rhwl.genes.new.picking.view.tree</field>
+            <field name="model">rhwl.genes.new.picking</field>
+            <field name="arch" type="xml">
+                <tree string="Picking" >
+                    <field name="date"/>
+                    <field name="real_date" />
+                    <field name="name"/>
+                    <field name="batchs"/>
+                    <field name="files" />
+                    <field name="note"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_genes_new_picking_view_form">
+            <field name="name">rhwl.genes.new.picking.view.form</field>
+            <field name="model">rhwl.genes.new.picking</field>
+            <field name="arch" type="xml">
+                <form string="发货单">
+                    <header>
+                        <button name="action_pdf_upload" string="印刷文件上传" states="draft" type="object"/>
+                        <field name="state" widget="statusbar" clickable="True" />
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" />
+                                <field name="date" />
+                                <field name="real_date" />
+                            </group>
+                            <group>
+                                <field name="files" />
+                                <field name="upload" />
+                                <field name="note" />
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="批次明细">
+                                <field name="line">
+                                    <tree string="发货明细">
+                                        <field name="seq"/>
+                                        <field name="product_name"/>
+                                        <field name="batch_no"/>
+                                        <field name="qty"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="装箱单明细">
+                                <field name="box">
+                                    <tree>
+                                        <field name="partner_text"/>
+                                        <field name="address"/>
+                                        <field name="qty"/>
+                                        <field name="express_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_genes_new_picking_search">
+            <field name="name">rhwl.genes.new.picking.search</field>
+            <field name="model">rhwl.genes.new.picking</field>
+            <field name="arch" type="xml">
+                <search string="Picking">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_genes_new_picking" model="ir.actions.act_window">
+            <field name="name">新易感送货单</field>
+            <field name="res_model">rhwl.genes.new.picking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_new_picking_view_tree"/>
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_genes_new_picking" parent="menu_rhwl_easy_genes_new" name="新易感送货单" sequence="30"
+                  action='action_genes_new_picking' groups="rhwl_base_gene"/>
+
+        <record model="ir.ui.view" id="rhwl_genes_new_picking_line_view_form">
+            <field name="name">rhwl.genes.new.picking.line.view.form</field>
+            <field name="model">rhwl.genes.new.picking.line</field>
+            <field name="arch" type="xml">
+                <form string="发货单明细">
+
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="seq" />
+                                <field name="product_name" />
+                                <field name="batch_kind" />
+                                <field name="batch_no" />
+
+                            </group>
+                            <group>
+
+                                <field name="qty" />
+                                <field name="note" />
+
+                            </group>
+                        </group>
+                        <field name="detail">
+                            <tree string="明细">
+                                <field name="genes_id"/>
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+    </data>
+</openerp>

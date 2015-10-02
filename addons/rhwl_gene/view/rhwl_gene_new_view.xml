@@ -495,5 +495,101 @@
         </record>
         <menuitem id="menu_rhwl_easy_genes_new_import" parent="menu_easy_genes_new_root" name="数据导入" sequence="20"  />
         <menuitem action="action_rhwl_genes_new_import_report" id="menu_rhwl_easy_genes_new_instance" name="接收检测位点数据" parent="menu_rhwl_easy_genes_new_import" groups="rhwl_base_gene"/>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_tree">
+            <field name="name">rhwl.easy.genes.new.reuse.tree</field>
+            <field name="model">rhwl.easy.genes.new.reuse</field>
+            <field name="arch" type="xml">
+                <tree string="重采样">
+                    <field name="name"/>
+                    <field name="cust_name"/>
+                    <field name="date"/>
+                    <field name="mobile"/>
+                    <field name="hospital"/>
+                    <field name="notice_user"/>
+                    <field name="notice_date"/>
+                    <field name="reuse_note"/>
+                    <field name="note"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_form">
+            <field name="name">rhwl.easy.genes.new.reuse.form</field>
+            <field name="model">rhwl.easy.genes.new.reuse</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample ReUse">
+                    <header>
+                        <button name="action_done" states="draft" string="已通知" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_cancel" states="done" string="孕妇放弃" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" attrs="{'readonly':True}"/>
+                                <field name="cust_name"/>
+                                <field name="date"/>
+                                <field name="mobile"/>
+
+                            </group>
+                            <group>
+                                <field name="hospital"/>
+                                <field name="notice_user"/>
+                                <field name="notice_date"/>
+                                <field name="reuse_note"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="客户说明及备注">
+                                <field name="note"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_search">
+            <field name="name">rhwl.easy.genes.new.reuse.search</field>
+            <field name="model">rhwl.easy.genes.new.reuse</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="name" string="Sample NO"/>
+                    <field name="notice_user"/>
+                    <seperaotr/>
+                    <filter string="未通知" name="unnotice" domain="[('state','=','draft')]"/>
+                    <filter string="已重采血" name="type_usered" domain="[('state','=','reuse')]"/>
+                    <filter string="未重采血" name="type_notusered" domain="[('state','!=','reuse')]"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="通知人员" icon="terp-partner" domain="[]"
+                                context="{'group_by':'notice_user'}"/>
+                        <filter string="采样机构" icon="terp-partner" domain="[]"
+                                context="{'group_by':'hospital'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_easy_genes_new_reuse" model="ir.actions.act_window">
+            <field name="name">Again Blood</field>
+            <field name="res_model">rhwl.easy.genes.new.reuse</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_unnotice':1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_easy_genes_new_reuse" parent="menu_rhwl_easy_genes_new" name="重采样" sequence="20"
+                  action='action_rhwl_easy_genes_new_reuse' groups="rhwl_base_gene"/>
     </data>
 </openerp>

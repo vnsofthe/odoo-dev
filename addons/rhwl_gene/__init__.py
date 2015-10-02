@@ -7,3 +7,4 @@ import rhwl_export_excel
 import rhwl_account
 import rhwl_base
 import rhwl_gene_new
+import rhwl_gene_new_picking
