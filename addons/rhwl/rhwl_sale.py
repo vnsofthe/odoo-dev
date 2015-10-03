@@ -494,7 +494,7 @@ class rhwl_sample_info(osv.osv):
     def send_weixin(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
         #取医院联系人
-        person = self.pool.get("res.partner").get_Contact_person(cr,uid,obj.cxyy.id,context=context)
+        person = self.pool.get("res.partner").get_Contact_person_user(cr,uid,obj.cxyy.id,context=context)
         if not person:
             #没有联系人取驻院代表
             p_obj = self.pool.get("res.partner").browse(cr,uid,obj.cxyy.id,context=context)

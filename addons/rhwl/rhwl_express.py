@@ -212,6 +212,9 @@ class rhwl_express(osv.osv):
         "mobile": fields.char(u"手机号码", size=20),
         "receive_type":fields.selection([("internal",u"内部人员"),("external",u"外部人员")],string=u"收件方类型"),
         "receiv_user_text":fields.char(u"收货人员",size=20),
+        "state_id": fields.many2one("res.country.state",string=u'省'),
+        "city_id": fields.many2one("res.country.state.city",string=u'市',domain="[('state_id','=',state_id)]"),
+        "area_id":fields.many2one("res.country.state.city.area",string=u"区/县",domain="[('city_id','=',city_id)]"),
     }
 
     _defaults = {
@@ -259,13 +262,23 @@ class rhwl_express(osv.osv):
         devals=[]
         for i in rec:
             vals.append(i.express_type)
-            vals.append(i.receiv_partner.name)
-            vals.append(i.receiv_user.name)
-            vals.append(i.receiv_partner.phone)
-            vals.append(i.receiv_user.partner_id.mobile)
-            vals.append(i.receiv_partner.state_id.name)
-            vals.append(i.receiv_partner.city_id.name)
-            vals.append(i.receiv_partner.area_id.name)
+            if i.receive_type=="internal":
+                vals.append(i.receiv_partner.name)
+                vals.append(i.receiv_user.name)
+                vals.append(i.receiv_partner.phone)
+                vals.append(i.receiv_user.partner_id.mobile)
+                vals.append(i.receiv_partner.state_id.name)
+                vals.append(i.receiv_partner.city_id.name)
+                vals.append(i.receiv_partner.area_id.name)
+            else:
+                vals.append(i.receiv_user_text)
+                vals.append(i.receiv_user_text)
+                vals.append(i.mobile)
+                vals.append(i.mobile)
+                vals.append(i.state_id.name)
+                vals.append(i.city_id.name)
+                vals.append(i.area_id.name)
+
             vals.append(i.receiv_addr)
             vals.append(i.weight)
             vals.append(str(i.id).zfill(12))

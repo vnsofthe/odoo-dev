@@ -293,7 +293,7 @@ class WebClient(http.Controller):
                         "deliver_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,parent_id,self.CONTEXT),
                         "deliver_partner":parent_id,
                         "receiv_partner":1,
-                        "receiv_user":partnerobj.get_Contact_person(cr,SUPERUSER_ID,1,self.CONTEXT),
+                        "receiv_user":partnerobj.get_Contact_person_user(cr,SUPERUSER_ID,1,self.CONTEXT),
                         "receiv_addr":partnerobj.get_detail_address(cr,SUPERUSER_ID,1,self.CONTEXT),
                     }
                     mid = express.create(cr,uid,vals,context=self.CONTEXT)

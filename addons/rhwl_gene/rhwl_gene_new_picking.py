@@ -71,9 +71,8 @@ class rhwl_picking(osv.osv):
             objs=self.browse(cr,uid,ids,context=context)
             genes_id=[]
             for i in objs.line:
-                for j in i.box_line:
-                    for k in j.detail:
-                       genes_id.append(k.genes_id.id)
+                for k in i.detail:
+                   genes_id.append(k.genes_id.id)
             self.pool.get("rhwl.easy.genes.new").write(cr,uid,genes_id,{"state":stat[val["state"]]},context=context)
         return id
 
@@ -158,6 +157,56 @@ class rhwl_picking(osv.osv):
                     row +=1
         w.save(os.path.join(d_path,u"易感发货单(印刷)")+".xls")
 
+    def action_box_detail(self,cr,uid,id,context=None):
+        if isinstance(id,(list,tuple)):
+            id=id[0]
+        #判断装箱明细中是否已经有产生快递单
+        box_ids = self.pool.get("rhwl.genes.new.picking.box").search(cr,uid,[("picking_id","=",id),("express_id.id","!=",False)])
+        if box_ids:
+            raise osv.except_osv("Error",u"装箱明细中已经有产生对应的快递单，不可以重复产生。")
+        box_ids = self.pool.get("rhwl.genes.new.picking.box").search(cr,uid,[("picking_id","=",id)])
+        if box_ids:
+            self.pool.get("rhwl.genes.new.picking.box").unlink(cr,uid,box_ids)
+        genes_ids = self.pool.get("rhwl.genes.new.picking.line.detail").search(cr,uid,[("line_id.picking_id.id","=",id)],context=context)
+        if genes_ids:
+            box_dict={}
+            for g in self.pool.get("rhwl.genes.new.picking.line.detail").browse(cr,uid,genes_ids,context=context):
+                if g.genes_id.is_single_post:
+                    self.pool.get("rhwl.genes.new.picking.box").create(cr,uid,{"picking_id":id,
+                                                                               "partner_text":g.genes_id.cust_name,
+                                                                               "address":g.genes_id.address,
+                                                                               "mobile":g.genes_id.mobile,
+                                                                               "qty":1,
+                                                                               "state_id":g.genes_id.state_id,
+                                                                               "city_id":g.genes_id.city_id,
+                                                                               "area_id":g.genes_id.area_id},context=context)
+                else:
+                    if box_dict.has_key(g.genes_id.hospital.id):
+                        box_dict[g.genes_id.hospital.id]["qty"] +=1
+                    else:
+                        p_id = self.pool.get("res.partner").get_Contact_person(cr,uid,g.genes_id.hospital.id,u"易感报告收件人",context=context)
+                        if not p_id:
+                            p_id = g.genes_id.hospital.user_id.partner_id.id
+                        if not p_id:
+                            raise osv.except_osv("error",u"送检机构没有设置易感报告收件人，同时也没有对应的销售人员。")
+
+                        add_dict = self.pool.get("res.partner").get_detail_address_dict(cr,uid,p_id,context=context)
+                        partner_obj = self.pool.get("res.partner").browse(cr,uid,p_id,context=context)
+                        box_dict[g.genes_id.hospital.id]={
+                            "picking_id":id,
+                            "partner_id":g.genes_id.hospital.id,
+                           "partner_text":partner_obj.name,
+                           "qty":1,
+                           "state_id":add_dict["state_id"],
+                           "city_id":add_dict["city_id"],
+                           "area_id":add_dict["area_id"],
+                           "address":"".join([x for x in [add_dict["street"],add_dict["street2"]] if x]),
+                           "mobile":partner_obj.mobile
+                        }
+            if box_dict:
+                for b in box_dict.values():
+                    self.pool.get("rhwl.genes.new.picking.box").create(cr,uid,b,context=context)
+
 #发货单批次明细对象
 class rhwl_picking_line(osv.osv):
     _name = "rhwl.genes.new.picking.line"
@@ -225,10 +274,32 @@ class rhwl_picking_box(osv.osv):
     _name = "rhwl.genes.new.picking.box"
     _columns={
         "picking_id":fields.many2one("rhwl.genes.new.picking",u"发货单号",ondelete="restrict"),
-        "partner_id":fields.many2one("res.partner",string=u"收件方",),
-        "partner_text":fields.char(u"收件方",size=100),
+        "partner_id":fields.many2one("res.partner",string=u"收件机构",),
+        "partner_text":fields.char(u"收件人",size=100),
         "address":fields.char(u"详细地址",size=150),
         "mobile": fields.char(u"手机号码", size=20),
         "qty":fields.integer(u"数量"),
+        "state_id": fields.many2one("res.country.state",string=u'省'),
+        "city_id": fields.many2one("res.country.state.city",string=u'市',domain="[('state_id','=',state_id)]"),
+        "area_id":fields.many2one("res.country.state.city.area",string=u"区/县",domain="[('city_id','=',city_id)]"),
         "express_id":fields.many2one("stock.picking.express",u"快递单",ondelete="restrict")
     }
+
+    def action_create_express(self,cr,uid,id,context=None):
+        obj = self.browse(cr,uid,id,context=context)
+        product_id = self.pool.get("product.product").search(cr,uid,[("default_code","=","YGREPORT")])
+        val={
+            "expres_type":'1',
+            "receive_type":"external",
+            "receiv_user_text":obj.partner_text,
+            "receiv_addr":"".join([x for x in [obj.state_id.name,obj.city_id.name,obj.area_id.name,obj.address] if x]),
+            "mobile":obj.mobile,
+            "state_id":obj.state_id.id,
+            "city_id":obj.city_id.id,
+            "area_id":obj.area_id.id,
+            "product_id":product_id[0],
+            "product_qty":obj.qty,
+            "receiv_real_qty":obj.qty
+        }
+        express_id = self.pool.get("stock.picking.express").create(cr,uid,val,context=context)
+        self.write(cr,uid,obj.id,{"express_id":express_id},context=context)

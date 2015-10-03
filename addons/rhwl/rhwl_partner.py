@@ -239,16 +239,39 @@ class rhwl_partner(osv.osv):
 
         return data
 
-    def get_Contact_person(self,cr,uid,id,context=None):
+    def get_Contact_person(self,cr,uid,id,category_name=u"联络人",context=None):
         obj = self.browse(cr,uid,id,context=context)
         for i in obj.child_ids:
             for j in i.category_id:
-                if j.name==u"联络人":
-                    return i.user_ids and i.user_ids[0].id or None
-        if obj.zydb:
-            return obj.zydb.id
+                if j.name==category_name:
+                    return i.id and i.id or None
 
         return None
+
+    def get_Contact_person_user(self,cr,uid,id,category_name=u"联络人",context=None):
+        p_id = self.get_Contact_person(cr,uid,id,category_name,contet=context)
+        if p_id:
+            person = self.pool.get("res.users").search(cr,uid,[("partner_id.id","=",p_id)])
+            if isinstance(person,(list,tuple)):
+                person = person[0]
+            return person
+        return p_id
+
+    def get_detail_address_dict(self,cr,uid,id,context=None):
+        partner = self.browse(cr, uid, id, context=context)
+        if partner.parent_id and partner.use_parent_address:
+            res = {"state_id":partner.parent_id.state_id.id,
+                   "city_id":partner.parent_id.city_id.id,
+                   "area_id":partner.parent_id.area_id.id,
+                   "street":partner.parent_id.street,
+                   "street2":partner.parent_id.street2}
+        else:
+            res = {"state_id":partner.state_id.id,
+                   "city_id":partner.city_id.id,
+                   "area_id":partner.area_id.id,
+                   "street":partner.street,
+                   "street2":partner.street2}
+        return res
 
     def get_detail_address(self,cr,uid,id,context=None):
         partner = self.browse(cr, uid, id, context=context)

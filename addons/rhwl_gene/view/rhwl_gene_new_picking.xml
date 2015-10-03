@@ -23,6 +23,7 @@
                 <form string="发货单">
                     <header>
                         <button name="action_pdf_upload" string="印刷文件上传" states="draft" type="object"/>
+                        <button name="action_box_detail" string="产生装箱明细" states="upload" type="object"/>
                         <field name="state" widget="statusbar" clickable="True" />
                     </header>
                     <sheet>
@@ -53,10 +54,13 @@
                             <page string="装箱单明细">
                                 <field name="box">
                                     <tree>
+                                        <field name="partner_id"/>
                                         <field name="partner_text"/>
                                         <field name="address"/>
+                                        <field name="mobile"/>
                                         <field name="qty"/>
                                         <field name="express_id"/>
+                                        <button name="action_create_express" string="生成快递单" attrs="{'invisible':[('express_id','!=',False)]}" type="object"/>
                                     </tree>
                                 </field>
                             </page>
