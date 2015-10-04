@@ -64,6 +64,10 @@ class ys(http.Controller):
             img = Image.open(file_like)
             img = img.transpose(Image.ROTATE_270)
             val={"img":base64.encodestring(img.tostring("jpeg",img.mode))}
+            if kw.get("etx",""):
+                val["except_note"]=kw.get("etx")
+                val["except_type"]=kw.get("etx_type")
+                obj.write(cr,request.uid,id,{"except_note":kw.get("etx"),"state":"except"},context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
             obj._post_images(cr,request.uid,id,val["img"],context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
             if kw.get("is_confirm")=="true":
                 o=obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})

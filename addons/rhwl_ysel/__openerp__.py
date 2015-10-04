@@ -20,6 +20,8 @@
               "views/rhwl_ys.xml",
               "views/rhwl_el.xml",
               "wizard/wizard_import.xml",
+              "views/rhwl_el_picking.xml",
+              "views/rhwl_ys_picking.xml",
               ],
     "qweb":[],
     'demo': [],

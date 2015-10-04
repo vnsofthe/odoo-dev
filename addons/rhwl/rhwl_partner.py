@@ -32,7 +32,7 @@ class rhwl_partner(osv.osv):
             u'医院等级'),
         "cust_type": fields.selection([(u'私立', u'私立'), (u'公立', u'公立')], u'客户性质'),
         "zydb": fields.many2one('res.users', string=u'驻院代表'),
-        "amt": fields.float(u'收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
+        "amt": fields.float(u'无创收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
         "sfdw": fields.many2one('res.partner', string=u'收费单位', domain=[('is_company', '=', True)]),
         "sncjrs": fields.integer(u'上年产检人数'),
         "njfml":fields.integer(u'年均分娩人数'),
@@ -45,13 +45,13 @@ class rhwl_partner(osv.osv):
         "jzds": fields.selection([(u'人和', u'人和'), (u'华大', u'华大'), (u'贝瑞', u'贝瑞'), (u'凡迪', u'凡迪'), ('0', u'其它')],
                                  u"客户占有"),
         "jzdsother": fields.char(size=20),
-        "mbjysj": fields.date(u'目标进院时间'),
-        "sjjysj": fields.date(u'实际进院时间'),
+        "mbjysj": fields.date(u'无创目标进院时间'),
+        "sjjysj": fields.date(u'无创实际进院时间'),
         "eduction": fields.selection([(u'博士', u'博士'), (u'硕士', u'硕士'), (u'本科', u'本科'), (u'专科', u'专科'), (u'中专', u'中专'), ],
                                      string=u'学历'),
         "yjfx": fields.char(u"研究方向", size=100),
         "cprz": fields.selection([("1", u"初识"), ("2", u"认可"), ("3", u"推荐")], string=u"产品认知"),
-        "hospital_price": fields.float(u"临床收费", digits_compute=dp.get_precision('Product Price')),
+        "hospital_price": fields.float(u"无创临床收费", digits_compute=dp.get_precision('Product Price')),
         "city_id": fields.many2one("res.country.state.city", string=u"城市",domain="[('state_id','=',state_id]"),
         "area_id": fields.many2one("res.country.state.city.area",string=u"区/县", domain="[('city_id','=',city_id)]"),
         'function_sel': fields.selection(
@@ -60,6 +60,16 @@ class rhwl_partner(osv.osv):
         "product_cost":fields.float(u'试管成本收费', required=True, digits_compute=dp.get_precision('Product Price')),
         "proxy_partner":fields.many2one("res.partner",u"上级代理",domain="[('is_company', '=', True),('customer','=',True)]"),
         "payment_kind":fields.selection([('hospital',u"医院代收"),('proxy',u'经销商代收'),('pos',u'POS机收费'),('cash',u'现金')],string=u"收费方式", required=True),
+        "yg_amt":fields.float(u'易感收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
+        "ys_amt":fields.float(u'叶酸收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
+        "el_amt":fields.float(u'耳聋收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
+        "yg_mbjysj": fields.date(u'易感目标进院时间'),
+        "ys_mbjysj": fields.date(u'叶酸目标进院时间'),
+        "el_mbjysj": fields.date(u'耳聋目标进院时间'),
+        "yg_sjjysj": fields.date(u'易感实际进院时间'),
+        "ys_sjjysj": fields.date(u'叶酸实际进院时间'),
+        "el_sjjysj": fields.date(u'耳聋实际进院时间'),
+
     }
 
     _defaults = {

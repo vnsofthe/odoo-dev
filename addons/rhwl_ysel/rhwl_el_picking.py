@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 
 #样本发货单对象
 class rhwl_picking(osv.osv):
-    _name="rhwl.genes.new.picking"
+    _name="rhwl.genes.el.picking"
 
     BOX_TO_PICKING={}
     BATCH_TO_PICKING={}
@@ -51,8 +51,8 @@ class rhwl_picking(osv.osv):
         "upload":fields.integer(u"已上传文件数",readonly=True),
         "note":fields.char(u"备注",size=300),
         "batchs":fields.function(_get_batchs,type="char",string=u"发货批号"),
-        "line":fields.one2many("rhwl.genes.new.picking.line","picking_id","Detail"),
-        "box":fields.one2many("rhwl.genes.new.picking.box","picking_id",string="Box",readonly=True),
+        "line":fields.one2many("rhwl.genes.el.picking.line","picking_id","Detail"),
+        "box":fields.one2many("rhwl.genes.el.picking.box","picking_id",string="Box",readonly=True),
     }
     _defaults={
         "date":fields.date.today,
@@ -73,7 +73,7 @@ class rhwl_picking(osv.osv):
             for i in objs.line:
                 for k in i.detail:
                    genes_id.append(k.genes_id.id)
-            self.pool.get("rhwl.easy.genes.new").write(cr,uid,genes_id,{"state":stat[val["state"]]},context=context)
+            self.pool.get("rhwl.genes.el").write(cr,uid,genes_id,{"state":stat[val["state"]]},context=context)
         return id
 
     def pdf_copy(self,cr,uid,pdf_path,d_path,files):
@@ -81,15 +81,14 @@ class rhwl_picking(osv.osv):
         t_count = 0
 
         for k,v in files.items():
-            for k1,v1 in v.items():
-                t_count += len(v1)
-                for i in v1:
-                    if os.path.exists(os.path.join(pdf_path,i[0])):
-                        f_path = os.path.join(os.path.join(d_path,k),k1)
-                        if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
-                            shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
+            t_count += len(v)
+            for i in v:
+                if os.path.exists(os.path.join(pdf_path,i[0])):
+                    f_path = os.path.join(os.path.join(d_path,k),k)
+                    if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
+                        shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
 
-                        u_count += 1
+                    u_count += 1
         return (t_count,u_count)
 
     #根据发货单，生成需要上传的目录结构，并复制pdf文件到相应的目录中。
@@ -98,8 +97,8 @@ class rhwl_picking(osv.osv):
             self.action_pdf_upload(cr,uid,i,context=context)
 
     def action_pdf_upload(self,cr,uid,id,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/yg")
-        pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report/yg")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/ys")
+        pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report/ys")
 
         if isinstance(id,(long,int)):
             id=[id]
@@ -113,22 +112,20 @@ class rhwl_picking(osv.osv):
                 os.mkdir(d_path)
             for l in obj.line:
                 if l.qty==0:continue
-                k1=l.batch_no+"-"+str(l.qty)
-                line_path=os.path.join(d_path,k1)
-                if not os.path.exists(line_path):
-                    os.mkdir(line_path)
-                if not files.has_key(k1):files[k1]={}
 
                 for b in l.detail:
-                    k2=b.genes_id.package_id.code + "." +b.genes_id.package_id.name
-                    box_path=os.path.join(line_path,k2)
+                    if b.genes_id.is_single_post:
+                        k1 = u"单独邮寄"
+                    else:
+                        k1 = b.genes_id.hospital.name
+                    if not files.has_key(k1):
+                        files[k1]=[]
+                    box_path=os.path.join(d_path,k1)
                     if not os.path.exists(box_path):
                         os.mkdir(box_path)
 
-                    if not files[k1].has_key(k2):files[k1][k2]=[]
-
                     pdf_file = b.genes_id.name+".pdf"
-                    files[k1][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex])
+                    files[k1].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.mobile,"".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x]),b.genes_id.hospital.name])
 
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,files)
 
@@ -143,36 +140,48 @@ class rhwl_picking(osv.osv):
 
     def export_excel_to_print(self,d_path,files):
         w = xlwt.Workbook(encoding='utf-8')
+        single_dict = files.get(u"单独邮寄",[])
+        if single_dict:
+            files.remove(u"单独邮寄")
+
         for k,v in files.items():
             ws = w.add_sheet(k)
             row=0
-            batch=v.keys()
-            batch.sort()
-            for k1 in batch:
-                for i in v[k1]:
-                    ws.write(row,0,k)
-                    ws.write(row,1,i[1])
-                    ws.write(row,2,i[2])
-                    ws.write(row,3,u"男" if i[3]=="M" else u"女" )
-                    row +=1
-        w.save(os.path.join(d_path,u"易感发货单(印刷)")+".xls")
+            for i in v:
+                ws.write(row,0,k)
+                ws.write(row,1,i[1])
+                ws.write(row,2,i[2])
+                ws.write(row,3,u"男" if i[3]=="M" else u"女" )
+                row +=1
+        if single_dict:
+            ws2 = w.add_sheet(u"单独邮寄")
+            row=0
+            for s in single_dict:
+                ws2.write(row,0,i[6])
+                ws2.write(row,1,i[1])
+                ws2.write(row,2,i[2])
+                ws2.write(row,3,u"男" if i[3]=="M" else u"女" )
+                ws2.write(row,4,i[4])
+                ws2.write(row,5,i[5])
+                row +=1
+        w.save(os.path.join(d_path,u"耳聋发货单")+".xls")
 
     def action_box_detail(self,cr,uid,id,context=None):
         if isinstance(id,(list,tuple)):
             id=id[0]
         #判断装箱明细中是否已经有产生快递单
-        box_ids = self.pool.get("rhwl.genes.new.picking.box").search(cr,uid,[("picking_id","=",id),("express_id.id","!=",False)])
+        box_ids = self.pool.get("rhwl.genes.el.picking.box").search(cr,uid,[("picking_id","=",id),("express_id.id","!=",False)])
         if box_ids:
             raise osv.except_osv("Error",u"装箱明细中已经有产生对应的快递单，不可以重复产生。")
-        box_ids = self.pool.get("rhwl.genes.new.picking.box").search(cr,uid,[("picking_id","=",id)])
+        box_ids = self.pool.get("rhwl.genes.el.picking.box").search(cr,uid,[("picking_id","=",id)])
         if box_ids:
-            self.pool.get("rhwl.genes.new.picking.box").unlink(cr,uid,box_ids)
-        genes_ids = self.pool.get("rhwl.genes.new.picking.line.detail").search(cr,uid,[("line_id.picking_id.id","=",id)],context=context)
+            self.pool.get("rhwl.genes.el.picking.box").unlink(cr,uid,box_ids)
+        genes_ids = self.pool.get("rhwl.genes.el.picking.line.detail").search(cr,uid,[("line_id.picking_id.id","=",id)],context=context)
         if genes_ids:
             box_dict={}
-            for g in self.pool.get("rhwl.genes.new.picking.line.detail").browse(cr,uid,genes_ids,context=context):
+            for g in self.pool.get("rhwl.genes.el.picking.line.detail").browse(cr,uid,genes_ids,context=context):
                 if g.genes_id.is_single_post:
-                    self.pool.get("rhwl.genes.new.picking.box").create(cr,uid,{"picking_id":id,
+                    self.pool.get("rhwl.genes.el.picking.box").create(cr,uid,{"picking_id":id,
                                                                                "partner_text":g.genes_id.cust_name,
                                                                                "address":g.genes_id.address,
                                                                                "mobile":g.genes_id.mobile,
@@ -184,11 +193,11 @@ class rhwl_picking(osv.osv):
                     if box_dict.has_key(g.genes_id.hospital.id):
                         box_dict[g.genes_id.hospital.id]["qty"] +=1
                     else:
-                        p_id = self.pool.get("res.partner").get_Contact_person(cr,uid,g.genes_id.hospital.id,u"易感报告收件人",context=context)
+                        p_id = self.pool.get("res.partner").get_Contact_person(cr,uid,g.genes_id.hospital.id,u"耳聋报告收件人",context=context)
                         if not p_id:
                             p_id = g.genes_id.hospital.user_id.partner_id.id
                         if not p_id:
-                            raise osv.except_osv("error",u"送检机构没有设置易感报告收件人，同时也没有对应的销售人员。")
+                            raise osv.except_osv("error",u"送检机构没有设置耳聋报告收件人，同时也没有对应的销售人员。")
 
                         add_dict = self.pool.get("res.partner").get_detail_address_dict(cr,uid,p_id,context=context)
                         partner_obj = self.pool.get("res.partner").browse(cr,uid,p_id,context=context)
@@ -205,7 +214,7 @@ class rhwl_picking(osv.osv):
                         }
             if box_dict:
                 for b in box_dict.values():
-                    self.pool.get("rhwl.genes.new.picking.box").create(cr,uid,b,context=context)
+                    self.pool.get("rhwl.genes.el.picking.box").create(cr,uid,b,context=context)
 
     def action_export_excel(self,cr,uid,id,context=None):
         return {
@@ -214,31 +223,31 @@ class rhwl_picking(osv.osv):
             'view_mode': 'form',
             'view_type': 'form',
             #'res_id': id,
-            "context":{'func_name': 'gene_new_picking',"active_id":id,},
+            "context":{'func_name': 'gene_el_picking',"active_id":id,},
             'views': [(False, 'form')],
             'target': 'new',
             'name':u"导出发货单数据Excel"
         }
 #发货单批次明细对象
 class rhwl_picking_line(osv.osv):
-    _name = "rhwl.genes.new.picking.line"
+    _name = "rhwl.genes.el.picking.line"
 
     def _get_detail_qty(self,cr,uid,ids,field_names,arg,context=None):
         res=dict.fromkeys(ids,0)
         for k in res.keys():
-            res[k] = self.pool.get("rhwl.genes.new.picking.line.detail").search_count(cr,uid,[("line_id.id","=",k)])
+            res[k] = self.pool.get("rhwl.genes.el.picking.line.detail").search_count(cr,uid,[("line_id.id","=",k)])
         return res
 
     _order = "seq"
     _columns={
-        "picking_id":fields.many2one("rhwl.genes.new.picking",u"发货单号",ondelete="restrict"),
+        "picking_id":fields.many2one("rhwl.genes.el.picking",u"发货单号",ondelete="restrict"),
         "seq":fields.integer(u"序号",required=True),
         "product_name":fields.char(u"货品名称",size=20),
         "batch_no":fields.char(u"批号",size=15,required=True),
         "batch_kind":fields.selection([("normal",u"普通"),("resend",u"破损重印")],u"类型"),
         "qty":fields.function(_get_detail_qty,arg="batch_no",type="integer",string=u"数量"),
         "note":fields.char(u"备注",size=200),
-        "detail":fields.one2many("rhwl.genes.new.picking.line.detail","line_id","Detail"),
+        "detail":fields.one2many("rhwl.genes.el.picking.line.detail","line_id","Detail"),
 
     }
     _defaults={
@@ -247,7 +256,7 @@ class rhwl_picking_line(osv.osv):
 
     }
     _sql_constraints = [
-        ('rhwl_genes_picking_seq_uniq', 'unique(picking_id,seq)', u'发货明细序号不能重复!'),
+        ('rhwl_genes_el_picking_seq_uniq', 'unique(picking_id,seq)', u'发货明细序号不能重复!'),
     ]
 
     @api.onchange("batch_kind")
@@ -261,7 +270,7 @@ class rhwl_picking_line(osv.osv):
         if val.get("seq",0)<=0:
             raise osv.except_osv(u'错误',u'发货明细的序号必须大于0')
         if val.get("batch_kind")=="normal":
-            ids=self.pool.get("rhwl.easy.genes.new").search(cr,uid,[("batch_no","=",val.get("batch_no"))],context=context)
+            ids=self.pool.get("rhwl.genes.el").search(cr,uid,[("batch_no","=",val.get("batch_no"))],context=context)
             if not ids:
                 raise osv.except_osv(u"错误",u"批次号不存在，请输入正确的批次号码。")
             else:
@@ -274,18 +283,18 @@ class rhwl_picking_line(osv.osv):
         return line_id
 
 class rhwl_picking_detail(osv.osv):
-    _name="rhwl.genes.new.picking.line.detail"
+    _name="rhwl.genes.el.picking.line.detail"
     _columns={
-        "line_id":fields.many2one("rhwl.genes.new.picking.line",u"批号",ondelete="cascade"),
-        "genes_id":fields.many2one("rhwl.easy.genes.new",u"样本编号",ondelete="restrict",required=True),
-        "name":fields.related("genes_id","cust_name",type="char",string=u"会员姓名"),
+        "line_id":fields.many2one("rhwl.genes.el.picking.line",u"批号",ondelete="cascade"),
+        "genes_id":fields.many2one("rhwl.genes.el",u"样本编号",ondelete="restrict",required=True),
+        "name":fields.related("genes_id","cust_name",type="char",string=u"客户姓名"),
 
     }
 
 class rhwl_picking_box(osv.osv):
-    _name = "rhwl.genes.new.picking.box"
+    _name = "rhwl.genes.el.picking.box"
     _columns={
-        "picking_id":fields.many2one("rhwl.genes.new.picking",u"发货单号",ondelete="restrict"),
+        "picking_id":fields.many2one("rhwl.genes.el.picking",u"发货单号",ondelete="restrict"),
         "partner_id":fields.many2one("res.partner",string=u"收件机构",),
         "partner_text":fields.char(u"收件人",size=100),
         "address":fields.char(u"详细地址",size=150),
@@ -299,7 +308,7 @@ class rhwl_picking_box(osv.osv):
 
     def action_create_express(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=context)
-        product_id = self.pool.get("product.product").search(cr,uid,[("default_code","=","YGREPORT")])
+        product_id = self.pool.get("product.product").search(cr,uid,[("default_code","=","YSREPORT")])
         val={
             "expres_type":'1',
             "receive_type":"external",

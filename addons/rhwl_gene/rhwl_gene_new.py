@@ -93,7 +93,7 @@ class rhwl_gene(osv.osv):
         "typ": fields.one2many("rhwl.easy.genes.new.type", "genes_id", "Type"),
         "dns_chk": fields.one2many("rhwl.easy.genes.new.check", "genes_id", "DNA_Check"),
         "export_img":fields.boolean("Export Img"),
-        "pdf_file": fields.char(u"风险报告", size=100),
+        "pdf_file": fields.char(u"检测报告", size=100),
         "q1_0":fields.boolean(u"无"),
         "q1_1":fields.boolean(u"肿瘤"),
         "q1_2":fields.boolean(u"糖尿病"),

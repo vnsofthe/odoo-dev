@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <record model="ir.ui.view" id="rhwl_genes_new_picking_view_tree">
-            <field name="name">rhwl.genes.new.picking.view.tree</field>
-            <field name="model">rhwl.genes.new.picking</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_picking_view_tree">
+            <field name="name">rhwl.genes.el.picking.view.tree</field>
+            <field name="model">rhwl.genes.el.picking</field>
             <field name="arch" type="xml">
                 <tree string="Picking" >
                     <field name="date"/>
@@ -16,15 +16,15 @@
                 </tree>
             </field>
         </record>
-        <record model="ir.ui.view" id="rhwl_genes_new_picking_view_form">
-            <field name="name">rhwl.genes.new.picking.view.form</field>
-            <field name="model">rhwl.genes.new.picking</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_picking_view_form">
+            <field name="name">rhwl.genes.el.picking.view.form</field>
+            <field name="model">rhwl.genes.el.picking</field>
             <field name="arch" type="xml">
                 <form string="发货单">
                     <header>
                         <button name="action_pdf_upload" string="印刷文件上传" states="draft" type="object"/>
                         <button name="action_box_detail" string="产生装箱明细" states="upload" type="object"/>
-                        <button name="action_export_excel" string="导出发货单" states="upload" type="object"/>
+
                         <field name="state" widget="statusbar" clickable="True" />
                     </header>
                     <sheet>
@@ -71,9 +71,9 @@
                 </form>
             </field>
         </record>
-        <record model="ir.ui.view" id="rhwl_genes_new_picking_search">
-            <field name="name">rhwl.genes.new.picking.search</field>
-            <field name="model">rhwl.genes.new.picking</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_picking_search">
+            <field name="name">rhwl.genes.el.picking.search</field>
+            <field name="model">rhwl.genes.el.picking</field>
             <field name="arch" type="xml">
                 <search string="Picking">
                     <field name="name"/>
@@ -85,12 +85,12 @@
                 </search>
             </field>
         </record>
-        <record id="action_genes_new_picking" model="ir.actions.act_window">
-            <field name="name">新易感送货单</field>
-            <field name="res_model">rhwl.genes.new.picking</field>
+        <record id="action_genes_el_picking" model="ir.actions.act_window">
+            <field name="name">耳聋送货单</field>
+            <field name="res_model">rhwl.genes.el.picking</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="rhwl_genes_new_picking_view_tree"/>
+            <field name="view_id" ref="rhwl_genes_el_picking_view_tree"/>
 
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
@@ -100,12 +100,12 @@
                 </p>
             </field>
         </record>
-        <menuitem id="menu_genes_new_picking" parent="menu_rhwl_easy_genes_new" name="新易感送货单" sequence="30"
-                  action='action_genes_new_picking' groups="rhwl_base_gene"/>
+        <menuitem id="menu_genes_el_picking" parent="menu_rhwl_genes_el" name="耳聋送货单" sequence="80"
+                  action='action_genes_el_picking' />
 
-        <record model="ir.ui.view" id="rhwl_genes_new_picking_line_view_form">
-            <field name="name">rhwl.genes.new.picking.line.view.form</field>
-            <field name="model">rhwl.genes.new.picking.line</field>
+        <record model="ir.ui.view" id="rhwl_genes_el_picking_line_view_form">
+            <field name="name">rhwl.genes.el.picking.line.view.form</field>
+            <field name="model">rhwl.genes.el.picking.line</field>
             <field name="arch" type="xml">
                 <form string="发货单明细">
 
