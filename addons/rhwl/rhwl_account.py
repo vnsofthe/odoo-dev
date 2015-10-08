@@ -62,17 +62,36 @@ class rhwl_material(osv.osv):
         begin_id = self.search(cr,uid,[("date","<",obj.date),("state","in",["done",])],order="date desc",limit=1,context=context)
         if begin_id:
             begin_obj = self.browse(cr,uid,begin_id,context=context)
+            val_dict={}
             for d in begin_obj.line:
                 if d.data_kind != "end" or (d.qty==0 and d.amount==0):continue
-                val={
-                    "parent_id":obj.id,
-                    "data_kind":"begin",
-                    "product_id":d.product_id.id,
-                    "qty":d.qty,
-                    "price":d.price,
-                    "amount":d.amount
-                }
-                self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                if val_dict.has_key(d.product_id.id):
+                    if val_dict[d.product_id.id].has_key(d.price):
+                        val_dict[d.product_id.id][d.price]['qty'] = val_dict[d.product_id.id][d.price]['qty'] + d.qty
+                        val_dict[d.product_id.id][d.price]['amount'] = val_dict[d.product_id.id][d.price]['amount'] + d.amount
+                    else:
+                        val_dict[d.product_id.id][d.price]={
+                            "qty":d.qty,
+                            "amount":d.amount
+                        }
+                else:
+                    val_dict[d.product_id.id]={}
+                    val_dict[d.product_id.id][d.price]={
+                        "qty":d.qty,
+                        "amount":d.amount
+                    }
+
+            for k,v in val_dict.items():
+                for k1,v1 in v.items():
+                    val={
+                        "parent_id":obj.id,
+                        "data_kind":"begin",
+                        "product_id":k,
+                        "qty":v1["qty"],
+                        "price":k1,
+                        "amount":v1["amount"]
+                    }
+                    self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
         #处理本期采购入库
         supplier_location_id = self.pool.get("stock.location").search(cr,SUPERUSER_ID,[("usage","=","supplier")],context=context)
         production_location_id = self.pool.get("stock.location").search(cr,SUPERUSER_ID,[("usage","=","production")],context=context)
@@ -197,7 +216,8 @@ class rhwl_material(osv.osv):
                 elif t.move_type=="out":
                     v["qty"] -= t.qty
                     v["amt"] -= t.amount
-                this_detail_ids.remove(t.id)
+                if this_detail_ids.count(t.id)>0:
+                    this_detail_ids.remove(t.id)
             val={
                 "parent_id":obj.id,
                 "data_kind":"end",

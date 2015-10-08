@@ -17,16 +17,19 @@
     'init_xml': [],
     'data': [
         'security/ir.model.access.csv',
+
+
+        'base_data.xml',
+        'ebiz_data.xml',
+        'wizard/ebiz_shop_account_wizard.xml',
+        'ebiz_view.xml',
+        'ebiz_action.xml',
         'wizard/ebiz_check_order_wizard.xml',
         'wizard/ebiz_product_sku_wizard.xml',
         'wizard/ebiz_shop_merge_wizard.xml',
-        'wizard/ebiz_shop_account_wizard.xml',
+
         'wizard/ebiz_stock_sync_wizard.xml',
         'wizard/ebiz_delivery_sync_wizard.xml',
-        'base_data.xml',
-        'ebiz_data.xml',
-        'ebiz_view.xml',
-        'ebiz_action.xml', 
      ],
     'demo_xml': [],
     'installable': True,

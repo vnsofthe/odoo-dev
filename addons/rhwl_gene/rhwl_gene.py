@@ -671,6 +671,36 @@ class rhwl_gene(osv.osv):
         return s_date,e_date
 
 
+    #导出样本位点数据到报告生成服务器
+    def temp_export(self, cr, uid, ids, context=None):
+        ids = self.search(cr, uid, [("snp_name", "=", "snp_20150922131523")], order="batch_no,name",limit=200,context=context)
+        if not ids:return
+
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        data = self.get_gene_type_list(cr,uid,ids,context=context)
+        snp_name = "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp/hebin")
+        fname = os.path.join(fpath, snp_name + ".txt")
+        header=[]
+        f = open(fname, "w+")
+
+        for s in ["F","M"]:
+            if not data.has_key(s):continue
+            data_list=data[s].keys()
+            data_list.sort()
+            for k in data_list:
+                line_row=[data[s][k]["name"],data[s][k]["cust_name"],s]
+                if not header:
+                    header = data[s][k].keys()
+                    header.remove("name")
+                    header.remove("cust_name")
+                    header.sort()
+                    f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                for i in header:
+                    line_row.append(data[s][k][i])
+                f.write("\t".join(line_row) + '\n')
+        f.close()
 
 #样本对象操作日志
 class rhwl_gene_log(osv.osv):
