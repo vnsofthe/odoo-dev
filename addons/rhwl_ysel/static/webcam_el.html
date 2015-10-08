@@ -84,7 +84,12 @@
 
                 </tbody>
             </table>
-
+            <label>信息异常说明</label><br>原因:
+            <select data-am-selected>
+                <option value="custom">客户填写不清楚</option>
+                <option value="employee">录入错误</option>
+            </select>
+            <textarea rows="4" id="except_text" style="width:100%"></textarea>
         </div>
     </div>
     <div class="am-g">
@@ -162,7 +167,8 @@
 
                 var id=$("#doc-ipt-3").val();
                 var is_chk=$("#chk_confirm");
-
+                var excepttext=$("#except_text").val();
+                var except_type=$("select").val();
                 if(id==""){
                     alert("请扫描样品编码。");
                     $("#doc-ipt-3").focus();
@@ -171,7 +177,7 @@
                 $.ajax({
                   type: 'POST',
                   url: "/web/api/rhwl_el/pic/",
-                  data: {img1:img1[0].src,no:id,is_confirm:is_chk[0].checked},
+                  data: {img1:img1[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext,etx_type:except_type},
                   success: function(data){
                       if(data=="NO_DATA_FOUND"){
                           alert("样本编码在数据库不存在，请确认。");

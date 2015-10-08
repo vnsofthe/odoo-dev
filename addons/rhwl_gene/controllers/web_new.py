@@ -81,24 +81,27 @@ class gene(http.Controller):
                 return "NO_DATA_FOUND"
             file_like = cStringIO.StringIO(kw.get("img1").split(";")[-1].split(",")[-1].decode('base64','strict'))
             img = Image.open(file_like)
-            width,height = img.size
-            file_like2 = cStringIO.StringIO(kw.get("img2").split(";")[-1].split(",")[-1].decode('base64','strict'))
-            img2 = Image.open(file_like2)
+            #判断是单张还是两张拍照，如果是单张，则旋转后保存，如果是两张，则截取后合并保存
+            if not kw.has_key("img2"):
+                img = img.transpose(Image.ROTATE_270)
+            else:
+                width,height = img.size
+                file_like2 = cStringIO.StringIO(kw.get("img2").split(";")[-1].split(",")[-1].decode('base64','strict'))
+                img2 = Image.open(file_like2)
 
-            region = img2.crop((0,0,width/2,height))
-            img.paste(region, (width/2, 0,width,height))
+                region = img2.crop((0,0,width/2,height))
+                img.paste(region, (width/2, 0,width,height))
             val={"img":base64.encodestring(img.tostring("jpeg",img.mode))}
             if kw.get("etx",""):
                 val["except_note"]=kw.get("etx")
-
-            obj.write(cr,request.uid,id,val,context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
-            if val.has_key("except_note") or kw.get("is_confirm")=="true":
+                val["except_type"]=kw.get("etx_type")
+                obj.write(cr,request.uid,id,{"except_note":kw.get("etx"),"state":"except"},context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
+            obj._post_images(cr,request.uid,id,val["img"],context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
+            #obj.write(cr,request.uid,id,val,context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
+            if (not val.has_key("except_note")) and kw.get("is_confirm")=="true":
                 o=obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
                 if o.state=="draft":
-                    if val.has_key("except_note"):
-                        obj.action_state_except(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
-                    elif kw.get("is_confirm")=="true":
-                        obj.action_state_confirm(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+                    obj.action_state_confirm(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
 
 
             return "OK"
@@ -107,7 +110,7 @@ class gene(http.Controller):
     def get_detail(self,**kw):
         registry = RegistryManager.get(request.session.db)
         obj = registry.get("rhwl.easy.genes.new")
-        sexdict={'T':u'男','F':u'女'}
+        sexdict={'M':u'男','F':u'女'}
         with registry.cursor() as cr:
             id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
             if not id:
@@ -123,6 +126,8 @@ class gene(http.Controller):
                     "identity":res.identity and res.identity or "",
                     "mobile":res.mobile and res.mobile or "",
                     "birthday":res.birthday and res.birthday or "",
+                    "hospital":res.hospital.name,
+                    "package":res.package_id.name,
                 }
 
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])

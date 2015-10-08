@@ -57,8 +57,11 @@
                                 <field name="deliver_partner"/>
                             </group>
                             <group>
-                                <field name="receiv_user" on_change="get_address(receiv_user,'receiv_addr')"/>
+                                <field name="receive_type"/>
+                                <field name="receiv_user_text" attrs="{'invisible':[('receive_type','=','internal')]}"/>
+                                <field name="receiv_user" on_change="get_address(receiv_user,'receiv_addr')" attrs="{'invisible':[('receive_type','!=','internal')]}"/>
                                 <field name="receiv_addr"/>
+                                <field name="mobile" attrs="{'invisible':[('receive_type','=','internal')]}"/>
                                 <field name="receiv_date"/>
                                 <field name="receiv_partner"/>
                             </group>

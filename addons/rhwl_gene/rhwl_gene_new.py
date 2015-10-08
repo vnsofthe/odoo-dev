@@ -12,7 +12,9 @@ import re
 from openerp import tools
 from lxml import etree
 _logger = logging.getLogger(__name__)
-
+REMOTE_SNP_PATH="static/remote/yg/snp"
+REMOTE_REPORT_PATH="static/remote/yg/report"
+LOCAL_REPORT_PATH="static/local/report/yg"
 class rhwl_gene(osv.osv):
     STATE_SELECT_LIST=[
         ('draft', u'草稿'),
@@ -47,7 +49,7 @@ class rhwl_gene(osv.osv):
 
 
     _columns = {
-        "batch_no": fields.char(u"批次",select=True),
+        "batch_no": fields.char(u"批次",select=True,help=u"实验位点导入时会自动产生。"),
         "name": fields.char(u"基因样本编号", required=True, size=10),
         "date": fields.date(u"送检日期", required=True),
         "cust_name": fields.char(u"会员姓名", required=True, size=50),
@@ -67,7 +69,7 @@ class rhwl_gene(osv.osv):
         "address":fields.char(u"详细地址",size=100),
         "email":fields.char(u"电子邮箱",size=50),
         "weixin":fields.char(u"微信号",size=20),
-        "hospital":fields.many2one('res.partner', string=u'送检医院',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
+        "hospital":fields.many2one('res.partner', string=u'送检机构',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "birthday": fields.date(u"出生日期"),
         "receiv_date": fields.datetime(u"接收时间"),
         "is_reuse":fields.boolean(u"重采"),
@@ -79,6 +81,7 @@ class rhwl_gene(osv.osv):
         "has_invoice":fields.boolean(u"是否开发票"),
         "except_note": fields.text(u"信息异常内容"),
         "confirm_note": fields.text(u"信息异常反馈"),
+        "except_type":fields.selection([('custom',u"客户填写不清楚"),("employee",u"录入错误")],u"异常原因"),
         "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性",required=True),
         "prop_note":fields.char(u"其它说明",size=20),
         "package_id":fields.many2one("rhwl.genes.base.package",string="套餐", required=True,ondelete="restrict"),
@@ -90,6 +93,7 @@ class rhwl_gene(osv.osv):
         "typ": fields.one2many("rhwl.easy.genes.new.type", "genes_id", "Type"),
         "dns_chk": fields.one2many("rhwl.easy.genes.new.check", "genes_id", "DNA_Check"),
         "export_img":fields.boolean("Export Img"),
+        "pdf_file": fields.char(u"检测报告", size=100),
         "q1_0":fields.boolean(u"无"),
         "q1_1":fields.boolean(u"肿瘤"),
         "q1_2":fields.boolean(u"糖尿病"),
@@ -238,9 +242,23 @@ class rhwl_gene(osv.osv):
         "q12_5":False,
     }
 
+    def _get_hospital_seq(self,cr,uid,hospital,context=None):
+        hospital_obj = self.pool.get("res.partner").browse(cr,uid,hospital,context)
+        cr.execute("select hospital_seq from rhwl_easy_genes_new where hospital_seq like '%s' order by id desc " % ("YG"+hospital_obj.partner_unid + '-%',))
+        max_id=""
+        for unid in cr.fetchall():
+            max_id = unid[0]
+            break
+        if max_id:
+            max_id = max_id.split('-')[0]+'-'+str(int(max_id.split('-')[1])+1)
+        else:
+            max_id = "YG"+hospital_obj.partner_unid+'-1'
+        return max_id
+
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
-
+        val["hospital_seq"] = self._get_hospital_seq(cr,uid,val["hospital"],context)
+        self.pool.get("stock.picking.express.detail").confirm_receive(cr,uid,val["name"],context=context)
         return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):
@@ -280,6 +298,148 @@ class rhwl_gene(osv.osv):
                                                   context=context)
         return super(rhwl_gene, self).unlink(cr, uid, ids, context=context)
 
+    def _post_images(self,cr,uid,id,img,context=None):
+        val={}
+        val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
+
+        if context.has_key("name"):
+            obj_name = context["name"]
+        else:
+            obj = self.browse(cr,SUPERUSER_ID,id,context=context)
+            obj_name = obj.name
+
+        vals={
+            "name":obj_name,
+            "datas_fname":obj_name+".jpg",
+            "description":obj_name+" information to IMG",
+            "res_model":self._name,
+            "res_id":id[0],
+            "create_date":fields.datetime.now,
+            "create_uid":SUPERUSER_ID,
+            "datas":img,
+        }
+        atta_obj = self.pool.get('ir.attachment')
+        atta_id = atta_obj.create(cr,SUPERUSER_ID,vals)
+        val["img_atta"]=atta_id
+
+        return self.write(cr,uid,id,val,context=context)
+
+    #取得指定id列表的所有位点数据
+    def get_gene_type_list(self,cr,uid,ids,context=None):
+        data={}
+        for i in self.browse(cr,uid,ids,context=context):
+            package_code=i.package_id.code.encode("utf-8")
+            key = i.name.encode("utf-8")
+            if not data.has_key(package_code):
+                data[package_code]={}
+            if not data[package_code].has_key(key):
+                data[package_code][key]={"name":key,
+                           "cust_name":i.cust_name.encode("utf-8").replace(" ",""),
+                           "sex":i.sex.encode("utf-8"),
+                           "hospital":i.hospital.name.encode("utf-8")
+                           }
+
+            for t in i.typ:
+                k = t.snp.encode("utf-8")
+                data[package_code][key][k]=(t.typ).encode("utf-8").replace("/","")
+
+        return data
+
+    #导出样本位点数据到报告生成服务器
+    def export_gene_to_report(self, cr, uid, ids, context=None):
+        ids = self.search(cr, uid, [("state", "=", "ok"),("typ","!=",False)], order="batch_no,name",limit=200,context=context)
+        if not ids:return
+
+        if isinstance(ids, (long, int)):
+            ids = [ids]
+        data = self.get_gene_type_list(cr,uid,ids,context=context)
+        for k,v in data.items():
+            snp_name = k+"_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            fpath = os.path.join(os.path.split(__file__)[0], REMOTE_SNP_PATH)
+            fname = os.path.join(fpath, snp_name + ".txt")
+            header=[]
+            f = open(fname, "w+")
+
+            data_list=data[k].keys()
+            data_list.sort()
+            for k1 in data_list:
+                line_row=[data[k][k1]["name"],data[k][k1]["cust_name"],data[k][k1]["sex"],data[k][k1]["hospital"]]
+                if not header:
+                    header = data[k][k1].keys()
+                    header.remove("name")
+                    header.remove("cust_name")
+                    header.remove("sex")
+                    header.remove("hospital")
+                    header.sort()
+                    f.write("编号\t姓名\t性别\t送检机构\t" + "\t".join(header) + '\n')
+                for i in header:
+                    line_row.append(data[k][k1][i])
+                f.write("\t".join(line_row) + '\n')
+            f.close()
+        self.action_state_report(cr, uid, ids, context=context)
+
+    #接收风险报告
+    def get_gene_pdf_file(self, cr, uid, context=None):
+        #_logger.warn("cron job get_gene_pdf_file")
+        model_path=os.path.split(__file__)[0]
+        fpath = os.path.join(model_path, REMOTE_REPORT_PATH)
+        tpath = os.path.join(model_path, LOCAL_REPORT_PATH)
+        pdf_count = 0
+        last_week = time.time() - 60*60*24*3
+
+        for f in os.listdir(fpath):
+            newfile = os.path.join(fpath, f)
+            if not os.path.isdir(newfile):continue
+            for f1 in os.listdir(newfile):
+                name_list = re.split("[_\.]",f1) #分解文件名称
+
+                if len(name_list)==2:
+                    f2 = ".".join(name_list)
+                    shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
+                    ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
+                    if ids:
+                        self.write(cr, uid, ids,
+                                   {"pdf_file": "rhwl_gene/"+LOCAL_REPORT_PATH+"/" + f2, "state": "report_done"})
+                        pdf_count += 1
+                elif len(name_list)==3:
+                    f2 = ".".join([name_list[0],name_list[2]])
+                    shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
+                    ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
+                    if ids:
+                        self.write(cr, uid, ids,
+                                   {"pdf_file": "rhwl_gene/"+LOCAL_REPORT_PATH+"/" + f2, "state": "report_done"})
+                        pdf_count += 1
+
+
+            if os.path.getmtime(newfile) < last_week:
+                os.rmdir(newfile)
+
+
+    def action_state_except(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'res_model': 'rhwl.easy.genes.popup',
+            'view_mode': 'form',
+            'name': u"异常说明",
+            'target': 'new',
+            'context': {'col': 'except_note',"tab":"rhwl.easy.genes.new"},
+            'flags': {'form': {'action_buttons': False}}}
+
+    def action_state_except_confirm(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'res_model': 'rhwl.easy.genes.popup',
+            'view_mode': 'form',
+            'name': u"确认说明",
+            'target': 'new',
+            'context': {'col': 'confirm_note',"tab":"rhwl.easy.genes.new"},
+            'flags': {'form': {'action_buttons': False}}}
 
     def action_state_confirm(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {"state": "confirm"})
@@ -378,3 +538,38 @@ class rhwl_gene_type(osv.osv):
         "active": True
     }
 
+class rhwl_reuse(osv.osv):
+    _name = "rhwl.easy.genes.new.reuse"
+    _inherit = ['ir.needaction_mixin']
+
+    _order = "id desc"
+
+    _columns = {
+        "name": fields.many2one("rhwl.easy.genes.new", u"样本单号",required=True,ondelete="restrict"),
+        "cust_name": fields.related('name', 'cust_name', type='char', string=u'客户姓名', readonly=1),
+        "date": fields.related('name', 'date', type='char', string=u'送检日期', readonly=1),
+        "mobile": fields.related('name', 'mobile', type='char', string=u'手机号码', readonly=1),
+        "hospital": fields.related('name', 'hospital', relation="res.partner", type='many2one', string=u'送检机构', readonly=1,store=True),
+        "notice_user": fields.many2one("res.users", u"通知人员"),
+        "notice_date": fields.date(u"通知日期"),
+        "reuse_note": fields.char(u"重采原因", size=200),
+        "note": fields.text(u"客户说明及备注"),
+        "state": fields.selection(
+            [("draft", u"未通知"), ("done", u"已通知"), (u"重复通知", u"重复通知"), ("cancel", u"客户放弃"), ("reuse", u"已重采血")], u"状态"),
+    }
+    _sql_constraints = [
+        ('rhwl_easy_genes_new_name_uniq', 'unique(name)', u'样品编号不能重复!'),
+    ]
+    _defaults = {
+        "state": lambda obj, cr, uid, context: "draft",
+    }
+
+    def _needaction_domain_get(self, cr, uid, context=None):
+        #user = self.pool.get("res.users").browse(cr, uid, uid)
+        return [('state','=','draft')]
+
+    def action_done(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'done','notice_user':uid}, context=context)
+
+    def action_cancel(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state': 'cancel','notice_user':uid}, context=context)

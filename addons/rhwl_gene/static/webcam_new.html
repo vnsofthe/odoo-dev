@@ -45,11 +45,19 @@
             <div class="am-u-sm-2">
                 <input type="text" id="doc-ipt-3" autofocus="autofocus" onkeypress="if(event.keyCode==13||event.which==13){get_detail();$('#btn_cam').focus();return false;}" placeholder="扫描样本编码">
             </div>
-            <div class="am-checkbox am-u-sm-2">
-              <label>
-                <input type="checkbox" id="chk_confirm"> 提交时同步进行确认
-              </label>
+            <div class="am-u-sm-2">
+                <div class="am-checkbox am-u-sm-12">
+                  <label>
+                    <input type="checkbox" id="chk_confirm"/> 提交时同步进行确认
+                  </label>
+                </div>
+                <div class="am-checkbox am-u-sm-12">
+                  <label>
+                      <input type="checkbox" id="img_count"/>单张拍照
+                  </label>
+                </div>
             </div>
+
             <div class="am-u-sm-1">
                 <button type="button" id="form_submit" class="am-btn am-btn-primary">提交</button>
             </div>
@@ -60,7 +68,7 @@
                 <button  type="button" onclick="delete_img()" class="am-btn am-btn-danger">全部取消</button>
             </div>
             <div class="am-u-sm-1 am-u-end">
-                <button  type="button" onclick="delete_img2()" class="am-btn am-btn-danger">取消第二个</button>
+                <button  type="button" onclick="delete_img2()" class="am-btn am-btn-danger" id="cancel_sec">取消第二个</button>
             </div>
         </div>
     </form>
@@ -84,7 +92,11 @@
 
                 </tbody>
             </table>
-            <label>信息异常说明</label><br>
+            <label>信息异常说明</label><br>原因:
+            <select data-am-selected>
+                <option value="custom">客户填写不清楚</option>
+                <option value="employee">录入错误</option>
+            </select>
             <textarea rows="4" id="except_text" style="width:100%"></textarea>
         </div>
     </div>
@@ -92,7 +104,7 @@
           <div class="am-u-lg-6 am-u-md-6">
               图片一
           </div>
-          <div class="am-u-lg-6 am-u-md-6">
+          <div class="am-u-lg-6 am-u-md-6" id="img_sec">
               图片二
           </div>
     </div>
@@ -147,12 +159,17 @@
             return false;
         }
         function take_snapshot() {
+            var img_single=$("#img_count");
+
             Webcam.snap( function(data_uri) {
-                if(document.getElementById('my_result0').innerHTML){
+                if(img_single[0].checked==false && document.getElementById('my_result0').innerHTML){
                     document.getElementById('my_result1').innerHTML = '<img id="img1" style="width:100%;" src="'+data_uri+'"/>';
                     $("#form_submit").focus()
                 }else{
                     document.getElementById('my_result0').innerHTML = '<img id="img0" style="width:100%;" src="'+data_uri+'"/>';
+                    if(img_single[0].checked==true){
+                        $("#form_submit").focus()
+                    }
                 }
             return false;
             } );
@@ -166,25 +183,42 @@
                   success: function(data){
                       $("#detail tbody tr").remove();
                       $("#detail tbody").append("<tr><td>"+data.cust_name+"</td><td>"+data.date+"</td><td>"+data.sex+"</td><td>"+data.identity+"</td><td>"+data.mobile+"</td></tr>");
+                      $("#detail tbody").append("<tr><th colspan=\"3\">送检机构</th><th colspan=\"2\">检测套餐</th></tr><tr><td colspan=\"3\">"+data.hospital+"</td><td colspan=\"2\">"+data.package+"</td></tr>");
                   }
                 });
         }
         $(function(){
+            $("#img_count").bind("click",function(e){
+                var img_count=this;
+                if(e.target.checked==true){
+                    $("#cancel_sec").hide();
+                    $("#img_sec").hide();
+                }else{
+                    $("#cancel_sec").show();
+                    $("#img_sec").show();
+                };
+            });
             $("#form_submit").bind("click",function(e){
                 var img1=$('#img0');
                 var img2=$('#img1');
                 var id=$("#doc-ipt-3").val();
                 var is_chk=$("#chk_confirm");
                 var excepttext=$("#except_text").val();
+                var img_single=$("#img_count");
+                var except_type=$("select").val();
                 if(id==""){
                     alert("请扫描样品编码。");
                     $("#doc-ipt-3").focus();
                     return false
                 }
+                var post_data={img1:img1[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext,etx_type:except_type};
+                if(img_single[0].checked==false){
+                    post_data.img2=img2[0].src;
+                }
                 $.ajax({
                   type: 'POST',
                   url: "/web/api/gene_new/pic/",
-                  data: {img1:img1[0].src,img2:img2[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext},
+                  data: post_data,
                   success: function(data){
                       if(data=="NO_DATA_FOUND"){
                           alert("样本编码在数据库不存在，请确认。");

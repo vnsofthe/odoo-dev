@@ -82,6 +82,7 @@ class rhwl_import(osv.osv_memory):
                     }
                     self.pool.get("rhwl.genes.ys.snp").create(cr,uid,val,context=context)
                     if v=="N/A":is_ok=False
+                self.pool.get("rhwl.genes.ys").write(cr,uid,id,{"batch_no":"YS"+datetime.datetime.now().strftime("%y%m%d")},context=context)
                 self.pool.get("rhwl.genes.ys").action_state_snp(cr,uid,id,context=context)
                 if type_ids:
                     self.pool.get("rhwl.genes.ys.snp").write(cr,uid,type_ids,{"active":False},context=context)
@@ -156,6 +157,7 @@ class rhwl_import(osv.osv_memory):
                     }
                     self.pool.get("rhwl.genes.el.snp").create(cr,uid,val,context=context)
                     if v=="N/A":is_ok=False
+                self.pool.get("rhwl.genes.el").write(cr,uid,id,{"batch_no":"EL"+datetime.datetime.now().strftime("%y%m%d")},context=context)
                 self.pool.get("rhwl.genes.el").action_state_snp(cr,uid,id,context=context)
                 if type_ids:
                     self.pool.get("rhwl.genes.el.snp").write(cr,uid,type_ids,{"active":False},context=context)

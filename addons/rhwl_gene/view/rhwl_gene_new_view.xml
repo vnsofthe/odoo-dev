@@ -22,14 +22,16 @@
             <field name="arch" type="xml">
                 <form string="样本信息">
                     <header>
+                        <button name="action_state_except" string="信息异常反馈" states="draft" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_except_confirm" string="信息异常确认" states="except" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
                         <group col="16">
-                            <group colspan="8">
-                                <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                            <group colspan="4">
+                                <field name="name" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                             </group>
                             <group colspan="4">
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
@@ -37,26 +39,32 @@
                             <group colspan="4">
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
-
                             <group colspan="4">
-                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="width" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="identity" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="is_reuse" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="has_invoice" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <label string="风险报告 " for="pdf_file" attrs="{'invisible':[('pdf_file','=',False)]}"/>
+                                <div attrs="{'invisible':[('pdf_file','=',False)]}">
+                                    <field name="pdf_file" attrs="{'invisible':True}"/>
+                                    <button name="action_view_pdf" type="object" string="查看" context="{'file_name':pdf_file}" attrs="{'invisible':[('pdf_file','=',False)]}"></button>
+                                </div>
+                            </group>
+                            <group colspan="4">
+                                <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="width" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="identity" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="is_reuse" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="has_invoice" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                             </group>
                             <group  colspan="4">
-                                <field name="name_pinying" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="contact" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="is_single_post" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="has_sms" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="name_pinying" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="mingzhu" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="contact" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="is_single_post" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="has_sms" attrs="{'readonly':1}"/>
                             </group>
                             <group colspan="4">
                                 <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="mobile"/>
-                                <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="is_free" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
+                                <field name="is_free" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                                 <field name="hospital_seq" attrs="{'readonly':1}"/>
                             </group>
                             <group colspan="4">
@@ -75,11 +83,11 @@
                                 <label for="state_id" string="报告书邮寄地址"/>
                                 <div class="address_format">
                                     <field name="state_id" class="oe_no_button" placeholder="State" style="width: 15%%"
-                                           options='{"no_open": True}' />
-                                    <field name="city_id" placeholder="City" style="width: 15%%" options='{"no_open": True}'/>
+                                           options='{"no_open": True}' attrs="{'required':[('is_single_post','=',True)]}"/>
+                                    <field name="city_id" placeholder="City" style="width: 15%%" options='{"no_open": True}' attrs="{'required':[('is_single_post','=',True)]}"/>
                                     <field name="area_id" domain="[('city_id','=',city_id)]" placeholder="Area"
-                                       style="width: 15%%" options='{"no_open": True}'/>
-                                    <field name="address" placeholder="address" style="width: 55%%"/>
+                                       style="width: 15%%" options='{"no_open": True}' attrs="{'required':[('is_single_post','=',True)]}"/>
+                                    <field name="address" placeholder="address" style="width: 55%%" attrs="{'required':[('is_single_post','=',True)]}"/>
                                 </div>
                             </group>
                             <group colspan="5">
@@ -398,6 +406,10 @@
                                 </field>
                             </page>
                             <page string="异常说明">
+                                <group>
+                                    <field name="except_type"/>
+                                </group>
+
                                 <label for="except_note" string="异常说明"/>
                                 <field name="except_note"/>
                                 <label for="confirm_note" string="异常反馈"/>
@@ -472,5 +484,112 @@
         <menuitem id="menu_easy_genes_new_image" parent="menu_rhwl_easy_genes_new" name="样本图像采集" sequence="12"
                   action='action_easy_genes_new_image' groups="rhwl_base_gene"/>
 
+        <record id="action_rhwl_genes_new_import_report" model="ir.actions.act_window">
+            <field name="name">接收检测位点数据</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type10":1}</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_rhwl_easy_genes_new_import" parent="menu_easy_genes_new_root" name="数据导入" sequence="20"  />
+        <menuitem action="action_rhwl_genes_new_import_report" id="menu_rhwl_easy_genes_new_instance" name="接收检测位点数据" parent="menu_rhwl_easy_genes_new_import" groups="rhwl_base_gene"/>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_tree">
+            <field name="name">rhwl.easy.genes.new.reuse.tree</field>
+            <field name="model">rhwl.easy.genes.new.reuse</field>
+            <field name="arch" type="xml">
+                <tree string="重采样">
+                    <field name="name"/>
+                    <field name="cust_name"/>
+                    <field name="date"/>
+                    <field name="mobile"/>
+                    <field name="hospital"/>
+                    <field name="notice_user"/>
+                    <field name="notice_date"/>
+                    <field name="reuse_note"/>
+                    <field name="note"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_form">
+            <field name="name">rhwl.easy.genes.new.reuse.form</field>
+            <field name="model">rhwl.easy.genes.new.reuse</field>
+            <field name="arch" type="xml">
+                <form string="Sale Sample ReUse">
+                    <header>
+                        <button name="action_done" states="draft" string="已通知" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_cancel" states="done" string="孕妇放弃" type="object"
+                                groups="base.group_user" class="oe_highlight"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
+                               statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" attrs="{'readonly':True}"/>
+                                <field name="cust_name"/>
+                                <field name="date"/>
+                                <field name="mobile"/>
+
+                            </group>
+                            <group>
+                                <field name="hospital"/>
+                                <field name="notice_user"/>
+                                <field name="notice_date"/>
+                                <field name="reuse_note"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="客户说明及备注">
+                                <field name="note"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_search">
+            <field name="name">rhwl.easy.genes.new.reuse.search</field>
+            <field name="model">rhwl.easy.genes.new.reuse</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="name" string="Sample NO"/>
+                    <field name="notice_user"/>
+                    <seperaotr/>
+                    <filter string="未通知" name="unnotice" domain="[('state','=','draft')]"/>
+                    <filter string="已重采血" name="type_usered" domain="[('state','=','reuse')]"/>
+                    <filter string="未重采血" name="type_notusered" domain="[('state','!=','reuse')]"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="通知人员" icon="terp-partner" domain="[]"
+                                context="{'group_by':'notice_user'}"/>
+                        <filter string="采样机构" icon="terp-partner" domain="[]"
+                                context="{'group_by':'hospital'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_easy_genes_new_reuse" model="ir.actions.act_window">
+            <field name="name">Again Blood</field>
+            <field name="res_model">rhwl.easy.genes.new.reuse</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_unnotice':1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_easy_genes_new_reuse" parent="menu_rhwl_easy_genes_new" name="重采样" sequence="20"
+                  action='action_rhwl_easy_genes_new_reuse' groups="rhwl_base_gene"/>
     </data>
 </openerp>

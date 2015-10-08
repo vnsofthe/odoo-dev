@@ -135,6 +135,12 @@
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="product_cost"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="yg_amt"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="ys_amt"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="el_amt"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
                     <xpath expr="//field[@name='property_account_position']" position="before">
                         <field name="sfdw"
@@ -199,6 +205,18 @@
                         <field name="sjjysj"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                         <field name="hospital_price"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="yg_mbjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="yg_sjjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="ys_mbjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="ys_sjjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="el_mbjysj"
+                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+                        <field name="el_sjjysj"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
                     </xpath>
 

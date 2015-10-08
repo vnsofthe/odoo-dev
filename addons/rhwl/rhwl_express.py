@@ -59,7 +59,9 @@ class rhwl_express(osv.osv):
             val['value']['deliver_partner']=res[0]
         elif colname=="receiv_addr":
             val['value']['receiv_partner']=res[0]
-
+            u = self.pool.get("res.users").browse(cr,uid,user,context=context)
+            val['value']['receiv_user_text']=u.name
+            val['value']['mobile']=u.mobile
         return val
 
     def get_num_express(self, cr, uid, ids, deliver, context=None):
@@ -207,6 +209,12 @@ class rhwl_express(osv.osv):
         "receiv_addr1":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr1"),
         "receiv_addr2":fields.function(_fun_get_receiv_addr,type="char",string="receiv_addr2"),
         "express_type":fields.selection([("1",u"标准快递"),("11",u"医药常温"),("12",u"医药温控")],string=u"快递类型",required=True),
+        "mobile": fields.char(u"手机号码", size=20),
+        "receive_type":fields.selection([("internal",u"内部人员"),("external",u"外部人员")],string=u"收件方类型"),
+        "receiv_user_text":fields.char(u"收货人员",size=20),
+        "state_id": fields.many2one("res.country.state",string=u'省'),
+        "city_id": fields.many2one("res.country.state.city",string=u'市',domain="[('state_id','=',state_id)]"),
+        "area_id":fields.many2one("res.country.state.city.area",string=u"区/县",domain="[('city_id','=',city_id)]"),
     }
 
     _defaults = {
@@ -217,7 +225,8 @@ class rhwl_express(osv.osv):
         "deliver_id": _get_first_deliver,
         "product_id": _get_product_id,
         "num_express": lambda obj,cr, uid,context: "0000000000",
-        "express_type":lambda obj,cr,uid,context:"11"
+        "express_type":lambda obj,cr,uid,context:"11",
+        "receive_type":"internal"
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -253,13 +262,23 @@ class rhwl_express(osv.osv):
         devals=[]
         for i in rec:
             vals.append(i.express_type)
-            vals.append(i.receiv_partner.name)
-            vals.append(i.receiv_user.name)
-            vals.append(i.receiv_partner.phone)
-            vals.append(i.receiv_user.partner_id.mobile)
-            vals.append(i.receiv_partner.state_id.name)
-            vals.append(i.receiv_partner.city_id.name)
-            vals.append(i.receiv_partner.area_id.name)
+            if i.receive_type=="internal":
+                vals.append(i.receiv_partner.name)
+                vals.append(i.receiv_user.name)
+                vals.append(i.receiv_partner.phone)
+                vals.append(i.receiv_user.partner_id.mobile)
+                vals.append(i.receiv_partner.state_id.name)
+                vals.append(i.receiv_partner.city_id.name)
+                vals.append(i.receiv_partner.area_id.name)
+            else:
+                vals.append(i.receiv_user_text)
+                vals.append(i.receiv_user_text)
+                vals.append(i.mobile)
+                vals.append(i.mobile)
+                vals.append(i.state_id.name)
+                vals.append(i.city_id.name)
+                vals.append(i.area_id.name)
+
             vals.append(i.receiv_addr)
             vals.append(i.weight)
             vals.append(str(i.id).zfill(12))
@@ -297,6 +316,11 @@ class rhwl_express_in(osv.osv):
         "out_flag": fields.boolean(u'发货'),
         "invoice":fields.boolean(u"是否开票"),
     }
+
+    def confirm_receive(self,cr,uid,no,context=None):
+        id = self.search(cr,uid,[("number_seq","=",no)],context=context)
+        if id:
+            self.write(cr,uid,{"in_flag":True},context=context)
 
 class sale_express(osv.osv):
     _name = 'rhwl.sampleone.express'

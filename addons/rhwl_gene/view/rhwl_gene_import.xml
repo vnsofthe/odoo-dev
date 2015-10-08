@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <form string="Parameters">
                     <group>
-                        <field name="file_bin" invisible="not context.get('file_type1',False)"/>
+                        <field name="file_bin" invisible="(not context.get('file_type1',False)) and (not context.get('file_type10',False))"/>
                         <field name="file_bin2" invisible="(not context.get('file_type2',False)) and (not context.get('file_type4',False)) "/>
                         <field name="file_bin3" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
                         <field name="is_over" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
@@ -17,6 +17,7 @@
                         <button name="import_report2" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type2',False)"/>
                         <button name="import_report3" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type3',False)"/>
                         <button name="import_report4" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type4',False)"/>
+                        <button name="import_report10" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type10',False)"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel" />
                     </footer>
