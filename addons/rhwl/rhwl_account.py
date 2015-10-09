@@ -11,8 +11,16 @@ _logger = logging.getLogger(__name__)
 class vnsoft_account(osv.osv):
     _inherit = "account.invoice"
 
+    def _get_line_count(self,cr,uid,ids,fields_name,args,context=None):
+        res={}
+        for i in ids:
+            res[i] = self.pool.get("account.invoice.line").search_count(cr,uid,[("invoice_id","=",i)])
+
+        return res
+
     _columns={
         "page_inv_no":fields.char(u"纸质发票号"),
+        "line_count":fields.function(_get_line_count,type="integer",string=u"明细笔数"),
     }
 
 class rhwl_material(osv.osv):

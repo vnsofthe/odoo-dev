@@ -14,6 +14,7 @@
                     <field name="date_out"/>
                     <field name="partner"/>
                     <field name="company"/>
+                    <field name="project"/>
                 </tree>
             </field>
         </record>
@@ -31,6 +32,7 @@
                                 <field name="date"/>
                                 <field name="manage"/>
                                 <field name="company"/>
+                                <field name="project"/>
                             </group>
                             <group>
                                 <field name="user_id"/>

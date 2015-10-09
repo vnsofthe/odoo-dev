@@ -21,6 +21,7 @@
                 <data>
                     <xpath expr="//field[@name='fiscal_position']" position="after">
                         <field name="page_inv_no" />
+                        <field name="line_count" />
                     </xpath>
                  </data>
             </field>

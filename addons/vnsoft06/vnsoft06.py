@@ -27,7 +27,7 @@ class rhwl_sample_report(osv.osv):
         return res
 
     _columns={
-        'product_id': fields.many2one("product.product",string="Product"),
+        'product_id': fields.many2one("product.product",string="Product",auto_join=True),
         'date': fields.datetime('Date'),
         'product_uom': fields.many2one('product.uom', 'Unit of Measure', required=True,),
         'product_uom_qty': fields.float('Quantity', digits_compute=dp.get_precision('Product Unit of Measure')),
@@ -52,6 +52,7 @@ class rhwl_sample_report(osv.osv):
                 join stock_location b on ((a.location_id =b.id and b.usage='supplier') or (a.location_dest_id=b.id and b.usage='production'))
                 join product_product c on (a.product_id =c.id and c.active=true)
                 join product_template d on (c.product_tmpl_id=d.id and d.active=true)
+                where a.state='done'
         """
         return from_str
 
