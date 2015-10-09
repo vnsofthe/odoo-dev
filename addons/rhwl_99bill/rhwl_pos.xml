@@ -6,7 +6,6 @@
             <field name="model">rhwl.base.pos</field>
             <field name="arch" type="xml">
                 <tree string="POS">
-
                     <field name="provide"/>
                     <field name="terminal_id"/>
                     <field name="date"/>
@@ -14,6 +13,7 @@
                     <field name="user_id"/>
                     <field name="date_out"/>
                     <field name="partner"/>
+                    <field name="company"/>
                 </tree>
             </field>
         </record>
@@ -30,6 +30,7 @@
                                 <field name="terminal_id"/>
                                 <field name="date"/>
                                 <field name="manage"/>
+                                <field name="company"/>
                             </group>
                             <group>
                                 <field name="user_id"/>

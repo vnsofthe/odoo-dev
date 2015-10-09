@@ -673,7 +673,7 @@ class rhwl_gene(osv.osv):
 
     #导出样本位点数据到报告生成服务器
     def temp_export(self, cr, uid, ids, context=None):
-        ids = self.search(cr, uid, [("snp_name", "=", "snp_20150922131523")], order="batch_no,name",limit=200,context=context)
+        ids = self.search(cr, uid, [("name", "in", ['3599999021','3599999843','3599998984','3599999187','3599999887'])], order="batch_no,name",limit=200,context=context)
         if not ids:return
 
         if isinstance(ids, (long, int)):

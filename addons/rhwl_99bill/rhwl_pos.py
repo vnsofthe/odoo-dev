@@ -12,7 +12,8 @@ class rhwl_pos(osv.osv):
         "user_id":fields.many2one("res.users",string=u"领用人员"),
         "date_out":fields.date(u"领用日期"),
         "partner":fields.many2one("res.partner",string=u"使用客户"),
-        "note":fields.text(u"备注")
+        "note":fields.text(u"备注"),
+        "company":fields.selection([("rhwl",u"人和未来"),("xy",u"湘雅")],string=u"收款机构")
     }
     _defaults={
         "provide":"KQ",

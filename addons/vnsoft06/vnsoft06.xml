@@ -12,6 +12,7 @@
                         <field name="product_uom"/>
                         <field name="product_uom_qty"/>
                         <field name="move_type"/>
+                        <field name="invoice"/>
                     </tree>
 
             </field>
