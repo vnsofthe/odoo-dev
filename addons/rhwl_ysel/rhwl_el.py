@@ -197,7 +197,7 @@ class rhwl_ys(osv.osv):
         atta_obj = self.pool.get('ir.attachment')
         atta_id = atta_obj.create(cr,SUPERUSER_ID,vals)
         val["img_atta"]=atta_id
-        val["state"]="img"
+
         return self.write(cr,uid,id,val,context=context)
 
 

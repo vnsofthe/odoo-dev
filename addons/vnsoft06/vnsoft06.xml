@@ -11,8 +11,12 @@
                         <field name="date"/>
                         <field name="product_uom"/>
                         <field name="product_uom_qty"/>
+                        <field name="amt"/>
                         <field name="move_type"/>
+                        <field name="partner"/>
                         <field name="invoice"/>
+                        <field name="project"/>
+                        <field name="period"/>
                     </tree>
 
             </field>

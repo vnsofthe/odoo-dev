@@ -38,11 +38,15 @@ class rhwl_material(osv.osv):
         "user_id":fields.many2one("res.users",string="User",readonly=True),
         "compute_date":fields.datetime("Compute Time",readonly=True),
         "state":fields.selection([("draft","Draft"),("done","Done")],string="State"),
-        "line":fields.one2many("rhwl.material.cost.line","parent_id",string="Detail")
+        "line":fields.one2many("rhwl.material.cost.line","parent_id",string="Detail"),
+        "invoice":fields.boolean(u"统计未到票数据"),
+        "inventory":fields.boolean(u"统计盘盈亏数据"),
     }
     _defaults={
         "user_id":lambda obj,cr,uid,context:uid,
-        "state":"draft"
+        "state":"draft",
+        "invoice":False,
+        "inventory":False,
     }
     _sql_constraints = [
         ('rhwl_material_cost_uniq', 'unique(date)', u'成本日期不能重复!'),
@@ -106,7 +110,10 @@ class rhwl_material(osv.osv):
         period_ids = self.pool.get("account.period").search(cr,SUPERUSER_ID,[("date_stop",">=",obj.date),("date_start","<=",obj.date),("special","=",False)],context=context)
         period_obj = self.pool.get("account.period").browse(cr,SUPERUSER_ID,period_ids,context=context)
         #取得会计期间所有已收到的供应商发票资料。
-        invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("state","not in",["draft","cancel"]),("period_id","in",period_ids),('type','=','in_invoice')],context=context)
+        if obj.invoice:
+            invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("period_id","in",period_ids),('type','=','in_invoice')],context=context)
+        else:
+            invoice_ids = self.pool.get("account.invoice").search(cr,SUPERUSER_ID,[("state","not in",["draft","cancel"]),("period_id","in",period_ids),('type','=','in_invoice')],context=context)
         invoice_line_ids = self.pool.get("account.invoice.line").search(cr,SUPERUSER_ID,[("invoice_id","in",invoice_ids)],context=context)
         purchase_line_ids = self.pool.get("purchase.order.line").search(cr,SUPERUSER_ID,[("invoice_lines","in",invoice_line_ids),("order_id.state","not in",["draft","cancel","sent","bid","confirmed"])],context=context)
         move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",supplier_location_id[0]),("purchase_line_id","in",purchase_line_ids),("cost_mark","=",0),("state","=","done")],context=context)
@@ -133,7 +140,7 @@ class rhwl_material(osv.osv):
             for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
                 if not i.purchase_line_id.invoice_lines:continue
                 for inv in i.purchase_line_id.invoice_lines:
-                    if inv.invoice_id.type=="in_invoice" and (not inv.invoice_id.state in ("draft","cancel")):
+                    if inv.invoice_id.type=="in_invoice" and (obj.invoice or (not inv.invoice_id.state in ("draft","cancel"))):
                         if inv.invoice_id.period_id.date_stop < period_obj.date_start:
                             val={
                                 "parent_id":obj.id,
@@ -186,16 +193,23 @@ class rhwl_material(osv.osv):
                         for il in l.invoice_lines:
                             il_ids.append(il.id)
                     if il_ids:
-                        if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),'|',("invoice_id.state","in",["draft","cancel"]),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:
-                            continue
+                        if obj.invoice:
+                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:
+                                continue
+                        else:
+                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),'|',("invoice_id.state","in",["draft","cancel"]),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:
+                                continue
                     else:
                         continue
 
                 for mq in m.quant_ids:
                     if mq.qty<0:continue
-                    is_purchase=False
-                    for h in mq.history_ids:
-                        if h.purchase_line_id:is_purchase=True
+                    if obj.inventory:
+                        is_purchase=True
+                    else:
+                        is_purchase=False
+                        for h in mq.history_ids:
+                            if h.purchase_line_id:is_purchase=True
                     if not is_purchase:continue
                     val={
                         "parent_id":obj.id,
