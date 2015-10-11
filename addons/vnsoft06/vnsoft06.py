@@ -5,7 +5,24 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 import logging
 from openerp import SUPERUSER_ID
-
+"""insert into stock_quant_move_rel
+select distinct q.quant_id,tt.max_id
+from (
+select id,(select max(id) from stock_move where product_id=a.product_id and location_id=8) as max_id from stock_move a
+where picking_id in (
+select id from stock_picking where origin in (
+select name from rhwl_library_request where date>='2015-09-01'
+ union
+select name from rhwl_library_consump where date>='2015-09-01')
+)
+and not exists (
+select * from stock_move where location_id=8 and id in (
+select move_id from stock_quant_move_rel where quant_id in (
+select quant_id from stock_quant_move_rel where move_id=a.id)))) as tt
+join stock_quant_move_rel q on (tt.id=q.move_id)
+where tt.max_id is not null
+and not exists (select * from stock_quant_move_rel where quant_id=q.quant_id and move_id=tt.max_id);
+"""
 _logger = logging.getLogger(__name__)
 class rhwl_sample_report(osv.osv):
     _name = "vnsoft.stock.move.input"
