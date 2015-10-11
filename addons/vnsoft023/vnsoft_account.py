@@ -23,18 +23,7 @@ class vnsoft_partner(osv.osv):
         return super(vnsoft_partner,self).create(cr,uid,vals,context)
 
     def write(self,cr,uid,ids,vals,context=None):
-        is_company=False
-        bank_ids=[]
-        obj = self.browse(cr,uid,ids,context=context)
-        if vals.has_key("is_company"):
-            is_company = vals.get("is_company",False)
-        else:
-            is_company = obj.is_company
 
-        if vals.has_key("bank_ids"):
-            bank_ids = vals.get("bank_ids",[])
-        else:
-            bank_ids = obj.bank_ids
 
         #if is_company and (not bank_ids):
         #   raise osv.except_osv("Error",u"请设置银行帐号信息。")

@@ -17,6 +17,9 @@
                         <field name="invoice"/>
                         <field name="project"/>
                         <field name="period"/>
+                        <field name="request_no"/>
+                        <field name="request_date"/>
+                        <button name="action_check" type="object" string="检查"/>
                     </tree>
 
             </field>
