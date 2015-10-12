@@ -41,6 +41,7 @@ class rhwl_ys(osv.osv):
         "user_id":fields.many2one("res.users",string=u"销售员",),
         "room":fields.char(u"科室",size=20),
         "date":fields.date(u"采样日期", required=True),
+        "accp_date":fields.date(u"收样日期"),
         "cust_name":fields.char(u"客户姓名", required=True, size=20),
         "cust_pinying":fields.char(u"客户姓名(拼音)", size=20),
         "sex":fields.selection([("F",u"女"),("M",u"男")],string=u"性别",required=True),
@@ -87,7 +88,9 @@ class rhwl_ys(osv.osv):
     ]
     _defaults={
         "state":"draft",
-        "sex":"F"
+        "sex":"F",
+        "accp_date":fields.date.today,
+        "urgency":"0"
     }
 
     @api.onchange("hospital")
@@ -167,7 +170,7 @@ class rhwl_ys(osv.osv):
         self.write(cr,uid,id,{"state":"confirm"},context=None)
 
     def action_state_snp(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{"state":"library"},context=None)
+        self.write(cr,uid,id,{"state":"ok"},context=None)
 
     def action_view_pdf(self, cr, uid, ids, context=None):
         return {'type': 'ir.actions.act_url',
@@ -218,7 +221,7 @@ class rhwl_ys(osv.osv):
             ids = [ids]
         data = self.get_gene_type_list(cr,uid,ids,context=context)
         snp_name = "el_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        fpath = os.path.join(os.path.split(__file__)[0], REMOTE_SERVER_PATH)
+        fpath = os.path.join(os.path.join(os.path.split(os.path.split(__file__)[0])[0],"rhwl_gene"), REMOTE_SERVER_PATH)
         fname = os.path.join(fpath, snp_name + ".txt")
         header=[]
         f = open(fname, "w+")
@@ -241,7 +244,7 @@ class rhwl_ys(osv.osv):
 
     def get_gene_pdf_file(self, cr, uid, context=None):
         #_logger.warn("cron job get_gene_pdf_file")
-        model_path=os.path.split(__file__)[0]
+        model_path=os.path.join(os.path.split(os.path.split(__file__)[0])[0],"rhwl_gene")
         fpath = os.path.join(model_path, REMOTE_REPORT_PATH)
         tpath = os.path.join(model_path, LOCAL_REPORT_PATH)
         pdf_count = 0

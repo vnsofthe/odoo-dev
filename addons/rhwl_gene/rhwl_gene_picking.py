@@ -81,10 +81,12 @@ class rhwl_picking(osv.osv):
         "note":fields.char(u"备注",size=300),
         "batchs":fields.function(_get_batchs,type="char",string=u"发货批号"),
         "line":fields.one2many("rhwl.genes.picking.line","picking_id","Detail"),
+        "is_merge":fields.boolean(u"是否拼版"),
     }
     _defaults={
         "date":fields.date.today,
         "state":"draft",
+        "is_merge":False,
     }
     #重载更新方法，发货单状态更新时，同时更新发货单对应的所有样本信息状态。
     def write(self,cr,uid,ids,val,context=None):
@@ -200,8 +202,11 @@ class rhwl_picking(osv.osv):
                             sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
                 self.create_sheet_excel(line_path,sheet_data)
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,files)
-            u_count += self.report_pdf_merge(cr,uid,obj.name,d,context=context)
-            if t_count!=u_count/2:is_upload=False
+            if obj.is_merge:
+                u_count += self.report_pdf_merge(cr,uid,obj.name,d,context=context)
+                if t_count!=u_count/2:is_upload=False
+            else:
+                if t_count!=u_count:is_upload=False
             vals={
                 "upload":u_count,
             }
@@ -806,7 +811,7 @@ class rhwl_picking(osv.osv):
 
     #导出已经分配好箱号的样本给报告生成服务器
     def export_box_genes(self,cr,uid,context=None):
-        ids = self.search(cr,uid,[("state","=","draft")])
+        ids = self.search(cr,uid,[("state","=","draft"),("is_merge","=",True)])
 
         if not ids:return
         for i in ids:

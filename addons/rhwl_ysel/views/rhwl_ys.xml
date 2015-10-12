@@ -39,6 +39,7 @@
                                 <field name="date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="accp_date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <label string="检测报告 " for="pdf_file" attrs="{'invisible':[('pdf_file','=',False)]}"/>
                                 <div attrs="{'invisible':[('pdf_file','=',False)]}">
                                     <field name="pdf_file" attrs="{'invisible':True}"/>

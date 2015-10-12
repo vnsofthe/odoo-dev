@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 
+#/database/yangt/folate_report
 REMOTE_SERVER_PATH="static/remote/ys/snp"
 REMOTE_REPORT_PATH="static/remote/ys/report"
 LOCAL_REPORT_PATH="static/local/report/ys"
@@ -41,6 +42,7 @@ class rhwl_ys(osv.osv):
         "user_id":fields.many2one("res.users",string=u"销售员",),
         "room":fields.char(u"科室",size=20),
         "date":fields.date(u"采样日期", required=True),
+        "accp_date":fields.date(u"收样日期"),
         "cust_name":fields.char(u"客户姓名", required=True, size=20),
         "cust_pinying":fields.char(u"客户姓名(拼音)", size=20),
         "sex":fields.selection([("F",u"女"),("M",u"男")],string=u"性别",required=True),
@@ -80,7 +82,9 @@ class rhwl_ys(osv.osv):
     ]
     _defaults={
         "state":"draft",
-        "sex":"F"
+        "sex":"F",
+        "accp_date":fields.date.today,
+        "urgency":"0"
     }
 
     @api.onchange("hospital")
@@ -160,7 +164,7 @@ class rhwl_ys(osv.osv):
         self.write(cr,uid,id,{"state":"confirm"},context=None)
 
     def action_state_snp(self,cr,uid,id,context=None):
-        self.write(cr,uid,id,{"state":"library"},context=None)
+        self.write(cr,uid,id,{"state":"ok"},context=None)
 
     def action_view_pdf(self, cr, uid, ids, context=None):
         return {'type': 'ir.actions.act_url',
@@ -196,10 +200,18 @@ class rhwl_ys(osv.osv):
     def get_gene_type_list(self,cr,uid,ids,context=None):
         data={}
         for i in self.browse(cr,uid,ids,context=context):
-            data[i.name]={"cust_name":i.cust_name.encode("utf-8"),"sex":i.sex.encode("utf-8")}
+            data[i.name.encode("utf-8")]={"cname":i.cust_name.encode("utf-8"),
+                            "gender":i.sex.encode("utf-8"),
+                          "age":str(i.age),
+                          "hospital":i.hospital.name.encode("utf-8"),
+                          "section":i.room.encode("utf-8"),
+                          "doctor":i.doctor.name.encode("utf-8"),
+                          "clctDate":i.date.encode("utf-8"),
+                          "acptDate":i.accp_date.encode("utf-8")
+                          }
 
             for s in i.snp:
-                data[i.name][s.snp.encode("utf-8")] = s.typ.encode("utf-8").replace("/","")
+                data[i.name.encode("utf-8")][s.snp.encode("utf-8")] = s.typ.encode("utf-8").replace("/","")
 
         return data
 
@@ -214,16 +226,31 @@ class rhwl_ys(osv.osv):
         fname = os.path.join(fpath, snp_name + ".txt")
         header=[]
         f = open(fname, "w+")
-
-
+        """
+        barcode	编码
+        cname	姓名
+        gender	性别
+        age	年龄
+        hospital	医院
+        section	科室
+        doctor	医生
+        clctDate	采集日期
+        acptDate	收样日期
+        """
         for k,v in data.items():
-            line_row=[k,v["cust_name"],v["sex"]]
+            line_row=[k,v["cname"],v["gender"],v["age"],v["hospital"],v["section"],v["doctor"],v["clctDate"],v["acptDate"]]
             if not header:
                 header = v.keys()
-                header.remove("cust_name")
-                header.remove("sex")
+                header.remove("cname")
+                header.remove("gender")
+                header.remove("age")
+                header.remove("hospital")
+                header.remove("section")
+                header.remove("doctor")
+                header.remove("clctDate")
+                header.remove("acptDate")
                 header.sort()
-                f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                f.write("barcode\tcname\tgender\tage\thospital\tsection\tdoctor\tclctDate\tacptDate\t" + "\t".join(header) + '\n')
             for i in header:
                 line_row.append(data[k][i])
             f.write("\t".join(line_row) + '\n')

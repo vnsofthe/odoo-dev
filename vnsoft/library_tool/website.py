@@ -100,12 +100,36 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             if not data.has_key(k):
                 data[k]={}
             k1 = sh.cell_value(i,4)
-            if isinstance(k1,(float,)):
-                k1 = k1.__trunc__()
-            if header_list.count(k1)==0:
-                header_list.append(k1)
-            data[k][k1] = sh.cell_value(i,8)
+            if k1=="deletion":
+                Orig_GT = sh.cell_value(i,7)
 
+                if header_list.count("GSTT1")==0:
+                    header_list.append("GSTT1")
+                if header_list.count("GSTM1")==0:
+                    header_list.append("GSTM1")
+                if Orig_GT=="VIC/VIC":
+                    data[k]["GSTT1"] = "P"
+                    data[k]["GSTM1"] = "D"
+                if Orig_GT=="VIC/FAM":
+                    data[k]["GSTT1"] = "P"
+                    data[k]["GSTM1"] = "P"
+                if Orig_GT=="FAM/FAM":
+                    data[k]["GSTT1"] = "D"
+                    data[k]["GSTM1"] = "P"
+                if Orig_GT=="U":
+                    Flags = sh.cell_value(i,9)
+                    u_tip=""
+                    if Flags!="NoAmplification":
+                        u_tip = "("+Flags+")"
+                    data[k]["GSTT1"] = "D"+u_tip
+                    data[k]["GSTM1"] = "D"+u_tip
+
+            else:
+                if isinstance(k1,(float,)):
+                    k1 = k1.__trunc__()
+                if header_list.count(k1)==0:
+                    header_list.append(k1)
+                data[k][k1] = sh.cell_value(i,8)
 
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")

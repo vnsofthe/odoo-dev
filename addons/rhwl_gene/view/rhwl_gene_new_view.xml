@@ -75,7 +75,7 @@
                                 <label for="cust_prop" string="客户属性"/>
                                 <div>
                                     <field name="cust_prop" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                    <field name="prop_note" attrs="{'invisible':[('cust_prop','not in',['other'])],'required':[('cust_prop','in',['other'])]}"/>
+                                    <field name="prop_note" attrs="{'invisible':[('cust_prop','not in',['other','custom'])],'required':[('cust_prop','in',['other'])]}"/>
                                 </div>
 
                             </group>
