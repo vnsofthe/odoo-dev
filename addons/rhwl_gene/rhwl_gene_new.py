@@ -84,7 +84,7 @@ class rhwl_gene(osv.osv):
         "except_type":fields.selection([('custom',u"客户填写不清楚"),("employee",u"录入错误")],u"异常原因"),
         "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性",required=True),
         "prop_note":fields.char(u"其它说明",size=20),
-        "package_id":fields.many2one("rhwl.genes.base.package",string="套餐", required=True,ondelete="restrict"),
+        "package_id":fields.many2one("rhwl.genes.base.package",domain="[('is_product','=',True)]",string="套餐", required=True,ondelete="restrict"),
         "state": fields.selection(STATE_SELECT_LIST, u"状态"),
         "note": fields.text(u"备注"),
         "img_atta":fields.many2one("ir.attachment","IMG"),

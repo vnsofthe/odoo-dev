@@ -81,11 +81,16 @@ class rhwl_base_package(osv.osv):
     _columns={
         "parent_id":fields.many2one("rhwl.genes.base.set",string="Parent"),
         "name":fields.char("Name",size=20,required=True),
-        "code":fields.char("Code",size=50,required=True)
+        "code":fields.char("Code",size=50,required=True),
+        "is_product":fields.boolean(u"已推产品")
     }
     _sql_constraints = [
         ('rhwl_genes_base_package_code_uniq', 'unique(parent_id,code)', u'代号不能重复!'),
     ]
+
+    _defaults={
+        "is_product":False
+    }
 
     def name_get(self, cr, user, ids, context=None):
         if context is None:
@@ -129,3 +134,17 @@ class rhwl_base_package(osv.osv):
         else:
             ids = self.search(cr, uid, args, limit=limit, context=context)
         return self.name_get(cr, uid, ids, context)
+
+class rhwl_barcode(osv.osv):
+    _name = "rhwl.genes.barcode"
+    _rec_name="barcode_start"
+    _columns={
+        "partner":fields.many2one("res.partner",string=u"客户名称",domain="[('is_company', '=', True), ('customer', '=', True)]",required=True),
+        "package_id":fields.many2one("rhwl.genes.base.package",domain="[('is_product','=',True)]",string=u"套餐", required=True,ondelete="restrict"),
+        "qty":fields.integer(u"数量",required=True),
+        "barcode_start":fields.char(u"起始条码",size=15,required=True),
+        "barcode_stop":fields.char(u"终止条码",size=15,required=True),
+        "date":fields.date(u"发出日期",required=True),
+        "express":fields.char(u"快递公司",size=10),
+        "express_no":fields.char(u"快递单号",size=15)
+    }

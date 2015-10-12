@@ -84,7 +84,7 @@ class rhwl_picking(osv.osv):
             t_count += len(v)
             for i in v:
                 if os.path.exists(os.path.join(pdf_path,i[0])):
-                    f_path = os.path.join(os.path.join(d_path,k),k)
+                    f_path = os.path.join(d_path,k)
                     if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
                         shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
 
@@ -125,7 +125,7 @@ class rhwl_picking(osv.osv):
                         os.mkdir(box_path)
 
                     pdf_file = b.genes_id.name+".pdf"
-                    files[k1].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.mobile,"".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x]),b.genes_id.hospital.name])
+                    files[k1].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.tel,"".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x]),b.genes_id.hospital.name])
 
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,files)
 
@@ -310,7 +310,7 @@ class rhwl_picking_box(osv.osv):
         obj = self.browse(cr,uid,id,context=context)
         product_id = self.pool.get("product.product").search(cr,uid,[("default_code","=","YSREPORT")])
         val={
-            "expres_type":'1',
+            "express_type":'1',
             "receive_type":"external",
             "receiv_user_text":obj.partner_text,
             "receiv_addr":"".join([x for x in [obj.state_id.name,obj.city_id.name,obj.area_id.name,obj.address] if x]),
@@ -320,7 +320,8 @@ class rhwl_picking_box(osv.osv):
             "area_id":obj.area_id.id,
             "product_id":product_id[0],
             "product_qty":obj.qty,
-            "receiv_real_qty":obj.qty
+            "receiv_real_qty":obj.qty,
+            "receiv_partner":obj.partner_id.id
         }
         express_id = self.pool.get("stock.picking.express").create(cr,uid,val,context=context)
         self.write(cr,uid,obj.id,{"express_id":express_id},context=context)

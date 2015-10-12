@@ -111,6 +111,7 @@
                                     <tree editable="TOP">
                                         <field name="name"/>
                                         <field name="code"/>
+                                        <field name="is_product"/>
                                     </tree>
                                 </field>
                             </page>
@@ -154,5 +155,82 @@
 
         <menuitem id="menu_genes_base_set" parent="menu_rhwl_easy_genes_disease" name="套餐信息维护" sequence="30"
                   action='action_genes_base_set' groups="rhwl_base_tjs"/>
+
+
+        <record model="ir.ui.view" id="rhwl_genes_barcode_view_tree">
+            <field name="name">rhwl.genes.barcode.view.tree</field>
+            <field name="model">rhwl.genes.barcode</field>
+            <field name="arch" type="xml">
+                <tree string="易感样本发送记录" >
+                    <field name="partner"/>
+                    <field name="package_id"/>
+                    <field name="qty"/>
+                    <field name="barcode_start"/>
+                    <field name="barcode_stop"/>
+                    <field name="date"/>
+                    <field name="express"/>
+                    <field name="express_no"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_genes_barcode_view_form">
+            <field name="name">rhwl.genes.barcode.view.form</field>
+            <field name="model">rhwl.genes.barcode</field>
+            <field name="arch" type="xml">
+                <form string="易感样本发出记录">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="partner"/>
+                                <field name="package_id"/>
+                                <field name="qty"/>
+                                <field name="barcode_start"/>
+                                <field name="barcode_stop"/>
+
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="express"/>
+                                <field name="express_no"/>
+                            </group>
+                        </group>
+
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_genes_barcode_search">
+            <field name="name">rhwl.genes.barcode.search</field>
+            <field name="model">rhwl.genes.barcode</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="partner"/>
+                    <field name="package_id"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="action_genes_barcode" model="ir.actions.act_window">
+            <field name="name">易感套餐条码发出记录</field>
+            <field name="res_model">rhwl.genes.barcode</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_genes_barcode_view_tree"/>
+
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_rhwl_easy_genes_new_other" parent="menu_easy_genes_new_root" name="其它" sequence="30"  />
+        <menuitem id="menu_genes_base_barcode" parent="menu_rhwl_easy_genes_new_other" name="易感套餐条码发出记录" sequence="30"
+                  action='action_genes_barcode' groups="rhwl_base_tjs"/>
     </data>
 </openerp>
