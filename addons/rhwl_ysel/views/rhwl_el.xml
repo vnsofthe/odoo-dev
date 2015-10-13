@@ -54,6 +54,7 @@
                                 <field name="birthday" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="fdjfr_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="contact" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="sample_type" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="3">
                                 <field name="user_id" attrs="{'readonly':[('state','not in',['draft'])]}"/>
@@ -61,6 +62,7 @@
                                 <field name="cust_pinying" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="sample_deal" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="9" col="8">
                                 <group colspan="2">
@@ -100,16 +102,19 @@
                                 <label for="is_jksc" string="患者主诉"/>
                                 <div >
                                     <label string="健康筛查" for="is_jksc"/>
-                                    <field name="is_jksc"  style="width: 5%%" />
+                                    <field name="is_jksc"  style="width: 25%%" />
+
+                                    <label string="耳聋患者" for="is_self"/>
+                                    <field name="is_self"  style="width: 25%%" />
 
                                     <label string="父母均为耳聋患者" for="is_both"/>
-                                    <field name="is_both"  style="width: 5%%" />
+                                    <field name="is_both"  style="width: 15%%" />
 
                                     <label string="父亲耳聋" for="is_father"/>
-                                    <field name="is_father" style="width: 5%%" />
+                                    <field name="is_father" style="width: 25%%" />
 
                                     <label string="母亲耳聋" for="is_mother"/>
-                                    <field name="is_mother"  style="width: 5%%"/>
+                                    <field name="is_mother"  style="width: 25%%"/>
 
                                     <label string="父母健康、兄弟姐妹有耳聋" for="is_brother"/>
                                     <field name="is_brother"  style="width: 5%%"/>

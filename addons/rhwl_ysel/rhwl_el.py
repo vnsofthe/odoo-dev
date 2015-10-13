@@ -50,6 +50,7 @@ class rhwl_ys(osv.osv):
         "fdjfr_name":fields.char(u"法定监护人姓名",size=20),
         "age":fields.integer(u"年龄(周岁)"),
         "is_jksc":fields.boolean(u"健康筛查"),
+        "is_self":fields.boolean(u"耳聋患者"),
         "is_both":fields.boolean(u"父母均为耳聋患者"),
         "is_father":fields.boolean(u"父亲耳聋"),
         "is_mother":fields.boolean(u"母亲耳聋"),
@@ -82,6 +83,8 @@ class rhwl_ys(osv.osv):
         "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性",required=True),
         "prop_note":fields.char(u"其它说明",size=20),
         "pdf_file": fields.char(u"检测报告", size=100),
+        "sample_type":fields.selection([("finger",u"指尖血"),("toe",u"足跟血")],string=u"样本类型",required=True),
+        "sample_deal":fields.selection([("EDTA",u"EDTA抗凝")],string=u"样本处理",required=True)
     }
     _sql_constraints = [
         ('rhwl_genes_el_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -90,7 +93,9 @@ class rhwl_ys(osv.osv):
         "state":"draft",
         "sex":"F",
         "accp_date":fields.date.today,
-        "urgency":"0"
+        "urgency":"0",
+        "sample_type":"finger",
+        "sample_deal":"EDTA"
     }
 
     @api.onchange("hospital")

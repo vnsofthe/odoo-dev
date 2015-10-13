@@ -52,6 +52,7 @@
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="age" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="contact" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="sample_type" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="3">
                                 <field name="user_id" attrs="{'readonly':[('state','not in',['draft'])]}"/>
@@ -59,6 +60,7 @@
                                 <field name="cust_pinying" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="identity" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="contact_tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="sample_deal" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                             </group>
                             <group colspan="9" col="8">
                                 <group colspan="2">

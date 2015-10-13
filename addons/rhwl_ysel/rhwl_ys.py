@@ -76,6 +76,8 @@ class rhwl_ys(osv.osv):
         "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性",required=True),
         "prop_note":fields.char(u"其它说明",size=20),
         "pdf_file": fields.char(u"检测报告", size=100),
+        "sample_type":fields.selection([("blood",u"全血")],string=u"样本类型",required=True),
+        "sample_deal":fields.selection([("EDTA",u"EDTA抗凝")],string=u"样本处理",required=True)
     }
     _sql_constraints = [
         ('rhwl_genes_ys_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -84,7 +86,9 @@ class rhwl_ys(osv.osv):
         "state":"draft",
         "sex":"F",
         "accp_date":fields.date.today,
-        "urgency":"0"
+        "urgency":"0",
+        "sample_type":"blood",
+        "sample_deal":"EDTA"
     }
 
     @api.onchange("hospital")
@@ -200,6 +204,8 @@ class rhwl_ys(osv.osv):
     def get_gene_type_list(self,cr,uid,ids,context=None):
         data={}
         for i in self.browse(cr,uid,ids,context=context):
+            sel_type = dict(fields.selection.reify(cr,uid,self,self._columns['sample_type'],context=context))
+            sel_deal = dict(fields.selection.reify(cr,uid,self,self._columns['sample_deal'],context=context))
             data[i.name.encode("utf-8")]={"cname":i.cust_name.encode("utf-8"),
                             "gender":i.sex.encode("utf-8"),
                           "age":str(i.age),
@@ -208,8 +214,8 @@ class rhwl_ys(osv.osv):
                           "doctor":i.doctor.name.encode("utf-8"),
                           "clctDate":i.date.encode("utf-8").replace("-","."),
                           "acptDate":i.accp_date.encode("utf-8").replace("-","."),
-                          "sampleType":"全血",
-                          "sampleDeal":"EDTA抗凝"
+                          "sampleType":sel_type.get(i.sample_type,"").encode("utf-8"),
+                          "sampleDeal":sel_deal.get(i.sample_deal,"").encode("utf-8"),
                           }
 
             for s in i.snp:

@@ -69,7 +69,18 @@ class rhwl_partner(osv.osv):
         "yg_sjjysj": fields.date(u'易感实际进院时间'),
         "ys_sjjysj": fields.date(u'叶酸实际进院时间'),
         "el_sjjysj": fields.date(u'耳聋实际进院时间'),
-
+        "wc_contacts":fields.many2one("res.partner",string=u"医院联系人",domain="[('parent_id','=',id)]"),
+        "wc_material":fields.many2one("res.partner",string=u"物料联系人",domain="[('parent_id','=',id)]"),
+        "wc_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]"),
+        "yg_contacts":fields.many2one("res.partner",string=u"医院联系人",domain="[('parent_id','=',id)]"),
+        "yg_material":fields.many2one("res.partner",string=u"物料联系人",domain="[('parent_id','=',id)]"),
+        "yg_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]"),
+        "ys_contacts":fields.many2one("res.partner",string=u"医院联系人",domain="[('parent_id','=',id)]"),
+        "ys_material":fields.many2one("res.partner",string=u"物料联系人",domain="[('parent_id','=',id)]"),
+        "ys_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]"),
+        "el_contacts":fields.many2one("res.partner",string=u"医院联系人",domain="[('parent_id','=',id)]"),
+        "el_material":fields.many2one("res.partner",string=u"物料联系人",domain="[('parent_id','=',id)]"),
+        "el_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]")
     }
 
     _defaults = {
