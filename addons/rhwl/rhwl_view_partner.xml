@@ -258,6 +258,20 @@
                             <field name="street2" attrs="{'invisible':1}"/>
                         </div>
                     </xpath>
+                    <xpath expr="//page[@name='internal_notes']" position="before">
+                        <page string="无创">
+
+                        </page>
+                        <page string="易感">
+
+                        </page>
+                        <page string="叶酸">
+
+                        </page>
+                        <page string="耳聋">
+
+                        </page>
+                    </xpath>
                 </data>
             </field>
         </record>

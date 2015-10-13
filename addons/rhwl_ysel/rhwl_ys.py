@@ -206,8 +206,10 @@ class rhwl_ys(osv.osv):
                           "hospital":i.hospital.name.encode("utf-8"),
                           "section":i.room.encode("utf-8"),
                           "doctor":i.doctor.name.encode("utf-8"),
-                          "clctDate":i.date.encode("utf-8"),
-                          "acptDate":i.accp_date.encode("utf-8")
+                          "clctDate":i.date.encode("utf-8").replace("-","."),
+                          "acptDate":i.accp_date.encode("utf-8").replace("-","."),
+                          "sampleType":"全血",
+                          "sampleDeal":"EDTA抗凝"
                           }
 
             for s in i.snp:
@@ -238,7 +240,7 @@ class rhwl_ys(osv.osv):
         acptDate	收样日期
         """
         for k,v in data.items():
-            line_row=[k,v["cname"],v["gender"],v["age"],v["hospital"],v["section"],v["doctor"],v["clctDate"],v["acptDate"]]
+            line_row=[k,v["cname"],v["gender"],v["age"],v["hospital"],v["section"],v["doctor"],v["clctDate"],v["acptDate"],v["sampleType"],v["sampleDeal"]]
             if not header:
                 header = v.keys()
                 header.remove("cname")
@@ -249,13 +251,15 @@ class rhwl_ys(osv.osv):
                 header.remove("doctor")
                 header.remove("clctDate")
                 header.remove("acptDate")
+                header.remove("sampleType")
+                header.remove("sampleDeal")
                 header.sort()
-                f.write("barcode\tcname\tgender\tage\thospital\tsection\tdoctor\tclctDate\tacptDate\t" + "\t".join(header) + '\n')
+                f.write("barcode\tcname\tgender\tage\thospital\tsection\tdoctor\tclctDate\tacptDate\tsampleType\tsampleDeal\t" + "\t".join(header) + '\n')
             for i in header:
                 line_row.append(data[k][i])
             f.write("\t".join(line_row) + '\n')
         f.close()
-
+        os.system("chmod 777 "+fname)
         self.write(cr,uid,ids,{"state":"report"},context=context)
 
     def get_gene_pdf_file(self, cr, uid, context=None):
