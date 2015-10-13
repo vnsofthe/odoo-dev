@@ -310,7 +310,7 @@ class rhwl_express_in(osv.osv):
     _name = "stock.picking.express.detail"
     _rec_name = "number_seq"
     _columns = {
-        'parent_id': fields.many2one("stock.picking.express", string="物流单号",ondelete="cascade"),
+        'parent_id': fields.many2one("stock.picking.express", string=u"物流单号",ondelete="cascade"),
         'number_seq': fields.char(u"样品编号", size=20),
         'number_seq_ori': fields.char(u"原样品编号", size=20),
         "in_flag": fields.boolean(u"收货"),
