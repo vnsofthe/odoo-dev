@@ -177,16 +177,14 @@ class rhwl_material(osv.osv):
             move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_dest_id","in",production_location_id),("picking_id","=",p.id),("state","=","done"),("cost_mark","=",0)],context=context)
 
             for m in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
-                if m.product_id.id==756:
-                    _logger.error((m.id,m.product_qty))
+
                 #检查领用出库单对应的采购是否已经确认发票
                 p_ids=[]
                 for q in m.quant_ids:
                     for h in q.history_ids:
                         if h.location_id.id==supplier_location_id[0] and h.purchase_line_id != False and h.state=="done":
                             p_ids.append(h.purchase_line_id.id)
-                if m.product_id.id==756:
-                    _logger.error(p_ids)
+
                 if p_ids:
                     il_ids=[]
 
@@ -196,8 +194,7 @@ class rhwl_material(osv.osv):
                             break
                         for il in l.invoice_lines:
                             il_ids.append(il.id)
-                    if m.product_id.id==756:
-                        _logger.error(il_ids)
+
                     if il_ids:
                         if obj.invoice:
                             if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:
@@ -215,7 +212,7 @@ class rhwl_material(osv.osv):
                     else:
                         is_purchase=False
                         for h in mq.history_ids:
-                            if h.purchase_line_id:is_purchase=True
+                            if h.purchase_line_id and h.state=='done':is_purchase=True
                     if not is_purchase:continue
                     val={
                         "parent_id":obj.id,
