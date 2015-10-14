@@ -83,7 +83,7 @@ class rhwl_ys(osv.osv):
         "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性",required=True),
         "prop_note":fields.char(u"其它说明",size=20),
         "pdf_file": fields.char(u"检测报告", size=100),
-        "sample_type":fields.selection([("finger",u"指尖血"),("toe",u"足跟血")],string=u"样本类型",required=True),
+        "sample_type":fields.selection([("blood",u"全血")],string=u"样本类型",required=True),
         "sample_deal":fields.selection([("EDTA",u"EDTA抗凝")],string=u"样本处理",required=True)
     }
     _sql_constraints = [
@@ -94,7 +94,7 @@ class rhwl_ys(osv.osv):
         "sex":"F",
         "accp_date":fields.date.today,
         "urgency":"0",
-        "sample_type":"finger",
+        "sample_type":"blood",
         "sample_deal":"EDTA"
     }
 
