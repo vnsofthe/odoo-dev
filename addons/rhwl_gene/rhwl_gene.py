@@ -85,6 +85,7 @@ class rhwl_gene(osv.osv):
         "state": fields.selection(STATE_SELECT_LIST, u"状态"),
         "note": fields.text(u"备注"),
         "gene_id": fields.char(u"基因编号", size=20),
+        "language":fields.selection([("CN",u"中文"),("EN",u"英文")],u"报告语种"),
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
         "img": fields.binary(u"图片"),
@@ -182,6 +183,7 @@ class rhwl_gene(osv.osv):
         "is_risk":False,
         "is_child":False,
         "export_img":False,
+        "language":"CN"
     }
 
     def init(self, cr):
@@ -355,6 +357,7 @@ class rhwl_gene(osv.osv):
             if not data[sex].has_key(key):
                 data[sex][key]={"name":key,
                            "cust_name":i.cust_name.encode("utf-8").replace(" ",""),
+                                "language":i.language
                            }
 
             for t in i.typ:
@@ -409,13 +412,14 @@ class rhwl_gene(osv.osv):
             data_list=data[s].keys()
             data_list.sort()
             for k in data_list:
-                line_row=[data[s][k]["name"],data[s][k]["cust_name"],s]
+                line_row=[data[s][k]["name"],data[s][k]["cust_name"],s,data[s][k]["language"]]
                 if not header:
                     header = data[s][k].keys()
                     header.remove("name")
                     header.remove("cust_name")
+                    header.remove("language")
                     header.sort()
-                    f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                    f.write("编号\t姓名\t性别\t语种\t" + "\t".join(header) + '\n')
                 for i in header:
                     line_row.append(data[s][k][i])
                 f.write("\t".join(line_row) + '\n')

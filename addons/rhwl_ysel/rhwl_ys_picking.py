@@ -125,7 +125,14 @@ class rhwl_picking(osv.osv):
                         os.mkdir(box_path)
 
                     pdf_file = b.genes_id.name+".pdf"
-                    files[k1].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.tel,"".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x]),b.genes_id.hospital.name])
+                    files[k1].append([pdf_file,
+                                      b.genes_id.name,
+                                      b.genes_id.cust_name,
+                                      b.genes_id.sex,
+                                      b.genes_id.tel,
+                                      "".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x]),
+                                      b.genes_id.hospital.name,
+                                      b.genes_id.date])
 
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,files)
 
@@ -136,35 +143,152 @@ class rhwl_picking(osv.osv):
                 vals["state"]="upload"
             self.write(cr,uid,i,vals,context=context)
             #生成印刷版的发货单
-            self.export_excel_to_print(d_path,files)
+            self.export_excel_to_print(obj.name,obj.date,d_path,files)
 
-    def export_excel_to_print(self,d_path,files):
+    def export_excel_to_print(self,no,send_date,d_path,files):
         w = xlwt.Workbook(encoding='utf-8')
         single_dict = files.get(u"单独邮寄",[])
         if single_dict:
             files.remove(u"单独邮寄")
 
+        #12号字,水平居中,垂直居中
+        title_style = xlwt.XFStyle()
+        title_style.font = xlwt.Font()
+        title_style.font.name=u"宋体"
+        title_style.font.height = 240
+        title_style.alignment = xlwt.Alignment()
+        title_style.alignment.horz = xlwt.Alignment.HORZ_CENTER
+        title_style.alignment.vert = xlwt.Alignment.VERT_CENTER
+
+        #11号字,水平居中,垂直居中
+        style = xlwt.XFStyle()
+        style.font = xlwt.Font()
+        style.font.name=u"宋体"
+        style.font.height = 220
+        style.alignment = xlwt.Alignment()
+        style.alignment.horz = xlwt.Alignment.HORZ_CENTER
+        style.alignment.vert = xlwt.Alignment.VERT_CENTER
+
+        #18号字,水平居中,垂直居中,画线
+        title_style1 = xlwt.XFStyle()
+        title_style1.font = xlwt.Font()
+        title_style1.font.name=u"宋体"
+        title_style1.font.height = 360
+        title_style1.alignment = xlwt.Alignment()
+        title_style1.alignment.horz = xlwt.Alignment.HORZ_CENTER
+        title_style1.alignment.vert = xlwt.Alignment.VERT_CENTER
+        title_style1.borders = xlwt.Borders() # Add Borders to Style
+        title_style1.borders.left = xlwt.Borders.MEDIUM # May be: NO_LINE, THIN, MEDIUM, DASHED, DOTTED, THICK, DOUBLE, HAIR, MEDIUM_DASHED, THIN_DASH_DOTTED, MEDIUM_DASH_DOTTED, THIN_DASH_DOT_DOTTED, MEDIUM_DASH_DOT_DOTTED, SLANTED_MEDIUM_DASH_DOTTED, or 0x00 through 0x0D.
+        title_style1.borders.right = xlwt.Borders.MEDIUM
+        title_style1.borders.top = xlwt.Borders.MEDIUM
+        title_style1.borders.bottom = xlwt.Borders.MEDIUM
+        title_style1.borders.left_colour = 0x40
+        title_style1.borders.right_colour = 0x40
+        title_style1.borders.top_colour = 0x40
+        title_style1.borders.bottom_colour = 0x40
+
+        #12号字,水平居中,垂直居中,画线
+        style2 = xlwt.XFStyle()
+        style2.font = xlwt.Font()
+        style2.font.name=u"宋体"
+        style2.font.height = 240
+        style2.alignment = xlwt.Alignment()
+        style2.alignment.horz = xlwt.Alignment.HORZ_CENTER
+        style2.alignment.vert = xlwt.Alignment.VERT_CENTER
+        style2.borders = xlwt.Borders() # Add Borders to Style
+        style2.borders.left = xlwt.Borders.MEDIUM # May be: NO_LINE, THIN, MEDIUM, DASHED, DOTTED, THICK, DOUBLE, HAIR, MEDIUM_DASHED, THIN_DASH_DOTTED, MEDIUM_DASH_DOTTED, THIN_DASH_DOT_DOTTED, MEDIUM_DASH_DOT_DOTTED, SLANTED_MEDIUM_DASH_DOTTED, or 0x00 through 0x0D.
+        style2.borders.right = xlwt.Borders.MEDIUM
+        style2.borders.top = xlwt.Borders.MEDIUM
+        style2.borders.bottom = xlwt.Borders.MEDIUM
+        style2.borders.left_colour = 0x40
+        style2.borders.right_colour = 0x40
+        style2.borders.top_colour = 0x40
+        style2.borders.bottom_colour = 0x40
+
+        #发货单
+        ws0 = w.add_sheet(u"发货单")
+        ws0.col(1).width = 4300
+        ws0.col(2).width = 10750
+        ws0.col(4).width = 5000
+        ws0.write_merge(1,1,0,3,u"叶酸检测报告送货清单(日期:%s)" %(send_date,),style=title_style1)
+        ws0.write(1,4,no,style=title_style1)
+        ws0.write(2,0,u"序号",style=style2)
+        ws0.write(2,1,u"货品名称",style=style2)
+        ws0.write(2,2,u"送检机构",style=style2)
+        ws0.write(2,3,u"包裹数量",style=style2)
+        ws0.write(2,4,u"报告数量（份）",style=style2)
+        row=3
+        total_pack=0
+        total_report=0
+        for k,v in files.items():
+            ws0.write(row,0,row-2,style=style2)
+            ws0.write(row,1,u"检测报告",style=style2)
+            ws0.write(row,2,k,style=style2)
+            ws0.write(row,3,1,style=style2)
+            ws0.write(row,4,len(v),style=style2)
+            row +=1
+            total_pack +=1
+            total_report += len(v)
+
+        if single_dict:
+            ws0.write(row,0,row-2)
+            ws0.write(row,1,u"检测报告",style=style2)
+            ws0.write(row,2,u"单独邮寄",style=style2)
+            ws0.write(row,3,len(single_dict),style=style2)
+            ws0.write(row,4,len(single_dict),style=style2)
+            total_pack +=len(single_dict)
+            total_report += len(single_dict)
+            row +=1
+        ws0.write_merge(row,row,0,2,u"合计件数",style=style2)
+        ws0.write(row,3,total_pack,style=style2)
+        ws0.write(row,4,total_report,style=style2)
+
         for k,v in files.items():
             ws = w.add_sheet(k)
-            row=0
+            ws.col(0).width = 3200 #1000 = 3.715(Excel)
+            ws.col(3).width = 3200
+            ws.write_merge(0,0,0,3,k+u"叶酸报告清单",style=title_style)
+            row=1
+
+            ws.write(row,0,u"样本编号",style=style)
+            ws.write(row,1,u"姓名",style=style)
+            ws.write(row,2,u"性别",style=style)
+            ws.write(row,3,u"送检日期",style=style)
+            row +=1
             for i in v:
-                ws.write(row,0,k)
-                ws.write(row,1,i[1])
-                ws.write(row,2,i[2])
-                ws.write(row,3,u"男" if i[3]=="M" else u"女" )
+                ws.write(row,0,i[1],style=style)
+                ws.write(row,1,i[2],style=style)
+                ws.write(row,2,u"男" if i[3]=="M" else u"女" ,style=style)
+                ws.write(row,3,i[7],style=style)
                 row +=1
+
         if single_dict:
             ws2 = w.add_sheet(u"单独邮寄")
-            row=0
-            for s in single_dict:
-                ws2.write(row,0,i[6])
-                ws2.write(row,1,i[1])
-                ws2.write(row,2,i[2])
-                ws2.write(row,3,u"男" if i[3]=="M" else u"女" )
-                ws2.write(row,4,i[4])
-                ws2.write(row,5,i[5])
+            ws2.col(0).width = 6200
+            ws2.col(1).width = 3200
+            ws2.col(4).width = 3200
+            ws2.col(5).width = 4200
+            ws2.col(6).width = 8200
+            ws2.write_merge(0,0,0,6,u"单独邮寄叶酸报告清单",style=title_style)
+            row=1
+            ws2.write(row,0,u"送检机构",style=style)
+            ws2.write(row,1,u"样本编号",style=style)
+            ws2.write(row,2,u"姓名",style=style)
+            ws2.write(row,3,u"性别",style=style)
+            ws2.write(row,4,u"送检日期",style=style)
+            ws2.write(row,5,u"电话",style=style)
+            ws2.write(row,6,u"邮寄地址",style=style)
+            row +=1
+            for i in single_dict:
+                ws2.write(row,0,i[6] ,style=style)
+                ws2.write(row,1,i[1] ,style=style)
+                ws2.write(row,2,i[2] ,style=style)
+                ws2.write(row,3,u"男" if i[3]=="M" else u"女"  ,style=style)
+                ws2.write(row,4,i[7] ,style=style)
+                ws2.write(row,5,i[4] ,style=style)
+                ws2.write(row,6,i[5] ,style=style)
                 row +=1
-        w.save(os.path.join(d_path,u"叶酸发货单")+".xls")
+        w.save(os.path.join(d_path,no+u"叶酸发货单")+".xls")
 
     def action_box_detail(self,cr,uid,id,context=None):
         if isinstance(id,(list,tuple)):
