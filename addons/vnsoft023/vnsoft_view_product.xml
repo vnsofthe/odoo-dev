@@ -146,6 +146,17 @@
                 </xpath>
             </field>
         </record>
+        <record id="vnsoft023_view_stock_picking_form" model="ir.ui.view">
+            <field name="name">vnsoft023.view.stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                   <field name="express_comp" />
+                   <field name="express_no" />
+                </xpath>
+            </field>
+        </record>
 
 
     </data>

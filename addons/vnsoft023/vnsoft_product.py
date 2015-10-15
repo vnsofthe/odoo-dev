@@ -267,5 +267,7 @@ class vnsoft_picking(osv.osv):
         return res
 
     _columns={
-        "client_order_ref":fields.function(_get_client_order_ref,type='many2one', relation='sale.order',string="Client Order Ref")
+        "client_order_ref":fields.function(_get_client_order_ref,type='many2one', relation='sale.order',string="Client Order Ref"),
+        "express_comp":fields.char(u"物流公司",size=20),
+        "express_no":fields.char(u"物流单号",size=20)
     }

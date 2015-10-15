@@ -8,7 +8,8 @@
             <field name="arch" type="xml">
                 <data>
                     <xpath expr="//field[@name='origin']" position="after">
-                        <field name="page_inv_no" />
+                        <field name="page_inv_no" invisible="context.get('type')=='in_invoice'"/>
+                        <field name="supplier_invoice_number" invisible="context.get('type')=='out_invoice'"/>
                     </xpath>
                  </data>
             </field>
