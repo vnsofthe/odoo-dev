@@ -366,6 +366,16 @@ class gene(http.Controller):
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
+    @http.route("/web/view/pdf/",type="http",auth="user")
+    def _view_pdf(self,**kw):
+        fname = os.path.join(os.path.split(os.path.split(__file__)[0])[0],u"4-4_H_3499995128_黄斌_4-4_H_3499995412_白亚博_M.pdf")
+        f=open(fname,"rb")
+        html=f.read()
+        f.close()
+
+        response =  request.make_response(html, headers=[('Content-Type', 'application/pdf'), ('Content-Length', len(html))])
+        response.headers.add('Content-Disposition', 'inline; filename=%s.pdf;' % "123")
+        return response
 # assume data contains your decoded image
 
 

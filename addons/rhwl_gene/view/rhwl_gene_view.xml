@@ -43,6 +43,7 @@
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <field name="mobile"/>
                                 <field name="cust_prop" />
+                                <field name="language" />
                                 <field name="except_note" />
                             </group>
                             <group>
@@ -50,7 +51,7 @@
                                 <field name="birthday" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="is_child" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
-                                <field name="sex" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="sex" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
                                 <label string="风险报告 " for="pdf_file" attrs="{'invisible':[('pdf_file','=',False)]}"/>
                                 <div attrs="{'invisible':[('pdf_file','=',False)]}">
                                     <field name="pdf_file" attrs="{'invisible':True}"/>

@@ -134,8 +134,7 @@
                     <xpath expr="//field[@name='property_account_position']" position="before">
                         <field name="sfdw"
                                attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
-                        <field name="payment_kind"
-                               attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}"/>
+
                     </xpath>
                     <xpath expr="//page[@name='accounting']" position="attributes">
                         <attribute name="attrs">{'invisible':[('is_company','=',False),('supplier','=',False)]}</attribute>
@@ -222,6 +221,7 @@
                                     <field name="wc_report"/>
                                 </group>
                                 <group colspan="3">
+                                    <field name="payment_kind"/>
                                     <field name="amt"/>
                                     <field name="product_cost"/>
                                 </group>
@@ -234,7 +234,9 @@
                                     <field name="jnsjrs"/>
                                     <field name="nextmonth"/>
                                 </group>
-
+                            </group>
+                            <group>
+                                <field name="wc_note"/>
                             </group>
                         </page>
                         <page string="易感" attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}">
@@ -243,15 +245,16 @@
                                     <field name="yg_contacts"/>
                                     <field name="yg_material"/>
                                     <field name="yg_report"/>
-
-
                                 </group>
                                 <group>
                                     <field name="yg_mbjysj"/>
                                     <field name="yg_sjjysj"/>
+                                    <field name="yg_payment_kind"/>
                                     <field name="yg_amt"/>
-
                                 </group>
+                            </group>
+                            <group>
+                                <field name="yg_note"/>
                             </group>
                         </page>
                         <page string="叶酸" attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}">
@@ -264,8 +267,12 @@
                                 <group>
                                     <field name="ys_mbjysj"/>
                                     <field name="ys_sjjysj"/>
+                                    <field name="ys_payment_kind"/>
                                     <field name="ys_amt"/>
                                 </group>
+                            </group>
+                            <group>
+                                <field name="ys_note"/>
                             </group>
                         </page>
                         <page string="耳聋" attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}">
@@ -278,8 +285,12 @@
                                 <group>
                                     <field name="el_mbjysj"/>
                                     <field name="el_sjjysj"/>
+                                    <field name="el_payment_kind"/>
                                     <field name="el_amt"/>
                                 </group>
+                            </group>
+                            <group>
+                                <field name="el_note"/>
                             </group>
                         </page>
                     </xpath>

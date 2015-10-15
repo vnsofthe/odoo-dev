@@ -60,6 +60,9 @@ class rhwl_partner(osv.osv):
         "product_cost":fields.float(u'试管成本收费', required=True, digits_compute=dp.get_precision('Product Price')),
         "proxy_partner":fields.many2one("res.partner",u"上级代理",domain="[('is_company', '=', True),('customer','=',True)]"),
         "payment_kind":fields.selection([('hospital',u"医院代收"),('proxy',u'经销商代收'),('pos',u'POS机收费'),('cash',u'现金')],string=u"收费方式", required=True),
+        "yg_payment_kind":fields.selection([('hospital',u"医院代收"),('proxy',u'经销商代收'),('pos',u'POS机收费'),('cash',u'现金')],string=u"收费方式"),
+        "ys_payment_kind":fields.selection([('hospital',u"医院代收"),('proxy',u'经销商代收'),('pos',u'POS机收费'),('cash',u'现金')],string=u"收费方式"),
+        "el_payment_kind":fields.selection([('hospital',u"医院代收"),('proxy',u'经销商代收'),('pos',u'POS机收费'),('cash',u'现金')],string=u"收费方式"),
         "yg_amt":fields.float(u'易感收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
         "ys_amt":fields.float(u'叶酸收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
         "el_amt":fields.float(u'耳聋收费金额', required=True, digits_compute=dp.get_precision('Product Price')),
@@ -80,7 +83,11 @@ class rhwl_partner(osv.osv):
         "ys_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]"),
         "el_contacts":fields.many2one("res.partner",string=u"医院联系人",domain="[('parent_id','=',id)]"),
         "el_material":fields.many2one("res.partner",string=u"物料联系人",domain="[('parent_id','=',id)]"),
-        "el_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]")
+        "el_report":fields.many2one("res.partner",string=u"报告联系人",domain="[('parent_id','=',id)]"),
+        "wc_note":fields.text(u"备注"),
+        "yg_note":fields.text(u"备注"),
+        "ys_note":fields.text(u"备注"),
+        "el_note":fields.text(u"备注"),
     }
 
     _defaults = {
