@@ -355,7 +355,7 @@ class rhwl_gene(osv.osv):
         data = self.get_gene_type_list(cr,uid,ids,context=context)
         for k,v in data.items():
             snp_name = k+"_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            fpath = os.path.join(os.path.split(__file__)[0], REMOTE_SNP_PATH)
+            fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp/hebin")#REMOTE_SNP_PATH)
             fname = os.path.join(fpath, snp_name + ".txt")
             header=[]
             f = open(fname, "w+")

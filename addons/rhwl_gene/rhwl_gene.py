@@ -356,8 +356,8 @@ class rhwl_gene(osv.osv):
                 data[sex]={}
             if not data[sex].has_key(key):
                 data[sex][key]={"name":key,
-                           "cust_name":i.cust_name.encode("utf-8").replace(" ",""),
-                                "language":i.language
+                           "cust_name":i.cust_name.encode("utf-8"),
+                                "language":i.language.encode("utf-8")
                            }
 
             for t in i.typ:
@@ -438,7 +438,7 @@ class rhwl_gene(osv.osv):
     #发送文件大小错误微信通知
     def pdf_size_error(self,cr,uid,file,lens,context=None):
         s=os.stat(file).st_size
-        if s/1024/1024<16 or ( (lens<10 and s/1024/1024>20) or (lens>=10 and s/1024/1024>40) ):
+        if s/1024/1024<16 or ( (lens<10 and s/1024/1024>50) or (lens>=10 and s/1024/1024>90) ):
             js={
                 "first":"易感样本报告接收出错：",
                 "keyword1":"即时",

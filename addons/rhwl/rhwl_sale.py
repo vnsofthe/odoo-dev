@@ -557,6 +557,10 @@ class rhwl_sample_info(osv.osv):
             raise osv.except_osv(_("Error"), u"采血医院无关联的仓库信息，不能做确认。")
         if isinstance(w_id, (list, tuple)):
             w_id = w_id[0]
+        order_id = self.pool.get("sale.order").search(cr,uid,[("client_order_ref","=",obj.name)],context=context)
+        if order_id:
+            self.pool.get("sale.order").write(cr,uid,order_id,{"state":"cancel"},context=context)
+
         vals = {
             "partner_id": obj.cxys.id,
             "partner_invoice_id":inv_id,

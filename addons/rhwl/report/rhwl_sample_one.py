@@ -53,7 +53,7 @@ class rhwl_sample_report(osv.osv):
     def _from(self):
         from_str = """
                 sale_sampleone a
-                left join sale_order b on (a.cxys=b.partner_id and a.name = b.client_order_ref)
+                join sale_order b on (a.cxys=b.partner_id and a.name = b.client_order_ref and b.state!='cancel')
                 left join sale_order_line c on (b.id = c.order_id)
         """
         return from_str
