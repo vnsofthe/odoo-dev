@@ -283,7 +283,7 @@ class rhwl_partner(osv.osv):
         p_id = self.get_Contact_person(cr,uid,id,category_name,context=context)
         if p_id:
             person = self.pool.get("res.users").search(cr,uid,[("partner_id.id","=",p_id)])
-            if isinstance(person,(list,tuple)):
+            if person and isinstance(person,(list,tuple)):
                 person = person[0]
             return person
         return p_id

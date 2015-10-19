@@ -82,7 +82,8 @@ class rhwl_base_package(osv.osv):
         "parent_id":fields.many2one("rhwl.genes.base.set",string="Parent"),
         "name":fields.char("Name",size=20,required=True),
         "code":fields.char("Code",size=50,required=True),
-        "is_product":fields.boolean(u"已推产品")
+        "is_product":fields.boolean(u"已推产品"),
+        "detail":fields.one2many("rhwl.genes.base.package.snp","parent_id","Detail"),
     }
     _sql_constraints = [
         ('rhwl_genes_base_package_code_uniq', 'unique(parent_id,code)', u'代号不能重复!'),
@@ -134,6 +135,13 @@ class rhwl_base_package(osv.osv):
         else:
             ids = self.search(cr, uid, args, limit=limit, context=context)
         return self.name_get(cr, uid, ids, context)
+
+class rhwl_base_package_snp(osv.osv):
+    _name = "rhwl.genes.base.package.snp"
+    _columns={
+        "parent_id":fields.many2one("rhwl.genes.base.package","Parent"),
+        "snp":fields.char("SNP",size=10),
+    }
 
 class rhwl_barcode(osv.osv):
     _name = "rhwl.genes.barcode"

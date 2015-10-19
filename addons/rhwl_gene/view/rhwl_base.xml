@@ -74,8 +74,6 @@
         </record>
 
 
-        <menuitem id="menu_genes_base_customer" parent="menu_rhwl_easy_genes_disease" name="客户信息维护" sequence="20"
-                  action='action_genes_base_customer' groups="rhwl_base_tjs"/>
 
         <record model="ir.ui.view" id="rhwl_genes_base_set_view_tree">
             <field name="name">rhwl.genes.base.set.view.tree</field>
@@ -108,11 +106,28 @@
                         <notebook>
                             <page string="套餐分类">
                                 <field name="detail">
-                                    <tree editable="TOP">
+                                    <tree >
                                         <field name="name"/>
                                         <field name="code"/>
                                         <field name="is_product"/>
                                     </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name="name"/>
+                                                    <field name="code"/>
+                                                    <field name="is_product"/>
+                                                </group>
+                                            </group>
+                                            <field name="detail">
+                                                <tree editable="TOP">
+                                                    <field name="snp"/>
+                                                </tree>
+                                            </field>
+                                        </sheet>
+
+                                    </form>
                                 </field>
                             </page>
                         </notebook>
@@ -153,8 +168,7 @@
         </record>
 
 
-        <menuitem id="menu_genes_base_set" parent="menu_rhwl_easy_genes_disease" name="套餐信息维护" sequence="30"
-                  action='action_genes_base_set' groups="rhwl_base_tjs"/>
+
 
 
         <record model="ir.ui.view" id="rhwl_genes_barcode_view_tree">
