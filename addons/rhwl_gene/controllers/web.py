@@ -246,6 +246,24 @@ class gene(http.Controller):
                 </script></head></html>
                 """
 
+    @http.route("/web/api/genes/risk/",type="http",auth="none")
+    def _get_rhwl_genes_risk(self,**kw):
+        res = self.check_userinfo(kw)
+        data = {}
+        if res.get('statu')==200:
+            registry = RegistryManager.get(request.session.db)
+            with registry.cursor() as cr:
+                risk = registry.get("rhwl.easy.gene.risk")
+                id = risk.search(cr,SUPERUSER_ID,[("genes_id.name","=",res.get("params").get("id"))])
+                if id:
+                    for r in risk.browse(cr,SUPERUSER_ID,id):
+                        data[r.disease_id.name]= r.risk
+        else:
+            data=res
+
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
     @http.route("/web/api/genes/weixin/",type="http",auth="none")
     def _get_rhwl_api_weixin(self,**kw):
         res = self.check_userinfo(kw)
@@ -262,7 +280,7 @@ class gene(http.Controller):
                     data["name"] = obj.name.encode('utf-8')
                     data["stateList"]=[
                         ["收件","等待中",""],
-                        ["检测中","等待中",""],
+                        ["送检","等待中",""],
                         ["质检","等待中",""],
                         ["出实验结果","等待中",""],
                         ["报告分析","等待中",""],
@@ -272,10 +290,13 @@ class gene(http.Controller):
                     log_id=registry.get("rhwl.easy.genes.batch").search(cr,SUPERUSER_ID,[("name","=",obj.batch_no)])
                     if log_id:
                         log_obj = registry.get("rhwl.easy.genes.batch").browse(cr,SUPERUSER_ID,log_id,context=self.CONTEXT)
-                        data["stateList"][0][1]="完成"
-                        data["stateList"][0][2]=log_obj.post_date.replace("-","/")
-                        data["stateList"][1][1]="完成"
-                        data["stateList"][1][2]=log_obj.lib_date.replace("-","/")
+                        if log_obj:
+                            if log_obj.post_date:
+                                data["stateList"][0][1]="完成"
+                                data["stateList"][0][2]=log_obj.post_date.replace("-","/")
+                            if log_obj.lib_date:
+                                data["stateList"][1][1]="完成"
+                                data["stateList"][1][2]=log_obj.lib_date.replace("-","/")
                     else:
                         log_id=log.search(cr,SUPERUSER_ID,[("genes_id","=",id[0]),("data","in",['except','except_confirm','confirm','img'])],order="date")
                         if log_id:
