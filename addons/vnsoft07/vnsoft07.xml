@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <template id="assets_backend" name="vnsoft07 assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/vnsoft07/static/js/vnsoft07.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>
