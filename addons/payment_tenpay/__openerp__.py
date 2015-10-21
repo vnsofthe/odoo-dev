@@ -6,13 +6,14 @@
     'summary': 'Payment Acquirer: Tenpay Implementation',
     'version': '1.0',
     'description': """Tenpay Payment Acquirer""",
-    'author': 'Odoo CN, Jeffery <jeffery9@gmail.com>',
+    'author': 'Odoo CN Community, Jeffery <jeffery9@gmail.com>',
     'depends': ['payment'],
     'data': [
         'views/tenpay.xml',
         'views/payment_acquirer.xml',
-        'views/res_config_view.xml',
         'data/tenpay.xml',
     ],
     'installable': True,
+    'price': 499.99,
+    'currency': 'EUR',
 }

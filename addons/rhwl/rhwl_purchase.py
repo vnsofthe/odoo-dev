@@ -306,6 +306,27 @@ class purchase_order(osv.osv):
         order_line.price_unit = price
         return res
 
+class purchase_order_line(osv.osv):
+    _inherit="purchase.order.line"
+
+    def _validate_unit(self, cr, uid, ids, context=None):
+        for i in self.browse(cr, uid, ids, context=context):
+            if i.product_uom.id not in (i.product_id.uom_id.id,i.product_id.uom_po_id.id) :
+                return False
+        return True
+
+    _columns={
+        "brand":fields.related("product_id","brand",type="char",string=u"品牌",readonly=True),
+        "default_code":fields.related("product_id","default_code",type="char",string=u"货号",readonly=True),
+        "attribute":fields.related("product_id","attribute_value_ids",obj="product.attribute.value", type="many2many",string=u"规格",readonly=True),
+    }
+    _constraints = [(_validate_unit, u'产品采购单位必须是产品的计量单位或采购单位之一.', ['product_uom','product_id'])]
+
+    def create(self,cr,uid,val,context=None):
+        if val.get("product_id"):
+            val["name"] = self.pool.get("product.product").browse(cr,uid,val.get("product_id"),context=context).name
+        return super(purchase_order_line,self).create(cr,uid,val,context=context)
+
 class purchase_apply_popup(osv.osv_memory):
     _name = "purchase.order.apply.popup"
     _columns = {

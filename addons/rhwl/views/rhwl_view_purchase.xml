@@ -117,7 +117,23 @@
             </field>
         </record>
 
+        <record id="rhwl_purchase_order_line_view_form" model="ir.ui.view">
+            <field name="name">rhwl.purchase.order.line.view.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <data>
+                    <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="replace">
 
+                    </xpath>
+                    <xpath expr="//field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                        <field name="brand"/>
+                        <field name="default_code"/>
+                        <field name="attribute" widget="many2many_tags"/>
+                    </xpath>
+                </data>
+            </field>
+        </record>
 
         <record model="ir.ui.view" id="purchase_order_apply_popup_view_form">
             <field name="name">purchase.order.apply.popup.view.form</field>
