@@ -211,7 +211,7 @@ class rhwl_ys(osv.osv):
                           "age":str(i.age),
                           "hospital":i.hospital.name.encode("utf-8"),
                           "section":i.room.encode("utf-8"),
-                          "doctor":i.doctor.name.encode("utf-8"),
+                          "doctor":i.doctor.name and i.doctor.name.encode("utf-8") or "",
                           "clctDate":i.date.encode("utf-8").replace("-","."),
                           "acptDate":i.accp_date.encode("utf-8").replace("-","."),
                           "sampleType":sel_type.get(i.sample_type,"").encode("utf-8"),

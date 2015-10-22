@@ -7,3 +7,9 @@
 .oe_list_field_cell_nowrap {
   white-space: nowrap !important;
 }
+
+.openerp .oe_form_sheet_width {
+  min-width: 650px;
+  max-width: 95%;
+  margin: 0 auto;
+}
