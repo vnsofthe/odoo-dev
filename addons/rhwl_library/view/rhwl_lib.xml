@@ -11,6 +11,7 @@
                     <field name="user_id"/>
                     <field name="location_id"/>
                     <field name="state"/>
+                    <field name="picking_state"/>
                 </tree>
             </field>
         </record>
@@ -38,6 +39,7 @@
                                 <field name="user_id"/>
                                 <field name="location_id"/>
                                 <field name="is_rd"/>
+                                <field name="picking_state"/>
                             </group>
 
                         </group>
@@ -52,7 +54,7 @@
                                 
                                 <field name="uom_id"/>
                                 <field name="qty"/>
-
+                                <field name="note"/>
                             </tree>
                         </field>
                     </sheet>

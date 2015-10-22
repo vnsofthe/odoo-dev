@@ -41,6 +41,12 @@ class rhwl_move(osv.osv):
         "cost_mark":0
     }
 
+    def force_assign(self, cr, uid, ids, context=None):
+        if uid==SUPERUSER_ID:
+            return super(rhwl_move,self).force_assign(cr,uid,ids,context=context)
+        else:
+            raise osv.except_osv("Waring",u"当前作业帐号不允许强制可用功能。")
+
 class rhwl_warehouse_orderpoint(osv.osv):
     _inherit = "stock.warehouse.orderpoint"
     _columns={

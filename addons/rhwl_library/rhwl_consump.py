@@ -10,6 +10,27 @@ import logging
 class rhwl_library_consump(osv.osv):
     _name = "rhwl.library.consump"
 
+    def _get_picking_state(self,cr,uid,ids,field_names,args,context=None):
+        res={}
+        for i in self.browse(cr,uid,ids,context=context):
+            res[i.id] = ""
+            picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",i.name),("state","!=","cancel")])
+            if not picking_id:
+                res[i.id] = u"无出库单"
+            else:
+                done_count = total_count = 0
+                for p in self.pool.get("stock.picking").browse(cr,uid,picking_id,context=context):
+                    if p.state=="done":
+                        done_count += 1
+                    total_count += 1
+                if done_count==total_count:
+                    res[i.id] = u"已出库"
+                elif done_count>0:
+                    res[i.id] = u"部分已出库"
+                else:
+                    res[i.id] = u"未出库"
+        return res
+
     _columns={
         "name":fields.char("Name",size=10,readonly=True),
         "date":fields.date("Date"),
@@ -20,7 +41,8 @@ class rhwl_library_consump(osv.osv):
         "active":fields.boolean("Active"),
         "project":fields.many2one("res.company.project","Project",required=True),
         "is_rd":fields.boolean("R&D"),
-        "line":fields.one2many("rhwl.library.consump.line","name","Detail",readonly=True,states={'draft':[('readonly',False)]})
+        "line":fields.one2many("rhwl.library.consump.line","name","Detail",readonly=True,states={'draft':[('readonly',False)]}),
+        "picking_state":fields.function(_get_picking_state,type="char",string=u"出库单状态"),
     }
 
     _defaults={

@@ -11,6 +11,28 @@ _logger = logging.getLogger(__name__)
 class rhwl_lib(osv.osv):
     _name="rhwl.library.request"
     _order = "date desc"
+
+    def _get_picking_state(self,cr,uid,ids,field_names,args,context=None):
+        res={}
+        for i in self.browse(cr,uid,ids,context=context):
+            res[i.id] = ""
+            picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",i.name),("state","!=","cancel")])
+            if not picking_id:
+                res[i.id] = u"无出库单"
+            else:
+                done_count = total_count = 0
+                for p in self.pool.get("stock.picking").browse(cr,uid,picking_id,context=context):
+                    if p.state=="done":
+                        done_count += 1
+                    total_count += 1
+                if done_count==total_count:
+                    res[i.id] = u"已出库"
+                elif done_count>0:
+                    res[i.id] = u"部分已出库"
+                else:
+                    res[i.id] = u"未出库"
+        return res
+
     _columns={
         "name":fields.char("Name",size=15,readonly=True),
         "date":fields.date("Date"),
@@ -22,6 +44,7 @@ class rhwl_lib(osv.osv):
         "active":fields.boolean("Active"),
         "project":fields.many2one("res.company.project","Project",required=True),
         "is_rd":fields.boolean("R&D"),
+        "picking_state":fields.function(_get_picking_state,type="char",string=u"出库单状态"),
     }
 
     _defaults={
@@ -127,6 +150,7 @@ class rhwl_lib_line(osv.osv):
         "uom_id":fields.related("product_id","uom_id",type="many2one",obj="product.uom",string="Unit",readonly=True),
         "qty":fields.float("Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True,),
         "real_qty":fields.float("Real Qty",digits_compute=dp.get_precision('Product Unit of Measure'),required=True ),
+        "note":fields.char(u"备注",size=200),
     }
     #_sql_constraints = [
     #    ('rhwl_lib_request_line_uniq', 'unique(name,product_id)', u'明细清单中相同产品不能重复!'),
