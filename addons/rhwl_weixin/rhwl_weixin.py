@@ -69,7 +69,8 @@ class rhwl_config(osv.osv):
         "ticket_expires":fields.integer("Ticket Expires",readonly=True),
         "welcome":fields.text("Welcome"),
         "users":fields.one2many("rhwl.weixin","base_id",u"关注用户"),
-        "menu":fields.one2many("rhwl.weixin.usermenu","base_id",u"自定义菜单")
+        "menu":fields.one2many("rhwl.weixin.usermenu","base_id",u"自定义菜单"),
+
     }
 
     def _get_memcache(self,key):
@@ -78,35 +79,39 @@ class rhwl_config(osv.osv):
     def _set_memcache(self,key,val):
         MEMCACHE[key]=val
 
-    def _get_memcache_id(self,cr,original):
-        ids=self._get_memcache(original)
+    def _get_memcache_id(self,cr,original,AgentID):
+        ids=self._get_memcache((original,AgentID))
         if not ids:
-            ids = self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
-            self._set_memcache(original,ids)
+            if (not AgentID) or AgentID=="0":
+                ids = self.search(cr,SUPERUSER_ID,[("original_id","=",original)])
+            else:
+                ids = self.search(cr,SUPERUSER_ID,[("original_id","=",original),("appid","=",AgentID)])
+            self._set_memcache((original,AgentID),ids)
         return ids
 
     #用户关注时，记录用户的OpenId信息，并返回设置的欢迎文字
-    def action_subscribe(self,cr,original,fromUser):
-        origId=self._get_memcache_id(cr,original)
+    def action_subscribe(self,cr,original,fromUser,AgentID="0"):
+        origId=self._get_memcache_id(cr,original,AgentID)
         user = self.pool.get('rhwl.weixin')
 
-        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser),('active','=',False)])
+        for o in origId:
+            id = user.search(cr,SUPERUSER_ID,[("base_id","=",o),('openid','=',fromUser),'|',('active','=',False),("active","=",True)])
 
-        if id:
-            user.write(cr,SUPERUSER_ID,id,{"active":True})
-        else:
-
-            user.create(cr,SUPERUSER_ID,{"base_id":origId[0],'openid':fromUser,'active':True,'state':'draft'})
+            if id:
+                user.write(cr,SUPERUSER_ID,id,{"active":True})
+            else:
+                user.create(cr,SUPERUSER_ID,{"base_id":o,'openid':fromUser,'active':True,'state':'draft'})
         cr.commit()
-        obj=self.browse(cr,SUPERUSER_ID,origId)
+        obj=self.browse(cr,SUPERUSER_ID,origId[0])
         return obj.welcome
 
-    def action_unsubscribe(self,cr,original,fromUser):
-        origId=self._get_memcache_id(cr,original)
+    def action_unsubscribe(self,cr,original,fromUser,AgentID="0"):
+        origId=self._get_memcache_id(cr,original,AgentID)
         user = self.pool.get('rhwl.weixin')
-        id = user.search(cr,SUPERUSER_ID,[("base_id","=",origId[0]),('openid','=',fromUser)])
-        if id:
-           user.write(cr,SUPERUSER_ID,id,{"active":False})
+        for o in origId:
+            id = user.search(cr,SUPERUSER_ID,[("base_id","=",o),('openid','=',fromUser)])
+            if id:
+               user.write(cr,SUPERUSER_ID,id,{"active":False})
         cr.commit()
 
     def action_event_clicked(self,cr,key,original,fromUser):
