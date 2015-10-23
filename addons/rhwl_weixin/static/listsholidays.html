@@ -49,7 +49,7 @@
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/api/hr_holidays/list/?openid="+$.getUrlVar('openid'),
+		  url: "/web/api/hr_holidays/list/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
 		  data: {},
 		  success: function(data){
               $.each(data.data,function(k,v){
@@ -76,7 +76,7 @@
               });
 		  }
 		});
-    $("#newadd").prop("href","/rhwl_weixin/static/holidays.html?openid="+$.getUrlVar('openid'));
+    $("#newadd").prop("href","/rhwl_weixin/static/holidays.html?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'));
   });
 </script>
 </body>

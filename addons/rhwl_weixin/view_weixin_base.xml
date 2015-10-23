@@ -9,6 +9,8 @@
                     <field name="name"/>
                     <field name="original_id"/>
                     <field name="appid"/>
+                    <field name="is_valid"/>
+                    <field name="service_type"/>
                 </tree>
             </field>
         </record>
@@ -22,19 +24,32 @@
                         <button name="action_usermenu" string="创建自定义菜单" type="object"/>
                     </header>
                     <sheet>
-                        <group colspan="8">
-                            <field name="name"/>
-                            <field name="original_id"/>
-                            <field name="code"/>
-                            <field name="token_flag"/>
-                            <field name="appid"/>
-                            <field name="appsecret"/>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="original_id"/>
+                                <field name="code"/>
+                                <field name="token_flag"/>
+                            </group>
+                            <group>
+                                <field name="appid"/>
+                                <field name="appsecret"/>
+                                <field name="is_valid"/>
+                                 <field name="service_type"/>
+                            </group>
+
+                        </group>
+                        <group>
                             <field name="token"/>
                             <field name="token_create" />
                             <field name="expires_in" />
+                        </group>
+                        <group>
                             <field name="ticket" />
                             <field name="ticket_create" />
                             <field name="ticket_expires" />
+                        </group>
+                        <group>
                             <field name="welcome"/>
                         </group>
                         <notebook>

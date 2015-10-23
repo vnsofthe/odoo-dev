@@ -91,7 +91,7 @@
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/crmapp/result/?openid="+$.getUrlVar('openid'),
+		  url: "/web/crmapp/result/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
 		  data: {},
 		  success: function(data){
               $.each(data,function(k,v){
@@ -132,7 +132,7 @@
                       $("#"+ v.time+'-tab tbody tr').bind("click",function(e){
                                $.ajax({
                                       type: 'POST',
-                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
+                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
                                       data: {},
                                       success: function(data){
                                           $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget":data});
@@ -169,7 +169,7 @@
             accordion.find(".am-round").parent().remove();
             $.ajax({
                   type: 'POST',
-                  url: "/web/crmapp/result/?openid="+$.getUrlVar('openid')+"&name="+val,
+                  url: "/web/crmapp/result/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&name="+val,
                   data: {},
                   success: function(data){
                        $('#accordion').append(
@@ -208,7 +208,7 @@
                       $("#query-tab tbody tr").bind("click",function(e){
                                $.ajax({
                                       type: 'POST',
-                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
+                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
                                       data: {},
                                       success: function(data){
                                           $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget":data});

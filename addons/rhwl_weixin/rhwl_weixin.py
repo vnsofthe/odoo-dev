@@ -70,6 +70,8 @@ class rhwl_config(osv.osv):
         "welcome":fields.text("Welcome"),
         "users":fields.one2many("rhwl.weixin","base_id",u"关注用户"),
         "menu":fields.one2many("rhwl.weixin.usermenu","base_id",u"自定义菜单"),
+        "is_valid":fields.boolean(u"已认证"),
+        "service_type":fields.selection([("1",u"订阅号"),("2",u"服务号"),("3",u"企业号")],u"帐号类型")
 
     }
 
@@ -114,8 +116,8 @@ class rhwl_config(osv.osv):
                user.write(cr,SUPERUSER_ID,id,{"active":False})
         cr.commit()
 
-    def action_event_clicked(self,cr,key,original,fromUser):
-        origId=self._get_memcache_id(cr,original)
+    def action_event_clicked(self,cr,key,original,fromUser,appid=None):
+        origId=self._get_memcache_id(cr,original,appid)
         obj=self.browse(cr,SUPERUSER_ID,origId)
         if obj.code=="rhwc" and key=="ONLINE_QUERY":
             return u"请您输入送检编号！"
@@ -255,26 +257,48 @@ class rhwl_config(osv.osv):
             "appid":"",
             "secret":"",
         }
+        arg_qy={
+            "corpid":"",
+            "corpsecret":""
+        }
+
         if not obj:
             ids = self.search(cr,uid,[(valType,"=",val)],limit=1)
             obj = self.browse(cr,uid,ids,context=context)
 
-        if (not obj.token) or (datetime.datetime.now() - datetime.datetime.strptime(obj.token_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.expires_in - 30):
-            arg["appid"]=obj.appid
-            arg["secret"]=obj.appsecret
-            s=requests.post("https://api.weixin.qq.com/cgi-bin/token",params=arg)
-            ref = s.content
-            s.close()
-            res = eval(ref)
-            if res.get("access_token"):
-                self.write(cr,uid,obj.id,{"token":res.get("access_token"),"token_create":fields.datetime.now(),"expires_in":res.get("expires_in")})
+        if obj.service_type=="3":
+            #企业号处理
+            if (not obj.token) or (datetime.datetime.now() - datetime.datetime.strptime(obj.token_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.expires_in - 30):
+                arg_qy["corpid"] = obj.original_id
+                arg_qy["corpsecret"] = obj.appsecret
+                s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/gettoken",params=arg_qy)
+                ref = s.content
+                s.close()
+                res = eval(ref)
+                if res.get("access_token"):
+                    self.write(cr,uid,obj.id,{"token":res.get("access_token"),"token_create":fields.datetime.now(),"expires_in":res.get("expires_in")})
+                else:
+                    raise osv.except_osv("错误",res.get("errmsg"))
+                return res.get("access_token")
             else:
-                raise osv.except_osv("错误",res.get("errmsg"))
-            _logger.info("Get New Token:"+res.get("access_token"))
-            return res.get("access_token")
-        elif obj.token:
-            _logger.info("Get Old Token:"+obj.token.encode('utf-8'))
-            return obj.token.encode('utf-8')
+                return obj.token.encode('utf-8')
+        else:
+            if (not obj.token) or (datetime.datetime.now() - datetime.datetime.strptime(obj.token_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.expires_in - 30):
+                arg["appid"]=obj.appid
+                arg["secret"]=obj.appsecret
+                s=requests.post("https://api.weixin.qq.com/cgi-bin/token",params=arg)
+                ref = s.content
+                s.close()
+                res = eval(ref)
+                if res.get("access_token"):
+                    self.write(cr,uid,obj.id,{"token":res.get("access_token"),"token_create":fields.datetime.now(),"expires_in":res.get("expires_in")})
+                else:
+                    raise osv.except_osv("错误",res.get("errmsg"))
+                _logger.info("Get New Token:"+res.get("access_token"))
+                return res.get("access_token")
+            elif obj.token:
+                _logger.info("Get Old Token:"+obj.token.encode('utf-8'))
+                return obj.token.encode('utf-8')
 
     def action_token(self,cr,uid,ids,context=None):
         for i in self.browse(cr,uid,ids,context=context):
@@ -319,14 +343,19 @@ class rhwl_config(osv.osv):
         return m
 
     def action_usermenu(self,cr,uid,ids,context=None):
-        args={
-            "access_token":""
-        }
+        args={}
+
         for i in self.browse(cr,uid,ids,context=context):
-            args["access_token"] = self._get_token(cr,uid,None,None,i,context)
+            if i.service_type=="3":
+                create_url = "https://qyapi.weixin.qq.com/cgi-bin/menu/create"
+                args["access_token"] = self._get_token(cr,uid,None,None,i,context)
+                args["agentid"] = i.appid
+            else:
+                create_url = "https://api.weixin.qq.com/cgi-bin/menu/create"
+                args["access_token"] = self._get_token(cr,uid,None,None,i,context)
             i.user_menu = str(self._get_menu_json(cr,uid,i.id,context=context))
 
-            s=requests.post("https://api.weixin.qq.com/cgi-bin/menu/create",
+            s=requests.post(create_url,
                             params=args,
                             data=json.dumps(eval(i.user_menu),ensure_ascii=False),
                             headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)

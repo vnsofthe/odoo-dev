@@ -127,7 +127,7 @@
 		});
     $.ajax({
               type: 'POST',
-              url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid'),
+              url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {},
               success: function(data){
                   $.each(data,function(k,v){
@@ -156,7 +156,7 @@
             $("#reuse tbody tr").remove();
            $.ajax({
               type: 'POST',
-              url: "/web/crmapp/reuse/?openid="+$.getUrlVar('openid'),
+              url: "/web/crmapp/reuse/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: "",
               success: function(data){
                   $.each(data,function(k,v){
@@ -242,7 +242,7 @@
 
         $.ajax({
               type: 'POST',
-              url: "/web/crmapp/deliver/?openid="+$.getUrlVar('openid'),
+              url: "/web/crmapp/deliver/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {parentID:demo.parentID,packageID:demo.packageID,demos:JSON.stringify(demo.demo)},
               success: function(data){
                   alert("单据提交成功。");

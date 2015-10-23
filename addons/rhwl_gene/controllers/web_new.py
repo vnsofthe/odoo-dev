@@ -48,11 +48,12 @@ class gene(http.Controller):
                     DBNAME = self.get_dbname()
                     uid = request.session.authenticate(DBNAME,data.get('Username'),data.get('Pwd'))
                 elif data.get("openid"):
+                    app = data.get("code")
                     registry = RegistryManager.get(request.session.db)
                     weixin = registry.get("rhwl.weixin")
 
                     with registry.cursor() as cr:
-                        id = weixin.search(cr,SUPERUSER_ID,[('openid','=',data.get("openid"))],context=self.CONTEXT)
+                        id = weixin.search(cr,SUPERUSER_ID,[('openid','=',data.get("openid")),("base_id.code","=",app)],context=self.CONTEXT)
                         if id:
                             obj= weixin.browse(cr,SUPERUSER_ID,id,context=self.CONTEXT)
                             uid = obj.user_id.id

@@ -110,7 +110,7 @@
 
             $.ajax({
                   type: 'POST',
-                  url: "/web/api/genes/weixin/?openid="+$.getUrlVar('openid')+"&id="+val,
+                  url: "/web/api/genes/weixin/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&id="+val,
                   data: {},
                   success: function(data) {
                       if(data.name==undefined){
@@ -129,7 +129,7 @@
                                   $(t[k].children[0]).removeClass("status-end-invisible").addClass("status-end-active");
                                   $("#download_pdf").attr("href","/rhwl_gene/static/local/report/"+data.name+".pdf").removeClass("am-disabled");
 
-                                  $("#preview_pdf").attr("href","list_contents.html?seq=0&openid="+$.getUrlVar('openid')+"&id="+data.name).removeClass("am-disabled");
+                                  $("#preview_pdf").attr("href","list_contents.html?seq=0&openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&id="+data.name).removeClass("am-disabled");
                               }else{
                                   $(t[k].children[0]).removeClass("status-second-invisible").addClass("status-second-active");
                               }

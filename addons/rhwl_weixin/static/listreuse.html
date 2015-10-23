@@ -111,7 +111,7 @@
   $(function() {
     $.ajax({
 		  type: 'POST',
-		  url: "/web/crmapp/reuse/?openid="+$.getUrlVar('openid'),
+		  url: "/web/crmapp/reuse/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
 		  data: {},
 		  success: function(data){
                       $.each(data,function(t,s){
@@ -124,7 +124,7 @@
                       $("#query-tab tbody tr").bind("click",function(e){
                                $.ajax({
                                       type: 'POST',
-                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
+                                      url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&pregnantWomanID="+ e.target.parentElement.cells[0].textContent,
                                       data: {},
                                       success: function(data){
                                           $("#doc-modal-1").modal({"closeViaDimmer": 0,"relatedTarget":data});
@@ -168,7 +168,7 @@
         }
         $.ajax({
 		  type: 'POST',
-		  url: "/web/crmapp/notice/?openid="+$.getUrlVar('openid')+"&id="+no+"&btn="+btntext,
+		  url: "/web/crmapp/notice/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&id="+no+"&btn="+btntext,
 		  data: {},
 		  success: function(data){
                       $('#doc-modal-1').modal("close");

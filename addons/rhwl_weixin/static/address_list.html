@@ -74,7 +74,7 @@
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/api/hr/address_list/?openid="+$.getUrlVar('openid'),
+		  url: "/web/api/hr/address_list/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
 		  data: {},
 		  success: function(data){
               $.each(data,function(k,v){

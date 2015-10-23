@@ -99,7 +99,7 @@
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/crmapp/express/?openid="+$.getUrlVar('openid'),
+		  url: "/web/crmapp/express/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
 		  data: {},
 		  success: function(data){
               $.each(data,function(k,v){
@@ -147,7 +147,7 @@
                       }else{
                           $.ajax({
                               type: 'POST',
-                              url: "/web/crmapp/receive/?openid=" + $.getUrlVar('openid'),
+                              url: "/web/crmapp/receive/?openid=" + $.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
                               data: {goodsId: $("#express_no").val().split(",")[0], actualNumber: q},
                               success: function (data) {
                                   location.reload();

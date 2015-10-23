@@ -73,7 +73,7 @@
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&pregnantWomanID="+ $.getUrlVar('pregnantWomanID'),
+		  url: "/web/crmapp/woman/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&pregnantWomanID="+ $.getUrlVar('pregnantWomanID'),
 		  data: {},
 		  success: function(data){
               console.log(data);

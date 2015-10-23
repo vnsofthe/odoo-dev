@@ -68,7 +68,7 @@
             });
 	$.ajax({
 		  type: 'POST',
-		  url: "/web/api/holidays/approve/?openid="+$.getUrlVar('openid'),
+		  url: "/web/api/holidays/approve/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
 		  data: {},
 		  success: function(data){
               var count1=0;
@@ -113,7 +113,7 @@
                   var s = e.target.id.split('_');
                   $.ajax({
                       type: 'POST',
-                      url: "/web/api/holidays/approve/" + s[2] + "/" + s[1] + "/?openid=" + $.getUrlVar('openid'),
+                      url: "/web/api/holidays/approve/" + s[2] + "/" + s[1] + "/?openid=" + $.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
                       data: {},
                       success: function (data) {
                           if(data.statu==200){

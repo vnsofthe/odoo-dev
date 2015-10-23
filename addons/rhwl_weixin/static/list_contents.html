@@ -70,7 +70,7 @@
     function json2html(item){
 
         if(item.length==3){
-            return "<li class=\"\"><a href=\"genes_view.html?openid=" + OPENID + "&id=" + GENE_ID+"&ps="+item[1]+"&pe="+item[2]+"\" class=\"\">"+item[0]+"</a></li>"
+            return "<li class=\"\"><a href=\"genes_view.html?openid=" + OPENID +"&code="+$.getUrlVar('code')+ "&id=" + GENE_ID+"&ps="+item[1]+"&pe="+item[2]+"\" class=\"\">"+item[0]+"</a></li>"
         }else if(item.length==2){
             var sub_menu="";
             $.each(item[1],function(k,v){
@@ -80,7 +80,7 @@
             return "<li class=\"am-parent\"><a href=\"##\" class=\"\">"+item[0]+"</a><ul class=\"am-menu-sub am-collapse  am-avg-sm-1 \">"+sub_menu+"</ul></li>"
         }
     }
-    $("#home_link").attr("href","list_contents.html?seq=0&openid="+$.getUrlVar('openid')+"&id="+$.getUrlVar('id'));
+    $("#home_link").attr("href","list_contents.html?seq=0&openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&id="+$.getUrlVar('id'));
   $(function() {
       //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
 

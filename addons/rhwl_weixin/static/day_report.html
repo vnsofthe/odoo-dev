@@ -100,7 +100,7 @@
 
     $.ajax({
               type: 'POST',
-              url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid'),
+              url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {},
               success: function(data){
                   $.each(data,function(k,v){
@@ -161,7 +161,7 @@
         //alert(JSON.stringify(demos));
         $.ajax({
               type: 'POST',
-              url: "/web/api/rhwl/today/post/?openid="+$.getUrlVar('openid'),
+              url: "/web/api/rhwl/today/post/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {parentID:demo.parentID,datas:JSON.stringify(demo.datas)},
               success: function(data){
                   alert("单据提交成功。");

@@ -20,6 +20,10 @@ class weixin(http.Controller):
     CONTEXT={'lang': "zh_CN",'tz': "Asia/Shanghai"}
     HOSTNAME="http://erp.genetalks.com"
 
+    def xml2dict(self,xml):
+        data = dict([(x.tag,x.text) for x in xml.getchildren()])
+        return data
+
     def checkSignature(self,signature,timestamp,nonce,token):
         """检查是否微信官方通信请求。"""
         #token = 'vnsoft'
@@ -54,15 +58,12 @@ class weixin(http.Controller):
         return 'Not Data Found'
 
     def eventProcess(self,xmlstr,encrypt=False,kw=None):
-        msgType=xmlstr.find("MsgType").text
-        fromUser=xmlstr.find("FromUserName").text
-        toUser=xmlstr.find("ToUserName").text
-        Event=xmlstr.find("Event").text#获得用户所输入的内容
-        AgentID_el = [x for x in xmlstr.getchildren() if x.tag=="AgentID"]
-        if AgentID_el:
-            AgentID = AgentID_el[0].text
-        else:
-            AgentID=None
+        xml_data = self.xml2dict(xmlstr)
+        msgType=xml_data.get("MsgType")
+        fromUser=xml_data.get("FromUserName")
+        toUser=xml_data.get("ToUserName")
+        Event=xml_data.get("Event")#获得用户所输入的内容
+        AgentID=xml_data.get("AgentID",None)
 
         if Event=='subscribe':#关注
             registry = RegistryManager.get(request.session.db)
@@ -71,17 +72,17 @@ class weixin(http.Controller):
                 welcome = orig.action_subscribe(cr,toUser,fromUser,AgentID)
                 return self.replyWeiXin(fromUser,toUser,welcome,encrypt,AgentID,kw)
             #return self.replyWeiXin(fromUser,toUser,u"欢迎关注【人和未来生物科技(北京)有限公司】，您可以通过输入送检编号查询检测进度和结果。\n祝您生活愉快!")
-        elif Event=="CLICK":
-            key = xmlstr.find("EventKey").text
+        elif Event=="CLICK" or Event=="click":
+            key = xml_data.get("EventKey")
             registry = RegistryManager.get(request.session.db)
             with registry.cursor() as cr:
                 orig = registry.get("rhwl.weixin.base")
-                res=orig.action_event_clicked(cr,key,toUser,fromUser)
-                _logger.debug(res)
+                res=orig.action_event_clicked(cr,key,toUser,fromUser,AgentID)
+
                 if isinstance(res,(list,tuple)):
-                    return self.send_photo_text(fromUser,toUser,res[0],res[1])
+                    return self.send_photo_text(fromUser,toUser,res[0],res[1],encrypt,AgentID,kw)
                 else:
-                    return self.replyWeiXin(fromUser,toUser,res)
+                    return self.replyWeiXin(fromUser,toUser,res,encrypt,AgentID,kw)
         elif Event=="unsubscribe":
              registry = RegistryManager.get(request.session.db)
              with registry.cursor() as cr:
@@ -92,7 +93,7 @@ class weixin(http.Controller):
             return ""
 
     def textProcess(self,xmlstr,encrypt=False,kw=None):
-        _logger.error(etree.tostring(xmlstr))
+
         msgType=xmlstr.find("MsgType").text
         fromUser=xmlstr.find("FromUserName").text
         toUser=xmlstr.find("ToUserName").text
@@ -104,16 +105,16 @@ class weixin(http.Controller):
             AgentID=None
 
         registry = RegistryManager.get(request.session.db)
-        _logger.error((content,AgentID))
+
         if content=="openid":
             return self.replyWeiXin(fromUser,toUser,fromUser,encrypt,AgentID,kw)
         with registry.cursor() as cr:
             orig = registry.get("rhwl.weixin.base")
             res = orig.action_text_input(cr,content,toUser,fromUser)
-            return self.replyWeiXin(fromUser,toUser,res)
+            return self.replyWeiXin(fromUser,toUser,res,encrypt,AgentID,kw)
 
 
-    def send_photo_text(self,toUser,fromUser,code,articles):
+    def send_photo_text(self,toUser,fromUser,code,articles,encrypt=None,AgentID=None,kw=None):
         #发送图文消息
         articlesxml=""
         for i in articles:
@@ -134,13 +135,8 @@ class weixin(http.Controller):
             articlesxml += itemxml
 
         temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[news]]></MsgType><ArticleCount>%s</ArticleCount><Articles>%s</Articles></xml> "
-        return temp % (toUser,fromUser,time.time().__trunc__().__str__(),str(articles.__len__()),articlesxml)
-
-    def replyWeiXin(self,toUser,fromUser,text,encrypt=False,AgentID=None,kw=None):
-        """微信号统一回复方法"""
-        if AgentID:
-            temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content><AgentID>"+AgentID+"</AgentID></xml>"
-            temp = temp % (toUser,fromUser,time.time().__trunc__().__str__(),text)
+        temp =  temp % (toUser,fromUser,time.time().__trunc__().__str__(),str(articles.__len__()),articlesxml)
+        if encrypt:
             sVerifyTimeStamp=kw.get('timestamp')
             sVerifyNonce=kw.get('nonce')
             sToken = kw.get('t')
@@ -149,6 +145,26 @@ class weixin(http.Controller):
             wxcpt=WXBizMsgCrypt.WXBizMsgCrypt(sToken,sEncodingAESKey,sCorpID)
             ret,sEncryptMsg=wxcpt.EncryptMsg(temp, sVerifyNonce, sVerifyTimeStamp)
             _logger.debug((ret,sEncryptMsg))
+            if( ret!=0 ):
+               return "ERR: EncryptMsg ret: " + ret
+            return sEncryptMsg
+        else:
+            return temp
+
+    def replyWeiXin(self,toUser,fromUser,text,encrypt=False,AgentID=None,kw=None):
+        """微信号统一回复方法"""
+        _logger.error((toUser,fromUser,text,encrypt,AgentID,kw))
+        if AgentID:
+            temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content><AgentID>"+AgentID+"</AgentID></xml>"
+            temp = temp % (toUser,fromUser,time.time().__trunc__().__str__(),text.encode("utf-8"))
+            sVerifyTimeStamp=kw.get('timestamp')
+            sVerifyNonce=kw.get('nonce')
+            sToken = kw.get('t')
+            sEncodingAESKey = "KWkAnyk5COAu3tiLlSvWCwHp8pHj7wGwjYvuNxLdyCR"
+            sCorpID = "wx77bc43a51cdb049b"
+            wxcpt=WXBizMsgCrypt.WXBizMsgCrypt(sToken,sEncodingAESKey,sCorpID)
+            ret,sEncryptMsg=wxcpt.EncryptMsg(temp, sVerifyNonce, sVerifyTimeStamp)
+            _logger.error((ret,sEncryptMsg))
             if( ret!=0 ):
                return "ERR: EncryptMsg ret: " + ret
             return sEncryptMsg
@@ -194,7 +210,7 @@ class weixin(http.Controller):
                   return "ERR: DecryptMsg ret: " + ret
                else:
                   return self.msgProcess(sMsg,True,kw)
-        return self.msgProcess(request.httprequest.data)
+        return self.msgProcess(request.httprequest.data,False,kw)
 
     @http.route("/web/weixin/bind/",type="http",auth="public")
     def rhwl_weixin_bind(self,**kw):

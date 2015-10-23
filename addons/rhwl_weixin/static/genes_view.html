@@ -67,7 +67,7 @@
       //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
       $.ajax({
           type: 'POST',
-          url: "/web/api/genes/report/img/?openid=" + OPENID + "&id=" + GENE_ID + "&ps="+$.getUrlVar('ps')+"&pe="+$.getUrlVar('pe'),
+          url: "/web/api/genes/report/img/?openid=" + OPENID +"&code="+$.getUrlVar('code')+ "&id=" + GENE_ID + "&ps="+$.getUrlVar('ps')+"&pe="+$.getUrlVar('pe'),
           data: {},
           success: function (data) {
               $.each(data,function(k,v){
