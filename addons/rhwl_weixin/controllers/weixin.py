@@ -58,9 +58,9 @@ class weixin(http.Controller):
         fromUser=xmlstr.find("FromUserName").text
         toUser=xmlstr.find("ToUserName").text
         Event=xmlstr.find("Event").text#获得用户所输入的内容
-        AgentID_el = xmlstr.find("AgentID")
+        AgentID_el = [x for x in xmlstr.getchildren() if x.tag=="AgentID"]
         if AgentID_el:
-            AgentID = AgentID_el.text
+            AgentID = AgentID_el[0].text
         else:
             AgentID=None
 
@@ -92,19 +92,19 @@ class weixin(http.Controller):
             return ""
 
     def textProcess(self,xmlstr,encrypt=False,kw=None):
+        _logger.error(etree.tostring(xmlstr))
         msgType=xmlstr.find("MsgType").text
         fromUser=xmlstr.find("FromUserName").text
         toUser=xmlstr.find("ToUserName").text
         content=xmlstr.find("Content").text #获得用户所输入的内容
-        AgentID_el = xmlstr.find("AgentID")
+        AgentID_el = [x for x in xmlstr.getchildren() if x.tag=="AgentID"]
         if AgentID_el:
-            _logger.debug(dir(AgentID_el))
-            AgentID = AgentID_el.text
+            AgentID = AgentID_el[0].text
         else:
             AgentID=None
-        _logger.debug(etree.tostring(xmlstr))
+
         registry = RegistryManager.get(request.session.db)
-        _logger.debug((content,AgentID))
+        _logger.error((content,AgentID))
         if content=="openid":
             return self.replyWeiXin(fromUser,toUser,fromUser,encrypt,AgentID,kw)
         with registry.cursor() as cr:

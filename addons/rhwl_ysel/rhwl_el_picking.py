@@ -452,6 +452,13 @@ class rhwl_picking_box(osv.osv):
 
     def action_open_express(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=context)
-        result = self.pool.get("stock.picking.express")._get_act_window_dict(cr, uid, 'rhwl.rhwl_stock_picking_express_form', context=context)
-        result['domain'] = "[('id','in',[" + ','.join(map(str, obj.express_id)) + "])]"
-        return result
+        mod_obj = self.pool.get('ir.model.data')
+        dummy, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'l10n_cn_express_track', 'action_stock_express'))
+        action = self.pool.get('ir.actions.act_window').read(cr, uid, action_id, context=context)
+        action['context'] = {}
+
+        res = mod_obj.get_object_reference(cr, uid, 'rhwl', 'rhwl_stock_picking_express_form')
+        action['views'] = [(res and res[1] or False, 'form')]
+        action['res_id'] = obj.express_id.id and obj.express_id.id or False
+
+        return action

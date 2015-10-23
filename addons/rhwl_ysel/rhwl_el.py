@@ -84,7 +84,7 @@ class rhwl_ys(osv.osv):
         "prop_note":fields.char(u"其它说明",size=20),
         "pdf_file": fields.char(u"检测报告", size=100),
         "sample_type":fields.selection([("blood",u"全血")],string=u"样本类型",required=True),
-        "sample_deal":fields.selection([("EDTA",u"EDTA抗凝")],string=u"样本处理",required=True)
+        "sample_deal":fields.selection([("DBS",u"干血片")],string=u"样本处理",required=True)
     }
     _sql_constraints = [
         ('rhwl_genes_el_uniq', 'unique(name)', u'样本编号不能重复!'),
@@ -95,7 +95,7 @@ class rhwl_ys(osv.osv):
         "accp_date":fields.date.today,
         "urgency":"0",
         "sample_type":"blood",
-        "sample_deal":"EDTA"
+        "sample_deal":"DBS"
     }
 
     @api.onchange("hospital")
@@ -211,8 +211,27 @@ class rhwl_ys(osv.osv):
 
     def get_gene_type_list(self,cr,uid,ids,context=None):
         data={}
+        sel_type = dict(fields.selection.reify(cr,uid,self,self._columns['sample_type'],context=context))
+        sel_deal = dict(fields.selection.reify(cr,uid,self,self._columns['sample_deal'],context=context))
         for i in self.browse(cr,uid,ids,context=context):
-            data[i.name]={"cust_name":i.cust_name.encode("utf-8"),"sex":i.sex.encode("utf-8")}
+            data[i.name]={"cname":i.cust_name.encode("utf-8"),
+                            "gender":i.sex.encode("utf-8"),
+                          "birthday":i.birthday.encode("utf-8").replace("-","."),
+                          "hospital":i.hospital.name.encode("utf-8"),
+                          "section":i.room.encode("utf-8"),
+                          "doctor":i.doctor.name and i.doctor.name.encode("utf-8") or "",
+                          "clctDate":i.date.encode("utf-8").replace("-","."),
+                          "acptDate":i.accp_date.encode("utf-8").replace("-","."),
+                          "sampleType":sel_type.get(i.sample_type,"").encode("utf-8"),
+                          "sampleDeal":sel_deal.get(i.sample_deal,"").encode("utf-8"),
+                          "jksc":"Y" if i.is_jksc else "N",
+                          "elhz": "Y" if i.is_self else "N",
+                            "fmjwelhz":"Y" if i.is_both else "N",
+                            "fqel":"Y" if i.is_father else "N",
+                           "mqel":"Y" if i.is_mother else "N",
+                            "fmjkxdjmyel":"Y" if i.is_brother else "N",
+
+                          }
 
             for s in i.snp:
                 data[i.name][s.snp.encode("utf-8")] = s.typ.encode("utf-8").replace("/","")
@@ -226,20 +245,44 @@ class rhwl_ys(osv.osv):
             ids = [ids]
         data = self.get_gene_type_list(cr,uid,ids,context=context)
         snp_name = "el_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        fpath = os.path.join(os.path.join(os.path.split(os.path.split(__file__)[0])[0],"rhwl_gene"), REMOTE_SERVER_PATH)
+        fpath = os.path.join(os.path.split(__file__)[0], REMOTE_SERVER_PATH)
         fname = os.path.join(fpath, snp_name + ".txt")
         header=[]
         f = open(fname, "w+")
 
-
+        """barcode	编码
+        cname	姓名
+        gender	性别
+        birthday	出生年月	2015.10.01
+        hospital	医院
+        section	科室
+        docter	医生
+        clctDate	采集日期	2015.10.22
+        acptDate	收样日期	2015.10.23
+        sampleType	样本类型	全血（足跟血/指尖血）
+        sampleDeal	样本处理	干血片
+        jksc    健康筛查	Y/N
+        elhz    耳聋患者	Y/N
+        fmjwelhz	父母均为耳聋患者	Y/N
+        fqel    父亲耳聋	Y/N
+        mqel    母亲耳聋	Y/N
+        fmjkxdjmyel     父母健康，兄弟姊妹有耳聋	Y/N"""
         for k,v in data.items():
-            line_row=[k,v["cust_name"],v["sex"]]
+            line_row=[k,v["cname"],v["gender"],v["birthday"],v["hospital"],v["section"],v["docter"],v["clctDate"],v["acptDate"],v["sampleType"],v["sampleDeal"]]
             if not header:
                 header = v.keys()
-                header.remove("cust_name")
-                header.remove("sex")
+                header.remove("cname")
+                header.remove("gender")
+                header.remove("birthday")
+                header.remove("hospital")
+                header.remove("section")
+                header.remove("docter")
+                header.remove("clctDate")
+                header.remove("acptDate")
+                header.remove("sampleType")
+                header.remove("sampleDeal")
                 header.sort()
-                f.write("编号\t姓名\t性别\t" + "\t".join(header) + '\n')
+                f.write("barcode\tcname\tgender\tbirthday\thospital\tsection\tdocter\tclctDate\tacptDate\tsampleType\tsampleDeal\t" + "\t".join(header) + '\n')
             for i in header:
                 line_row.append(data[k][i])
             f.write("\t".join(line_row) + '\n')
@@ -304,7 +347,7 @@ class rhwl_ys_snp(osv.osv):
     _name = "rhwl.genes.el.snp"
     _columns = {
         "parent_id": fields.many2one("rhwl.genes.el", "Parent ID",select=True),
-        "snp": fields.char("SNP", size=20),
+        "snp": fields.char("SNP", size=40),
         "typ": fields.char("Type", size=10),
         "active": fields.boolean("Active"),
     }

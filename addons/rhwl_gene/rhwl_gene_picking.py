@@ -305,7 +305,11 @@ class rhwl_picking(osv.osv):
         ws = w.add_sheet(os.path.split(line_path)[1])
         row=0
         batch=data.keys()
-        batch.sort()
+        batch1 = [i for i in batch if i.count("-")>0]
+        batch2 = [i for i in batch if i.count("-")==0]
+        batch1.sort(cmp=(lambda x,y: cmp([int(i) for i in x.split("-")],[int(j) for j in y.split("-")])))
+        batch2.sort()
+        batch = batch1 + batch2
         for k in batch:
             for i in data[k]:
                 ws.write(row,0,k)
