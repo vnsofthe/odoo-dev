@@ -246,7 +246,7 @@ class weixin(http.Controller):
         with registry.cursor() as cr:
             b = registry.get('rhwl.weixin.base')
             ids =b.search(cr,SUPERUSER_ID,[("code","=",code)],limit=1)
-            appid = b.browse(cr,SUPERUSER_ID,ids).appid
+            appid = b.browse(cr,SUPERUSER_ID,ids).original_id
             jsapi_ticket= b._get_ticket(cr,SUPERUSER_ID,code,context=self.CONTEXT)
         str = "jsapi_ticket="+jsapi_ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url
         sha = hashlib.sha1(str)

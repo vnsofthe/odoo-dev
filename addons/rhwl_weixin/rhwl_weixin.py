@@ -239,7 +239,10 @@ class rhwl_config(osv.osv):
         obj = self.browse(cr,uid,ids,context=context)
         if not obj.ticket or (datetime.datetime.now() - datetime.datetime.strptime(obj.ticket_create,tools.DEFAULT_SERVER_DATETIME_FORMAT)).total_seconds() > (obj.ticket_expires - 30):
             arg['access_token'] = self._get_token(cr,uid,val,valType,obj,context=context)
-            s=requests.post("https://api.weixin.qq.com/cgi-bin/ticket/getticket",params=arg)
+            if obj.service_type=="3":
+                s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket",params=arg)
+            else:
+                s=requests.post("https://api.weixin.qq.com/cgi-bin/ticket/getticket",params=arg)
             ref = s.content
             s.close()
             res = eval(ref)
