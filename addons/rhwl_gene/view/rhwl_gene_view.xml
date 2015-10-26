@@ -55,7 +55,11 @@
                                 <label string="风险报告 " for="pdf_file" attrs="{'invisible':[('pdf_file','=',False)]}"/>
                                 <div attrs="{'invisible':[('pdf_file','=',False)]}">
                                     <field name="pdf_file" attrs="{'invisible':True}"/>
-                                    <button name="action_view_pdf" type="object" string="查看" context="{'file_name':pdf_file}" attrs="{'invisible':[('pdf_file','=',False)]}"></button>
+                                    <field name="pdf_file_en" attrs="{'invisible':True}"/>
+                                    <field name="pdf_file_other" attrs="{'invisible':True}"/>
+                                    <button name="action_view_pdf" type="object" string="查看中文" context="{'file_name':pdf_file}" attrs="{'invisible':[('pdf_file','=',False)]}"></button>
+                                    <button name="action_view_pdf" type="object" string="查看英文" context="{'file_name':pdf_file_en}" attrs="{'invisible':[('pdf_file_en','=',False)]}"></button>
+                                    <button name="action_view_pdf" type="object" string="查看其它" context="{'file_name':pdf_file_other}" attrs="{'invisible':[('pdf_file_other','=',False)]}"></button>
                                 </div>
                                 <field name="confirm_note" attrs="{'readonly':[('state','!=','except')]}"/>
                             </group>

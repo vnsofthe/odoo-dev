@@ -95,7 +95,9 @@ class rhwl_gene(osv.osv):
         "typ": fields.one2many("rhwl.easy.genes.type", "genes_id", "Type"),
         "dns_chk": fields.one2many("rhwl.easy.genes.check", "genes_id", "DNA_Check"),
         "risk": fields.one2many("rhwl.easy.gene.risk", "genes_id", "Risk"),
-        "pdf_file": fields.char(u"风险报告", size=100),
+        "pdf_file": fields.char(u"中文风险报告", size=100),
+        "pdf_file_en": fields.char(u"英文风险报告", size=100),
+        "pdf_file_other": fields.char(u"母语风险报告", size=100),
         "is_risk":fields.boolean(u"是高风险"),
         "is_child":fields.boolean(u"是儿童"),
         "risk_count": fields.function(_get_risk, type="integer", string=u'高风险疾病数', multi='risk'),
@@ -466,12 +468,7 @@ class rhwl_gene(osv.osv):
             for f1 in os.listdir(newfile):
                 name_list = re.split("[_\.]",f1) #分解文件名称
                 #文件名分为六种模式
-                #1. 398877432.pdf
-                #2. 399834245_张三.pdf
-                #3. 1-2_H_384778393.pdf
-                #4. 1-4_H_394834949_王五_男.pdf
-                #5. 2-5_H_494839848_2-9_H_49384345.pdf
-                #6. 2-3_H_394857583_张三_2-3_H_40348934_李四_男.pdf
+
                 if self.pdf_size_error(cr,uid,os.path.join(newfile, f1),len(name_list),context=context):
                     continue
 
@@ -491,17 +488,26 @@ class rhwl_gene(osv.osv):
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
                         pdf_count += 1
-                elif len(name_list)==4 or len(name_list)==7:
-                    gene_no = name_list[2]
-                    if len(f.split("_"))==3:
-                        picking_no = f.split("_")[1]
+                elif len(name_list)==4:
+                    #23999945_张三_CN.pdf
+                    lang = name_list[2]
+                    col_name="pdf_file"
+
+                    if lang=="CN":
+                        f2 = ".".join([name_list[0],name_list[3]])
                     else:
-                        picking_no = self.pool.get("rhwl.genes.picking")._get_picking_from_genes(cr,uid,gene_no,context=context)
-                    if not picking_no:continue
-                    ppath=os.path.join(tpath,picking_no)
-                    if not os.path.exists(ppath):
-                        os.mkdir(ppath)
-                    shutil.move(os.path.join(newfile, f1), os.path.join(ppath, f1))
+                        f2 = ".".join([name_list[0]+"_"+name_list[2],name_list[3]])
+                        if lang=="EN":
+                            col_name = "pdf_file_en"
+                        else:
+                            col_name = "pdf_file_other"
+                    shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
+                    ids = self.search(cr, uid, [("name", "=", f2.split(".")[0])])
+                    if ids:
+                        self.write(cr, uid, ids,
+                                   {col_name: "rhwl_gene/static/local/report/" + f2, "state": "report_done"})
+                        pdf_count += 1
+
                 elif len(name_list)==6 or len(name_list)==10:
                     gene_no = name_list[2]
                     if len(f.split("_"))==3:
