@@ -142,7 +142,7 @@ function sale_report2(){
                 option.series[1].data[i]=v[3];
                 option.series[2].data[i]=v[4];
             });
-            console.log(option);
+
             charts_sale("main",option,['echarts','echarts/chart/bar']);
         }
     });

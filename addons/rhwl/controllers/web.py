@@ -48,6 +48,7 @@ class WebClient(http.Controller):
                     "errtext":u"参数中无登录帐号和密码信息。"
                 }
             else:
+                uid = None
                 if data.get("Username"):
                     DBNAME = self.get_dbname()
                     uid = request.session.authenticate(DBNAME,data.get('Username'),data.get('Pwd'))

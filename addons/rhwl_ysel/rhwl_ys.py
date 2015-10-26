@@ -225,6 +225,7 @@ class rhwl_ys(osv.osv):
 
     def export_gene_to_report(self,cr,uid,ids,context=None):
         ids = self.search(cr, uid, [("state", "=", "ok"),("snp","!=",False)], order="name",limit=200,context=context)
+        self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_test","本次导出%s笔"%(len(ids)))
         if not ids:return
         if isinstance(ids, (long, int)):
             ids = [ids]

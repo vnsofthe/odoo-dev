@@ -48,7 +48,10 @@ class rhwl_weixin(osv.osv):
         base_obj = self.pool.get("rhwl.weixin.base")
         id=base_obj.search(cr,SUPERUSER_ID,[("code","=",code)])
         ids=self.search(cr,SUPERUSER_ID,[("base_id","=",id[0]),("openid","=",openid)])
-        self.write(cr,SUPERUSER_ID,ids,{"user_id":uid})
+        if ids:
+            self.write(cr,SUPERUSER_ID,ids,{"user_id":uid})
+        else:
+            self.create(cr,SUPERUSER_ID,{"base_id":id[0],"openid":openid,"active":True,"user_id":uid,"state":"draft"})
 
 class rhwl_config(osv.osv):
     _name = "rhwl.weixin.base"
@@ -410,6 +413,55 @@ class rhwl_config(osv.osv):
                             headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)
             ref = s.content
             s.close()
+
+    def send_qy_text(self,cr,uid,code,field_name,content,context=None):
+        ids = self.pool.get("rhwl.weixin").search(cr,uid,[("base_id.code","=",code),(field_name,"=",True)],context=context)
+        vals={
+               "touser": "",
+               "toparty": "",
+               "totag": "",
+               "msgtype": "text",
+               "agentid": None,
+               "text": {
+                   "content": ""
+               },
+               "safe":"0"
+            }
+        touser=[]
+        if ids:
+            for i in self.pool.get("rhwl.weixin").browse(cr,uid,ids,context=context):
+                touser.append(i.openid.encode('utf-8'))
+                if not vals["agentid"]:
+                    vals["agentid"] = i.base_id.appid.encode('utf-8')
+            vals["touser"] = '|'.join(touser)
+            vals["text"]["content"] = content.encode('utf-8')
+            token=self._get_token(cr,SUPERUSER_ID,code,context=context)
+            s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/message/send",
+                            params={"access_token":token},
+                            data=json.dumps(vals,ensure_ascii=False),
+                            headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)
+            ref = s.content
+            s.close()
+
+    def get_dept_user(self,cr,uid,id,context=None):
+        obj = self.browse(cr,uid,id,context=context)
+        token=self._get_token(cr,SUPERUSER_ID,obj.code.encode("utf-8"),context=context)
+        vals={
+            "access_token":token,
+            "department_id":1,
+            "fetch_child":1,
+             "status":0
+        }
+        s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/user/simplelist",
+                            params=vals,
+                            headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)
+        ref = eval(s.content)
+        s.close()
+        if ref["errcode"]==0:
+            for i in ref["userlist"]:
+                u_id = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[("base_id","=",obj.id),("openid","=",i["userid"])])
+                if not u_id:
+                    self.pool.get("rhwl.weixin").create(cr,SUPERUSER_ID,{"base_id":obj.id,"openid":i["userid"],"active":True,"state":"draft"})
 
 class rhwl_usermenu(osv.osv):
     _name = "rhwl.weixin.usermenu"
