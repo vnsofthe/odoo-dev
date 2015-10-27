@@ -28,9 +28,30 @@
 
         <record id="rhwl_pos_manager" model="res.groups">
             <field name="name">设备管理</field>
-
             <field name="comment">设备管理</field>
+        </record>
 
+        <record model="ir.module.category" id="module_category_rhwl_library">
+            <field name="name">人和实验</field>
+            <field name="description">Helps you handle your quotations, sale orders and invoicing.</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="rhwl_base_library" model="res.groups">
+            <field name="name">实验员</field>
+            <field name="category_id" ref="module_category_rhwl_library"/>
+            <field name="comment">实验员</field>
+        </record>
+        <record id="rhwl_base_library_user" model="res.groups">
+            <field name="name">小组长</field>
+            <field name="category_id" ref="module_category_rhwl_library"/>
+            <field name="comment">小组长</field>
+            <field name="implied_ids" eval="[(4, ref('rhwl_base_library'))]"/>
+        </record>
+        <record id="rhwl_base_library_manager" model="res.groups">
+            <field name="name">主管</field>
+            <field name="category_id" ref="module_category_rhwl_library"/>
+            <field name="comment">主管</field>
+            <field name="implied_ids" eval="[(4, ref('rhwl_base_library_user'))]"/>
         </record>
 
         <record id="sale_partner_rhwlbase_rule" model="ir.rule">

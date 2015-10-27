@@ -22,6 +22,7 @@
                 ,"report/report.xml"
                 ,"wizard/stock_picking.xml"
                 ,"view/rhwl_consump.xml"
+                ,"view/rhwl_project.xml"
               ],
     "qweb":[],
     'demo': [],

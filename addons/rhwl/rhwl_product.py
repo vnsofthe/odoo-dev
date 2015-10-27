@@ -59,10 +59,12 @@ class rhwl_product_template(osv.osv):
         "cost_allocation":fields.boolean(u"可跨月分摊"),
         "project_ids":fields.related("product_variant_ids","project_ids",type="one2many",relation="rhwl.product.project",string=u"项目耗用量"),
         'uol_id': fields.many2one('product.uom', 'Unit of Library',),
+        "project_allocation":fields.boolean(u"依项目人份数分摊"),
     }
     _defaults={
         'purchase_requisition':True,
         "cost_allocation":False,
+        "project_allocation":False
     }
 
     def init(self,cr):

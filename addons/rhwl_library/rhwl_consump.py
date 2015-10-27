@@ -86,6 +86,7 @@ class rhwl_library_consump(osv.osv):
             "is_rd":obj.is_rd,
         }
         for l in obj.line:
+            if l.qty==0:continue
             move_val={
                 "product_id":l.product_id.id
             }
