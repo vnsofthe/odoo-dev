@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from openerp import SUPERUSER_ID,api
 import threading
 from openerp.osv import osv,fields
 import base64
@@ -90,7 +90,7 @@ class rhwl_import(osv.osv_memory):
         finally:
             f.close()
             os.remove(xlsname+'.xls')
-
+        self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_export_ys","本次导入叶酸检测位点%s笔"%(nrows-1,))
         return
 
     def import_report_el(self, cr, uid, ids, context=None):
@@ -165,5 +165,5 @@ class rhwl_import(osv.osv_memory):
         finally:
             f.close()
             os.remove(xlsname+'.xls')
-
+        self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_export_el","本次导入耳聋检测位点%s笔"%(nrows-1,))
         return

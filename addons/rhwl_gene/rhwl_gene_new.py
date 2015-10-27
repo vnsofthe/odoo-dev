@@ -471,6 +471,12 @@ class rhwl_gene(osv.osv):
                 'target': 'new'}
 
 
+    def _get_sale_count_for_day(self,cr,uid,context=None):
+        cr.execute("select hospital,count(*) from rhwl_easy_genes_new where (create_date at time zone 'CCT')::date = current_date group by hospital")
+        data={}
+        for i in cr.fetchall():
+            data[i[0]] = i[1]
+        return data
 
     #根据中间日期计算本周期的起迄日期
     def date_between(self,days=20):

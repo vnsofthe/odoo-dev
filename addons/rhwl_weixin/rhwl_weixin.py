@@ -33,6 +33,9 @@ class rhwl_weixin(osv.osv):
         "is_library":fields.boolean(u"实验进度催促通知",help=u"每周四统计预计出货样本数据。"),
         "is_sampleresult":fields.boolean(u"无创检测结果通知",help=u"无创样本实验结果完成后通知。"),
         "is_account":fields.boolean(u"易感对帐通知",help=u"易感项目每月对帐信息通知"),
+        "is_export_ys":fields.boolean(u"叶酸检测位点导入通知",help=u"叶酸样本实验导入位点通知"),
+        "is_export_el":fields.boolean(u"耳聋检测位点导入通知",help=u"耳聋样本实验导入位点通知"),
+        "is_sale_count":fields.boolean(u"销售人员每日销量统计通知"),
         "is_test":fields.boolean(u"测试通知")
     }
 
@@ -414,8 +417,7 @@ class rhwl_config(osv.osv):
             ref = s.content
             s.close()
 
-    def send_qy_text(self,cr,uid,code,field_name,content,context=None):
-        ids = self.pool.get("rhwl.weixin").search(cr,uid,[("base_id.code","=",code),(field_name,"=",True)],context=context)
+    def send_qy_text_ids(self,cr,uid,ids,content,context=None):
         vals={
                "touser": "",
                "toparty": "",
@@ -433,15 +435,24 @@ class rhwl_config(osv.osv):
                 touser.append(i.openid.encode('utf-8'))
                 if not vals["agentid"]:
                     vals["agentid"] = i.base_id.appid.encode('utf-8')
+                    token=self._get_token(cr,SUPERUSER_ID,i.base_id.code.encode('utf-8'),context=context)
             vals["touser"] = '|'.join(touser)
             vals["text"]["content"] = content.encode('utf-8')
-            token=self._get_token(cr,SUPERUSER_ID,code,context=context)
+
             s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/message/send",
                             params={"access_token":token},
                             data=json.dumps(vals,ensure_ascii=False),
                             headers={'content-type': 'application/json; encoding=utf-8'},allow_redirects=False)
             ref = s.content
             s.close()
+
+    def send_qy_text_openid(self,cr,uid,code,openid,content,context=None):
+        ids = self.pool.get("rhwl.weixin").search(cr,uid,[("base_id.code","=",code),("openid","=",openid)],context=context)
+        self.send_qy_text_ids(cr,uid,ids,content,context=context)
+
+    def send_qy_text(self,cr,uid,code,field_name,content,context=None):
+        ids = self.pool.get("rhwl.weixin").search(cr,uid,[("base_id.code","=",code),(field_name,"=",True)],context=context)
+        self.send_qy_text_ids(cr,uid,ids,content,context=context)
 
     def get_dept_user(self,cr,uid,id,context=None):
         obj = self.browse(cr,uid,id,context=context)

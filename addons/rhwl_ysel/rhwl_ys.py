@@ -225,7 +225,7 @@ class rhwl_ys(osv.osv):
 
     def export_gene_to_report(self,cr,uid,ids,context=None):
         ids = self.search(cr, uid, [("state", "=", "ok"),("snp","!=",False)], order="name",limit=200,context=context)
-        self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_test","本次导出%s笔"%(len(ids)))
+
         if not ids:return
         if isinstance(ids, (long, int)):
             ids = [ids]
@@ -303,6 +303,13 @@ class rhwl_ys(osv.osv):
 
             if os.path.getmtime(newfile) < last_week:
                 os.rmdir(newfile)
+
+    def _get_sale_count_for_day(self,cr,uid,context=None):
+        cr.execute("select hospital,count(*) from rhwl_genes_ys where (create_date at time zone 'CCT')::date = current_date group by hospital")
+        data={}
+        for i in cr.fetchall():
+            data[i[0]] = i[1]
+        return data
 
 class rhwl_log(osv.osv):
     _name = "rhwl.genes.ys.log"

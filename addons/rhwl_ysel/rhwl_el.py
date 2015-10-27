@@ -325,6 +325,12 @@ class rhwl_ys(osv.osv):
             if os.path.getmtime(newfile) < last_week:
                 os.rmdir(newfile)
 
+    def _get_sale_count_for_day(self,cr,uid,context=None):
+        cr.execute("select hospital,count(*) from rhwl_genes_el where (create_date at time zone 'CCT')::date = current_date group by hospital")
+        data={}
+        for i in cr.fetchall():
+            data[i[0]] = i[1]
+        return data
 
 class rhwl_log(osv.osv):
     _name = "rhwl.genes.el.log"

@@ -19,17 +19,32 @@
             <field name="arch" type="xml">
                 <form string="WeiXin">
                     <sheet>
-                        <group colspan="8">
-                            <field name="openid"/>
-                            <field name="active"/>
-                            <field name="user_id"/>
-                            <field name="is_lib_import"/>
-                            <field name="is_jobmanager"/>
-                            <field name="is_notice"/>
-                            <field name="is_library"/>
-                            <field name="is_sampleresult"/>
-                            <field name="is_account"/>
-                            <field name="is_test"/>
+                        <group col="9">
+                            <group colspan="3">
+                                <field name="openid"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="user_id"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="is_lib_import"/>
+                                <field name="is_jobmanager"/>
+                                <field name="is_notice"/>
+                                <field name="is_library"/>
+                                <field name="is_sampleresult"/>
+                            </group>
+                            <group>
+                                <field name="is_account"/>
+                                <field name="is_export_ys"/>
+                                <field name="is_export_el"/>
+                                <field name="is_sale_count"/>
+                                <field name="is_test"/>
+                            </group>
                         </group>
                     </sheet>
                 </form>

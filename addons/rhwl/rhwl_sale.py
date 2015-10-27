@@ -628,6 +628,108 @@ class rhwl_sample_info(osv.osv):
             self.pool.get("res.partner").write(cr,uid,i[0],{"jnsjrs":i[1]},context=context)
         cr.commit()
 
+    def _get_sale_count_for_day(self,cr,uid,context=None):
+        cr.execute("select cxyy,count(*) from sale_sampleone where (create_date at time zone 'CCT')::date = current_date group by cxyy")
+        data={}
+        for i in cr.fetchall():
+            data[i[0]] = i[1]
+        return data
+
+    def send_weixin_sale_count(self,cr,uid,context=None):
+        wc_data = self._get_sale_count_for_day(cr,uid,context=context)
+        yg_data = self.pool.get("rhwl.easy.genes.new")._get_sale_count_for_day(cr,uid,context=context)
+        ys_data = self.pool.get("rhwl.genes.ys")._get_sale_count_for_day(cr,uid,context=context)
+        el_data = self.pool.get("rhwl.genes.el")._get_sale_count_for_day(cr,uid,context=context)
+
+        sale_data={}
+        for k,v in wc_data.items():
+            if sale_data.has_key(k):
+                if sale_data[k].has_key("无创"):
+                    sale_data[k]["无创"] = sale_data[k]["无创"] + v
+                else:
+                    sale_data[k]["无创"] = v
+            else:
+                sale_data[k] = {"无创":v}
+        for k,v in yg_data.items():
+            if sale_data.has_key(k):
+                if sale_data[k].has_key("易感"):
+                    sale_data[k]["易感"] = sale_data[k]["易感"] + v
+                else:
+                    sale_data[k]["易感"] = v
+            else:
+                sale_data[k] = {"易感":v}
+        for k,v in ys_data.items():
+            if sale_data.has_key(k):
+                if sale_data[k].has_key("叶酸"):
+                    sale_data[k]["叶酸"] = sale_data[k]["叶酸"] + v
+                else:
+                    sale_data[k]["叶酸"] = v
+            else:
+                sale_data[k] = {"叶酸":v}
+        for k,v in el_data.items():
+            if sale_data.has_key(k):
+                if sale_data[k].has_key("耳聋"):
+                    sale_data[k]["耳聋"] = sale_data[k]["耳聋"] + v
+                else:
+                    sale_data[k]["耳聋"] = v
+            else:
+                sale_data[k] = {"耳聋":v}
+
+        all_data={}
+        xy_wc=0
+        """
+        all_data={
+                    销售经理:
+                            {
+                                省区:
+                                    {
+                                        无创:笔数,
+                                        叶酸:笔数,
+                                        耳聋:笔数,
+                                        易感:笔数
+                                    }
+                            }
+                    }
+        """
+        for k,v in sale_data.items():
+            partner_obj = self.pool.get("res.partner").browse(cr,uid,k,context=context)
+            user_id = partner_obj.user_id.id
+            team_ids = self.pool.get("crm.case.section").search(cr,uid,[("member_ids.id","=",user_id)])
+            if isinstance(team_ids,(list,tuple)):
+                team_ids = team_ids[0]
+            team_obj = self.pool.get("crm.case.section").browse(cr,uid,team_ids,context=context)
+            if not all_data.has_key(team_obj.user_id.id):
+                all_data[team_obj.user_id.id]={}
+            if not all_data[team_obj.user_id.id].has_key(partner_obj.state_id.name):
+                all_data[team_obj.user_id.id][partner_obj.state_id.name]={}
+            for k1,v1 in v.items():
+                if k1=="无创" and partner_obj.state_id.name in (u"湖南省",u"山东省",u"浙江省"):
+                    xy_wc += v1
+                if all_data[team_obj.user_id.id][partner_obj.state_id.name].has_key(k1):
+                    all_data[team_obj.user_id.id][partner_obj.state_id.name][k1] = all_data[team_obj.user_id.id][partner_obj.state_id.name][k1] + v1
+                else:
+                    all_data[team_obj.user_id.id][partner_obj.state_id.name] = {k1:v1}
+
+        send_all_text={}
+        for k,v in all_data.items():
+            send_text = ""
+            for k1,v1 in v.items():
+                t2=k1+":"
+                for k2,v2 in v1.items():
+                    t2 = t2+k2+str(v2)+"笔,"
+                    if send_all_text.has_key(k2):
+                        send_all_text[k2] += v2
+                    else:
+                        send_all_text[k2] = v2
+                send_text += t2
+            weixin_user = self.pool.get("rhwl.weixin").search(cr,uid,[("base_id.code","=","rhwlyy"),("user_id.id","=",k)])
+            if weixin_user:
+                self.pool.get("rhwl.weixin.base").send_qy_text_ids(cr,uid,weixin_user,send_text,context=context)
+        if xy_wc>0:
+            send_all_text["无创"] = str(send_all_text["无创"])+"笔,其中湘雅"+str(xy_wc)
+        send_text = fields.date.today()+"样本合计："+(",".join(["%s:%s笔"%(x,send_all_text[x]) for x in send_all_text.keys()]))
+        self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,"rhwlyy","is_sale_count",send_text,context=context)
+
 class rhwl_sample_lims(osv.osv):
     _name = "sale.sampleone.lims"
     _description = "样品实验记录"
