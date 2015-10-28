@@ -119,6 +119,7 @@
                                        attrs="{'required':[('is_reused','=','1')],'invisible':[('is_reused','&lt;&gt;','1')],'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="is_free" colspan='2' attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="urgency"/>
+                                <field name="check_center"/>
                                 <field name="has_invoice"/>
                                 <field name="has_sms"/>
                                 <field name="is_export"/>

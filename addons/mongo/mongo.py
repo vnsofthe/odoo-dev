@@ -29,10 +29,10 @@ class WebClient(http.Controller):
         return db
 
     def _get_common(self):
-        if not self.COMMON:
-            db = self._get_cursor()
-            for i in db.common.find():
-                self.COMMON[i.get("_id")] = i.get("region")
+        #if not self.COMMON:
+        db = self._get_cursor()
+        for i in db.common.find():
+            self.COMMON[i.get("_id")] = i.get("region")
 
         return self.COMMON
 
@@ -115,7 +115,7 @@ class WebClient(http.Controller):
             if not pd:continue
             if not result.has_key(pd["category"]):
                 result[pd["category"]]=[]
-            result[pd["category"]].append([k,pd.get(kw.get("lang"))["title"]])
+            result[pd["category"]].append([k,pd.get(kw.get("lang")).get("title","")])
 
         for i in tc.get("region"):
             res.append([i,category.get(kw.get("lang")).get(i),result[i]])

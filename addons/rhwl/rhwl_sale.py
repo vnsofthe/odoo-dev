@@ -39,7 +39,7 @@ class rhwl_sample_info(osv.osv):
         (u'其它', u'其它')
     ]
     _columns = {
-        "name": fields.char(u"样品编号", required=True, size=20),
+        "name": fields.char(u"样品编号", required=True, size=20,copy=False),
         "sampletype": fields.selection(SELECTION_TYPE, u"样品类型", required=True),
         "cx_date": fields.date(u'采血时间', required=True),
         "cx_time": fields.selection(
@@ -124,21 +124,22 @@ class rhwl_sample_info(osv.osv):
         "yfjwsdate":fields.date(u"既往史日期"),
         "yftsqkbz": fields.char(u'特殊情况备注', size=100),
         "note": fields.text(u'备注'),
-        "state": fields.selection([(k,rhwl_sale_state_select[k]) for k in rhwl_sale_state_select], u'状态'),
+        "state": fields.selection([(k,rhwl_sale_state_select[k]) for k in rhwl_sale_state_select], u'状态',copy=False),
         "check_state": fields.selection(
             [('get', u'已接收'), ('library', u'已进实验室'), ('pc', u'已上机'), ('reuse', u'需重采血'), ('ok', u'检验结果正常'),
-             ('except', u'检验结果阳性')], u'检验状态'),
+             ('except', u'检验结果阳性')], u'检验状态',copy=False),
         "urgency":fields.selection([("0",u"正常"),("1",u"加急")],u"紧急程度"),
-        "lims":fields.one2many("sale.sampleone.lims","name",readonly=True),
-        "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True),
-        "library_date":fields.date(u"实验结果时间"),
-        "lib_t13":fields.float("T13",digits=(12,8),readonly=True),
-        "lib_t18":fields.float("T18",digits=(12,8),readonly=True),
-        "lib_t21":fields.float("T21",digits=(12,8),readonly=True),
+        "lims":fields.one2many("sale.sampleone.lims","name",readonly=True,copy=False),
+        "hospital_seq":fields.char(u"档案流水号",size=20,readonly=True,copy=False),
+        "library_date":fields.date(u"实验结果时间",copy=False),
+        "lib_t13":fields.float("T13",digits=(12,8),readonly=True,copy=False),
+        "lib_t18":fields.float("T18",digits=(12,8),readonly=True,copy=False),
+        "lib_t21":fields.float("T21",digits=(12,8),readonly=True,copy=False),
         "lib_note":fields.text("Note",readonly=True),
         "has_invoice":fields.boolean(u"是否开发票"),
-        "has_sms":fields.boolean(u"短信已通知",readonly=True),
-        "is_export":fields.boolean(u"结果是否导出",readonly=True)
+        "has_sms":fields.boolean(u"短信已通知",readonly=True,copy=False),
+        "is_export":fields.boolean(u"结果是否导出",readonly=True,copy=False),
+        "check_center":fields.selection([("arud",u"安诺优达"),("xyyx",u"湘雅医学检验所"),("rhwl",u"人和未来")],string=u"检测中心")
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -152,12 +153,11 @@ class rhwl_sample_info(osv.osv):
         "yffqsfrsthx": lambda obj, cr, uid, context: "0",
         "yfjzycb": lambda obj, cr, uid, context: "0",
         "yfissgyr": lambda obj, cr, uid, context: "0",
-        "yfissgyr": lambda obj, cr, uid, context: "0",
         "urgency":lambda obj,cr,uid,context:"0",
         "has_invoice":False,
         "has_sms":False,
-        "is_export":False
-
+        "is_export":False,
+        "check_center":"arud"
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),
@@ -445,6 +445,8 @@ class rhwl_sample_info(osv.osv):
                 "remark":"以上样本检测结果为正常，请即时发送短信通知。"
             }
             self.pool.get("rhwl.weixin.base").send_template2(cr,user,js,"is_sampleresult",context=context)
+            content = "%s%s[%s],接收时间：%s,%s" %(js["first"],js["keyword1"],js["keyword2"],js["keyword3"],js["remark"])
+            self.pool.get("rhwl.weixin.base").send_qy_text(cr,user,"rhwlyy","is_sampleresult",content,context=context)
         if result['except']:
             js={
                 "first":"无创样本检测异常提醒：",
@@ -454,7 +456,8 @@ class rhwl_sample_info(osv.osv):
                 "remark":"以上样本检测结果为阳性，请即时与送检医生联系，以便孕妇作进一步的检测。"
             }
             self.pool.get("rhwl.weixin.base").send_template2(cr,user,js,"is_sampleresult",context=context)
-
+            content = "%s%s[%s],接收时间：%s,%s" %(js["first"],js["keyword1"],js["keyword2"],js["keyword3"],js["remark"])
+            self.pool.get("rhwl.weixin.base").send_qy_text(cr,user,"rhwlyy","is_sampleresult",content,context=context)
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
 
@@ -695,20 +698,25 @@ class rhwl_sample_info(osv.osv):
             partner_obj = self.pool.get("res.partner").browse(cr,uid,k,context=context)
             user_id = partner_obj.user_id.id
             team_ids = self.pool.get("crm.case.section").search(cr,uid,[("member_ids.id","=",user_id)])
-            if isinstance(team_ids,(list,tuple)):
-                team_ids = team_ids[0]
-            team_obj = self.pool.get("crm.case.section").browse(cr,uid,team_ids,context=context)
-            if not all_data.has_key(team_obj.user_id.id):
-                all_data[team_obj.user_id.id]={}
-            if not all_data[team_obj.user_id.id].has_key(partner_obj.state_id.name):
-                all_data[team_obj.user_id.id][partner_obj.state_id.name]={}
+            if not team_ids:
+                _logger.error("%s is not team."%(partner_obj.user_id.name,))
+                team_user_id = partner_obj.user_id.id
+            else:
+                if isinstance(team_ids,(list,tuple)):
+                    team_ids = team_ids[0]
+                team_obj = self.pool.get("crm.case.section").browse(cr,uid,team_ids,context=context)
+                team_user_id = team_obj.user_id.id
+            if not all_data.has_key(team_user_id):
+                all_data[team_user_id]={}
+            if not all_data[team_user_id].has_key(partner_obj.state_id.name):
+                all_data[team_user_id][partner_obj.state_id.name]={}
             for k1,v1 in v.items():
                 if k1=="无创" and partner_obj.state_id.name in (u"湖南省",u"山东省",u"浙江省"):
                     xy_wc += v1
-                if all_data[team_obj.user_id.id][partner_obj.state_id.name].has_key(k1):
-                    all_data[team_obj.user_id.id][partner_obj.state_id.name][k1] = all_data[team_obj.user_id.id][partner_obj.state_id.name][k1] + v1
+                if all_data[team_user_id][partner_obj.state_id.name].has_key(k1):
+                    all_data[team_user_id][partner_obj.state_id.name][k1] = all_data[team_user_id][partner_obj.state_id.name][k1] + v1
                 else:
-                    all_data[team_obj.user_id.id][partner_obj.state_id.name] = {k1:v1}
+                    all_data[team_user_id][partner_obj.state_id.name] = {k1:v1}
 
         send_all_text={}
         for k,v in all_data.items():

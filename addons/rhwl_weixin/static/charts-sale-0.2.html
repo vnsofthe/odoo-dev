@@ -88,6 +88,10 @@
 
 <script type="text/javascript">
     $(function() {
+        if(!$.isWeiXin()){
+            alert("非微信浏览器，不可以执行此操作。");
+            return false;
+        }
         $("#doc-oc-demo1 a").bind("click",function(e){
             if(e.target.id=="report1"){
                 sale_report1();

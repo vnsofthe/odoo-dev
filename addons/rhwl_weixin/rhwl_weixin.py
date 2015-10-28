@@ -27,6 +27,7 @@ class rhwl_weixin(osv.osv):
         "checkNum":fields.char(u"验证码"),
         "checkDateTime":fields.datetime(u"验证码发送时间"),
         "sampleno":fields.char("sample No"),
+        "rhwlid":fields.char("Rhwl ID",size=20,select=True),
         "is_lib_import":fields.boolean(u"易感检测位点导入通知",help=u"易感样本实验导入位点通知。"),
         "is_jobmanager":fields.boolean(u"易感报告接收通知",help=u"易感报告产生后，接收到ODOO中的笔数通知。"),
         "is_notice":fields.boolean(u"易感信息每日统计通知",help=u"每日统计发送易感项目的各项指标数据。"),
@@ -39,13 +40,25 @@ class rhwl_weixin(osv.osv):
         "is_test":fields.boolean(u"测试通知")
     }
 
+    def get_rhwl_id(self,cr,uid,context=None):
+        s='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        noncestr=''.join([s[random.randrange(0,s.__len__()-1)] for i in range(1,21)])
+        ids = self.search(cr,uid,[("rhwlid","=",noncestr),'|',("active","=",True),("active","=",False)])
+        if not ids:
+            return noncestr
+        else:
+            return self.get_rhwl_id(cr,uid,context=context)
+
     def init(self, cr):
-        ids = self.search(cr,SUPERUSER_ID,[("base_id","=",False)])
+        ids = self.search(cr,SUPERUSER_ID,[("rhwlid","=",False),'|',("active","=",True),("active","=",False)])
         if ids:
-            base_id = self.pool.get("rhwl.weixin.base").search(cr,SUPERUSER_ID,[])
-            if len(base_id)==1:
-                self.write(cr,SUPERUSER_ID,ids,{'base_id':base_id[0]})
+            for i in ids:
+                self.write(cr,SUPERUSER_ID,i,{'rhwlid':self.get_rhwl_id(cr,SUPERUSER_ID)})
         cr.commit()
+
+    def create(self,cr,uid,vals,context=None):
+        vals["rhwlid"] = self.get_rhwl_id(cr,SUPERUSER_ID,context=context)
+        return super(rhwl_weixin,self).create(cr,uid,vals,context=context)
 
     def action_user_bind(self,cr,code,openid,uid):
         base_obj = self.pool.get("rhwl.weixin.base")
@@ -160,7 +173,7 @@ class rhwl_config(osv.osv):
             return u"此功能在开发中，敬请稍候！"
 
     def action_text_input(self,cr,content,original,fromUser):
-        origId=self._get_memcache_id(cr,original)
+        origId=self._get_memcache_id(cr,original,None)
         obj=self.browse(cr,SUPERUSER_ID,origId)
 
         if obj.code=="rhwc": #人和无创公众号
