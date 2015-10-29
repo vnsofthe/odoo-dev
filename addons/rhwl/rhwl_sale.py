@@ -372,7 +372,8 @@ class rhwl_sample_info(osv.osv):
                 dnaExtractions = json["sample"]["dnaExtractions"]
             else:
                 continue
-            for dna in dnaExtractions:
+            dnaExtractions.sort(cmp=lambda x,y:x['timeGen']-y['timeGen'],reverse=True)
+            for dna in dnaExtractions[0:1]:
                 timeGen = dna.get("timeCom",0)
                 if not timeGen:
                     timeGen = dna.get("timeGen",0)
@@ -386,8 +387,8 @@ class rhwl_sample_info(osv.osv):
                     libraries = dna.get("libraries")
                 else:
                     continue
-
-                for lib in libraries:
+                libraries.sort(cmp=lambda x,y:x['timeGen']-y['timeGen'],reverse=True)
+                for lib in libraries[0:1]:
                     timeGen = lib.get("timeCom",0)
                     if not timeGen:
                         timeGen = lib.get("timeGen",0)
@@ -403,7 +404,8 @@ class rhwl_sample_info(osv.osv):
                         runs = lib.get("runs")
                     else:
                         continue
-                    for r in runs:
+                    runs.sort(cmp=lambda x,y:x['lane']['timeGen']-y['lane']['timeGen'],reverse=True)
+                    for r in runs[0:1]:
                         if not r.has_key("lane"):continue
                         if not r.has_key("data"):continue
                         if not r["data"]:continue
