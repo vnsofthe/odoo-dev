@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <template id="assets_backend" name="colresizable assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/vnsoft_colresizable/static/src/js/colResizable-1.5.min.js"></script>
+                <script type="text/javascript" src="/vnsoft_colresizable/static/src/js/vnsoft_colresizable.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>
