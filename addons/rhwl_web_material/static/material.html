@@ -1,0 +1,109 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>运营物料申请</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="/rhwl_weixin/static/assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.4.2/css/amazeui.min.css">
+
+</head>
+<body>
+<div class="am-u-sm-centered am-u-md-centered am-u-lg-centered">
+    <form class="am-form">
+        <div class="am-form-group">
+            <label class="am-form-label" for="partner_id">申请机构</label><br>
+
+                    <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}"></select>
+
+        </div>
+
+        <div class="am-form-group">
+            <label for="doc-ipt-3" class="am-form-label">收件人</label>
+
+              <input type="text" id="doc-ipt-3">
+
+        </div>
+        <div class="am-form-group">
+            <label for="doc-ipt-4" class="am-form-label">收件人地址</label>
+
+              <input type="text" id="doc-ipt-4" >
+
+        </div>
+        <div class="am-form-group">
+            <label for="doc-ipt-5" class="am-form-label">收件人电话</label>
+
+              <input type="text" id="doc-ipt-5">
+
+        </div>
+    </form>
+
+    <table class="am-table am-table-bordered am-table-striped am-table-compact">
+        <thead>
+            <tr>
+                <th>物料名称</th>
+                <th>单位</th>
+                <th>数量</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <a link="#" id="add_btn">点击新增</a>
+ </div>
+
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.amazeui.org/amazeui/2.4.2/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin-0.2.js"></script>
+
+<script>
+     var store = $.AMUI.store;
+  $(function() {
+    //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+
+    $.ajax({
+              type: 'POST',
+              url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
+              data: {},
+              success: function(data){
+                  $.each(data,function(k,v){
+                    $("select").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
+                  })
+
+              },
+              fail:function(res){
+                  alert("获取采血医院信息失败。");
+              }
+            });
+  });
+</script>
+</body>
+</html>

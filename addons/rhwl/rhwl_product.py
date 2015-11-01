@@ -60,11 +60,13 @@ class rhwl_product_template(osv.osv):
         "project_ids":fields.related("product_variant_ids","project_ids",type="one2many",relation="rhwl.product.project",string=u"项目耗用量"),
         'uol_id': fields.many2one('product.uom', 'Unit of Library',),
         "project_allocation":fields.boolean(u"依项目人份数分摊"),
+        "is_web":fields.boolean(u"可在线领用"),
     }
     _defaults={
         'purchase_requisition':True,
         "cost_allocation":False,
-        "project_allocation":False
+        "project_allocation":False,
+        "is_web":False
     }
 
     def init(self,cr):

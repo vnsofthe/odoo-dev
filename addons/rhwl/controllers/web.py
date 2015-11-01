@@ -525,7 +525,7 @@ class WebClient(http.Controller):
             registry = RegistryManager.get(request.session.db)
             with registry.cursor() as cr:
                 obj = registry.get("res.partner")
-                ids = obj.search(cr,uid,[("sjjysj","!=",False)],context=self.CONTEXT)
+                ids = obj.search(cr,uid,['|','|','|',("sjjysj","!=",False),("yg_sjjysj","!=",False),("ys_sjjysj","!=",False),("el_sjjysj","!=",False)],context=self.CONTEXT)
                 for i in obj.browse(cr,uid,ids,context=self.CONTEXT):
                     data.append((i.id,i.name))
         else:

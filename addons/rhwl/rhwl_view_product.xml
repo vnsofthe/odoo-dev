@@ -12,6 +12,7 @@
                         <field name="cost_allocation"/>
                         <field name="project_allocation"/>
                         <field name="uol_id" attrs="{'invisible':[('cost_allocation','=',False)]}"/>
+                        <field name="is_web"/>
                     </xpath>
                     <xpath expr="//field[@name='default_code']" position="before">
                         <field name="product_no" attrs="{'invisible': [('product_variant_count', '>', 1)]}"/>

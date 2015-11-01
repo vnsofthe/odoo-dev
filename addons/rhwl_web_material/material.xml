@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_web_material_view_tree">
+            <field name="name">rhwl.web.material.view.tree</field>
+            <field name="model">rhwl.web.material</field>
+            <field name="arch" type="xml">
+                <tree string="运营物料申请单" >
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="user_id"/>
+                    <field name="hospital"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_web_material_view_form">
+            <field name="name">rhwl.web.material.view.form</field>
+            <field name="model">rhwl.web.material</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <field name="state" widget="statusbar" readonly="1"/>
+                    </header>
+                    <sheet>
+                        <group colspan="8">
+                            <group cols="4">
+                                <field name="name" readonly="1"/>
+                                <field name="date"/>
+                                <field name="user_id"/>
+                                <field name="hospital"/>
+                            </group>
+                            <group cols="4">
+
+                                <field name="receiver_user"/>
+                                <field name="receiver_address"/>
+                                <field name="receiver_tel"/>
+                                <field name="express_partner"/>
+                                <field name="express_no"/>
+                            </group>
+                        </group>
+                        <group cols="8">
+                                <field name="note"/>
+                        </group>
+                        <field name="line">
+                            <tree string="Line" editable="bottom">
+                                <field name="product_id"/>
+                                <field name="uom_id"/>
+                                <field name="qty"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_web_material_search">
+            <field name="name">rhwl.web.material.search</field>
+            <field name="model">rhwl.web.material</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="申请人" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_web_material" model="ir.actions.act_window">
+            <field name="name">运营物料申请</field>
+            <field name="res_model">rhwl.web.material</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_web_material_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_rhwl_web_material" parent="rhwl.menu_rhwl_sample_one" name="运营物料申请" sequence="70"
+                  action='action_rhwl_web_material' groups="base.group_user"/>
+
+
+    </data>
+</openerp>
