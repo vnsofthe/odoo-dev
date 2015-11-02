@@ -54,7 +54,8 @@ class rhwl_material(osv.osv):
     _constraints = [
         (_check_date, u'成本日期只能是每月的1号。', ['date']),
     ]
-
+    month_project={}
+    product_project={}
     def action_done(self,cr,uid,ids,context=None):
         self.write(cr,uid,ids,{'state':'done'})
 
@@ -175,9 +176,8 @@ class rhwl_material(osv.osv):
 
         for p in self.pool.get("stock.picking").browse(cr,SUPERUSER_ID,picking_ids,context=context):
             move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_dest_id","in",production_location_id),("picking_id","=",p.id),("state","=","done"),("cost_mark","=",0)],context=context)
-
+            #处理每笔出库单对象的未完结的库存移动.
             for m in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
-
                 #检查领用出库单对应的采购是否已经确认发票
                 p_ids=[]
                 for q in m.quant_ids:
@@ -214,18 +214,62 @@ class rhwl_material(osv.osv):
                         for h in mq.history_ids:
                             if h.purchase_line_id and h.state=='done':is_purchase=True
                     if not is_purchase:continue
-                    val={
-                        "parent_id":obj.id,
-                        "data_kind":"this",
-                        "product_id":mq.product_id.id,
-                        "qty":mq.qty,
-                        "price":mq.cost,
-                        "amount":mq.qty *mq.cost ,
-                        "move_type":"out",
-                        "project":p.project.id,
-                        "is_rd":p.is_rd
-                    }
-                    self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                    #处理项目分摊数量
+                    if m.product_id.project_allocation:
+                        if not m.product_id.project_ids:
+                            raise osv.except_osv("Error",u"产品[%s]设定为依每月项目人份分摊，但产品基本资料未设定每个项目的可做样本数。"%(m.product_id.name,))
+                        if not self.month_project:
+                            persons_ids = self.pool.get("rhwl.project.persons").search(cr,uid,[("date","=",obj.date),("state","=","done")],context=context)
+                            if not persons_ids:
+                                raise osv.except_osv("Error",u"当月未设定各项目人份数。")
+                            persons_obj = self.pool.get("rhwl.project.persons").browse(cr,uid,persons_ids,context=context)
+                            for ps in persons_obj.line:
+                                self.month_project[ps.project_id.id] = ps.sample_count
+                        if not self.product_project.get(m.product_id.id,None):
+                            self.product_project[m.product_id.id]={}
+                            for ps in m.product_id.project_ids:
+                                self.product_project[m.product_id.id][ps.project_id.id]=ps.sample_count
+                        temp_number={}
+                        for k1,v1 in self.month_project.items():
+                            if self.product_project[m.product_id.id].get(k1):
+                                temp_number[k1] = (v1*1.0)/self.product_project[m.product_id.id].get(k1)
+                        if not temp_number:
+                            temp_number[p.project.id] = 1
+                        old_qty = mq.qty
+                        sum_rate = sum(temp_number.values())
+
+                        for k1 in temp_number.keys():
+                            temp_number[k1] = round(mq.qty * temp_number[k1]/sum_rate,6)
+                            old_qty -= temp_number[k1]
+                        if old_qty !=0:
+                            temp_number[temp_number.keys()[-1]] += old_qty
+                        for k1,v1 in temp_number.items():
+                            val={
+                                "parent_id":obj.id,
+                                "data_kind":"this",
+                                "product_id":mq.product_id.id,
+                                "qty":v1,
+                                "price":mq.cost,
+                                "amount":round(v1 *mq.cost,2) ,
+                                "move_type":"out",
+                                "project":k1,
+                                "is_rd":p.is_rd
+                            }
+
+                            self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                    else:
+                        val={
+                            "parent_id":obj.id,
+                            "data_kind":"this",
+                            "product_id":mq.product_id.id,
+                            "qty":mq.qty,
+                            "price":mq.cost,
+                            "amount":round(mq.qty *mq.cost,2) ,
+                            "move_type":"out",
+                            "project":p.project.id,
+                            "is_rd":p.is_rd
+                        }
+                        self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
                 self.pool.get("stock.move").write(cr,SUPERUSER_ID,m.id,{"cost_mark":obj.id},context=context)
 
         #期末结算
