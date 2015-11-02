@@ -33,8 +33,7 @@
     <form class="am-form">
         <div class="am-form-group">
             <label class="am-form-label" for="partner_id">申请机构</label><br>
-
-                    <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}"></select>
+            <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}"></select>
 
         </div>
 
@@ -71,8 +70,40 @@
 
         </tbody>
     </table>
-    <a link="#" id="add_btn">点击新增</a>
+    <button
+      type="button"
+      class="am-btn am-btn-link"
+      data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0}">
+      点我新增
+    </button>
  </div>
+
+<div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd am-topbar-inverse">物料明细
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+    </div>
+    <div class="am-modal-bd">
+      <form class="am-form">
+            <div class="am-form-group" style="text-align:left;">
+                <label for="doc-ipt-15" class="am-form-label">物料名称</label>
+                <select id="doc-ipt-15" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}"></select>
+            </div>
+            <div class="am-form-group" style="text-align:left;">
+                <label for="doc-ipt-16" class="am-form-label">单位</label>
+                <input type="text" id="doc-ipt-16" disabled>
+            </div>
+            <div class="am-form-group"  style="text-align:left;">
+                <label for="doc-ipt-17" class="am-form-label">数量</label>
+
+                <button type="button" class="am-btn" style="display:inline;" id="minus_num">-</button>
+                <input type="number" id="doc-ipt-17" min="1" max="999" style="width:100px;display:inline;" value="1"/>
+                <button type="button" class="am-btn" style="display:inline;" id="add_num">+</button>
+            </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
@@ -95,7 +126,7 @@
               data: {},
               success: function(data){
                   $.each(data,function(k,v){
-                    $("select").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
+                    $("#partner_id").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
                   })
 
               },
@@ -103,6 +134,32 @@
                   alert("获取采血医院信息失败。");
               }
             });
+      $.ajax({
+              type: 'POST',
+              url: "/web/api/web_material/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
+              data: {},
+              success: function(data){
+                  $.each(data,function(k,v){
+                    $("#doc-ipt-15").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
+                  })
+
+              },
+              fail:function(res){
+                  alert("获取物料信息失败。");
+              }
+            });
+      $("#add_num").bind("click",function(e){
+            var text=$("#doc-ipt-17").val();
+            $("#doc-ipt-17").val(parseInt(text)+1);
+      });
+      $("#minus_num").bind("click",function(e){
+            var text=$("#doc-ipt-17").val();
+          if(parseInt(text)>0){
+              $("#doc-ipt-17").val(parseInt(text)-1);
+          }
+
+      })
+
   });
 </script>
 </body>
