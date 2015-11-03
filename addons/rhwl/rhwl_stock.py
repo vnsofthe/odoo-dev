@@ -31,6 +31,24 @@ class rhwl_stock(osv.osv):
         "qty": fields.function(_get_warehouse_qty, type="float", string=u"库存数量"),
     }
 
+    def get_product_qty(self,cr,uid,product_id,wh_id,context=None):
+        stock_obj = self.browse(cr, uid, wh_id, context=context)
+        cr.execute("select sum(qty) from stock_quant where location_id = %s and product_id = %s", (stock_obj.lot_stock_id.id,product_id))
+        qty = 0
+        for j in cr.fetchall():
+            qty += j[0] and j[0] or 0
+        return qty
+
+    def get_product_wh(self,cr,uid,product_id,wh_id,context=None):
+        qty = self.get_product_qty(cr,uid,product_id,wh_id,context=context)
+        if qty>0:return wh_id
+        wh_obj = self.browse(cr,uid,wh_id,context=context)
+        if wh_obj.default_resupply_wh_id and wh_obj.default_resupply_wh_id.id==1:
+            return wh_id
+        if wh_obj.default_resupply_wh_id:
+            return self.get_product_wh(cr,uid,product_id,wh_obj.default_resupply_wh_id.id,context=context)
+        return wh_id
+
 class rhwl_move(osv.osv):
     _inherit = "stock.move"
     _columns={

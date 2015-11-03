@@ -112,6 +112,10 @@ class rhwl_partner(osv.osv):
                     set partner_unid = partner_unid||'_'||id
                     where partner_unid in (select partner_unid from res_partner group by partner_unid having count(*)>1)""")
         #cr.execute("ALTER TABLE res_partner DROP constraint res_partner_partner_unid_uniq")
+        ids = self.search(cr,SUPERUSER_ID,[("is_company","=",True),("customer","=",True),'|',("sjjysj","!=",False),'|',("yg_sjjysj","!=",False),'|',("ys_sjjysj","!=",False),("el_sjjysj","!=",False)])
+        if ids:
+            self.write(cr,SUPERUSER_ID,ids,{"comment":""})
+
         cr.commit()
 
 
@@ -163,6 +167,7 @@ class rhwl_partner(osv.osv):
         company = None
         stock_warehouse = self.pool.get("stock.warehouse")
         for i in obj:
+            if not (i.customer and i.is_company):continue
             if not company:
                 company = self.pool.get("res.company").search(cr, uid, [("id", '=', i.company_id.id)], context=context)
                 company_partner = self.pool.get("res.company").browse(cr, uid, company, context=context)
@@ -178,6 +183,7 @@ class rhwl_partner(osv.osv):
             if not user_wh_ids:
                 stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
                 stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
+
                 user_wh_ids = stock_warehouse.create(cr, SUPERUSER_ID, {
                     "name": i.user_id.partner_id.name,
                     "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),

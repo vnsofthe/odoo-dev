@@ -566,6 +566,14 @@ class rhwl_sample_info(osv.osv):
         order_id = self.pool.get("sale.order").search(cr,uid,[("client_order_ref","=",obj.name)],context=context)
         if order_id:
             self.pool.get("sale.order").write(cr,uid,order_id,{"state":"cancel"},context=context)
+        pid = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True),("default_code", "=", 'P001')],
+                                                             context=context)
+        if not pid:
+            raise osv.except_osv(_('Error'), u"请先建立一笔可销售的产品资料。")
+        if isinstance(pid, (list, tuple)):
+            pid = pid[0]
+
+        w_id = warehouse.get_product_wh(cr,SUPERUSER_ID,pid,w_id,context=context)
 
         vals = {
             "partner_id": obj.cxys.id,
@@ -586,20 +594,6 @@ class rhwl_sample_info(osv.osv):
         else:
             amt = 0
 
-        express = self.pool.get("stock.picking.express").search(cr, uid, [("detail_ids.number_seq", "=", obj.name)],
-                                                                context=context)
-        if express:
-            express = self.pool.get("stock.picking.express").browse(cr, uid, express, context=context)
-            if isinstance(express, (list, tuple)):
-                express = express[0]
-            pid = express.product_id.id
-        else:
-            pid = self.pool.get("product.product").search(cr, uid, [('sale_ok', '=', True),("default_code", "=", 'P001')],
-                                                             context=context)
-            if not pid:
-                raise osv.except_osv(_('Error'), u"请先建立一笔可销售的产品资料。")
-            if isinstance(pid, (list, tuple)):
-                pid = pid[0]
         orderline = self.pool.get("sale.order.line")
         orderline_id = orderline.create(cr, uid, {"order_id": order_id, "product_id": pid,
                                                   "price_unit": amt, "product_uom_qty": 1}, context=context)
