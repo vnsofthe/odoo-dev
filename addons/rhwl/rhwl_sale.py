@@ -452,10 +452,10 @@ class rhwl_sample_info(osv.osv):
         if result['except']:
             js={
                 "first":"无创样本检测异常提醒：",
-                "keyword1":"检测结果阳性样本合计"+str(len(result['ok'])),
+                "keyword1":"检测结果异常样本合计"+str(len(result['except'])),
                 "keyword2":",".join(result['except']),
                 "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
-                "remark":"以上样本检测结果为阳性，请即时与送检医生联系，以便孕妇作进一步的检测。"
+                "remark":"以上样本检测结果为异常，请即时与送检医生联系，以便孕妇作进一步的检测。"
             }
             self.pool.get("rhwl.weixin.base").send_template2(cr,user,js,"is_sampleresult",context=context)
             content = "%s%s[%s],接收时间：%s,%s" %(js["first"],js["keyword1"],js["keyword2"],js["keyword3"],js["remark"])
@@ -492,6 +492,7 @@ class rhwl_sample_info(osv.osv):
 
     def action_check_except(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today()}, context=context)
+        if not isinstance(ids,(list,tuple)):ids=[ids]
         for i in ids:
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
             self.send_weixin(cr,uid,i,context=context)

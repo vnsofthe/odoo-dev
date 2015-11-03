@@ -155,6 +155,7 @@
                     <group expand="0" string="分组">
                         <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="送检机构" icon="terp-partner" domain="[]" context="{'group_by':'hospital'}"/>
                     </group>
                 </search>
             </field>

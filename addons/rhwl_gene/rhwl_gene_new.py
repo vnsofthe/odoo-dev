@@ -50,7 +50,7 @@ class rhwl_gene(osv.osv):
 
     _columns = {
         "batch_no": fields.char(u"批次",select=True,help=u"实验位点导入时会自动产生。"),
-        "name": fields.char(u"基因样本编号", required=True, size=10),
+        "name": fields.char(u"基因样本编号", required=True, size=15,copy=False),
         "date": fields.date(u"送检日期", required=True),
         "cust_name": fields.char(u"会员姓名", required=True, size=50),
         "name_pinying":fields.char(u"姓名(拼音)",size=20),
@@ -258,7 +258,10 @@ class rhwl_gene(osv.osv):
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
         val["hospital_seq"] = self._get_hospital_seq(cr,uid,val["hospital"],context)
-        self.pool.get("stock.picking.express.detail").confirm_receive(cr,uid,val["name"],context=context)
+        if val.has_key("name"):
+            self.pool.get("stock.picking.express.detail").confirm_receive(cr,uid,val["name"],context=context)
+        else:
+            val["name"]="0000"
         return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):

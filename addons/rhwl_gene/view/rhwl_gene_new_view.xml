@@ -134,7 +134,7 @@
                                 <label for="q2_0" string="亲属中（祖父母，父母，兄弟姐妹及子女）有无患上述疾病？"/>
                                <div >
                                        <label string="无" for="q2_0"/>
-                                        <field name="q2_0"  style="width: 90%%" />
+                                        <field name="q2_0"  style="width: 95%%" />
 
                                     <label string="有" for="q2_1" attrs="{'invisible':[('q2_0','!=',False)]}"/>
                                     <field name="q2_1"  style="width: 4%%" attrs="{'invisible':[('q2_0','!=',False)]}"/>
@@ -449,6 +449,8 @@
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                         <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="送检机构" icon="terp-partner" domain="[]" context="{'group_by':'hospital'}"/>
+                        <filter string="套餐" icon="terp-partner" domain="[]" context="{'group_by':'package_id'}"/>
                     </group>
                 </search>
             </field>

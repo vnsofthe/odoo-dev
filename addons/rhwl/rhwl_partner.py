@@ -165,31 +165,72 @@ class rhwl_partner(osv.osv):
         for i in obj:
             if not company:
                 company = self.pool.get("res.company").search(cr, uid, [("id", '=', i.company_id.id)], context=context)
-            if company:
-                partner = self.pool.get("res.company").browse(cr, uid, company, context=context)
+                company_partner = self.pool.get("res.company").browse(cr, uid, company, context=context)
+                default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', company_partner.partner_id.id)],
+                                                        context=context)
+                if not default_id:
+                    raise osv.except_osv(_('Error'), u"没有找到归属当前公司的仓库。")
+            if not company:continue
 
-                if i.customer and i.is_company and i.sjjysj:
+
+            #检查销售员有没有建立仓库
+            user_wh_ids = stock_warehouse.search(cr,SUPERUSER_ID,[("partner_id","=",i.user_id.partner_id.id)])
+            if not user_wh_ids:
+                stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
+                stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
+                user_wh_ids = stock_warehouse.create(cr, SUPERUSER_ID, {
+                    "name": i.user_id.partner_id.name,
+                    "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),
+                    "partner_id": i.user_id.partner_id.id,
+                    "company_id": i.company_id.id,
+                    "buy_to_resupply": False,
+                    "default_resupply_wh_id": default_id[0],
+                    "resupply_wh_ids":[[6, False, [default_id[0]]]]
+                  }, context=context)
+            user_wh_ids = user_wh_ids[0] if isinstance(user_wh_ids,(list,tuple)) else user_wh_ids
+            #检查代理有没有建立仓库
+            if i.proxy_partner:
+                proxy_wh_ids = stock_warehouse.search(cr,SUPERUSER_ID,[("partner_id","=",i.proxy_partner.id)])
+                if proxy_wh_ids:
+                    proxy_wh_obj = stock_warehouse.browse(cr,SUPERUSER_ID,proxy_wh_ids,context=context)
+                    if proxy_wh_obj.default_resupply_wh_id != user_wh_ids:
+                        stock_warehouse.write(cr,SUPERUSER_ID,proxy_wh_ids,{"default_resupply_wh_id":user_wh_ids,"resupply_wh_ids":[[6, False, [user_wh_ids]]]},context=context)
+                else:
                     stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
                     stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
-                    val = {
-                        "name": i.name,
+                    proxy_wh_ids = stock_warehouse.create(cr, SUPERUSER_ID, {
+                        "name": i.proxy_partner.name,
                         "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),
-                        "partner_id": i.id,
+                        "partner_id": i.proxy_partner.id,
                         "company_id": i.company_id.id,
                         "buy_to_resupply": False,
-                        "default_resupply_wh_id": 0,
-                      }
-                    default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', partner.partner_id.id)],
-                                                        context=context)
-                    if not default_id:
-                        raise osv.except_osv(_('Error'), u"没有找到归属当前公司的仓库。")
-                    val["default_resupply_wh_id"] = default_id[0]
-                    val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
-                    wh = stock_warehouse.search(cr, SUPERUSER_ID,
-                                                [('partner_id', '=', i.id)],
-                                                context=context)
-                    if not wh:
-                        id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
+                        "default_resupply_wh_id": user_wh_ids,
+                        "resupply_wh_ids":[[6, False, [user_wh_ids]]]
+                      }, context=context)
+                proxy_wh_ids = proxy_wh_ids[0] if isinstance(proxy_wh_ids,(list,tuple)) else proxy_wh_ids
+            if i.customer and i.is_company and (i.sjjysj or i.yg_sjjysj or i.ys_sjjysj or i.el_sjjysj):
+                stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
+                stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
+                val = {
+                    "name": i.name,
+                    "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),
+                    "partner_id": i.id,
+                    "company_id": i.company_id.id,
+                    "buy_to_resupply": False,
+                    "default_resupply_wh_id": 0,
+                  }
+
+                val["default_resupply_wh_id"] = proxy_wh_ids if i.proxy_partner else user_wh_ids
+                val["resupply_wh_ids"] = [[6, False, [val["default_resupply_wh_id"]]]]
+                wh = stock_warehouse.search(cr, SUPERUSER_ID,
+                                            [('partner_id', '=', i.id)],
+                                            context=context)
+                if not wh:
+                    id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
+                else:
+                    this_wh_obj = stock_warehouse.browse(cr,SUPERUSER_ID,wh[0],context=context)
+                    if this_wh_obj.default_resupply_wh_id != val["default_resupply_wh_id"]:
+                        stock_warehouse.write(cr,SUPERUSER_ID,wh[0],{"default_resupply_wh_id":val["default_resupply_wh_id"],"resupply_wh_ids":[[6, False, [val["default_resupply_wh_id"]]]]},context=context)
         return id
 
     def create(self, cr, uid, vals, context=None):
@@ -221,36 +262,7 @@ class rhwl_partner(osv.osv):
                vals['parent_id'] = 1
 
         id = super(rhwl_partner, self).create(cr, uid, vals, context)
-        partner = self.pool.get("res.company").search(cr, uid, [("id", '=', vals.get("company_id"))], context=context)
-        if not partner:
-            return id
-        partner = self.pool.get("res.company").browse(cr, uid, partner, context=context)
-
-        stock_warehouse = self.pool.get("stock.warehouse")
-        if vals.get("customer") and vals.get("is_company") and vals.get("sjjysj"):
-            stock_warehouse_id = stock_warehouse.search(cr,SUPERUSER_ID,[],order="id desc",limit=1)
-            stock_warehouse_obj = stock_warehouse.browse(cr,SUPERUSER_ID,stock_warehouse_id,context=context)
-            val = {
-                "name": vals.get("name"),
-                "code": str(stock_warehouse_obj.id+1),  # vals.get("partner_unid"),
-                "partner_id": id,
-                "company_id": vals.get("company_id"),
-                "buy_to_resupply": False,
-                "default_resupply_wh_id": 0,
-              }
-
-
-            default_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=', partner.partner_id.id)],
-                                                context=context)
-            if not default_id:
-                raise osv.except_osv(_('Error'), u"没有找到归属当前公司的仓库。")
-            val["default_resupply_wh_id"] = default_id[0]
-            val["resupply_wh_ids"] = [[6, False, [default_id[0]]]]
-            wh = stock_warehouse.search(cr, SUPERUSER_ID,
-                                        [('partner_id', '=', id)],
-                                        context=context)
-            if not wh:
-                id_s = stock_warehouse.create(cr, SUPERUSER_ID, val, context=context)
+        self.write(cr,uid,id,{"comment":vals.get("comment","")},context=context)
 
         return id
 
