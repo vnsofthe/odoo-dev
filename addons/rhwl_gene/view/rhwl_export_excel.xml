@@ -58,6 +58,16 @@
             multi="True"
             key2="client_action_multi"
             id="action_genes_export_snp_excel"/>
+
+        <act_window name="导出样本信息Excel"
+            context="{'func_name': 'new_genes'}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.easy.genes.new"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_new_genes_export_excel"/>
     </data>
 </openerp>
 

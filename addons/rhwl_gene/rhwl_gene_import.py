@@ -15,7 +15,8 @@ class rhwl_import(osv.osv_memory):
         "file_bin":fields.binary(string=u"样本信息文件名"),
         "file_bin2":fields.binary(string=u"质检结果文件"),
         "file_bin3":fields.binary(string=u"位点结果文件"),
-        "is_over":fields.boolean(u"是否覆盖已转入数据?")
+        "is_over":fields.boolean(u"是否覆盖已转入数据?"),
+        "hospital":fields.many2one("res.partner",u"送检机构",domain="[('is_company', '=', True), ('customer', '=', True)]")
     }
     _defaults={
         "is_over":False
@@ -344,3 +345,68 @@ class rhwl_import(osv.osv_memory):
             os.remove(xlsname+'.xls')
 
         return
+
+    def import_report5(self,cr,uid,ids,context=None):
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, ids[0])
+        if not this.hospital:
+            raise osv.except_osv(u"出错",u"送检机构不能为空。")
+
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        f=open(xlsname+'.xls','wb')
+        fileobj.close()
+        try:
+            #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
+            b=this.file_bin.decode('base64')
+            f.write(b)
+            f.close()
+
+            try:
+                bk = xlrd.open_workbook(xlsname+".xls")
+                sh = bk.sheet_by_index(0)
+            except:
+               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+            nrows = sh.nrows
+            ncols = sh.ncols
+            batch_no={}
+            """姓名，性别，联系电话，样本编码，身份证号，采样日期，检测项目"""
+            for i in range(1,nrows):
+                if not sh.cell_value(i,0):continue
+                name_col=sh.cell_value(i,0)
+                idt=sh.cell_value(i,4)
+                package_name = sh.cell_value(i,6)
+                package_ids = self.pool.get("rhwl.genes.base.package").search(cr,uid,[("is_product","=",True),("name","=",package_name)])
+                if not package_ids:
+                    raise osv.except_osv(u"出错",u"检测项目[%s]不存在。"%(package_name,))
+                val={
+                    "cust_name":name_col.encode("utf-8").replace(".","·").replace("▪","·"),
+                    "sex": 'M' if sh.cell_value(i,1)==u"男" else 'F',
+                    "mobile":sh.cell_value(i,2),
+                    "name":sh.cell_value(i,3),
+                    "identity":idt,
+                    "date":self.date_trun(sh.cell_value(i,5)),
+                    "hospital":this.hospital.id,
+                    "package_id":package_ids[0]
+                }
+                if idt and len(idt)==18:
+                    try:
+                        val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
+                    except:
+                        pass
+
+                self.pool.get("rhwl.easy.genes.new").create(cr,uid,val,context=context)
+
+        finally:
+            f.close()
+            os.remove(xlsname+'.xls')
+        v_id=self.pool.get('ir.ui.view').search(cr,uid,[('name', '=', "rhwl.easy.genes.new.view.tree")])
+
+        return {
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                "view_id":v_id,
+                'res_model': 'rhwl.easy.genes.new',
+                "context":{'search_default_type_draft':1},
+                'view_mode': 'tree'}

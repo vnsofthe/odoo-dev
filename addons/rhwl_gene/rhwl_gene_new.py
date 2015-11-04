@@ -444,6 +444,9 @@ class rhwl_gene(osv.osv):
             'context': {'col': 'confirm_note',"tab":"rhwl.easy.genes.new"},
             'flags': {'form': {'action_buttons': False}}}
 
+    def action_state_done(self,cr,uid,ids,context=None):
+        return self.write(cr, uid, ids, {"state": "done"})
+
     def action_state_confirm(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {"state": "confirm"})
 

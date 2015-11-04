@@ -58,6 +58,8 @@ class rhwl_export_excel(osv.osv_memory):
             return self.action_excel_snp(cr,uid,ids,context=context)
         elif context.get("func_name","")=="gene_new_picking":
             return self.action_excel_gene_new(cr,uid,ids,context=context)
+        elif context.get("func_name","")=="new_genes":
+            return self.action_excel_new_gene(cr,uid,ids,context=context)
 
     def action_excel_gene_new(self,cr,uid,ids,context=None):
         if not context.get("active_id"):return
@@ -382,6 +384,55 @@ class rhwl_export_excel(osv.osv_memory):
             'views': [(False, 'form')],
             'target': 'new',
             'name':u"导出样本问题反馈Excel"
+        }
+
+    def action_excel_new_gene(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+        ws.write(0,0,u"姓名",style=self.get_excel_style(font_size=11))
+        ws.write(0,1,u"性别",style=self.get_excel_style(font_size=11)),
+        ws.write(0,2,u"样本编号",style=self.get_excel_style(font_size=11)),
+        ws.write(0,3,u"送检机构",style=self.get_excel_style(font_size=11)),
+        ws.write(0,4,u"检测项目",style=self.get_excel_style(font_size=11)),
+        ws.col(0).width = 4500 #1000 = 3.14(Excel)
+        ws.col(2).width = 7000
+        ws.col(3).width = 8000
+        ws.col(4).width = 6000
+        rows=1
+        seq=1
+
+        for i in self.pool.get("rhwl.easy.genes.new").browse(cr,uid,ids,context=context):
+            ws.write(rows,0,i.cust_name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,1,u"男" if i.sex==u"M" else u"女",style=self.get_excel_style(font_size=11))
+            ws.write(rows,2,i.name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,3,i.hospital.name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,4,i.package_id.name,style=self.get_excel_style(font_size=11))
+            rows +=1
+
+        w.save(xlsname)
+        f=open(xlsname,'rb')
+        id=self.create(cr,uid,{"file":base64.encodestring(f.read()),"name":u"易感样本信息表.xls","state":"excel"})
+        f.close()
+
+        os.remove(xlsname)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'rhwl.gene.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出样本信息Excel"
         }
 
     def zip_dir(self,path, stream, include_dir=True):      # TODO add ignore list

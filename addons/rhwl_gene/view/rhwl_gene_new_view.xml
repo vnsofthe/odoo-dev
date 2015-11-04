@@ -26,6 +26,7 @@
                         <button name="action_state_except_confirm" string="信息异常确认" states="except" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_done" string="报告已发放" states="confirm,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
@@ -441,7 +442,9 @@
                     <filter string="检测完成" name="type_ok" domain="[('state','=','ok')]"/>
                     <filter string="生成报告中" name="type_report" domain="[('state','=','report')]"/>
                     <filter string="报告已生成" name="type_report_done" domain="[('state','=','report_done')]"/>
-
+                    <separator/>
+                    <filter string="免费" name="type_free1" domain="[('is_free','=',True)]"/>
+                    <filter string="收费" name="type_free0" domain="[('is_free','=',False)]"/>
                     <separator/>
                     <filter string="未拍照" name="type_imgs" domain="[('img_atta','=',False)]"/>
 
@@ -496,7 +499,7 @@
             <field name="target">new</field>
         </record>
         <menuitem id="menu_rhwl_easy_genes_new_import" parent="menu_easy_genes_new_root" name="数据导入" sequence="20"  />
-        <menuitem action="action_rhwl_genes_new_import_report" id="menu_rhwl_easy_genes_new_instance" name="接收检测位点数据" parent="menu_rhwl_easy_genes_new_import" groups="rhwl_base_gene"/>
+        <menuitem action="action_rhwl_genes_new_import_report" id="menu_rhwl_easy_genes_new_instance" name="接收检测位点数据" parent="menu_rhwl_easy_genes_new_import" groups="rhwl_base_gene" sequence="20" />
 
         <record model="ir.ui.view" id="rhwl_easy_genes_new_reuse_tree">
             <field name="name">rhwl.easy.genes.new.reuse.tree</field>

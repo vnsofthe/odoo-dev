@@ -141,6 +141,8 @@ from . import fields
 from ..models import MAGIC_COLUMNS, BaseModel
 import openerp.tools as tools
 
+import sys
+sys.setrecursionlimit(1000000) #例如这里设置为一百万
 
 # Domain operators.
 NOT_OPERATOR = '!'
