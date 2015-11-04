@@ -35,7 +35,7 @@
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                             </group>
                             <group colspan="4">
-                                <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="date" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
                             <group colspan="4">
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
@@ -103,268 +103,6 @@
                             <group colspan="16">
                                 <field name="package_id" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
-                            <group colspan="16">
-                                <label for="q1_0" string="您目前或曾患下列哪些疾病？"/>
-                               <div >
-                                    <label string="无" for="q1_0"/>
-                                    <field name="q1_0"  style="width: 90%%" />
-
-                                    <label string="肿瘤" for="q1_1" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_1"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-
-                                    <label string="糖尿病" for="q1_2" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_2" style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-
-                                    <label string="呼吸性疾病" for="q1_3" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_3"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-
-                                    <label string="心脑血管疾病" for="q1_4" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_4"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-
-                                   <label string="消化道溃疡" for="q1_5" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_5"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-
-                                   <label string="妇科病" for="q1_6" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_6"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-
-                                   <label string="过敏史" for="q1_7" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                    <field name="q1_7"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q2_0" string="亲属中（祖父母，父母，兄弟姐妹及子女）有无患上述疾病？"/>
-                               <div >
-                                       <label string="无" for="q2_0"/>
-                                        <field name="q2_0"  style="width: 95%%" />
-
-                                    <label string="有" for="q2_1" attrs="{'invisible':[('q2_0','!=',False)]}"/>
-                                    <field name="q2_1"  style="width: 4%%" attrs="{'invisible':[('q2_0','!=',False)]}"/>
-
-                                    <label string="请列举" for="q2_2" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
-                                    <field name="q2_2"  style="width: 50%%" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q3_0" string="您目前正在服用或曾服用以下哪些药物？"/>
-                               <div >
-                                    <label string="无" for="q3_0"/>
-                                    <field name="q3_0"  style="width: 90%%" />
-
-                                    <label string="抗感染药" for="q3_1" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-                                    <field name="q3_1"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-
-                                    <label string="抗神经精神类药" for="q3_2" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-                                    <field name="q3_2" style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-
-                                    <label string="抗心血管疾病药" for="q3_3" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-                                    <field name="q3_3"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-
-                                    <label string="抗肿瘤药物" for="q3_4" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-                                    <field name="q3_4"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-
-                                   <label string="激素类药" for="q3_5" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-                                    <field name="q3_5"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-
-                                   <label string="抗代谢及免疫抑制类药" for="q3_6" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-                                    <field name="q3_6"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q4_0" string="您是否有以下习惯？"/>
-                               <div >
-                                    <label string="无" for="q4_0"/>
-                                    <field name="q4_0"  style="width: 95%%" />
-
-                                    <label string="吸烟" for="q4_1" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-                                    <field name="q4_1"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-
-                                    <label string="酗酒" for="q4_2" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-                                    <field name="q4_2" style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-
-                                    <label string="常年服药" for="q4_3" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-                                    <field name="q4_3"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-
-                                    <label string="常年规律运动" for="q4_4" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-                                    <field name="q4_4"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-
-                                   <label string="经常群体社交活动" for="q4_5" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-                                    <field name="q4_5"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q5_0" string="您是否有以下消化系统不适？"/>
-                               <div >
-                                    <label string="无" for="q5_0"/>
-                                    <field name="q5_0"  style="width: 95%%" />
-
-                                    <label string="消化不良" for="q5_1" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-                                    <field name="q5_1"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-
-                                    <label string="经常便秘" for="q5_2" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-                                    <field name="q5_2" style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-
-                                    <label string="偶尔有腹泻" for="q5_3" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-                                    <field name="q5_3"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-
-                                    <label string="胃痛" for="q5_4" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-                                    <field name="q5_4"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-
-                                   <label string="胸前灼烧感" for="q5_5" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-                                    <field name="q5_5"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q6_0" string="您是否有以下神经系统不适？"/>
-                               <div >
-                                    <label string="无" for="q6_0"/>
-                                    <field name="q6_0"  style="width: 95%%" />
-
-                                    <label string="失眠" for="q6_1" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-                                    <field name="q6_1"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-
-                                    <label string="偶尔头痛" for="q6_2" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-                                    <field name="q6_2" style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-
-                                    <label string="记忆力下降" for="q6_3" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-                                    <field name="q6_3"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-
-                                    <label string="注意力不集中" for="q6_4" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-                                    <field name="q6_4"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-
-                                   <label string="耳聋耳鸣" for="q6_5" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-                                    <field name="q6_5"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q7_0" string="您是否有以下循环系统不适？"/>
-                               <div >
-                                    <label string="无" for="q7_0"/>
-                                    <field name="q7_0"  style="width: 95%%" />
-
-                                    <label string="头晕" for="q7_1" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-                                    <field name="q7_1"  style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-
-                                    <label string="手脚冰凉" for="q7_2" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-                                    <field name="q7_2" style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-
-                                    <label string="低血压" for="q7_3" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-                                    <field name="q7_3"  style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-
-                                    <label string="高血压" for="q7_4" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-                                    <field name="q7_4"  style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q8_0" string="您是否有以下运动系统不适？"/>
-                               <div >
-                                    <label string="无" for="q8_0"/>
-                                    <field name="q8_0"  style="width: 95%%" />
-
-                                    <label string="肌肉关节痛" for="q8_1" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-                                    <field name="q8_1"  style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-
-                                    <label string="腰背痛" for="q8_2" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-                                    <field name="q8_2" style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-
-                                    <label string="关节伸、缩、旋转等受限" for="q8_3" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-                                    <field name="q8_3"  style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-
-                                    <label string="关节变形" for="q8_4" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-                                    <field name="q8_4"  style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q9_0" string="您是否有以下免疫系统不适？"/>
-                               <div >
-                                    <label string="无" for="q9_0"/>
-                                    <field name="q9_0"  style="width: 95%%" />
-
-                                    <label string="皮肤易过敏" for="q9_1" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-                                    <field name="q9_1"  style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-
-                                    <label string="易患感冒" for="q9_2" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-                                    <field name="q9_2" style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-
-                                    <label string="双颊红斑" for="q9_3" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-                                    <field name="q9_3"  style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-
-                                    <label string="四肢无力" for="q9_4" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-                                    <field name="q9_4"  style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q10_0" string="您是否有以下内分泌系统不适？"/>
-                               <div >
-                                    <label string="无" for="q10_0"/>
-                                    <field name="q10_0"  style="width: 95%%" />
-
-                                    <label string="月经异常" for="q10_1" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-                                    <field name="q10_1"  style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-
-                                    <label string="容易长斑" for="q10_2" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-                                    <field name="q10_2" style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-
-                                    <label string="甲状腺肿大" for="q10_3" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-                                    <field name="q10_3"  style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-
-                                    <label string="四肢无力" for="q10_4" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-                                    <field name="q10_4"  style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q11_0" string="您是否有以下呼吸系统不适？"/>
-                               <div >
-                                    <label string="无" for="q11_0"/>
-                                    <field name="q11_0"  style="width: 95%%" />
-
-                                    <label string="鼻炎" for="q11_1" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-                                    <field name="q11_1"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-
-                                    <label string="打鼾" for="q11_2" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-                                    <field name="q11_2" style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-
-                                    <label string="哮喘" for="q11_3" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-                                    <field name="q11_3"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-
-                                    <label string="胸痛" for="q11_4" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-                                    <field name="q11_4"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-
-                                   <label string="呼吸困难" for="q11_5" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-                                    <field name="q11_5"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
-                            <group colspan="16">
-                                <label for="q12_0" string="您是否有以下泌尿生殖系统不适？"/>
-                               <div >
-                                    <label string="无" for="q12_0"/>
-                                    <field name="q12_0"  style="width: 95%%" />
-
-                                    <label string="尿频" for="q12_1" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-                                    <field name="q12_1"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-
-                                    <label string="尿急" for="q12_2" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-                                    <field name="q12_2" style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-
-                                    <label string="尿痛" for="q12_3" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-                                    <field name="q12_3"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-
-                                    <label string="夜尿增多" for="q12_4" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-                                    <field name="q12_4"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-
-                                   <label string="晨起眼睑浮肿" for="q12_5" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-                                    <field name="q12_5"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
-
-                                </div>
-                            </group>
                         </group>
                         <notebook>
                             <page string="日志">
@@ -381,6 +119,274 @@
                             </page>
                             <page string="图片">
                                 <field name="img_new" widget="image" options="{'size':[800,640]}"/>
+                            </page>
+                            <page string="问卷调查">
+                                <group col="16">
+
+                                    <group colspan="16">
+                                        <label for="q1_0" string="您目前或曾患下列哪些疾病？"/>
+                                       <div >
+                                            <label string="无" for="q1_0"/>
+                                            <field name="q1_0"  style="width: 95%%" />
+
+                                            <label string="肿瘤" for="q1_1" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_1"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                            <label string="糖尿病" for="q1_2" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_2" style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                            <label string="呼吸性疾病" for="q1_3" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_3"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                            <label string="心脑血管疾病" for="q1_4" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_4"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                           <label string="消化道溃疡" for="q1_5" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_5"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                           <label string="妇科病" for="q1_6" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_6"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+
+                                           <label string="过敏史" for="q1_7" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_7"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q2_0" string="亲属中（祖父母，父母，兄弟姐妹及子女）有无患上述疾病？"/>
+                                       <div >
+                                               <label string="无" for="q2_0"/>
+                                                <field name="q2_0"  style="width: 95%%" />
+
+                                            <label string="有" for="q2_1" attrs="{'invisible':[('q2_0','!=',False)]}"/>
+                                            <field name="q2_1"  style="width: 4%%" attrs="{'invisible':[('q2_0','!=',False)]}"/>
+
+                                            <label string="请列举" for="q2_2" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
+                                            <field name="q2_2"  style="width: 50%%" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q3_0" string="您目前正在服用或曾服用以下哪些药物？"/>
+                                       <div >
+                                            <label string="无" for="q3_0"/>
+                                            <field name="q3_0"  style="width: 90%%" />
+
+                                            <label string="抗感染药" for="q3_1" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+                                            <field name="q3_1"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+
+                                            <label string="抗神经精神类药" for="q3_2" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+                                            <field name="q3_2" style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+
+                                            <label string="抗心血管疾病药" for="q3_3" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+                                            <field name="q3_3"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+
+                                            <label string="抗肿瘤药物" for="q3_4" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+                                            <field name="q3_4"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+
+                                           <label string="激素类药" for="q3_5" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+                                            <field name="q3_5"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+
+                                           <label string="抗代谢及免疫抑制类药" for="q3_6" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+                                            <field name="q3_6"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q4_0" string="您是否有以下习惯？"/>
+                                       <div >
+                                            <label string="无" for="q4_0"/>
+                                            <field name="q4_0"  style="width: 95%%" />
+
+                                            <label string="吸烟" for="q4_1" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+                                            <field name="q4_1"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+
+                                            <label string="酗酒" for="q4_2" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+                                            <field name="q4_2" style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+
+                                            <label string="常年服药" for="q4_3" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+                                            <field name="q4_3"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+
+                                            <label string="常年规律运动" for="q4_4" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+                                            <field name="q4_4"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+
+                                           <label string="经常群体社交活动" for="q4_5" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+                                            <field name="q4_5"  style="width: 4%%" attrs="{'invisible':[('q4_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q5_0" string="您是否有以下消化系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q5_0"/>
+                                            <field name="q5_0"  style="width: 95%%" />
+
+                                            <label string="消化不良" for="q5_1" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+                                            <field name="q5_1"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+
+                                            <label string="经常便秘" for="q5_2" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+                                            <field name="q5_2" style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+
+                                            <label string="偶尔有腹泻" for="q5_3" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+                                            <field name="q5_3"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+
+                                            <label string="胃痛" for="q5_4" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+                                            <field name="q5_4"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+
+                                           <label string="胸前灼烧感" for="q5_5" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+                                            <field name="q5_5"  style="width: 4%%" attrs="{'invisible':[('q5_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q6_0" string="您是否有以下神经系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q6_0"/>
+                                            <field name="q6_0"  style="width: 95%%" />
+
+                                            <label string="失眠" for="q6_1" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+                                            <field name="q6_1"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+
+                                            <label string="偶尔头痛" for="q6_2" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+                                            <field name="q6_2" style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+
+                                            <label string="记忆力下降" for="q6_3" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+                                            <field name="q6_3"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+
+                                            <label string="注意力不集中" for="q6_4" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+                                            <field name="q6_4"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+
+                                           <label string="耳聋耳鸣" for="q6_5" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+                                            <field name="q6_5"  style="width: 4%%" attrs="{'invisible':[('q6_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q7_0" string="您是否有以下循环系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q7_0"/>
+                                            <field name="q7_0"  style="width: 95%%" />
+
+                                            <label string="头晕" for="q7_1" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+                                            <field name="q7_1"  style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+
+                                            <label string="手脚冰凉" for="q7_2" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+                                            <field name="q7_2" style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+
+                                            <label string="低血压" for="q7_3" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+                                            <field name="q7_3"  style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+
+                                            <label string="高血压" for="q7_4" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+                                            <field name="q7_4"  style="width: 4%%" attrs="{'invisible':[('q7_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q8_0" string="您是否有以下运动系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q8_0"/>
+                                            <field name="q8_0"  style="width: 95%%" />
+
+                                            <label string="肌肉关节痛" for="q8_1" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+                                            <field name="q8_1"  style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+
+                                            <label string="腰背痛" for="q8_2" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+                                            <field name="q8_2" style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+
+                                            <label string="关节伸、缩、旋转等受限" for="q8_3" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+                                            <field name="q8_3"  style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+
+                                            <label string="关节变形" for="q8_4" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+                                            <field name="q8_4"  style="width: 4%%" attrs="{'invisible':[('q8_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q9_0" string="您是否有以下免疫系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q9_0"/>
+                                            <field name="q9_0"  style="width: 95%%" />
+
+                                            <label string="皮肤易过敏" for="q9_1" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+                                            <field name="q9_1"  style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+
+                                            <label string="易患感冒" for="q9_2" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+                                            <field name="q9_2" style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+
+                                            <label string="双颊红斑" for="q9_3" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+                                            <field name="q9_3"  style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+
+                                            <label string="四肢无力" for="q9_4" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+                                            <field name="q9_4"  style="width: 4%%" attrs="{'invisible':[('q9_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q10_0" string="您是否有以下内分泌系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q10_0"/>
+                                            <field name="q10_0"  style="width: 95%%" />
+
+                                            <label string="月经异常" for="q10_1" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+                                            <field name="q10_1"  style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+
+                                            <label string="容易长斑" for="q10_2" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+                                            <field name="q10_2" style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+
+                                            <label string="甲状腺肿大" for="q10_3" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+                                            <field name="q10_3"  style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+
+                                            <label string="四肢无力" for="q10_4" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+                                            <field name="q10_4"  style="width: 4%%" attrs="{'invisible':[('q10_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q11_0" string="您是否有以下呼吸系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q11_0"/>
+                                            <field name="q11_0"  style="width: 95%%" />
+
+                                            <label string="鼻炎" for="q11_1" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+                                            <field name="q11_1"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+
+                                            <label string="打鼾" for="q11_2" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+                                            <field name="q11_2" style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+
+                                            <label string="哮喘" for="q11_3" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+                                            <field name="q11_3"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+
+                                            <label string="胸痛" for="q11_4" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+                                            <field name="q11_4"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+
+                                           <label string="呼吸困难" for="q11_5" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+                                            <field name="q11_5"  style="width: 4%%" attrs="{'invisible':[('q11_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+                                    <group colspan="16">
+                                        <label for="q12_0" string="您是否有以下泌尿生殖系统不适？"/>
+                                       <div >
+                                            <label string="无" for="q12_0"/>
+                                            <field name="q12_0"  style="width: 95%%" />
+
+                                            <label string="尿频" for="q12_1" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+                                            <field name="q12_1"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+
+                                            <label string="尿急" for="q12_2" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+                                            <field name="q12_2" style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+
+                                            <label string="尿痛" for="q12_3" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+                                            <field name="q12_3"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+
+                                            <label string="夜尿增多" for="q12_4" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+                                            <field name="q12_4"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+
+                                           <label string="晨起眼睑浮肿" for="q12_5" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+                                            <field name="q12_5"  style="width: 4%%" attrs="{'invisible':[('q12_0','!=',False)]}"/>
+
+                                        </div>
+                                    </group>
+
+                                </group>
                             </page>
                             <page string="质检数据">
                                 <field name="dns_chk" attrs="{'readonly':True}">
