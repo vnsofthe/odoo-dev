@@ -35,7 +35,7 @@
 
                             <group colspan="3">
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                <field name="hospital" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="hospital" options="{'no_open': True, 'no_create': True}" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="tel" attrs="{'readonly':[('state','not in',['draft'])]}"/>
@@ -48,7 +48,7 @@
                             </group>
                             <group colspan="3">
                                 <field name="batch_no" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                <field name="doctor" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="doctor" options="{'no_open': True, 'no_create': True}" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="age" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="contact" attrs="{'readonly':[('state','not in',['draft'])]}"/>

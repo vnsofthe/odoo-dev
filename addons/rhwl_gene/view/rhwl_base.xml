@@ -245,6 +245,6 @@
 
         <menuitem id="menu_rhwl_easy_genes_new_other" parent="menu_easy_genes_new_root" name="其它" sequence="30"  />
         <menuitem id="menu_genes_base_barcode" parent="menu_rhwl_easy_genes_new_other" name="易感套餐条码发出记录" sequence="30"
-                  action='action_genes_barcode' groups="rhwl_base_tjs"/>
+                  action='action_genes_barcode' groups="rhwl_base_gene"/>
     </data>
 </openerp>

@@ -288,6 +288,8 @@ class rhwl_partner(osv.osv):
 
         return data
 
+    #def get_Contact_person_from_columns(self,cr,uid,id,col_name,context=None):
+
     def get_Contact_person(self,cr,uid,id,category_name=u"联络人",context=None):
         obj = self.browse(cr,uid,id,context=context)
         for i in obj.child_ids:

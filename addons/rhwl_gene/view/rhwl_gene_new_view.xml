@@ -98,7 +98,7 @@
                                 <field name="weixin" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                             <group colspan="6">
-                                <field name="hospital" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                <field name="hospital" options="{'no_open': True, 'no_create': True}" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                             <group colspan="16">
                                 <field name="package_id" attrs="{'readonly':[('state','!=','draft')]}"/>

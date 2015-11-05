@@ -35,7 +35,7 @@
 
                             <group colspan="3">
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                <field name="hospital" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="hospital" options="{'no_open': True, 'no_create': True}" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="sex" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="fdjfr" attrs="{'readonly':[('state','not in',['draft'])]}"/>
@@ -49,7 +49,7 @@
                             </group>
                             <group colspan="3">
                                 <field name="batch_no" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                                <field name="doctor" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                                <field name="doctor" options="{'no_open': True, 'no_create': True}" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="birthday" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="fdjfr_name" attrs="{'readonly':[('state','not in',['draft'])]}"/>

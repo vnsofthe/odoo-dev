@@ -24,14 +24,15 @@
                         <field name="state" widget="statusbar" readonly="1"/>
                     </header>
                     <sheet>
-                        <group colspan="8">
-                            <group cols="4">
+                        <group col="12">
+                            <group colspan="4">
                                 <field name="name" readonly="1"/>
                                 <field name="date"/>
                                 <field name="user_id"/>
+                                <field name="wh_level"/>
                                 <field name="hospital"/>
                             </group>
-                            <group cols="4">
+                            <group colspan="4">
 
                                 <field name="receiver_user"/>
                                 <field name="receiver_address"/>
@@ -39,8 +40,15 @@
                                 <field name="express_partner"/>
                                 <field name="express_no"/>
                             </group>
+                            <group colspan="4">
+                                <field name="approve1_user" readonly="1"/>
+                                <field name="approve1_date" readonly="1"/>
+                                <field name="approve2_user" readonly="1"/>
+                                <field name="approve2_date" readonly="1"/>
+                                <field name="done_date" readonly="1"/>
+                            </group>
                         </group>
-                        <group cols="8">
+                        <group cols="12">
                                 <field name="note"/>
                         </group>
                         <field name="line">

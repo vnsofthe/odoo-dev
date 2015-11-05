@@ -32,24 +32,38 @@
 <div class="am-u-sm-centered am-u-md-centered am-u-lg-centered">
     <form class="am-form">
         <div class="am-form-group">
-            <label class="am-form-label" for="partner_id">申请机构</label><br>
-            <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}"></select>
-
+            <label class="am-form-label" for="wh_level">库存级别</label><br>
+            <select id="wh_level" class="am-form-field" data-am-selected="{btnWidth: '100%'}">
+                <option value="person" selected="selected">销售员级</option>
+                <option value="hospital">医院级</option>
+                <option value="proxy">代理级</option>
+            </select>
         </div>
 
-        <div class="am-form-group">
+        <div class="am-form-group am-hide" id="hospital">
+            <label class="am-form-label" for="partner_id">申请机构</label><br>
+            <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}">
+
+            </select>
+        </div>
+
+        <div class="am-form-group" id="address">
+            <label class="am-form-label">收货地址</label><br>
+        </div>
+
+        <div class="am-form-group  am-hide">
             <label for="doc-ipt-3" class="am-form-label">收件人</label>
 
               <input type="text" id="doc-ipt-3">
 
         </div>
-        <div class="am-form-group">
+        <div class="am-form-group  am-hide">
             <label for="doc-ipt-4" class="am-form-label">收件人地址</label>
 
               <input type="text" id="doc-ipt-4" >
 
         </div>
-        <div class="am-form-group">
+        <div class="am-form-group  am-hide">
             <label for="doc-ipt-5" class="am-form-label">收件人电话</label>
 
               <input type="text" id="doc-ipt-5">
@@ -119,6 +133,41 @@
      var store = $.AMUI.store;
   $(function() {
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
+      $('#wh_level').change(function() {
+          var v = $(this).children('option:selected').val();
+          if(v=="person"){
+              $("#hospital").addClass("am-hide");
+          }else{
+              $("#hospital").removeClass("am-hide");
+          }
+      });
+      $("#partner_id").change(function(){
+          var v = $(this).children('option:selected').val();
+
+          $.ajax({
+              type:"POST",
+              url:"/web/api/web_material/all_address/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&partner="+v,
+              data:{},
+              success:function(data){
+
+                  $.each(data,function(k,v){
+                      $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+v[0]+'" checked>'+v[1]+'：'+v[2]+','+v[3]+','+v[4]+'</label></div>');
+                  });
+              }
+          });
+      });
+    //获取当前登录用户的邮寄信息
+      $.ajax({
+          type:'POST',
+          url:"/web/api/web_material/login_address/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
+          data: {},
+              success: function(data){
+                  $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+data[0]+'" checked>'+data[1]+','+data[2]+','+data[3]+'</label></div>');
+              },
+              fail:function(res){
+                  alert("获取当前登录用户的邮寄信息失败。");
+              }
+      });
 
     $.ajax({
               type: 'POST',
