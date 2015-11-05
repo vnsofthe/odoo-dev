@@ -71,7 +71,7 @@
         </div>
     </form>
 
-    <table class="am-table am-table-bordered am-table-striped am-table-compact">
+    <table id="tab" class="am-table am-table-bordered am-table-striped am-table-compact">
         <thead>
             <tr>
                 <th>物料名称</th>
@@ -90,6 +90,12 @@
       data-am-modal="{target: '#doc-modal-1', closeViaDimmer: 0}">
       点我新增
     </button>
+    <br><br>
+    <footer>
+        <button type="button" id="form_save" class="am-btn am-btn-secondary am-btn-block" >保存</button>
+        <button type="button" id="form_submit" class="am-btn am-btn-success am-btn-block" >提交</button>
+    </footer>
+
  </div>
 
 <div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
@@ -114,6 +120,9 @@
                 <input type="number" id="doc-ipt-17" min="1" max="999" style="width:100px;display:inline;" value="1"/>
                 <button type="button" class="am-btn" style="display:inline;" id="add_num">+</button>
             </div>
+            <div class="am-form-group">
+                <button type="button" id="product_add" class="am-btn am-btn-success am-btn-block" >确 定</button>
+            </div>
       </form>
     </div>
   </div>
@@ -131,43 +140,65 @@
 
 <script>
      var store = $.AMUI.store;
+     function login_address(){
+         $.ajax({
+                  type:'POST',
+                  url:"/web/api/web_material/login_address/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
+                  data: {},
+                      success: function(data){
+                          $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+data[0]+'" checked>'+data[1]+','+data[2]+','+data[3]+'</label></div>');
+                      },
+                      fail:function(res){
+                          alert("获取当前登录用户的邮寄信息失败。");
+                      }
+              });
+     }
+
+     $("#product_add").bind("click",function(e){
+         var v = $("#doc-ipt-15").children('option:selected');
+         var is_exists=false;
+         $.each($("#tab tbody").children(),function(k,vv){
+            if(vv.dataset.id==v[0].value){
+                $("#tab tbody").children()[k].children[2].children[1].value=$("#doc-ipt-17").val();
+                is_exists=true;
+            };
+         });
+         if(!is_exists){
+             $("#tab tbody").append("<tr data-id=\""+v[0].value+"\"><td>"+v[0].label+"</td><td>"+v[0].dataset.uom+"</td><td><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">-</button><input type=\"number\" min=\"1\" max=\"999\" style=\"display:inline;\" value=\""+$("#doc-ipt-17").val()+"\"/><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">+</button></td><td><button type=\"button\" class=\"am-btn-link am-btn-xs\">删除</button></td></tr>");
+         }
+         $('#doc-modal-1').modal("close");
+     });
+     $("#tab tbody").on("click","tr",function(e){
+        if(e.target.className=="am-btn-link am-btn-xs"&& (e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") ){
+            $(e.currentTarget).remove();
+        }else if(e.target.className=="am-btn am-btn-xs"&& (e.target.nodeName=="BUTTON" ||e.target.nodeName=="BUTON") ){
+            if(e.target.innerText=="+"){
+                var t= $(e.target.parentElement)[0].childNodes[1].value;
+                $(e.target.parentElement)[0].childNodes[1].value = parseInt(t)+1
+            }else{
+                var t= $(e.target.parentElement)[0].childNodes[1].value;
+                if(parseInt(t)>1){
+                    $(e.target.parentElement)[0].childNodes[1].value = parseInt(t)-1
+                }
+            }
+        }
+    });
   $(function() {
     //$('#tab').find('tbody').append('<tr><td>名称</td><td>网址</td><td>日期</td></tr>');
       $('#wh_level').change(function() {
           var v = $(this).children('option:selected').val();
+          $(".am-radio").remove();
           if(v=="person"){
               $("#hospital").addClass("am-hide");
+              //获取当前登录用户的邮寄信息
+              login_address();
           }else{
               $("#hospital").removeClass("am-hide");
+              $("#partner_id").trigger("change");
           }
       });
-      $("#partner_id").change(function(){
-          var v = $(this).children('option:selected').val();
 
-          $.ajax({
-              type:"POST",
-              url:"/web/api/web_material/all_address/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&partner="+v,
-              data:{},
-              success:function(data){
 
-                  $.each(data,function(k,v){
-                      $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+v[0]+'" checked>'+v[1]+'：'+v[2]+','+v[3]+','+v[4]+'</label></div>');
-                  });
-              }
-          });
-      });
-    //获取当前登录用户的邮寄信息
-      $.ajax({
-          type:'POST',
-          url:"/web/api/web_material/login_address/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
-          data: {},
-              success: function(data){
-                  $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+data[0]+'" checked>'+data[1]+','+data[2]+','+data[3]+'</label></div>');
-              },
-              fail:function(res){
-                  alert("获取当前登录用户的邮寄信息失败。");
-              }
-      });
 
     $.ajax({
               type: 'POST',
@@ -175,28 +206,55 @@
               data: {},
               success: function(data){
                   $.each(data,function(k,v){
-                    $("#partner_id").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
-                  })
+                      if(k==0){
+                          $("#partner_id").append("<option value=\""+v[0]+"\" selected>"+v[1]+"</option>");
+                      }else{
+                          $("#partner_id").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
+                      }
+                  });
+                    $("#partner_id").change(function(){
+                        if($("#hospital").hasClass("am-hide")){
+                            return;
+                        }
+                          var v = $(this).children('option:selected').val();
+                            $(".am-radio").remove();
+                          $.ajax({
+                              type:"POST",
+                              url:"/web/api/web_material/all_address/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code')+"&partner="+v,
+                              data:{},
+                              success:function(data){
 
+                                  $.each(data,function(k,v){
+                                      $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+v[0]+'" checked>'+v[1]+'：'+v[2]+','+v[3]+','+v[4]+'</label></div>');
+                                  });
+                              }
+                          });
+                      });
               },
               fail:function(res){
                   alert("获取采血医院信息失败。");
               }
             });
+
+
       $.ajax({
               type: 'POST',
               url: "/web/api/web_material/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {},
               success: function(data){
                   $.each(data,function(k,v){
-                    $("#doc-ipt-15").append("<option value=\""+v[0]+"\">"+v[1]+"</option>");
-                  })
-
+                    $("#doc-ipt-15").append("<option value=\""+v[0]+"\" data-uom=\""+v[2]+"\">"+v[1]+"</option>");
+                  });
+                  $("#doc-ipt-15").change(function() {
+                      var v = $(this).children('option:selected');
+                      $("#doc-ipt-16").val(v[0].dataset.uom);
+                  });
               },
               fail:function(res){
                   alert("获取物料信息失败。");
               }
             });
+
       $("#add_num").bind("click",function(e){
             var text=$("#doc-ipt-17").val();
             $("#doc-ipt-17").val(parseInt(text)+1);
@@ -207,8 +265,9 @@
               $("#doc-ipt-17").val(parseInt(text)-1);
           }
 
-      })
-
+      });
+      login_address();
+      //$('#wh_level').trigger("change");
   });
 </script>
 </body>
