@@ -16,6 +16,7 @@ class web_material(osv.osv):
         "user_id":fields.many2one("res.users",string=u"申请人"),
         "hospital":fields.many2one("res.partner",string=u"申请医院(机构)",domain="[('is_company', '=', True), ('customer', '=', True),'|',('sjjysj','!=',False),'|',('yg_sjjysj','!=',False),'|',('ys_sjjysj','!=',False),('el_sjjysj','!=',False)]"),
         "wh_level":fields.selection([("hospital",u"医院级"),("proxy",u"代理级"),("person",u"销售员级")],string=u"库存归属"),
+        "address_id":fields.many2one("res.partner",string="Address ID"),
         "receiver_user":fields.char(u"收件人",size=10),
         "receiver_address":fields.char(u"收件地址",size=100),
         "receiver_tel":fields.char(u"收件人电话",size=20),

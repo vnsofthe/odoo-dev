@@ -1,0 +1,96 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>我的物料申请</title>
+
+  <!-- Set render engine for 360 browser -->
+  <meta name="renderer" content="webkit">
+  <!-- No Baidu Siteapp-->
+  <meta http-equiv="Cache-Control" content="no-siteapp"/>
+  <link rel="icon" type="image/png" href="/rhwl_weixin/static/assets/i/favicon.png">
+  <!-- Add to homescreen for Chrome on Android -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
+  <!-- Add to homescreen for Safari on iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+  <link rel="apple-touch-icon-precomposed" href="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
+  <!-- Tile icon for Win8 (144x144 + tile color) -->
+  <meta name="msapplication-TileImage" content="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
+  <meta name="msapplication-TileColor" content="#0e90d2">
+  <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.4.2/css/amazeui.min.css">
+
+</head>
+<body>
+<div class="am-u-sm-centered am-u-md-centered am-u-lg-centered">
+    <table id="tab"  class="am-table am-table-bordered am-table-striped am-table-compact">
+        <thead>
+            <tr>
+                <th>申请单号</th>
+                <th>申请日期</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+
+ </div>
+
+
+
+<!--在这里编写你的代码-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.amazeui.org/amazeui/2.4.2/js/amazeui.min.js"></script>
+<!--<![endif]-->
+<!--[if lte IE 8 ]>
+<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+<script src="/rhwl_weixin/static/js/weixin-0.2.js"></script>
+
+<script>
+     var store = $.AMUI.store;
+
+     $("#tab tbody").on("click","tr",function(e){
+        console.log(e.currentTarget.dataset.id);
+         location.href = location.origin+"/rhwl_web_material/static/material.html"+location.search+"&id="+e.currentTarget.dataset.id
+    });
+  $(function() {
+        $.ajax({
+              type: 'POST',
+              url: "/web/api/web_material/list/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
+              data: {},
+              success: function(data){
+                  $.each(data,function(k,v){
+                      var state_name="草稿"
+                      if(v[3]=="confirm"){
+                          state_name="确认";
+                      }else if(v[3]=="approve1"){
+                          state_name="核准1";
+                      }else if(v[3]=="approve2"){
+                          state_name="核准2";
+                      }else if(v[3]=="done"){
+                          state_name="完成";
+                      }
+                      $("#tab tbody").append("<tr data-id=\""+v[0]+"\"><td>"+v[1]+"</td><td>"+v[2]+"</td><td>"+state_name+"</td></tr>");
+                  });
+
+              },
+              fail:function(res){
+                  alert("获取采血医院信息失败。");
+              }
+            });
+  });
+</script>
+</body>
+</html>
