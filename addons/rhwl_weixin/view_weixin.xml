@@ -43,6 +43,7 @@
                                 <field name="is_export_ys"/>
                                 <field name="is_export_el"/>
                                 <field name="is_sale_count"/>
+                                <field name="is_lims_state"/>
                                 <field name="is_test"/>
                             </group>
                         </group>

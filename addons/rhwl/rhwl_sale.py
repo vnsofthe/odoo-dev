@@ -635,6 +635,19 @@ class rhwl_sample_info(osv.osv):
             data[i[0]] = i[1]
         return data
 
+    def _get_month_rate(self,cr,uid,context=None):
+        t=datetime.datetime.today().strftime("%Y-%m-01")
+        cr.execute("select count(*) from sale_sampleone where is_reused='0' and (create_date at time zone 'CCT')::date > '%s'" %(t,))
+        total = 0
+        done = 0
+        for i in cr.fetchall():
+            done = i[0]
+        ids = self.pool.get("res.partner").search(cr,uid,[('is_company', '=', True), ('customer', '=', True),('sjjysj','!=',False),("nextmonth",">",0)])
+        if ids:
+            for i in self.pool.get("res.partner").browse(cr,uid,ids,context=context):
+                total += i.nextmonth
+        return (total,done)
+
     def send_weixin_sale_count(self,cr,uid,context=None):
         wc_data = self._get_sale_count_for_day(cr,uid,context=context)
         yg_data = self.pool.get("rhwl.easy.genes.new")._get_sale_count_for_day(cr,uid,context=context)
@@ -733,7 +746,28 @@ class rhwl_sample_info(osv.osv):
         if xy_wc>0:
             send_all_text["无创"] = str(send_all_text["无创"])+"笔,其中湘雅"+str(xy_wc)
         send_text = fields.date.today()+"样本合计："+(",".join(["%s:%s笔"%(x,send_all_text[x]) for x in send_all_text.keys()]))
+        send_text += "。无创本月目标数:%s，当前已完成数:%s" %(self._get_month_rate(cr,SUPERUSER_ID,context=context))
+        #self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,"rhwlyy","is_test",send_text,context=context)
         self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,"rhwlyy","is_sale_count",send_text,context=context)
+
+    def send_weixin_lims_state(self,cr,uid,context=None):
+        config_obj = self.pool.get('ir.config_parameter')
+        lims_email = config_obj.get_param(cr, uid, 'rhwl.lims.email', default='').encode('utf-8')
+        lims_pwd = config_obj.get_param(cr, uid, 'rhwl.lims.pwd', default='').encode('utf-8')
+        ids = self.search(cr,uid,[("check_center","=","rhwl"),("state","=","done")])
+        obj = self.browse(cr,uid,ids,context=context)
+        sample_result={}
+        for i in obj:
+            json = requests.post("http://10.0.0.2:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email="+lims_email+"&password="+lims_pwd)
+            json = json.json()
+            if json.get("haserror",False):
+                sample_result["不存在"] = sample_result.get("不存在",0) + 1
+            else:
+                stat = json["sample"].get("status")
+                sample_result[stat] = sample_result.get(stat,0) +1
+        send_text=fields.date.today()+" LIMS样本状态统计："
+        send_text +=",".join(["%s:%s"%(x,sample_result[x]) for x in sample_result.keys()])
+        self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,"rhwlyy","is_lims_state",send_text,context=context)
 
 class rhwl_sample_lims(osv.osv):
     _name = "sale.sampleone.lims"

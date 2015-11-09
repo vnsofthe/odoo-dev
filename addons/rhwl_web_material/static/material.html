@@ -51,23 +51,17 @@
             <label class="am-form-label">收货地址</label><br>
         </div>
 
-        <div class="am-form-group  am-hide">
+        <div class="am-form-group  am-hide" id="address_1">
             <label for="doc-ipt-3" class="am-form-label">收件人</label>
-
               <input type="text" id="doc-ipt-3">
-
         </div>
-        <div class="am-form-group  am-hide">
+        <div class="am-form-group  am-hide" id="address_2">
             <label for="doc-ipt-4" class="am-form-label">收件人地址</label>
-
               <input type="text" id="doc-ipt-4" >
-
         </div>
-        <div class="am-form-group  am-hide">
+        <div class="am-form-group  am-hide" id="address_3">
             <label for="doc-ipt-5" class="am-form-label">收件人电话</label>
-
               <input type="text" id="doc-ipt-5">
-
         </div>
     </form>
 
@@ -147,13 +141,28 @@
                   data: {},
                       success: function(data){
                           $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+data[0]+'" checked>'+data[1]+','+data[2]+','+data[3]+'</label></div>');
+                          $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="0">其它</label></div>');
+                          radio_event();
                       },
                       fail:function(res){
                           alert("获取当前登录用户的邮寄信息失败。");
                       }
               });
      }
-
+     function radio_event(){
+         $('input:radio[name="doc-radio-1"]').change( function(){
+             var v=$("#address input[name='doc-radio-1']:checked").val();
+             if(v=="0"){
+                 $("#address_1").removeClass("am-hide");
+                 $("#address_2").removeClass("am-hide");
+                 $("#address_3").removeClass("am-hide");
+             }else{
+                 $("#address_1").addClass("am-hide");
+                 $("#address_2").addClass("am-hide");
+                 $("#address_3").addClass("am-hide");
+             }
+         });
+     }
      $("#product_add").bind("click",function(e){
          var v = $("#doc-ipt-15").children('option:selected');
          var is_exists=false;
@@ -227,6 +236,8 @@
                                   $.each(data,function(k,v){
                                       $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="'+v[0]+'" checked>'+v[1]+'：'+v[2]+','+v[3]+','+v[4]+'</label></div>');
                                   });
+                                  $("#address").append('<div class="am-radio"><label><input type="radio" name="doc-radio-1" value="0">其它</label></div>');
+                                  radio_event();
                               }
                           });
                       });
@@ -304,6 +315,9 @@
               wh_level:$('#wh_level').children('option:selected').val(),
               partner_id:$('#partner_id').children('option:selected').val(),
               address_id:$("#address input[name='doc-radio-1']:checked").val(),
+              address_1:$("#doc-ipt-3").val(),
+              address_2:$("#doc-ipt-4").val(),
+              address_3:$("#doc-ipt-5").val(),
               line:new Array()
           }
 
@@ -325,6 +339,13 @@
           if(p.line.length==0){
               alert("申请物料不可以为空。");
               return false;
+          }
+          if(p.address_id=="0"){
+              if(p.address_1>""&& p.address_2>""&& p.address_3>""){
+                  return true;
+              }else{
+                  alert("收货人、收货地址、电话不可以为空。");
+              }
           }
           return true;
       }

@@ -37,6 +37,7 @@ class rhwl_weixin(osv.osv):
         "is_export_ys":fields.boolean(u"叶酸检测位点导入通知",help=u"叶酸样本实验导入位点通知"),
         "is_export_el":fields.boolean(u"耳聋检测位点导入通知",help=u"耳聋样本实验导入位点通知"),
         "is_sale_count":fields.boolean(u"销售人员每日销量统计通知"),
+        "is_lims_state":fields.boolean(u"LIMS样本状态统计通知"),
         "is_test":fields.boolean(u"测试通知")
     }
 

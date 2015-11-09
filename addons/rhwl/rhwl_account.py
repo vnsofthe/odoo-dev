@@ -77,7 +77,7 @@ class rhwl_material(osv.osv):
             begin_obj = self.browse(cr,uid,begin_id,context=context)
             val_dict={}
             for d in begin_obj.line:
-                if d.data_kind != "end" or (d.qty==0 and d.qty<0):continue
+                if d.data_kind != "end" or (d.qty==0 or d.qty<0):continue
                 if val_dict.has_key(d.product_id.id):
                     if val_dict[d.product_id.id].has_key(d.price):
                         val_dict[d.product_id.id][d.price]['qty'] = val_dict[d.product_id.id][d.price]['qty'] + d.qty
