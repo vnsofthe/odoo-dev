@@ -27,6 +27,13 @@
   <meta name="msapplication-TileColor" content="#0e90d2">
   <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.4.2/css/amazeui.min.css">
 
+    <style type="text/css">
+      input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 <div class="am-u-sm-centered am-u-md-centered am-u-lg-centered">
@@ -110,9 +117,9 @@
             <div class="am-form-group"  style="text-align:left;">
                 <label for="doc-ipt-17" class="am-form-label">数量</label>
 
-                <button type="button" class="am-btn" style="display:inline;" id="minus_num">-</button>
+                <button type="button" class="am-btn" style="display:inline;padding:.2em .2em" id="minus_num">-</button>
                 <input type="number" id="doc-ipt-17" min="1" max="999" style="width:100px;display:inline;" value="1"/>
-                <button type="button" class="am-btn" style="display:inline;" id="add_num">+</button>
+                <button type="button" class="am-btn" style="display:inline;padding:.2em .2em" id="add_num">+</button>
             </div>
             <div class="am-form-group">
                 <button type="button" id="product_add" class="am-btn am-btn-success am-btn-block" >确 定</button>
@@ -173,7 +180,7 @@
             };
          });
          if(!is_exists){
-             $("#tab tbody").append("<tr data-id=\""+v[0].value+"\"><td>"+v[0].label+"</td><td>"+v[0].dataset.uom+"</td><td><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">-</button><input type=\"number\" min=\"1\" max=\"999\" style=\"display:inline;\" value=\""+$("#doc-ipt-17").val()+"\"/><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">+</button></td><td><button type=\"button\" class=\"am-btn-link am-btn-xs\">删除</button></td></tr>");
+             $("#tab tbody").append("<tr data-id=\""+v[0].value+"\"><td>"+v[0].label+"</td><td>"+v[0].dataset.uom+"</td><td><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;padding:.2em .2em\">-</button><input type=\"number\" min=\"1\" max=\"999\" style=\"display:inline;padding:.2em .2em\" value=\""+$("#doc-ipt-17").val()+"\"/><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">+</button></td><td><button type=\"button\" class=\"am-btn-link am-btn-xs\">删除</button></td></tr>");
          }
          $('#doc-modal-1').modal("close");
      });
@@ -250,8 +257,11 @@
                           success:function(data){
 
                               $("#tab")[0].dataset.id = $.getUrlVar('id');
+                              $("#wh_level option[value!=\""+data[0]+"\"]").attr("selected",false);
                               $("#wh_level option[value=\""+data[0]+"\"]").attr("selected",true);
+
                               if(data[0]!="person"){
+                                  $("#partner_id option[value!=\""+data[1]+"\"]").attr("selected",false);
                                   $("#partner_id option[value=\""+data[1]+"\"]").attr("selected",true);
                               }
                               if(data[2]!=false){
@@ -266,7 +276,7 @@
                                   if(data[3]!="draft"){
                                       $("#tab tbody").append("<tr data-id=\""+v[0]+"\"><td>"+v[1]+"</td><td>"+v[2]+"</td><td>"+v[3]+"</td><td></td></tr>");
                                   }else{
-                                      $("#tab tbody").append("<tr data-id=\""+v[0]+"\"><td>"+v[1]+"</td><td>"+v[2]+"</td><td><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">-</button><input type=\"number\" min=\"1\" max=\"999\" style=\"display:inline;\" value=\""+v[3]+"\"/><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;\">+</button></td><td><button type=\"button\" class=\"am-btn-link am-btn-xs\">删除</button></td></tr>");
+                                      $("#tab tbody").append("<tr data-id=\""+v[0]+"\"><td>"+v[1]+"</td><td>"+v[2]+"</td><td><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;padding:.2em .2em\">-</button><input type=\"number\" min=\"1\" max=\"999\" style=\"display:inline;\" value=\""+v[3]+"\"/><button type=\"button\" class=\"am-btn am-btn-xs\" style=\"display:inline;padding:.2em .2em\">+</button></td><td><button type=\"button\" class=\"am-btn-link am-btn-xs\">删除</button></td></tr>");
                                   }
 
                               })
