@@ -102,10 +102,15 @@ class WebClient(rhwlweb.WebClient):
                 vals["wh_level"] = params["wh_level"]
                 partner = registry.get("res.partner")
                 partner_obj = partner.browse(cr,uid,int(params["address_id"]),context=self.CONTEXT)
-                vals["address_id"] = int(params["address_id"])
-                vals["receiver_user"] = partner_obj.name
-                vals["receiver_address"] = partner.get_detail_address(cr,uid,int(params["address_id"]),context=self.CONTEXT)
-                vals["receiver_tel"] = partner_obj.mobile
+                if int(params["address_id"])>0:
+                    vals["address_id"] = int(params["address_id"])
+                    vals["receiver_user"] = partner_obj.name
+                    vals["receiver_address"] = partner.get_detail_address(cr,uid,int(params["address_id"]),context=self.CONTEXT)
+                    vals["receiver_tel"] = partner_obj.mobile
+                else:
+                    vals["receiver_user"] = params["address_1"]
+                    vals["receiver_address"] = params["address_2"]
+                    vals["receiver_tel"] = params["address_3"]
                 if int(params["is_confirm"])==1:
                     vals["state"] = "confirm"
                 material = registry.get("rhwl.web.material")
@@ -156,7 +161,14 @@ class WebClient(rhwlweb.WebClient):
                 material = registry.get("rhwl.web.material")
 
                 for i in material.browse(cr,uid,id,context=self.CONTEXT):
-                    data = [i.wh_level,i.hospital.id if i.hospital else 0,i.address_id.id,i.state]
+                    data = [i.wh_level,
+                            i.hospital.id if i.hospital else 0,
+                            i.address_id.id if i.address_id else 0,
+                            i.state,
+                            i.receiver_user,
+                            i.receiver_address,
+                            i.receiver_tel
+                            ]
                     detail=[]
                     for d in i.line:
                         detail.append([d.product_id.id,d.product_id.name,d.product_id.uom_id.name,round(d.qty,2)])
