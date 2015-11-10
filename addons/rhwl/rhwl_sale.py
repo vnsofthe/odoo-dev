@@ -652,7 +652,7 @@ class rhwl_sample_info(osv.osv):
         wc_data = self._get_sale_count_for_day(cr,uid,context=context)
         yg_data = self.pool.get("rhwl.easy.genes.new")._get_sale_count_for_day(cr,uid,context=context)
         ys_data = self.pool.get("rhwl.genes.ys")._get_sale_count_for_day(cr,uid,context=context)
-        el_data = self.pool.get("rhwl.genes.el")._get_sale_count_for_day(cr,uid,context=context)
+        el_data = {}#self.pool.get("rhwl.genes.el")._get_sale_count_for_day(cr,uid,context=context)
 
         sale_data={}
         for k,v in wc_data.items():
@@ -704,6 +704,7 @@ class rhwl_sample_info(osv.osv):
                             }
                     }
         """
+
         for k,v in sale_data.items():
             partner_obj = self.pool.get("res.partner").browse(cr,uid,k,context=context)
             user_id = partner_obj.user_id.id
@@ -720,14 +721,14 @@ class rhwl_sample_info(osv.osv):
                 all_data[team_user_id]={}
             if not all_data[team_user_id].has_key(partner_obj.state_id.name):
                 all_data[team_user_id][partner_obj.state_id.name]={}
+
             for k1,v1 in v.items():
                 if k1=="无创" and partner_obj.state_id.name in (u"湖南省",u"山东省",u"浙江省"):
                     xy_wc += v1
                 if all_data[team_user_id][partner_obj.state_id.name].has_key(k1):
                     all_data[team_user_id][partner_obj.state_id.name][k1] = all_data[team_user_id][partner_obj.state_id.name][k1] + v1
                 else:
-                    all_data[team_user_id][partner_obj.state_id.name] = {k1:v1}
-
+                    all_data[team_user_id][partner_obj.state_id.name][k1]=v1
         send_all_text={}
         for k,v in all_data.items():
             send_text = ""
@@ -766,7 +767,8 @@ class rhwl_sample_info(osv.osv):
                 stat = json["sample"].get("status")
                 sample_result[stat] = sample_result.get(stat,0) +1
         send_text=fields.date.today()+" LIMS样本状态统计："
-        send_text +=",".join(["%s:%s"%(x,sample_result[x]) for x in sample_result.keys()])
+        send_text +=";".join(["%s:%s"%(x,sample_result[x]) for x in sample_result.keys()])
+
         self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,"rhwlyy","is_lims_state",send_text,context=context)
 
 class rhwl_sample_lims(osv.osv):

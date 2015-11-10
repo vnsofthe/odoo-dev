@@ -40,7 +40,19 @@ class rhwl_weixin(osv.osv):
         "is_lims_state":fields.boolean(u"LIMS样本状态统计通知"),
         "is_test":fields.boolean(u"测试通知")
     }
-
+    _defaults={
+        "is_lib_import":False,
+        "is_jobmanager":False,
+        "is_notice":False,
+        "is_library":False,
+        "is_sampleresult":False,
+        "is_account":False,
+        "is_export_ys":False,
+        "is_export_el":False,
+        "is_sale_count":False,
+        "is_lims_state":False,
+        "is_test":False,
+    }
     def get_rhwl_id(self,cr,uid,context=None):
         s='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
         noncestr=''.join([s[random.randrange(0,s.__len__()-1)] for i in range(1,21)])
@@ -452,7 +464,7 @@ class rhwl_config(osv.osv):
                     token=self._get_token(cr,SUPERUSER_ID,i.base_id.code.encode('utf-8'),context=context)
             vals["touser"] = '|'.join(touser)
             vals["text"]["content"] = content.encode('utf-8')
-
+            _logger.error(vals)
             s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/message/send",
                             params={"access_token":token},
                             data=json.dumps(vals,ensure_ascii=False),
