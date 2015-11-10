@@ -45,6 +45,18 @@ class web_material(osv.osv):
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'rhwl.web.material') or '/'
         return super(web_material,self).create(cr,uid,vals,context)
 
+    def action_state_approve1(self,cr,uid,ids,context=None):
+        self.write(cr,uid,ids,{"state":"approve1","approve1_user":uid,"approve1_date":fields.datetime.now()},context=context)
+
+    def action_state_approve2(self,cr,uid,ids,context=None):
+        self.write(cr,uid,ids,{"state":"approve2","approve2_user":uid,"approve2_date":fields.datetime.now()},context=context)
+
+    def action_state_done(self,cr,uid,ids,context=None):
+        for i in self.browse(cr,uid,ids,context=context):
+            if not (i.express_partner and i.express_no):
+                raise osv.except_osv("Error",u"确认完成时，请输入快递公司和快递单号。")
+        self.write(cr,uid,ids,{"state":"done","done_date":fields.datetime.now()},context=context)
+
 class web_material_line(osv.osv):
     _name="rhwl.web.material.line"
     _columns={
