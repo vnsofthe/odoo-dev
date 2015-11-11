@@ -762,7 +762,7 @@ class rhwl_sample_info(osv.osv):
             json = requests.post("http://10.0.0.2:8080/Tony/RESTful-WS/getSampleByID?id="+i.name+"&email="+lims_email+"&password="+lims_pwd)
             json = json.json()
             if json.get("haserror",False):
-                sample_result["不存在"] = sample_result.get("不存在",0) + 1
+                sample_result["未录入"] = sample_result.get("未录入",0) + 1
             else:
                 stat = json["sample"].get("status")
                 sample_result[stat] = sample_result.get(stat,0) +1

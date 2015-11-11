@@ -85,7 +85,7 @@ class rhwl_gene(osv.osv):
         "state": fields.selection(STATE_SELECT_LIST, u"状态"),
         "note": fields.text(u"备注"),
         "gene_id": fields.char(u"基因编号", size=20),
-        "language":fields.selection([("CN",u"中文"),("EN",u"英文")],u"报告语种"),
+        "language":fields.selection([("CN",u"中文"),("EN",u"英文"),("RU",u"俄文"),("VN",u"越南文"),("MY",u"马来语"),("ID",u"印度尼西亚语"),("IN",u"印度")],u"报告语种"),
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
         "img": fields.binary(u"图片"),
@@ -105,6 +105,7 @@ class rhwl_gene(osv.osv):
         "snp_name":fields.char("SNP File",size=20),
         "batch_id":fields.many2one("rhwl.easy.genes.batch","Batch_id"),
         "export_img":fields.boolean("Export Img"),
+        "ftp_upload":fields.boolean("FTP Upload"),
         "A1":fields.function(_get_risk_detail,type="char",string="A1",multi="risk_detail"),
         "A2":fields.function(_get_risk_detail,type="char",string="A2",multi="risk_detail"),
         "A3":fields.function(_get_risk_detail,type="char",string="A3",multi="risk_detail"),
@@ -185,7 +186,8 @@ class rhwl_gene(osv.osv):
         "is_risk":False,
         "is_child":False,
         "export_img":False,
-        "language":"CN"
+        "language":"CN",
+        "ftp_upload":False
     }
 
     def init(self, cr):
@@ -241,6 +243,9 @@ class rhwl_gene(osv.osv):
         if val.has_key("state"):
             val["log"] = [
                 [0, 0, {"note": u"状态变更为:" + self.STATE_SELECT.get(val.get("state")), "data": val.get("state"),"user_id":context.get("user_id",uid)}]]
+            #如果重新变更为已收货，则PDF要重新上传
+            if val.get("state")=="done":
+                val["ftp_upload"]=False
         if val.has_key("img"):
             #log_id = self.pool.get("rhwl.easy.genes.log").search(cr,uid,[("genes_id","in",id),("data","=","expimg")])
             #if log_id:
@@ -680,6 +685,14 @@ class rhwl_gene(osv.osv):
             e_date = today
         return s_date,e_date
 
+    def action_ftp_upload(self,cr,uid,ids,context=None):
+        self.ftp_uploads(cr,uid,ids,context=context)
+
+    def ftp_uploads(self,cr,uid,ids,context=None):
+        ids = self.search(cr,uid,[("state","=","done"),("ftp_upload","=",False),("cust_prop","in",["tjs","tjs_vip"])],limit=100)
+        for i in self.browse(cr,uid,ids,context=context):
+            os.system("scp /data/odoo/file/report/%s*.pdf rhwlwz@222.240.161.194:/home/rhwlwz/ftp/"%(i.name.encode("utf-8"),))
+            self.write(cr,uid,i.id,{"ftp_upload":True})
 
     #导出样本位点数据到报告生成服务器
     def temp_export(self, cr, uid, ids, context=None):
