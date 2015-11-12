@@ -12,8 +12,8 @@ import re
 from openerp import tools
 from lxml import etree
 _logger = logging.getLogger(__name__)
-REMOTE_SNP_PATH="static/remote/yg/snp"
-REMOTE_REPORT_PATH="static/remote/yg/report"
+REMOTE_SNP_PATH="static/yg_remote/snp"
+REMOTE_REPORT_PATH="static/yg_remote/report"
 LOCAL_REPORT_PATH="static/local/report/yg"
 class rhwl_gene(osv.osv):
     STATE_SELECT_LIST=[
@@ -34,7 +34,7 @@ class rhwl_gene(osv.osv):
     STATE_SELECT = dict(STATE_SELECT_LIST)
 
     _name = "rhwl.easy.genes.new"
-    _order = "date desc,name asc"
+    _order = "receiv_date desc,name asc"
 
     def _genes_type_get(self, cr, uid, ids, field_names, arg, context=None):
         res = {}
@@ -51,7 +51,7 @@ class rhwl_gene(osv.osv):
     _columns = {
         "batch_no": fields.char(u"批次",select=True,help=u"实验位点导入时会自动产生。"),
         "name": fields.char(u"基因样本编号", required=True, size=15,copy=False),
-        "date": fields.date(u"送检日期", required=True),
+        "date": fields.date(u"采样日期", required=True),
         "cust_name": fields.char(u"会员姓名", required=True, size=50),
         "name_pinying":fields.char(u"姓名(拼音)",size=20),
         "sex": fields.selection([('M', u"男"), ('F', u"女")], u"性别", required=True),
@@ -71,7 +71,7 @@ class rhwl_gene(osv.osv):
         "weixin":fields.char(u"微信号",size=20),
         "hospital":fields.many2one('res.partner', string=u'送检机构',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
         "birthday": fields.date(u"出生日期"),
-        "receiv_date": fields.datetime(u"接收时间"),
+        "receiv_date": fields.date(u"收样日期"),
         "is_reuse":fields.boolean(u"重采"),
         "is_single_post":fields.boolean(u"单独邮寄"),
         "is_free":fields.boolean(u"免费"),
@@ -172,6 +172,7 @@ class rhwl_gene(osv.osv):
         "is_risk":False,
         "is_child":False,
         "export_img":False,
+        "receiv_date":fields.date.today,
         "q1_0":False,
         "q1_1":False,
         "q1_2":False,
@@ -358,7 +359,7 @@ class rhwl_gene(osv.osv):
         data = self.get_gene_type_list(cr,uid,ids,context=context)
         for k,v in data.items():
             snp_name = k+"_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp/hebin")#REMOTE_SNP_PATH)
+            fpath = os.path.join(os.path.split(__file__)[0], REMOTE_SNP_PATH)
             fname = os.path.join(fpath, snp_name + ".txt")
             header=[]
             f = open(fname, "w+")

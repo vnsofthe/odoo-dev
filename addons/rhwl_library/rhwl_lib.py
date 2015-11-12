@@ -125,6 +125,10 @@ class rhwl_lib(osv.osv):
         if not picking_id:
             self.action_state_done(cr,uid,ids,context=context)
             picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",obj.name)])
+        for p in self.pool.get("stock.picking").browse(cr,uid,picking_id,context=context):
+            back_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",p.name)])
+            if back_id:
+                picking_id = picking_id+back_id
 
         mod_obj = self.pool.get('ir.model.data')
         dummy, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'stock', 'action_picking_tree'))

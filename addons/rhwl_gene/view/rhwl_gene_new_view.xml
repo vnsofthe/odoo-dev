@@ -6,7 +6,7 @@
             <field name="model">rhwl.easy.genes.new</field>
             <field name="arch" type="xml">
                 <tree string="易感基因" >
-                    <field name="date"/>
+                    <field name="receiv_date"/>
                     <field name="name"/>
                     <field name="cust_name"/>
                     <field name="sex"/>
@@ -31,13 +31,16 @@
                     </header>
                     <sheet>
                         <group col="16">
-                            <group colspan="4">
+                            <group colspan="3">
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft','except'])]}"/>
                             </group>
-                            <group colspan="4">
+                            <group colspan="3">
                                 <field name="date" attrs="{'readonly':[('state','=','done')]}"/>
                             </group>
-                            <group colspan="4">
+                            <group colspan="3">
+                                <field name="receiv_date" attrs="{'readonly':[('state','=','done')]}"/>
+                            </group>
+                            <group colspan="3">
                                 <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                             <group colspan="4">

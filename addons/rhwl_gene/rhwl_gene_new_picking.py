@@ -106,7 +106,7 @@ class rhwl_picking(osv.osv):
 
         for i in id:
             obj=self.browse(cr,uid,i,context=context)
-            d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
+            d=obj.name #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
             files={}
             if not os.path.exists(d_path):
@@ -120,7 +120,7 @@ class rhwl_picking(osv.osv):
                 if not files.has_key(k1):files[k1]={}
 
                 for b in l.detail:
-                    k2=b.genes_id.package_id.code + "." +b.genes_id.package_id.name
+                    k2=b.genes_id.package_id.name
                     box_path=os.path.join(line_path,k2)
                     if not os.path.exists(box_path):
                         os.mkdir(box_path)
@@ -148,12 +148,19 @@ class rhwl_picking(osv.osv):
             row=0
             batch=v.keys()
             batch.sort()
+
+            ws.write(row,0,u"样本编号")
+            ws.write(row,1,u"姓名")
+            ws.write(row,2,u"性别")
+            ws.write(row,3,u"套餐")
+            row +=1
             for k1 in batch:
                 for i in v[k1]:
-                    ws.write(row,0,k)
-                    ws.write(row,1,i[1])
-                    ws.write(row,2,i[2])
-                    ws.write(row,3,u"男" if i[3]=="M" else u"女" )
+
+                    ws.write(row,0,i[1])
+                    ws.write(row,1,i[2])
+                    ws.write(row,2,u"男" if i[3]=="M" else u"女" )
+                    ws.write(row,3,k1)
                     row +=1
         w.save(os.path.join(d_path,u"易感发货单(印刷)")+".xls")
 

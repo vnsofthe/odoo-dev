@@ -176,8 +176,12 @@ class rhwl_material(osv.osv):
 
         for p in self.pool.get("stock.picking").browse(cr,SUPERUSER_ID,picking_ids,context=context):
             move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_dest_id","in",production_location_id),("picking_id","=",p.id),("state","=","done"),("cost_mark","=",0)],context=context)
+
             #处理每笔出库单对象的未完结的库存移动.
             for m in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
+                #检查是否有退货
+                back_move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("origin_returned_move_id","=",m.id),("location_id","=",m.location_dest_id.id),("location_dest_id","=",m.location_id.id),("state","=","done"),("product_qty","=",m.product_qty)])
+                if back_move_ids:continue
                 #检查领用出库单对应的采购是否已经确认发票
                 p_ids=[]
                 for q in m.quant_ids:
