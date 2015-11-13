@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rhwl_web_material,access_rhwl_web_material,model_rhwl_web_material,,1,1,1,0
+access_rhwl_web_material_line,access_rhwl_web_material_line,model_rhwl_web_material_line,,1,1,1,1

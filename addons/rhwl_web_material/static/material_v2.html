@@ -25,7 +25,7 @@
   <!-- Tile icon for Win8 (144x144 + tile color) -->
   <meta name="msapplication-TileImage" content="/rhwl_weixin/static/assets/i/app-icon72x72@2x.png">
   <meta name="msapplication-TileColor" content="#0e90d2">
-  <link rel="stylesheet" href="http://cdn.amazeui.org/amazeui/2.4.2/css/amazeui.min.css">
+  <link rel="stylesheet" href="/rhwl_web_material/static/css/amazeui.min.css">
 
     <style type="text/css">
       input[type=number]::-webkit-inner-spin-button,
@@ -49,7 +49,7 @@
 
         <div class="am-form-group am-hide" id="hospital">
             <label class="am-form-label" for="partner_id">申请机构</label><br>
-            <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}">
+            <select id="partner_id" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1,maxHeight: 300}">
 
             </select>
         </div>
@@ -108,7 +108,7 @@
       <form class="am-form">
             <div class="am-form-group" style="text-align:left;">
                 <label for="doc-ipt-15" class="am-form-label">物料名称</label>
-                <select id="doc-ipt-15" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1}"></select>
+                <select id="doc-ipt-15" class="am-form-field" data-am-selected="{btnWidth: '100%',searchBox: 1,maxHeight: 200}"></select>
             </div>
             <div class="am-form-group" style="text-align:left;">
                 <label for="doc-ipt-16" class="am-form-label">单位</label>
@@ -131,12 +131,10 @@
 
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
-<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
-<script src="http://cdn.amazeui.org/amazeui/2.4.2/js/amazeui.min.js"></script>
+<script src="/rhwl_web_material/static/js/jquery.min.js"></script>
+<script src="/rhwl_web_material/static/js/amazeui.min.js"></script>
 <!--<![endif]-->
-<!--[if lte IE 8 ]>
-<script src="http://libs.baidu.com/jquery/1.11.1/jquery.min.js"></script>
-<![endif]-->
+
 <script src="/rhwl_weixin/static/js/weixin-0.2.js"></script>
 
 <script>
@@ -227,6 +225,7 @@
               url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {},
               success: function(data){
+                  alert("get Partner");
                   $.each(data,function(k,v){
                       if(k==0){
                           $("#partner_id").append("<option value=\""+v[0]+"\" selected>"+v[1]+"</option>");

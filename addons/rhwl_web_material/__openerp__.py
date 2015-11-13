@@ -15,7 +15,7 @@ RHWL微信物料领用申请
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
     'depends': ['web','vnsoft_base','rhwl_weixin'],
-    'data': ["material_seq.xml","material.xml"],
+    'data': ["material_seq.xml","material.xml","security/ir.model.access.csv",],
     "qweb":[],
     'demo': [],
     'test': [],

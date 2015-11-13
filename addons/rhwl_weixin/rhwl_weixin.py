@@ -76,7 +76,7 @@ class rhwl_weixin(osv.osv):
     def action_user_bind(self,cr,code,openid,uid):
         base_obj = self.pool.get("rhwl.weixin.base")
         id=base_obj.search(cr,SUPERUSER_ID,[("code","=",code)])
-        ids=self.search(cr,SUPERUSER_ID,[("base_id","=",id[0]),("openid","=",openid)])
+        ids=self.search(cr,SUPERUSER_ID,[("base_id","=",id[0]),'|',("openid","=",openid),("rhwlid","=",openid)])
         if ids:
             self.write(cr,SUPERUSER_ID,ids,{"user_id":uid})
         else:
@@ -256,7 +256,7 @@ class rhwl_config(osv.osv):
     def _get_userid(self,cr,orig_id,openid):
         weixin = self.pool.get("rhwl.weixin")
 
-        id = weixin.search(cr,SUPERUSER_ID,[("base_id","=",orig_id),('openid','=',openid)])
+        id = weixin.search(cr,SUPERUSER_ID,[("base_id","=",orig_id),'|',('openid','=',openid),("rhwlid","=",openid)])
         if id:
             obj= weixin.browse(cr,SUPERUSER_ID,id)
             return obj.user_id.id

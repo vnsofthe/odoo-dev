@@ -54,11 +54,12 @@ class WebClient(http.Controller):
                     uid = request.session.authenticate(DBNAME,data.get('Username'),data.get('Pwd'))
                 elif data.get("openid"):
                     app = data.get("code")
+                    rhwlid = data.get("openid")
                     registry = RegistryManager.get(request.session.db)
                     weixin = registry.get("rhwl.weixin")
 
                     with registry.cursor() as cr:
-                        id = weixin.search(cr,SUPERUSER_ID,[('openid','=',data.get("openid")),("base_id.code","=",app)],context=self.CONTEXT)
+                        id = weixin.search(cr,SUPERUSER_ID,[("base_id.code","=",app),'|',('openid','=',rhwlid),("rhwlid","=",rhwlid)],context=self.CONTEXT)
 
                         if id:
                             obj= weixin.browse(cr,SUPERUSER_ID,id,context=self.CONTEXT)

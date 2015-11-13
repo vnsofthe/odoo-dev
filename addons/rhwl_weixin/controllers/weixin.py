@@ -116,6 +116,15 @@ class weixin(http.Controller):
 
     def send_photo_text(self,toUser,fromUser,code,articles,encrypt=None,AgentID=None,kw=None):
         #发送图文消息
+        registry = RegistryManager.get(request.session.db)
+        with registry.cursor() as cr:
+            orig = registry.get("rhwl.weixin")
+            ids = orig.search(cr,SUPERUSER_ID,[("openid","=",toUser),("base_id.code","=",code)])
+            if ids:
+                user_obj = orig.browse(cr,SUPERUSER_ID,ids[0]).rhwlid
+                user_obj = user_obj.encode("utf-8")
+            else:
+                user_obj=toUser
         articlesxml=""
         for i in articles:
             itemxml=""
@@ -126,9 +135,9 @@ class weixin(http.Controller):
                     if not v.startswith("http"): v = self.HOSTNAME+v
                     if k=='Url':
                         if v.count('?')>0:
-                            v = v+"&code="+code+"&openid="+toUser
+                            v = v+"&code="+code+"&openid="+user_obj
                         else:
-                            v = v+"?code="+code+"&openid="+toUser
+                            v = v+"?code="+code+"&openid="+user_obj
 
                 itemxml +="<%s><![CDATA[%s]]></%s>" %(k,v,k)
             itemxml="<item>%s</item>" % (itemxml,)
