@@ -375,7 +375,7 @@ class rhwl_gene(osv.osv):
 
     #导出样本信息图片
     def export_genes_img(self,cr,uid,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/tjs")
         d=os.path.join(upload_path,u"样本信息图片")
         if not os.path.exists(d):
             os.mkdir(d)

@@ -12,6 +12,7 @@ import os
 import shutil
 import xlwt
 import re
+import rhwl_reportlab
 _logger = logging.getLogger(__name__)
 
 #样本发货单对象
@@ -129,7 +130,7 @@ class rhwl_picking(osv.osv):
             self.report_upload_picking(cr,uid,i,context=context)
 
     def report_upload_picking(self,cr,uid,id,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/tjs")
         pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
         dict_level={
             "H":u"高风险",
@@ -139,25 +140,26 @@ class rhwl_picking(osv.osv):
             id=[id]
         #hardcode=[]
         is_upload=True
-        for i in id:
+
+
+        for i in id: #循环处理发货单内容
             obj=self.browse(cr,uid,i,context=context)
             d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
             files={}
             if not os.path.exists(d_path):
                 os.mkdir(d_path)
-            for l in obj.line:
+            for l in obj.line:#循环处理发货单下每个批次明细
                 if not l.box_line:is_upload=False
+                if l.qty==0:continue
                 #if not l.export:is_upload=False
                 #处理批号
                 sheet_data={} #用于保存每个批次的装箱数据，给印刷厂查看
                 if l.batch_kind=="normal":
-                    if l.qty==0:continue
                     line_path=os.path.join(d_path,l.batch_no+"-"+str(l.qty))
                     if not os.path.exists(line_path):
                         os.mkdir(line_path)
-                    for b in l.box_line:
-
+                    for b in l.box_line:#循环处理批次明细下每个箱号
                         box_path=os.path.join(line_path,dict_level[b.level])
                         if not os.path.exists(box_path):
                             os.mkdir(box_path)
@@ -166,10 +168,10 @@ class rhwl_picking(osv.osv):
                         if not os.path.exists(box_path):
                             os.mkdir(box_path)
                         if not files.has_key(box_path):files[box_path]=[]
-                        for bl in b.detail:
+                        for bl in b.detail:#循环处理每个箱号下的样本
                             pdf_file = bl.genes_id.name+".pdf"
                             files[box_path].append([pdf_file,bl.id])
-                            sheet_data[str(l.seq)+"-"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
+                            sheet_data[str(l.seq)+"-"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex,dict_level[b.level],bl.genes_id.date,bl.genes_id.batch_no])
                 elif l.batch_kind=="resend":
                     line_path=os.path.join(d_path,u"重新印刷")
                     if not os.path.exists(line_path):
@@ -184,7 +186,7 @@ class rhwl_picking(osv.osv):
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
                             files[box_path].append([pdf_file,bl.id])
-                            sheet_data["R"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
+                            sheet_data["R"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex,u"重新印刷","",""])
                 elif l.batch_kind=="vip":
                     line_path=os.path.join(d_path,u"会员部VIP")
                     if not os.path.exists(line_path):
@@ -199,8 +201,9 @@ class rhwl_picking(osv.osv):
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
                             files[box_path].append([pdf_file,bl.id])
-                            sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex])
+                            sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex,u"会员部VIP","",""])
                 self.create_sheet_excel(line_path,sheet_data)
+                self.picking_export_pdf(line_path,sheet_data)
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,files)
             if obj.is_merge:
                 u_count += self.report_pdf_merge(cr,uid,obj.name,d,context=context)
@@ -217,9 +220,34 @@ class rhwl_picking(osv.osv):
             if vals.get("state","")=="upload":
                 self.report_pdf_zip(cr,uid,obj.name,d,context=context)
 
+    #产生每个箱号下面的装箱单PDF
+    def picking_export_pdf(self,line_path,data):
+        report_lab = rhwl_reportlab.rhwl() #建立装箱单PDF对象
+        pdf_path = line_path
+        risk_name=""
+        footer_name=""
+
+        for k,v in data.items():
+            if len(v)==0:continue
+            risk_name = v[0][3].encode("utf-8")
+            if len(k.split("-"))==2:
+                pdf_path = os.path.join(os.path.join(line_path,v[0][3]),k)
+                footer_name = ".".join(v[0][4].split("-")[1:])
+                footer_name += "会"+v[0][5]+"批"
+            else:
+                pdf_path = os.path.join(line_path,k)
+                footer_name = ""
+
+            datas=[]
+            seq=1
+            for i in v:
+                datas.append([seq,k,i[0].encode("utf-8"),i[1].encode("utf-8"),"男" if i[2]=="T" else "女" ])
+                seq +=1
+            report_lab.export_pdf(risk_name,datas,footer_name,os.path.join(pdf_path,k+"装箱单.pdf"))
+
     #复制发货单下面的所有拼版报告
     def report_pdf_merge(self,cr,uid,name,d,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/tjs")
         pdf_path = os.path.join(os.path.split(__file__)[0], "static/local/report")
         pdf_count=0
         source_path = os.path.join(pdf_path,name)
@@ -271,7 +299,7 @@ class rhwl_picking(osv.osv):
         return pdf_count
 
     def report_pdf_zip(self,cr,uid,name,d,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/tjs")
         target_path = os.path.join(upload_path,d)
         if not os.path.exists(target_path):
             return
@@ -321,7 +349,7 @@ class rhwl_picking(osv.osv):
 
     #生成发货单Excel
     def excel_upload(self,cr,uid,ids,isvip=False,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/tjs")
         cust_path = os.path.join(upload_path,u"发货单及横版报告")
         if not os.path.exists(cust_path):
             os.mkdir(cust_path)
@@ -696,7 +724,7 @@ class rhwl_picking(osv.osv):
 
     #创建发货单的横板excel表
     def risk_excel(self,cr,uid,id,context=None):
-        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload")
+        upload_path = os.path.join(os.path.split(__file__)[0], "static/local/upload/tjs")
         cust_path = os.path.join(upload_path,u"发货单及横版报告")
         obj = self.browse(cr,uid,id,context=context)
         d=obj.date.replace("/","").replace("-","") #发货单需创建的目录名称
