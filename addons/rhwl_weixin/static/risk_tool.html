@@ -278,6 +278,19 @@
             </form>
     <button type="button" id="calculate" class="am-btn am-btn-danger am-align-right">计算风险</button>
 </div>
+<div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd am-topbar-inverse">乳腺癌风险预测
+      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+    </div>
+    <div class="am-modal-bd">
+      <label id="lab1">您的最近五年风险值为：<span id="span1"></span>%</label><br>
+      <label id="lab2">全民最近五年平均值为：<span id="span2"></span>%</label><br><br>
+      <label id="lab3">您的终身风险值为：<span id="span3"></span>%</label><br>
+      <label id="lab4">全民终身平均值为：<span id="span4"></span>%</label>
+    </div>
+  </div>
+</div>
 <!--在这里编写你的代码-->
 <!--[if (gte IE 9)|!(IE)]><!-->
 <script src="assets/js/jquery.min.js"></script>
@@ -290,7 +303,25 @@
 <script src="/rhwl_weixin/static/js/risk.js" charset="utf-8"></script>
 <script>
     $("#calculate").bind("click",function(e){
-       calculate();
+       p=calculate();
+        console.log(p);
+
+        if(p!=undefined){
+            $.ajax({
+              type: 'POST',
+              url: "/web/api/risk_tool/",
+              data: p,
+              success: function(data){
+
+                  $("#span1").html(data[0]);
+                  $("#span2").html(data[1]);
+                  $("#span3").html(data[2]);
+                  $("#span4").html(data[3]);
+                  $('#doc-modal-1').modal('open');;
+              }
+            });
+        }
+
     });
 </script>
 </body>

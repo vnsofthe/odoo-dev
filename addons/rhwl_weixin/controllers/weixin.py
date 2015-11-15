@@ -14,6 +14,7 @@ from .. import WXBizMsgCrypt
 from urllib import unquote
 import logging
 import re
+import BCPTConvert,BCPT
 _logger = logging.getLogger(__name__)
 
 class weixin(http.Controller):
@@ -186,6 +187,47 @@ class weixin(http.Controller):
         temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[transfer_customer_service]]></MsgType></xml>"
         return temp % (toUser,fromUser,time.time().__trunc__().__str__())
 
+    @http.route("/web/api/risk_tool/",type="http",auth="none")
+    def rhwl_risk_tool(self,**kw):
+        bcpt = BCPT.RiskCalculator()
+        bcpt_convert = BCPTConvert.BcptConvert()
+
+        currentAge = bcpt_convert.GetCurrentAge((kw.get("current_age")).encode("utf-8"))
+        menarcheAge = bcpt_convert.GetMenarcheAge(kw.get("age_at_menarche").encode("utf-8"))
+        firstLiveBirthAge = bcpt_convert.GetFirstLiveBirthAge(kw.get("age_at_first_live_birth").encode("utf-8"))
+        firstDegreeRel = bcpt_convert.GetFirstDegRelatives(kw.get("related_with_breast_cancer").encode("utf-8"))
+        hadBiopsy = bcpt_convert.GetEverHadBiopsy(kw.get("ever_had_biopsy").encode("utf-8"))
+        numBiopsy = bcpt_convert.GetNumberOfBiopsy(kw.get("previous_biopsies").encode("utf-8"))
+        hyperPlasia = bcpt_convert.GetHyperPlasia(kw.get("biopsy_with_hyperplasia").encode("utf-8"))
+        race = bcpt_convert.GetRace(kw.get("race").encode("utf-8"))
+
+        CurrentAge = bcpt_convert.GetCurrentAge(currentAge)
+        MenarcheAge = bcpt_convert.MenarcheAge(menarcheAge)
+        FirstLiveBirthAge =bcpt_convert.FirstLiveBirthAge(firstLiveBirthAge)
+        EverHadBiopsy = bcpt_convert.EverHadBiopsy(hadBiopsy)
+        NumberOfBiopsy = bcpt_convert.NumberOfBiopsy(numBiopsy, EverHadBiopsy)
+        ihyp = bcpt_convert.Hyperplasia(race, EverHadBiopsy);
+        race = int(bcpt_convert.GetRace(race))
+        if (race < 7):
+            FirstDegRelatives = bcpt_convert.FirstDegRelatives1(firstDegreeRel)
+        else:
+            FirstDegRelatives = bcpt_convert.FirstDegRelatives2(firstDegreeRel, race)
+
+        ProjectionAge = CurrentAge+5
+        AgeIndicator = bcpt_convert.CurrentAgeIndicator(CurrentAge)
+        rhyp = bcpt_convert.RHyperplasia(ihyp,EverHadBiopsy)
+        irace = race
+
+        abs_risk5 = bcpt.CalculateAbsoluteRisk(CurrentAge,ProjectionAge,AgeIndicator,NumberOfBiopsy,MenarcheAge,FirstLiveBirthAge,FirstDegRelatives,EverHadBiopsy,ihyp,rhyp,irace)
+        avg_risk5 = bcpt.CalculateAeverageRisk(CurrentAge,ProjectionAge,AgeIndicator,NumberOfBiopsy,MenarcheAge,FirstLiveBirthAge,FirstDegRelatives,EverHadBiopsy,ihyp,rhyp,irace)
+        abs_risk90 = bcpt.CalculateAbsoluteRisk(CurrentAge,90,AgeIndicator,NumberOfBiopsy,MenarcheAge,FirstLiveBirthAge,FirstDegRelatives,EverHadBiopsy,ihyp,rhyp,irace)
+        avg_risk90 = bcpt.CalculateAeverageRisk(CurrentAge,90,AgeIndicator,NumberOfBiopsy,MenarcheAge,FirstLiveBirthAge,FirstDegRelatives,EverHadBiopsy,ihyp,rhyp,irace)
+        abs_risk5 = round(round(abs_risk5,6)*100,1)
+        avg_risk5 = round(round(avg_risk5,6)*100,1)
+        abs_risk90 = round(round(abs_risk90,6)*100,1)
+        avg_risk90 = round(round(avg_risk90,6)*100,1)
+        response = request.make_response(json.dumps([abs_risk5,avg_risk5,abs_risk90,avg_risk90],ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
 
     @http.route("/web/weixin/",type="http",auth="none")
     def rhwl_weixin(self,**kw):

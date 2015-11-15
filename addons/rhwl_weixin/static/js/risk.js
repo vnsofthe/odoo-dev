@@ -170,9 +170,7 @@ function calculate() {
 		parameters["asian"]=asian
 	}
 
-    console.log(parameters);
-    
-    return;
+    return parameters;
 }
 
 function disclaimer() {
