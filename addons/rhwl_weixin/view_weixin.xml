@@ -37,6 +37,8 @@
                                 <field name="is_notice"/>
                                 <field name="is_library"/>
                                 <field name="is_sampleresult"/>
+                                <field name="is_material_approve"/>
+                                <field name="is_material_express"/>
                             </group>
                             <group>
                                 <field name="is_account"/>

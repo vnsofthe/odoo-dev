@@ -535,7 +535,7 @@ class RiskCalculator():
 
         for i in range(1,16):
             if (ts <= self.t[i - 1]):
-                ns = i - 1;
+                ns = i - 1
                 break
         incr = 0
         if (riskindex == 2 and irace < 7):

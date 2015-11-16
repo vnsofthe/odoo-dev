@@ -43,7 +43,33 @@ class web_material(osv.osv):
             context = {}
         if vals.get('name', '/') == '/':
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'rhwl.web.material') or '/'
-        return super(web_material,self).create(cr,uid,vals,context)
+        id = super(web_material,self).create(cr,uid,vals,context)
+        obj = self.browse(cr,uid,id,context=context)
+        if obj.state=="confirm":
+            send_text = "申请单[%s]已确认，请及时审核。" %(obj.name.encode("utf-8"),)
+            self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_material_approve",send_text,context=context)
+        return id
+
+    def write(self,cr,uid,ids,vals,context=None):
+        res = super(web_material,self).write(cr,uid,ids,vals,context=context)
+        if vals.get("state") in ("confirm","approve1","approve2","done"):
+            if isinstance(ids,(int,long)):
+                ids = [ids]
+            for i in self.browse(cr,uid,ids,context=context):
+                if(i.state=="confirm"):
+                    send_text = "申请单[%s]已确认，请及时审核。" %(i.name.encode("utf-8"),)
+                    self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_material_approve",send_text,context=context)
+                elif(i.state=="approve1"):
+                    send_text = "申请单[%s]已通过第一次核准，请通知第二核准人处理。" %(i.name.encode("utf-8"),)
+                    self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_material_approve",send_text,context=context)
+                elif(i.state=="approve2"):
+                    send_text = "申请单[%s]已通过第二次核准，请及时处理发货。" %(i.name.encode("utf-8"),)
+                    self.pool.get("rhwl.weixin.base").send_qy_text(cr,SUPERUSER_ID,"rhwlyy","is_material_express",send_text,context=context)
+                elif(i.state=="done"):
+                    send_text = "申请单[%s]已发货，快递公司[%s]，快递单号[%s]，请注意查收。" %(i.name.encode("utf-8"),i.express_partner.encode("utf-8"),i.express_no.encode("utf-8"))
+                    u_ids = self.pool.get("rhwl.weixin").search(cr,SUPERUSER_ID,[("base_id.code","=","rhwlyy"),("user_id.id","=",i.user_id.id)],context=context)
+                    self.pool.get("rhwl.weixin.base").send_qy_text_ids(cr,SUPERUSER_ID,u_ids,send_text,context=context)
+        return res
 
     def action_state_approve1(self,cr,uid,ids,context=None):
         self.write(cr,uid,ids,{"state":"approve1","approve1_user":uid,"approve1_date":fields.datetime.now()},context=context)

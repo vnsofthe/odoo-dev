@@ -223,7 +223,9 @@ class rhwl_picking(osv.osv):
     #产生每个箱号下面的装箱单PDF
     def picking_export_pdf(self,line_path,data):
         report_lab = rhwl_reportlab.rhwl() #建立装箱单PDF对象
-        pdf_path = line_path
+        pdf_path = os.path.join(line_path,u"装箱单")
+        if not os.path.exists(pdf_path):
+            os.mkdir(pdf_path)
         risk_name=""
         footer_name=""
 
@@ -231,11 +233,11 @@ class rhwl_picking(osv.osv):
             if len(v)==0:continue
             risk_name = v[0][3].encode("utf-8")
             if len(k.split("-"))==2:
-                pdf_path = os.path.join(os.path.join(line_path,v[0][3]),k)
+                #pdf_path = os.path.join(os.path.join(line_path,v[0][3]),k)
                 footer_name = ".".join(v[0][4].split("-")[1:])
                 footer_name += "会"+v[0][5]+"批"
             else:
-                pdf_path = os.path.join(line_path,k)
+                #pdf_path = os.path.join(line_path,k)
                 footer_name = ""
 
             datas=[]
