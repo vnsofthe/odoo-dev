@@ -81,15 +81,16 @@ class rhwl_picking(osv.osv):
         t_count = 0
 
         for k,v in files.items():
-            for k1,v1 in v.items():
-                t_count += len(v1)
-                for i in v1:
-                    if os.path.exists(os.path.join(pdf_path,i[0])):
-                        f_path = os.path.join(os.path.join(d_path,k),k1)
-                        if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
-                            shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
+            for k2,v2 in v.items():
+                for k1,v1 in v2.items():
+                    t_count += len(v1)
+                    for i in v1:
+                        if os.path.exists(os.path.join(pdf_path,i[0])):
+                            f_path = os.path.join(os.path.join(os.path.join(d_path,k),k2),k1)
+                            if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
+                                shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
 
-                        u_count += 1
+                            u_count += 1
         return (t_count,u_count)
 
     #根据发货单，生成需要上传的目录结构，并复制pdf文件到相应的目录中。
@@ -108,30 +109,37 @@ class rhwl_picking(osv.osv):
             obj=self.browse(cr,uid,i,context=context)
             d=obj.name #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
-            files={}
+            files={} #pdf文件目录位置,第一层批号，第二层送检机构，第三层检测项目，第四层报告编号清单
             if not os.path.exists(d_path):
-                os.mkdir(d_path)
+                os.mkdir(d_path) #创建发货单号目录
             for l in obj.line:
                 if l.qty==0:continue
                 k1=l.batch_no+"-"+str(l.qty)
                 line_path=os.path.join(d_path,k1)
                 if not os.path.exists(line_path):
-                    os.mkdir(line_path)
+                    os.mkdir(line_path) #创建批次目录
                 if not files.has_key(k1):files[k1]={}
 
                 for b in l.detail:
+                    hospital_name = b.genes_id.hospital.name
+                    hospital_path = os.path.join(line_path,hospital_name)
+                    if not os.path.exists(hospital_path):
+                        os.mkdir(hospital_path)
+
+                    if not files[k1].has_key(hospital_name):files[k1][hospital_name]={}
+
                     k2=b.genes_id.package_id.name
-                    box_path=os.path.join(line_path,k2)
+                    box_path=os.path.join(hospital_path,k2)
                     if not os.path.exists(box_path):
                         os.mkdir(box_path)
 
-                    if not files[k1].has_key(k2):files[k1][k2]=[]
+                    if not files[k1][hospital_name].has_key(k2):files[k1][hospital_name][k2]=[]
 
                     pdf_file = b.genes_id.name+".pdf"
-                    files[k1][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex])
+                    files[k1][hospital_name][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex])
 
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,files)
-
+            os.system("chmod 666 -R "+d_path)
             vals={
                 "upload":u_count,
             }

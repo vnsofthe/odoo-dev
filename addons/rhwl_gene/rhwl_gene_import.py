@@ -27,7 +27,6 @@ class rhwl_import(osv.osv_memory):
             return fields.date.today()
         if isinstance(val,str):val=val.replace(".","/")
         if list(str(val)).count("/")==0:
-
             d=xlrd.xldate_as_tuple(int(val),0)
             return "%s/%s/%s"%(d[0],d[1],d[2])
         if list(str(val)).count("/")==1:
@@ -371,20 +370,22 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             batch_no={}
-            """姓名，性别，联系电话，样本编码，身份证号，采样日期，检测项目"""
+            """检测项目，姓名，性别，联系电话，样本编码，身份证号，采样日期，"""
             for i in range(1,nrows):
-                if not sh.cell_value(i,0):continue
-                name_col=sh.cell_value(i,0)
-                idt=sh.cell_value(i,4)
-                package_name = sh.cell_value(i,6)
+                if not sh.cell_value(i,1):continue
+                name_col=sh.cell_value(i,1)
+                idt=sh.cell_value(i,5)
+                package_name = sh.cell_value(i,0)
                 package_ids = self.pool.get("rhwl.genes.base.package").search(cr,uid,[("is_product","=",True),("name","=",package_name)])
                 if not package_ids:
                     raise osv.except_osv(u"出错",u"检测项目[%s]不存在。"%(package_name,))
+                mobile = sh.cell_value(i,3)
+                if type(mobile)==type(1.0):mobile = mobile.__trunc__()
                 val={
                     "cust_name":name_col.encode("utf-8").replace(".","·").replace("▪","·"),
-                    "sex": 'M' if sh.cell_value(i,1)==u"男" else 'F',
-                    "mobile":sh.cell_value(i,2),
-                    "name":sh.cell_value(i,3),
+                    "sex": 'M' if sh.cell_value(i,2)==u"男" else 'F',
+                    "mobile":mobile,
+                    "name":sh.cell_value(i,4),
                     "identity":idt,
                     "date":self.date_trun(sh.cell_value(i,5)),
                     "hospital":this.hospital.id,

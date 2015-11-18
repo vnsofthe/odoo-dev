@@ -438,6 +438,8 @@ class export_excel(osv.osv_memory):
         ws.write_merge(3,4,14+project_count*3+4,14+project_count*3+4,u"单价（元）",style=header_style)
         ws.write_merge(3,4,14+project_count*3+5,14+project_count*3+5,u"价值（元）",style=header_style)
 
+        project_qty={}
+        project_qty_col = 14+project_count*3+6
         project_col={}
         total_begin_amount=0
         total_this_in_amount=0
@@ -542,6 +544,18 @@ class export_excel(osv.osv_memory):
                             ws.write(rows,14+project_count*3+5,total_amt,style=content_style_num)
                             total_end_amount += total_amt
 
+                            #将产品剩余数量可作样本数加入
+                            if detail_obj.product_id.project_ids:
+                                ppp=[]
+                                for p in detail_obj.product_id.project_ids:
+                                    if ppp.count(p.project_id.id)>0:continue
+                                    ppp.append(p.project_id.id)
+                                    if not project_qty.has_key(p.project_id.id):
+                                        project_qty[p.project_id.id] = project_qty_col
+                                        project_qty_col += 1
+                                        ws.write_merge(3,4,project_qty[p.project_id.id],project_qty[p.project_id.id],p.project_id.name,style=content_style)
+                                    ws.write(rows,project_qty.get(p.project_id.id),round(total_qty * p.sample_count,0),style=content_style)
+
                         ws.write(rows,1,detail_obj.product_id.categ_id.parent_id.name,style=content_style)
                         ws.write(rows,2,detail_obj.product_id.categ_id.name,style=content_style)
                         ws.write(rows,3,detail_obj.product_id.product_no or "",style=content_style)
@@ -555,6 +569,7 @@ class export_excel(osv.osv_memory):
                         ws.write(rows,6,attribute_name,style=content_style)
 
                         rows += 1
+        ws.write_merge(1,2,14+project_count*3+6,project_qty_col-1,u"剩余库存可作样本数",style=header_style)
         ws.write_merge(rows,rows,0,7,u"合计",style=header_style)
         ws.write(rows,8,"-",style=content_style_num)
         ws.write(rows,9,"-",style=content_style_num)
@@ -572,6 +587,15 @@ class export_excel(osv.osv_memory):
         ws.write(rows,14+project_count*3+3,"-",style=content_style_num)
         ws.write(rows,14+project_count*3+4,"-",style=content_style_num)
         ws.write(rows,14+project_count*3+5,total_end_amount,style=content_style_num)
+
+        persons_ids = self.pool.get("rhwl.project.persons").search(cr,uid,[("date","=",mat_cost_obj.date),("state","=","done")],context=context)
+        if persons_ids:
+            persons_obj = self.pool.get("rhwl.project.persons").browse(cr,uid,persons_ids,context=context)
+            persons_text={}
+            for ps in persons_obj.line:
+                persons_text[ps.project_id.name] = ps.sample_count
+            ws.write_merge(rows+3,rows+3,0,1,u"当月已做样本数：")
+            ws.write_merge(rows+3,rows+3,2,10,u",".join(["%s:%s"%(x,persons_text[x]) for x in persons_text.keys()]))
         w.save(xlsname)
         f=open(xlsname,'rb')
 

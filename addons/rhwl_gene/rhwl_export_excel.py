@@ -266,9 +266,9 @@ class rhwl_export_excel(osv.osv_memory):
 
         w.save(os.path.join(xlsname,file_str+u"会员部送检样品质检不合格名单.xls"))
 
-        if not os.path.exists(u"/data/odoo/file/upload/样本质检异常"):
-            os.mkdir(u"/data/odoo/file/upload/样本质检异常")
-        t_dir=u"/data/odoo/file/upload/样本质检异常/"+file_str+u"会员部送检样品质检不合格名单及报告"
+        if not os.path.exists(u"/data/odoo/file/upload/tjs/样本质检异常"):
+            os.mkdir(u"/data/odoo/file/upload/tjs/样本质检异常")
+        t_dir=u"/data/odoo/file/upload/tjs/样本质检异常/"+file_str+u"会员部送检样品质检不合格名单及报告"
         if not os.path.exists(t_dir):
             os.mkdir(t_dir)
 
@@ -367,9 +367,9 @@ class rhwl_export_excel(osv.osv_memory):
 
         w.save(os.path.join(xlsname,file_str+u"邮寄样本问题反馈.xls"))
 
-        if not os.path.exists(u"/data/odoo/file/upload/样本问题反馈"):
-            os.mkdir(u"/data/odoo/file/upload/样本问题反馈")
-        t_dir=u"/data/odoo/file/upload/样本问题反馈/"+file_str+u"邮寄样本问题反馈"
+        if not os.path.exists(u"/data/odoo/file/upload/tjs/样本问题反馈"):
+            os.mkdir(u"/data/odoo/file/upload/tjs/样本问题反馈")
+        t_dir=u"/data/odoo/file/upload/tjs/样本问题反馈/"+file_str+u"邮寄样本问题反馈"
         if not os.path.exists(t_dir):
             os.mkdir(t_dir)
 
