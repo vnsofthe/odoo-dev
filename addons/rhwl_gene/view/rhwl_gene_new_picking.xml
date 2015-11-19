@@ -62,6 +62,7 @@
                                         <field name="qty"/>
                                         <field name="express_id"/>
                                         <button name="action_create_express" string="生成快递单" attrs="{'invisible':[('express_id','!=',False)]}" type="object"/>
+                                        <button name="action_open_express" string="打开快递单" attrs="{'invisible':[('express_id','=',False)]}" type="object"/>
                                     </tree>
                                 </field>
                             </page>

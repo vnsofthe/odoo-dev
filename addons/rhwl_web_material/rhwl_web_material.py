@@ -10,6 +10,27 @@ import logging
 class web_material(osv.osv):
     _name = "rhwl.web.material"
 
+    def _get_picking_state(self,cr,uid,ids,field_names,args,context=None):
+        res={}
+        for i in self.browse(cr,uid,ids,context=context):
+            res[i.id] = ""
+            picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",i.name),("state","!=","cancel")])
+            if not picking_id:
+                res[i.id] = u"无出库单"
+            else:
+                done_count = total_count = 0
+                for p in self.pool.get("stock.picking").browse(cr,uid,picking_id,context=context):
+                    if p.state=="done":
+                        done_count += 1
+                    total_count += 1
+                if done_count==total_count:
+                    res[i.id] = u"已出库"
+                elif done_count>0:
+                    res[i.id] = u"部分已出库"
+                else:
+                    res[i.id] = u"未出库"
+        return res
+
     _columns={
         "name":fields.char(u"申请单号",size=10),
         "date":fields.date(u"申请日期"),
@@ -30,6 +51,7 @@ class web_material(osv.osv):
         "approve1_date":fields.datetime(u"核准时间"),
         "approve2_date":fields.datetime(u"核准时间"),
         "done_date":fields.datetime(u"完成时间"),
+        "picking_state":fields.function(_get_picking_state,type="char",string=u"出库单状态"),
     }
     _defaults={
         "date":fields.date.today,
@@ -82,6 +104,74 @@ class web_material(osv.osv):
             if not (i.express_partner and i.express_no):
                 raise osv.except_osv("Error",u"确认完成时，请输入快递公司和快递单号。")
         self.write(cr,uid,ids,{"state":"done","done_date":fields.datetime.now()},context=context)
+
+    def action_create_picking(self,cr,uid,ids,context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+        stock_warehouse = self.pool.get("stock.warehouse")
+
+        location_id = self.pool.get("stock.location").search(cr,uid,[("usage","=","internal"),("loc_barcode","=","OFFICE")])
+        wh = stock_warehouse.search(cr,uid,[("partner_id","=",1)])
+        picking_type = self.pool.get("stock.picking.type").search(cr,uid,[("warehouse_id","=",wh[0]),("code","=","internal")])
+        if obj.wh_level=="person":
+            partner_id = obj.user_id.partner_id.id
+        else:
+            partner_id = obj.hospital.id
+
+        wh_id = stock_warehouse.search(cr, SUPERUSER_ID, [('partner_id', '=',partner_id)],context=context)
+        if not wh_id:
+            raise osv.except_osv('Error', u"[%s]没有归属仓库。"%(obj.user_id.partner_id.name if obj.wh_level=="person" else obj.hospital.name,))
+        wh_obj = stock_warehouse.browse(cr,SUPERUSER_ID,wh_id[0],context=context)
+        location_dest_id = wh_obj.lot_stock_id.id
+        val_0={
+            "partner_id":1,
+            "min_date":fields.datetime.now(),
+            "origin":obj.name,
+            "picking_type_id":picking_type[0],
+            "move_lines":[],
+        }
+        for l in obj.line:
+            if l.qty==0:continue
+            move_val={
+                "product_id":l.product_id.id
+            }
+            res=self.pool.get("stock.move").onchange_product_id(cr,uid,0,l.product_id.id)
+            move_val.update(res["value"])
+            move_val["product_uom_qty"]=l.qty
+            move_val["product_uos_qty"]=l.qty
+
+            move_val["location_dest_id"]=location_dest_id
+            move_val["location_id"] = location_id[0]
+
+            move_id = self.pool.get("stock.move").create(cr,uid,move_val,context=context)
+            val_0["move_lines"].append([4,move_id])
+
+        if val_0["move_lines"]:
+            self.pool.get("stock.picking").create(cr,uid,val_0,context=context)
+
+
+    def action_view_picking(self,cr,uid,ids,context=None):
+        obj = self.browse(cr,uid,ids,context)
+        picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",obj.name),("state","!=","cancel")])
+        if not picking_id:
+            self.action_create_picking(cr,uid,ids,context=context)
+            picking_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",obj.name),("state","!=","cancel")])
+        for p in self.pool.get("stock.picking").browse(cr,uid,picking_id,context=context):
+            back_id = self.pool.get("stock.picking").search(cr,uid,[("origin","=",p.name)])
+            if back_id:
+                picking_id = picking_id+back_id
+
+        mod_obj = self.pool.get('ir.model.data')
+        dummy, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'stock', 'action_picking_tree'))
+        action = self.pool.get('ir.actions.act_window').read(cr, uid, action_id, context=context)
+        action['context'] = {}
+        if len(picking_id) > 1:
+            action['domain'] = "[('id','in',[" + ','.join(map(str, picking_id)) + "])]"
+        else:
+            res = mod_obj.get_object_reference(cr, uid, 'stock', 'view_picking_form')
+            action['views'] = [(res and res[1] or False, 'form')]
+            action['res_id'] = picking_id and picking_id[0] or False
+
+        return action
 
 class web_material_line(osv.osv):
     _name="rhwl.web.material.line"

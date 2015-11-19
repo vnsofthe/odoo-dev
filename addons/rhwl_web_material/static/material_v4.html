@@ -225,7 +225,7 @@
               url: "/web/api/rhwl/partner/get/?openid="+$.getUrlVar('openid')+"&code="+$.getUrlVar('code'),
               data: {},
               success: function(data){
-
+                  
                   $.each(data,function(k,v){
                       if(k==0){
                           $("#partner_id").append("<option value=\""+v[0]+"\" selected>"+v[1]+"</option>");

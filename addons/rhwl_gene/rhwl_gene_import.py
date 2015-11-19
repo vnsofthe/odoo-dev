@@ -16,7 +16,8 @@ class rhwl_import(osv.osv_memory):
         "file_bin2":fields.binary(string=u"质检结果文件"),
         "file_bin3":fields.binary(string=u"位点结果文件"),
         "is_over":fields.boolean(u"是否覆盖已转入数据?"),
-        "hospital":fields.many2one("res.partner",u"送检机构",domain="[('is_company', '=', True), ('customer', '=', True)]")
+        "hospital":fields.many2one("res.partner",u"送检机构",domain="[('is_company', '=', True), ('customer', '=', True)]"),
+        "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性"),
     }
     _defaults={
         "is_over":False
@@ -351,6 +352,8 @@ class rhwl_import(osv.osv_memory):
         this = self.browse(cr, uid, ids[0])
         if not this.hospital:
             raise osv.except_osv(u"出错",u"送检机构不能为空。")
+        if not this.cust_prop:
+            raise osv.except_osv(u"出错",u"客户属性不能为空。")
 
         fileobj = NamedTemporaryFile('w+',delete=True)
         xlsname =  fileobj.name
@@ -373,6 +376,7 @@ class rhwl_import(osv.osv_memory):
             """检测项目，姓名，性别，联系电话，样本编码，身份证号，采样日期，"""
             for i in range(1,nrows):
                 if not sh.cell_value(i,1):continue
+
                 name_col=sh.cell_value(i,1)
                 idt=sh.cell_value(i,5)
                 package_name = sh.cell_value(i,0)
@@ -387,8 +391,9 @@ class rhwl_import(osv.osv_memory):
                     "mobile":mobile,
                     "name":sh.cell_value(i,4),
                     "identity":idt,
-                    "date":self.date_trun(sh.cell_value(i,5)),
+                    "date":self.date_trun(sh.cell_value(i,6)),
                     "hospital":this.hospital.id,
+                    "cust_prop":this.cust_prop,
                     "package_id":package_ids[0]
                 }
                 if idt and len(idt)==18:

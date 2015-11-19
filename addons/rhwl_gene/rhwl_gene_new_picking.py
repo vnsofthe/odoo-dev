@@ -198,6 +198,7 @@ class rhwl_picking(osv.osv):
                 else:
                     if box_dict.has_key(g.genes_id.hospital.id):
                         box_dict[g.genes_id.hospital.id]["qty"] +=1
+                        box_dict[g.genes_id.hospital.id]["detail_no"].append(g.genes_id.name)
                     else:
                         p_id = self.pool.get("res.partner").get_Contact_person(cr,uid,g.genes_id.hospital.id,u"易感报告收件人",context=context)
                         if not p_id:
@@ -216,10 +217,12 @@ class rhwl_picking(osv.osv):
                            "city_id":add_dict["city_id"],
                            "area_id":add_dict["area_id"],
                            "address":"".join([x for x in [add_dict["street"],add_dict["street2"]] if x]),
-                           "mobile":partner_obj.mobile
+                           "mobile":partner_obj.mobile,
+                            "detail_no":[g.genes_id.name]
                         }
             if box_dict:
                 for b in box_dict.values():
+                    b["detail_no"] = ",".join(b["detail_no"])
                     self.pool.get("rhwl.genes.new.picking.box").create(cr,uid,b,context=context)
 
     def action_export_excel(self,cr,uid,id,context=None):
@@ -309,7 +312,8 @@ class rhwl_picking_box(osv.osv):
         "state_id": fields.many2one("res.country.state",string=u'省'),
         "city_id": fields.many2one("res.country.state.city",string=u'市',domain="[('state_id','=',state_id)]"),
         "area_id":fields.many2one("res.country.state.city.area",string=u"区/县",domain="[('city_id','=',city_id)]"),
-        "express_id":fields.many2one("stock.picking.express",u"快递单",ondelete="restrict")
+        "express_id":fields.many2one("stock.picking.express",u"快递单",ondelete="restrict"),
+        "detail_no":fields.text("Detail No")
     }
 
     def action_create_express(self,cr,uid,id,context=None):
@@ -330,3 +334,20 @@ class rhwl_picking_box(osv.osv):
         }
         express_id = self.pool.get("stock.picking.express").create(cr,uid,val,context=context)
         self.write(cr,uid,obj.id,{"express_id":express_id},context=context)
+        if obj.detail_no:
+            for d in obj.detail_no.split(","):
+                self.pool.get("stock.picking.express.detail").create(cr,uid,{"parent_id":express_id,"number_seq":d},context=context)
+
+    def action_open_express(self,cr,uid,id,context=None):
+        obj = self.browse(cr,uid,id,context=context)
+
+        mod_obj = self.pool.get('ir.model.data')
+        dummy, action_id = tuple(mod_obj.get_object_reference(cr, uid, 'l10n_cn_express_track', 'action_stock_express'))
+        action = self.pool.get('ir.actions.act_window').read(cr, uid, action_id, context=context)
+        action['context'] = {}
+
+        res = mod_obj.get_object_reference(cr, uid, 'rhwl', 'rhwl_stock_picking_express_form')
+        action['views'] = [(res and res[1] or False, 'form')]
+        action['res_id'] = obj.express_id.id and obj.express_id.id or False
+
+        return action
