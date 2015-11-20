@@ -22,6 +22,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
+                        <button name="action_state_confirm" type="object" string="确认" states="draft"/>
                         <button name="action_state_approve1" type="object" string="核准一" states="confirm"/>
                         <button name="action_state_approve2" type="object" string="核准二" states="approve1"/>
                         <button name="action_state_done" type="object" string="完成" states="approve2"/>

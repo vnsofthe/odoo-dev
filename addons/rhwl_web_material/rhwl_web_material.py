@@ -93,6 +93,9 @@ class web_material(osv.osv):
                     self.pool.get("rhwl.weixin.base").send_qy_text_ids(cr,SUPERUSER_ID,u_ids,send_text,context=context)
         return res
 
+    def action_state_confirm(self,cr,uid,ids,context=None):
+        self.write(cr,uid,ids,{"state":"confirm"},context=context)
+
     def action_state_approve1(self,cr,uid,ids,context=None):
         self.write(cr,uid,ids,{"state":"approve1","approve1_user":uid,"approve1_date":fields.datetime.now()},context=context)
 

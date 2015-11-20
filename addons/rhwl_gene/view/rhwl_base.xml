@@ -109,6 +109,7 @@
                                     <tree >
                                         <field name="name"/>
                                         <field name="code"/>
+                                        <field name="lib_code"/>
                                         <field name="is_product"/>
                                     </tree>
                                     <form>
@@ -117,6 +118,7 @@
                                                 <group>
                                                     <field name="name"/>
                                                     <field name="code"/>
+                                                    <field name="lib_code"/>
                                                     <field name="is_product"/>
                                                 </group>
                                             </group>
