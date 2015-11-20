@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -18,6 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+# __author__ = jeff@openerp.cn
+# __author__ = cysnake4713@gmail.com
 
 import time
 
@@ -27,18 +29,19 @@ from openerp.osv import osv
 
 from math import ceil
 
+
 class report_account_move_common(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context=None):
         super(report_account_move_common, self).__init__(cr, uid, name, context=context)
         self.localcontext.update({
-                'paginate': self._paginate,
-                'account_name': self._get_account_name,
-                'account_partner': self._get_account_partner,
-                'exchange_rate': self._get_exchange_rate,
-                'unit_price': self._get_unit_price,
-                'rmb_format': self._rmb_format,
-                'rmb_upper': self._rmb_upper,
-            })
+            'paginate': self._paginate,
+            'account_name': self._get_account_name,
+            'account_partner': self._get_account_partner,
+            'exchange_rate': self._get_exchange_rate,
+            'unit_price': self._get_unit_price,
+            'rmb_format': self._rmb_format,
+            'rmb_upper': self._rmb_upper,
+        })
 
         self.context = context
 
@@ -52,14 +55,14 @@ class report_account_move_common(report_sxw.rml_parse):
         count = len(items)
         return int(ceil(float(count) / max_per_page))
 
-    def _get_account_name(self,id):
-        account_name = self.pool.get('account.account').name_get(self.cr, self.uid, [id],{})[0]
-        #Account move print use Account here:
+    def _get_account_name(self, id):
+        account_name = self.pool.get('account.account').name_get(self.cr, self.uid, [id], {})[0]
+        # Account move print use Account here:
         return account_name[1]
 
     def _get_account_partner(self, id, name):
         value = 'account.account,' + str(id)
-        partner_prop_acc = self.pool.get('ir.property').search(self.cr, self.uid, [('value_reference','=',value)], {})
+        partner_prop_acc = self.pool.get('ir.property').search(self.cr, self.uid, [('value_reference', '=', value)], {})
         if partner_prop_acc:
             return name
         else:
@@ -73,10 +76,10 @@ class report_account_move_common(report_sxw.rml_parse):
         exchange_rate = False
         if line.amount_currency:
             if line.debit > 0:
-                exchange_rate = line.debit/line.amount_currency
+                exchange_rate = line.debit / line.amount_currency
             if line.credit > 0:
-                exchange_rate = line.credit/( -1 * line.amount_currency)
-        return exchange_rate
+                exchange_rate = line.credit / (-1 * line.amount_currency)
+        return round(exchange_rate, 6)
 
     def _get_unit_price(self, line):
         '''
@@ -85,9 +88,9 @@ class report_account_move_common(report_sxw.rml_parse):
         unit_price = False
         if line.quantity:
             if line.debit > 0:
-                unit_price = line.debit/line.quantity
+                unit_price = line.debit / line.quantity
             if line.credit > 0:
-                unit_price = line.credit/line.quantity
+                unit_price = line.credit / line.quantity
         return unit_price
 
     def _rmb_format(self, value):
@@ -98,7 +101,7 @@ class report_account_move_common(report_sxw.rml_parse):
             # 值为0的不输出，即返回12个空格
             return ['' for i in range(12)]
         # 先将数字转为字符，去掉小数点，然后和12个空格拼成列表，取最后12个元素返回
-        return (['' for i in range(12)] + list(('%0.2f'%value).replace('.','')))[-12:]
+        return (['' for i in range(12)] + list(('%0.2f' % value).replace('.', '')))[-12:]
 
     def _rmb_upper(self, value):
         """
@@ -106,30 +109,31 @@ class report_account_move_common(report_sxw.rml_parse):
         来自：http://topic.csdn.net/u/20091129/20/b778a93d-9f8f-4829-9297-d05b08a23f80.html
         传入浮点类型的值返回 unicode 字符串
         """
-        rmbmap  = [u"零",u"壹",u"贰",u"叁",u"肆",u"伍",u"陆",u"柒",u"捌",u"玖"]
-        unit = [u"分",u"角",u"元",u"拾",u"佰",u"仟",u"万",u"拾",u"佰",u"仟",u"亿",
-                u"拾",u"佰",u"仟",u"万",u"拾",u"佰",u"仟",u"兆"]
+        rmbmap = [u"零", u"壹", u"贰", u"叁", u"肆", u"伍", u"陆", u"柒", u"捌", u"玖"]
+        unit = [u"分", u"角", u"元", u"拾", u"佰", u"仟", u"万", u"拾", u"佰", u"仟", u"亿",
+                u"拾", u"佰", u"仟", u"万", u"拾", u"佰", u"仟", u"兆"]
 
-        nums = map(int,list(str('%0.2f'%value).replace('.','')))
+        nums = map(int, list(str('%0.2f' % value).replace('.', '')))
         words = []
-        zflag = 0   #标记连续0次数，以删除万字，或适时插入零字
-        start = len(nums)-3
-        for i in range(start, -3, -1):   #使i对应实际位数，负数为角分
-            if 0 != nums[start-i] or len(words) == 0:
+        zflag = 0  # 标记连续0次数，以删除万字，或适时插入零字
+        start = len(nums) - 3
+        for i in range(start, -3, -1):  # 使i对应实际位数，负数为角分
+            if 0 != nums[start - i] or len(words) == 0:
                 if zflag:
                     words.append(rmbmap[0])
                     zflag = 0
-                words.append(rmbmap[nums[start-i]])
-                words.append(unit[i+2])
-            elif 0 == i or (0 == i%4 and zflag < 3): #控制‘万/元’
-                words.append(unit[i+2])
+                words.append(rmbmap[nums[start - i]])
+                words.append(unit[i + 2])
+            elif 0 == i or (0 == i % 4 and zflag < 3):  # 控制‘万/元’
+                words.append(unit[i + 2])
                 zflag = 0
             else:
                 zflag += 1
 
-        if words[-1] != unit[0]:    #结尾非‘分’补整字
+        if words[-1] != unit[0]:  # 结尾非‘分’补整字
             words.append(u"整")
         return ''.join(words)
+
 
 class report_account_move(osv.AbstractModel):
     _name = 'report.oecn_account_print.report_account_move'

@@ -1,34 +1,30 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
 # __author__ = jeff@openerp.cn
-##############################################################################
-#
-# WARNING: This program as such is intended to be used by professional
-# programmers who take the whole responsability of assessing all potential
-# consequences resulting from its eventual inadequacies and bugs
-# End users who are looking for a ready-to-use solution with commercial
-# garantees and support are strongly adviced to contract a Free Software
-# Service Company
-#
-# This program is Free Software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-#
-##############################################################################
+# __author__ = cysnake4713@gmail.com
 
 {
-    "name" : "符合中国会计习惯的财务功能",
-    "version" : "7.0",
-    "description" : '''
+    "name": "符合中国会计习惯的财务功能",
+    "version": "8.0",
+    "description": '''
     中国财务报表打印模块
     增加视图：
         中国凭证
@@ -61,22 +57,33 @@
     use this concept. They care more about move number and move number must
     be organized in a period
     ''',
-    "author" : "Shine IT",
-    "website" : "http://www.openerp.cn",
-    "depends" : ["account","account_accountant"],
-    "data" : [
-                "wizard/oecn_account_print_wizard_view.xml",
-                "oecn_account_print_view.xml",
-                "oecn_account_print_report.xml",
-                "views/report_account_move.xml",
-                'views/report_general_ledger.xml',
-                "views/report_cash_journal.xml",
-                "views/report_threecolumns_ledger.xml",
-                "views/report_stock_ledger.xml",
-                "views/report_currency_cash_journal.xml",
+    "author": "开阖软件,cysnake4713@gmail.com",
+    "website": "http://www.osbzr.com",
+    "depends": ["account", "account_accountant", "l10n_cn"],
+    "data": [
+
+        "data/account.financial.report.csv",
+
+        "security/oecn_account_print_security.xml",
+        "security/ir.model.access.csv",
+
+        "wizard/oecn_account_print_wizard_view.xml",
+        "views/oecn_account_print_view.xml",
+        "views/oecn_account_print_report.xml",
+        "views/menuitem.xml",
+
+        "report/report_account_move.xml",
+        'report/report_general_ledger.xml',
+        "report/report_cash_journal.xml",
+        "report/report_threecolumns_ledger.xml",
+        "report/report_stock_ledger.xml",
+        "report/report_currency_cash_journal.xml",
+
+        "report/report_financial_pal.xml",
+        "report/report_financial_aab.xml",
     ],
-    "installable" : True,
-    "certificate" : "",
-    "category" : "Accounting & Finance",
+    "installable": True,
+    "certificate": "",
+    "category": "Accounting & Finance",
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

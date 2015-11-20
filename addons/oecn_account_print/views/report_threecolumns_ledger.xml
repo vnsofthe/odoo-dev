@@ -42,7 +42,10 @@
                     </div>
                 </div>
 
-                <table border='1' class='col-xs-12' bordercolor='green'>
+                <style>
+                    table.col-xs-12 td{border: 1px solid green}
+                </style>
+                <table class='col-xs-12'>
                     <thead>
                         <tr>
                             <td height='40px' class='col-xs-2 text-center' >日期</td>

@@ -112,10 +112,10 @@ class rhwl_picking(osv.osv):
             files={} #pdf文件目录位置,第一层批号，第二层送检机构，第三层检测项目，第四层报告编号清单
             if not os.path.exists(d_path):
                 os.mkdir(d_path) #创建发货单号目录
-            for l in obj.line:
+            for l in obj.line:#遍历发货单下的批次
                 if l.qty==0:continue
                 k1=l.batch_no+"-"+str(l.qty)
-                line_path=os.path.join(d_path,k1)
+                line_path=os.path.join(d_path,k1)  #批次所在的目录
                 if not os.path.exists(line_path):
                     os.mkdir(line_path) #创建批次目录
                 if not files.has_key(k1):files[k1]={}

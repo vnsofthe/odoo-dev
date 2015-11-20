@@ -101,7 +101,7 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 data[k]={}
             k1 = sh.cell_value(i,4)
             if k1=="deletion":
-                Orig_GT = sh.cell_value(i,7)
+                Orig_GT = sh.cell_value(i,6)
 
                 if header_list.count("GSTT1")==0:
                     header_list.append("GSTT1")

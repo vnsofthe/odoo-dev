@@ -35,8 +35,10 @@
                                 <sapn t-esc="paginate(o.line_id, 5)" />
                             </div>
                         </div>
-
-                        <table border='1' class='col-xs-12'  bordercolor='green'>
+                        <style>
+                                table.col-xs-12 td{border: 1px solid green}
+                        </style>
+                        <table class='col-xs-12'>
                             <thead>
                                 <tr>
                                     <td rowspan='2' height='80px' class='col-xs-2 text-center' >摘要</td>
