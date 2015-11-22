@@ -30,7 +30,7 @@
         </record>
 
         <act_window name="导出样本问题反馈Excel"
-            context="{'func_name': 'informat'}"
+            context="{'func_name': 'informat','project_path':'tjs'}"
             res_model="rhwl.gene.export.excel"
             src_model="rhwl.easy.genes"
             view_mode="form"
@@ -38,6 +38,16 @@
             multi="True"
             key2="client_action_multi"
             id="action_genes_export_excel"/>
+
+        <act_window name="导出样本问题反馈Excel"
+            context="{'func_name': 'informat_new','project_path':'yg'}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.easy.genes.new"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_genes_new_export_excel"/>
 
         <act_window name="导出质检异常Excel"
             context="{'func_name': 'dna'}"
