@@ -82,6 +82,7 @@ class rhwl_base_package(osv.osv):
         "parent_id":fields.many2one("rhwl.genes.base.set",string="Parent"),
         "name":fields.char("Name",size=20,required=True),
         "code":fields.char("Code",size=50,required=True),
+        "lib_code":fields.char("Library Code",size=2),
         "is_product":fields.boolean(u"已推产品"),
         "detail":fields.one2many("rhwl.genes.base.package.snp","parent_id","Detail"),
     }
@@ -92,6 +93,14 @@ class rhwl_base_package(osv.osv):
     _defaults={
         "is_product":False
     }
+
+    def _check_snp(self,cr,uid,id,snp,context=None):
+        obj = self.browse(cr,uid,id,context=context)
+        loss_snp=[]
+        for i in obj.detail:
+            if snp.count(i.snp)==0:
+                loss_snp.append(i.snp)
+        return loss_snp
 
     def name_get(self, cr, user, ids, context=None):
         if context is None:
