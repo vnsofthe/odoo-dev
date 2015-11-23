@@ -167,6 +167,9 @@ class rhwl_ys(osv.osv):
     def action_state_confirm(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{"state":"confirm"},context=None)
 
+    def action_state_reset(self,cr,uid,id,context=None):
+        self.write(cr,uid,id,{"state":"draft"},context=context)
+
     def action_state_snp(self,cr,uid,id,context=None):
         self.write(cr,uid,id,{"state":"ok"},context=None)
 

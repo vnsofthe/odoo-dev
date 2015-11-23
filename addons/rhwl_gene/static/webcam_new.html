@@ -146,7 +146,7 @@
 			flip_horiz: false
 		});
         Webcam.attach( '#my_camera' );
-
+        var gene_id=0;
         function delete_img(){
             document.getElementById('my_result0').innerHTML="";
             document.getElementById('my_result1').innerHTML="";
@@ -184,6 +184,7 @@
                       $("#detail tbody tr").remove();
                       $("#detail tbody").append("<tr><td>"+data.cust_name+"</td><td>"+data.date+"</td><td>"+data.sex+"</td><td>"+data.identity+"</td><td>"+data.mobile+"</td></tr>");
                       $("#detail tbody").append("<tr><th colspan=\"3\">送检机构</th><th colspan=\"2\">检测套餐</th></tr><tr><td colspan=\"3\">"+data.hospital+"</td><td colspan=\"2\">"+data.package+"</td></tr>");
+                      gene_id = data.gene_id;
                   }
                 });
         }
@@ -211,7 +212,7 @@
                     $("#doc-ipt-3").focus();
                     return false
                 }
-                var post_data={img1:img1[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext,etx_type:except_type};
+                var post_data={img1:img1[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext,etx_type:except_type,id:gene_id};
                 if(img_single[0].checked==false){
                     post_data.img2=img2[0].src;
                 }

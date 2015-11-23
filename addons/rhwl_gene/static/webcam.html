@@ -134,7 +134,7 @@
 			flip_horiz: false
 		});
         Webcam.attach( '#my_camera' );
-
+        var gene_id=0;
         function delete_img(){
             document.getElementById('my_result0').innerHTML="";
             document.getElementById('my_result1').innerHTML="";
@@ -166,11 +166,13 @@
                   success: function(data){
                       $("#detail tbody tr").remove();
                       $("#detail tbody").append("<tr><td>"+data.cust_name+"</td><td>"+data.date+"</td><td>"+data.sex+"</td><td>"+data.identity+"</td><td>"+data.mobile+"</td></tr>");
+                      gene_id = data.gene_id;
                   }
                 });
         }
         $(function(){
             $("#form_submit").bind("click",function(e){
+                var startDate = new Date();
                 var img1=$('#img0');
                 var img2=$('#img1');
                 var id=$("#doc-ipt-3").val();
@@ -184,7 +186,7 @@
                 $.ajax({
                   type: 'POST',
                   url: "/web/api/gene/pic/",
-                  data: {img1:img1[0].src,img2:img2[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext},
+                  data: {img1:img1[0].src,img2:img2[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext,id:gene_id},
                   success: function(data){
                       if(data=="NO_DATA_FOUND"){
                           alert("样本编码在数据库不存在，请确认。");
@@ -194,6 +196,9 @@
                       $("#except_text").val("")
                       delete_img();
                       $("#doc-ipt-3").focus();
+                      gene_id=0;
+                      var endDate=new Date();
+                      document.title = "本次用时"+((endDate-startDate)/1000);
                   }
                 });
 

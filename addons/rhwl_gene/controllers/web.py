@@ -183,9 +183,12 @@ class gene(http.Controller):
         registry = RegistryManager.get(request.session.db)
         obj = registry.get("rhwl.easy.genes")
         with registry.cursor() as cr:
-            id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
-            if not id:
-                return "NO_DATA_FOUND"
+            if kw.get("id",0) and int(kw.get("id",0))>0:
+                id = [int(kw.get("id",0))]
+            else:
+                id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
+                if not id:
+                    return "NO_DATA_FOUND"
             file_like = cStringIO.StringIO(kw.get("img1").split(";")[-1].split(",")[-1].decode('base64','strict'))
             img = Image.open(file_like)
             width,height = img.size
@@ -230,6 +233,7 @@ class gene(http.Controller):
                     "identity":res.identity and res.identity or "",
                     "mobile":res.mobile and res.mobile or "",
                     "birthday":res.birthday and res.birthday or "",
+                    "gene_id":res.id,
                 }
 
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])

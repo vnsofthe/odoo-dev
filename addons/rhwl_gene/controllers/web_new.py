@@ -129,6 +129,7 @@ class gene(http.Controller):
                     "birthday":res.birthday and res.birthday or "",
                     "hospital":res.hospital.name,
                     "package":res.package_id.name,
+                    "gene_id":res.id,
                 }
 
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
