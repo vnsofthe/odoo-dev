@@ -8,6 +8,7 @@ import xlrd,os
 import datetime
 import logging
 import rhwl_gene_check
+import xlwt
 _logger = logging.getLogger(__name__)
 class rhwl_import(osv.osv_memory):
     _name = 'rhwl.genes.import'
@@ -425,3 +426,60 @@ class rhwl_import(osv.osv_memory):
                 'res_model': 'rhwl.easy.genes.new',
                 "context":{'search_default_type_draft':1},
                 'view_mode': 'tree'}
+
+    def import_report6(self,cr,uid,ids,context=None):
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, ids[0])
+
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        f=open(xlsname+'.xls','wb')
+        fileobj.close()
+        try:
+            #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
+            b=this.file_bin.decode('base64')
+            f.write(b)
+            f.close()
+
+            try:
+                bk = xlrd.open_workbook(xlsname+".xls")
+                sh = bk.sheet_by_index(0)
+            except:
+               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+            nrows = sh.nrows
+
+            w = xlwt.Workbook(encoding='utf-8')
+            ws = w.add_sheet("Sheet1")
+
+            for i in range(0,nrows):
+                gene_no = sh.cell_value(i,0)
+                if not gene_no:continue
+                gene_ids = self.pool.get("rhwl.easy.genes.new").search(cr,uid,[("name","=",gene_no)])
+                if not gene_ids:
+                    ws.write(i,1,u"无此样本编号")
+                else:
+                    gene_obj = self.pool.get("rhwl.easy.genes.new").browse(cr,uid,gene_ids[0],context=context)
+                    ws.write(i,0,gene_no)
+                    ws.write(i,1,gene_obj.package_id.name)
+                    ws.write(i,2,gene_no+gene_obj.package_id.lib_code)
+            w.save(xlsname+"_lib.xls")
+            f=open(xlsname+"_lib.xls",'rb')
+            id=self.pool.get('rhwl.gene.export.excel').create(cr,uid,{"file":base64.encodestring(f.read()),"name":u"样本编码转换结果.xls","state":"excel"})
+            f.close()
+            os.remove(xlsname+"_lib.xls")
+            os.remove(xlsname+".xls")
+
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'rhwl.gene.export.excel',
+                'view_mode': 'form',
+                'view_type': 'form',
+                'res_id': id,
+                'views': [(False, 'form')],
+                'target': 'new',
+                'name':u"实验编码转换"
+            }
+        finally:
+            f.close()
+            if os.path.exists(xlsname+'.xls'):os.remove(xlsname+'.xls')
