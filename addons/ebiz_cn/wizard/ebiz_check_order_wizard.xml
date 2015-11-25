@@ -54,8 +54,6 @@
             <field name="context">{}</field>
         </record>
 
-        <menuitem id="menu_check_order" parent="menu_oscg_web_shop" name='订单导入'  action="oscg_action_check_order" sequence="10"/>
-
     </data>
 </openerp>
 

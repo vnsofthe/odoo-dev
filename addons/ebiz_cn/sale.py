@@ -25,14 +25,14 @@ class product_template(osv.osv):
     _inherit = 'product.template'
 
     _columns = {
-        'num_iid': fields.integer(u'淘宝数字编码'),
+        'num_iid': fields.char(u'淘宝数字编码'),
     }
 
 class product_product(osv.osv):
     _inherit = 'product.product'
 
     _columns = {
-        'sku_id': fields.integer(u'淘宝SKU_ID'),
+        'sku_id': fields.char(u'淘宝SKU_ID'),
     }
 
 

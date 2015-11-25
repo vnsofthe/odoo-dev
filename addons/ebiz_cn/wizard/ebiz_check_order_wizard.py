@@ -81,23 +81,20 @@ class ebiz_check_order_wizard(osv.osv_memory):
             orders = self.pool.get('ebiz.shop').search_import_orders(cr, uid, [obj.shop_id.id], status = obj.order_state, date_start = obj.date_start, date_end = obj.date_end, context=context)
         return {'type': 'ir.actions.act_window_close'}
 
-
     def check_sale_order(self, cr, uid, ids, context=None):
         vals = []
         res = []
         for obj in self.browse(cr, uid, ids, context=context):
             orders = self.pool.get('ebiz.shop').search_orders(cr, uid, [obj.shop_id.id], status = obj.order_state, date_start = obj.date_start, date_end = obj.date_end, context=context)
             for order in orders:
-                so_ids = self.pool.get('sale.order').search(cr, uid, [('name', '=', order.get('sale_code'))], context = context)
-                if not so_ids:
-                    line_vals = {
-                        'sale_code': str(order.get('sale_code')), 
-                        'tid': str(order.get('tid')), 
-                        'date_create': str(order.get('modified')),
-                        'amount': float(order.get('total_fee')) or 0,
-                        'buyer_nick': order.get('buyer_nick'), 
-                    }
-                    res.append(line_vals)
+                line_vals = {
+                    'sale_code': str(order.get('sale_code')), 
+                    'tid': str(order.get('tid')), 
+                    'date_create': str(order.get('modified')),
+                    'amount': float(order.get('total_fee')) or 0,
+                    'buyer_nick': order.get('buyer_nick'), 
+                }
+                res.append(line_vals)
             
             context.update({'default_line': res})
             context.update({'date_start':obj.date_start,'date_end':obj.date_end,'shop_id':obj.shop_id.id,'order_state':obj.order_state})
@@ -117,7 +114,16 @@ class ebiz_check_order_wizard(osv.osv_memory):
             for line in obj.order_line:
                 res.append(line.tid)
             self.pool.get('ebiz.shop').import_orders(cr, uid, [obj.shop_id.id], res, context=context)
-        return {'type': 'ir.actions.act_window_close'}
+        context.update({'default_line': []})
+        return {
+            'name': 'Check Order',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'ebiz.check.order.wizard',
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+            'context': context
+        }
 
 
 class ebiz_check_order_line_wizard(osv.osv_memory):

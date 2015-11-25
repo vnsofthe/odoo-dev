@@ -1,24 +1,4 @@
 # -*- encoding: utf-8 -*-
-##############################################################################
-#
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2012-today OSCG (<http://www.zhiyunerp.com>)
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-
 import time
 import logging
 from openerp import tools
@@ -134,7 +114,7 @@ class ebiz_shop(osv.osv):
         #创建Product Template
         vals_template = {
             'name': product_vals['name'],
-            'num_iid': product_vals['num_iid'],
+            'num_iid': str(product_vals['num_iid']),
             'type': product_vals['type'],
             'categ_id': product_vals['categ_id'],
             'cost_method': 'real',
@@ -146,7 +126,7 @@ class ebiz_shop(osv.osv):
             prt_ids = self.pool.get('product.product').create(cr, uid, vals_template, context = context)
             return [prt_ids]
 
-        template_ids = self.pool.get('product.template').search(cr, uid, [('num_iid', '=', product_vals['num_iid'] )], context=context)
+        template_ids = self.pool.get('product.template').search(cr, uid, [('num_iid', '=', str(product_vals['num_iid']) )], context=context)
         if not template_ids:
             template_ids = self.pool.get('product.template').create(cr, uid, vals_template, context = context)
         else:
@@ -158,7 +138,7 @@ class ebiz_shop(osv.osv):
             #创建 product.product
             prt_vals = {
                 'default_code': sku['outer_id'],
-                'sku_id': sku['sku_id'],
+                'sku_id': str(sku['sku_id']),
                 'product_tmpl_id': template_ids,
                 'attribute_value_ids': [],
             }
@@ -191,7 +171,7 @@ class ebiz_shop(osv.osv):
             if prt_vals['default_code']:
                 prt_domain = [ ('default_code', '=', prt_vals['default_code']) ]
             else:
-                prt_domain = [ ('sku_id', '=', prt_vals['sku_id']) ]
+                prt_domain = [ ('sku_id', '=', str(prt_vals['sku_id'])) ]
             prt_ids = self.pool.get('product.product').search(cr, uid, prt_domain, context = context)
             if prt_ids:
                 prt_ids = prt_ids[0]
@@ -238,7 +218,7 @@ class ebiz_shop(osv.osv):
                 skus = resp.get('item_skus_get_response').get('skus', False)
                 product_vals = {
                     'name': product.name,
-                    'num_iid': long(product.num_code),
+                    'num_iid': product.num_code,
                     'type': 'product',
                     'categ_id': shop.categ_id.id,
                     'default_code': product.out_code or product.num_code,
@@ -251,7 +231,7 @@ class ebiz_shop(osv.osv):
             except Exception, e:
                #写入 同步异常日志
                 syncerr = u"店铺【%s】商品【num_iid=%s】导入错误: %s" % (shop.name, product.num_code, e)
-                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'product' }, context = context )
+                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'product', 'state': 'draft' }, context = context )
         return res
 
     def search_orders(self, cr, uid, ids, status = 'WAIT_SELLER_SEND_GOODS', date_start = None, date_end = None, context=None):
@@ -323,7 +303,9 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             r['created'] = (datetime.strptime(r['created'],'%Y-%m-%d %H:%M:%S',) - timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
             r['modified'] = (datetime.strptime(r['modified'],'%Y-%m-%d %H:%M:%S',) - timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
             r['sale_code'] = '%s_%s' % (shop.code, r['tid'])
-        return res
+        
+        orders = self.remove_duplicate_orders(cr, uid, res, context=context)
+        return orders
 
     def create_partner_address(self, cr, uid, shop_code, trade, context=None):
         """
@@ -431,7 +413,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             #如果没有匹配到产品，报同步异常
             if not product_ids:
                 syncerr = u"订单导入错误: 匹配不到商品。tid=%s, 商品【%s】, outer_iid=%s, num_iid=%s, outer_sku_id=%s, sku_id=%s " % ( trade.get('tid'), o.get('title', ''), o.get('outer_iid', ''), o.get('num_iid', ''),  o.get('outer_sku_id', ''), o.get('sku_id', '') )
-                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id':shop.id , 'type': 'order' }, context = context )
+                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id':shop.id , 'type': 'order', 'state': 'draft' }, context = context )
                 return False
             
             #添加订单明细行
@@ -497,7 +479,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
         except Exception,e:
            #写入 同步异常日志
             syncerr = u"店铺【%s】订单【%s】同步错误: %s" % (shop.name, tid, e)
-            self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'order' }, context = context )
+            self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'order', 'state': 'draft' }, context = context )
             return False
 
     def import_orders(self, cr, uid, ids, tids, context=None):
@@ -513,6 +495,15 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
         return order_ids
 
 
+    def remove_duplicate_orders(self, cr, uid, orders, context=None):
+        sale_obj = self.pool.get('sale.order')
+        submitted_references = [o['sale_code'] for o in orders]
+        existing_order_ids = sale_obj.search(cr, uid, [('name', 'in', submitted_references)], context = context)
+        existing_orders = sale_obj.read(cr, uid, existing_order_ids, ['name'], context=context)
+        existing_references = set([o['name'] for o in existing_orders])
+        orders_to_save = [o for o in orders if o['sale_code'] not in existing_references]
+        return orders_to_save
+        
     def search_import_orders(self, cr, uid, ids, status = 'WAIT_SELLER_SEND_GOODS', date_start = None, date_end = None, context=None):
         """
         搜索订单，批量导入
@@ -521,7 +512,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
         shop = self.browse(cr, uid, ids[0], context = context)
         setDefaultAppInfo(shop.appkey, shop.appsecret)
         req = TradesSoldIncrementGetRequest(shop.apiurl,port)
-        req.fields="seller_nick,buyer_nick,created,sid,tid,status,buyer_memo,seller_memo,payment,discount_fee,adjust_fee,post_fee,total_fee,pay_time,end_time,modified,received_payment,price,alipay_id,receiver_name,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,receiver_mobile,receiver_phone,orders.price,orders.num,orders.iid,orders.num_iid,orders.sku_id,orders.refund_status,orders.status,orders.oid,orders.total_fee,orders.payment,orders.discount_fee,orders.adjust_fee,orders.sku_properties_name,orders.outer_iid,orders.outer_sku_id"
+        req.fields="seller_nick,buyer_nick,created,sid,tid,status,buyer_memo,seller_memo,payment,discount_fee,adjust_fee,post_fee,total_fee, pay_time,end_time,modified,received_payment,price,alipay_id,receiver_name,receiver_state,receiver_city,receiver_district,receiver_address, receiver_zip,receiver_mobile,receiver_phone,orders.price,orders.num,orders.iid,orders.num_iid,orders.sku_id,orders.refund_status,orders.status,orders.oid, orders.total_fee,orders.payment,orders.discount_fee,orders.adjust_fee,orders.sku_properties_name,orders.outer_iid,orders.outer_sku_id"
         req.status = status
         if date_start:
             date_start = (datetime.strptime(str(date_start), '%Y-%m-%d %H:%M:%S',) + timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
@@ -563,6 +554,9 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             trade['created'] = (datetime.strptime(trade['created'], '%Y-%m-%d %H:%M:%S',) - timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
             trade['pay_time'] = (datetime.strptime(trade['pay_time'], '%Y-%m-%d %H:%M:%S',) - timedelta(hours=8)).strftime('%Y-%m-%d %H:%M:%S')
             trade['sale_code'] = '%s_%s' % (shop.code, trade['tid'])
+        
+        orders = self.remove_duplicate_orders(cr, uid, res, context=context)
+        for trade in orders:
             try:
                 #创建Partner
                 partner_id, address_id = self.create_partner_address(cr, uid, shop.code, trade, context = context )
@@ -572,7 +566,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             except Exception, e:
                 #写入 同步异常日志
                 syncerr = u"店铺【%s】订单【%s】同步错误: %s" % (shop.name, trade['tid'], e)
-                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'order' }, context = context )
+                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'order', 'state': 'draft' }, context = context )
                 continue
         return order_ids
 
@@ -588,7 +582,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
         except Exception,e:
            #写入 同步异常日志
             syncerr = u"店铺【%s】订单【%s】物流发货同步错误: %s" % (shop.name, tid, e)
-            self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'delivery' }, context = context )
+            self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'delivery', 'state': 'draft' }, context = context )
             return False
         return True
 
@@ -607,7 +601,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             partner_ref = picking.carrier_id and picking.carrier_id.partner_id.ref
             if not delivery_code or not partner_ref:
                 syncerr = u"店铺【%s】订单【%s】物流发货同步错误: 对应的发货单没有运单号，或者没有快递方式，或者快递方式的快递公司（Partner）没有填写’物流公司代码‘（Ref字段）！" % (shop.name, order.name)
-                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'delivery' }, context = context )
+                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'delivery', 'state': 'draft' }, context = context )
                 continue
                 
             #tid 格式为 店铺前缀_电商订单编号，如果是合并订单，则格式为 店铺前缀mg_流水号
@@ -617,7 +611,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             if order.name[:i].endswith('mg'):  #处理合并订单
                 if not order.origin:
                     syncerr = u"店铺【%s】订单【%s】物流发货同步错误: 合并订单的源单据中没有原始订单号！" % (shop.name, order.name)
-                    self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'delivery' }, context = context )
+                    self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'delivery', 'state': 'draft' }, context = context )
                     continue
                 tids = order.origin.split(',')
                 for t in tids:
@@ -643,7 +637,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
         if order.name[:i].endswith('mg'):  #处理合并订单
             if not order.origin:
                 syncerr = u"店铺【%s】订单【%s】买家签收同步错误: 合并订单的源单据中没有原始订单号！" % (shop.name, order.name)
-                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'invoice' }, context = context )
+                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'invoice', 'state': 'draft' }, context = context )
                 signed = False
             tids = order.origin.split(',')
             for t in tids:
@@ -695,7 +689,7 @@ ALL_CLOSED：所有关闭的交易（包含：TRADE_CLOSED、TRADE_CLOSED_BY_TAO
             except Exception, e:
                #写入 同步异常日志
                 syncerr = u"店铺【%s】订单【%s】买家签收同步错误: %s" % (shop.name, tid, e)
-                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'invoice' }, context = context )
+                self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'invoice', 'state': 'draft' }, context = context )
         
         return res
 
@@ -823,7 +817,7 @@ class ebiz_stock(osv.osv):
             ss = self.pool.get('product.product')._product_available(cr, uid, product_ids, context=context)
             for product in self.pool.get('product.product').browse(cr, uid, product_ids, context=context):
                 req = ItemQuantityUpdateRequest(shop.apiurl, port)
-                req.num_iid= product.num_iid
+                req.num_iid= long(product.num_iid)
                 if product.default_code:
                     req.outer_id = product.default_code
                 else:
@@ -839,7 +833,7 @@ class ebiz_stock(osv.osv):
                 except Exception,e:
                    #写入 同步异常日志
                     syncerr = u"店铺【%s】商品【[%s]%s】库存数量同步错误: %s" % (shop.name, product.default_code, product.name, e)
-                    self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'stock' }, context = context )
+                    self.pool.get('ebiz.syncerr').create(cr, uid, {'name':syncerr, 'shop_id': shop.id, 'type': 'stock', 'state': 'draft' }, context = context )
 
         return True
 

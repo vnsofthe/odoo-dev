@@ -54,8 +54,6 @@
             <field name="context">{}</field>
         </record>
 
-        <menuitem id="menu_product_sku" parent="menu_oscg_web_shop" name='商品/SKU匹配'  action="oscg_action_product_sku" sequence="5"/>
-
     </data>
 </openerp>
 
