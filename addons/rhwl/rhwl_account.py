@@ -183,12 +183,13 @@ class rhwl_material(osv.osv):
                 back_move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("origin_returned_move_id","=",m.id),("location_id","=",m.location_dest_id.id),("location_dest_id","=",m.location_id.id),("state","=","done"),("product_qty","=",m.product_qty)])
                 if back_move_ids:continue
                 #检查领用出库单对应的采购是否已经确认发票
-                p_ids=[]
-                for q in m.quant_ids:
-                    for h in q.history_ids:
-                        if h.location_id.id==supplier_location_id[0] and h.purchase_line_id != False and h.state=="done":
-                            p_ids.append(h.purchase_line_id.id)
-
+                #p_ids=[]
+                #for q in m.quant_ids:
+                #    for h in q.history_ids:
+                #        if h.location_id.id==supplier_location_id[0] and h.purchase_line_id != False and h.state=="done":
+                #            p_ids.append(h.purchase_line_id.id)
+                #获取跟此笔移库相关的采购明细ID
+                p_ids = self.pool.get("stock.move")._get_purchase_order_line(cr,SUPERUSER_ID,m.id,context=context)
                 if p_ids:
                     il_ids=[]
 
@@ -215,8 +216,7 @@ class rhwl_material(osv.osv):
                         is_purchase=True
                     else:
                         is_purchase=False
-                        for h in mq.history_ids:
-                            if h.purchase_line_id and h.state=='done':is_purchase=True
+                        if p_ids:is_purchase=True
                     if not is_purchase:continue
                     #处理项目分摊数量
                     if m.product_id.project_allocation:

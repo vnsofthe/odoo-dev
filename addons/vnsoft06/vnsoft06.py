@@ -35,21 +35,16 @@ class rhwl_sample_report(osv.osv):
         for id in ids:
             move_obj = self.pool.get("stock.move").browse(cr,uid,id,context=context)
             res[id]=False
-            if move_obj.purchase_line_id:
-                for inv in move_obj.purchase_line_id.invoice_lines:
-                    if inv.invoice_id.state in ("open","paid"):
-                        res[id]=True
-                    else:
-                        res[id]=False
-            else:
-                for q in move_obj.quant_ids:
-                    for h in q.history_ids:
-                        if h.purchase_line_id != False and h.state=="done":
-                            for inv in h.purchase_line_id.invoice_lines:
-                                if inv.invoice_id.state in ("open","paid"):
-                                    res[id]=True
-                                else:
-                                    res[id]=False
+
+            line_ids = self.pool.get("stock.move")._get_purchase_order_line(cr,SUPERUSER_ID,move_obj.id,context=context)
+            if line_ids:
+                for p in self.pool.get("purchase.order.line").browse(cr,SUPERUSER_ID,line_ids,context=context):
+                    for inv in p.invoice_lines:
+                        if inv.invoice_id.state in ("open","paid"):
+                            res[id]=True
+                        else:
+                            res[id]=False
+
         return res
 
     def _get_project(self,cr,uid,ids,fields_names,arg,context=None):

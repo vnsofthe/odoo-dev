@@ -59,6 +59,18 @@ class rhwl_move(osv.osv):
         "cost_mark":0
     }
 
+    def _get_purchase_order_line(self,cr,uid,ids,context=None):
+        if isinstance(ids,(long,int)):
+            ids = [ids]
+        line_ids=[]
+        for i in self.browse(cr,uid,ids,context=context):
+            for q in i.quant_ids:
+                for h in q.history_ids:
+                    if h.purchase_line_id != False and h.state=="done":
+                        line_ids.append(h.purchase_line_id.id)
+                    if h.origin_returned_move_id:
+                        line_ids += self._get_purchase_order_line(cr,uid,h.origin_returned_move_id.id,context=context)
+        return line_ids
 
 class rhwl_warehouse_orderpoint(osv.osv):
     _inherit = "stock.warehouse.orderpoint"

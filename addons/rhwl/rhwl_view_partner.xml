@@ -216,9 +216,9 @@
                                     <field name="mbjysj"/>
                                     <field name="sjjysj"/>
                                     <field name="hospital_price"/>
-                                    <field name="wc_contacts"/>
-                                    <field name="wc_material"/>
-                                    <field name="wc_report"/>
+                                    <field name="wc_contacts" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="wc_material" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="wc_report" options='{"no_open": True,"no_create":True}'/>
                                 </group>
                                 <group colspan="3">
                                     <field name="payment_kind"/>
@@ -242,9 +242,9 @@
                         <page string="易感" attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}">
                             <group>
                                 <group>
-                                    <field name="yg_contacts"/>
-                                    <field name="yg_material"/>
-                                    <field name="yg_report"/>
+                                    <field name="yg_contacts" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="yg_material" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="yg_report" options='{"no_open": True,"no_create":True}'/>
                                 </group>
                                 <group>
                                     <field name="yg_mbjysj"/>
@@ -260,9 +260,9 @@
                         <page string="叶酸" attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}">
                             <group>
                                 <group>
-                                    <field name="ys_contacts"/>
-                                    <field name="ys_material"/>
-                                    <field name="ys_report"/>
+                                    <field name="ys_contacts" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="ys_material" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="ys_report" options='{"no_open": True,"no_create":True}'/>
                                 </group>
                                 <group>
                                     <field name="ys_mbjysj"/>
@@ -278,9 +278,9 @@
                         <page string="耳聋" attrs="{'invisible': ['|',('is_company','!=', True),('customer','=',False)]}">
                             <group>
                                 <group>
-                                    <field name="el_contacts"/>
-                                    <field name="el_material"/>
-                                    <field name="el_report"/>
+                                    <field name="el_contacts" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="el_material" options='{"no_open": True,"no_create":True}'/>
+                                    <field name="el_report" options='{"no_open": True,"no_create":True}'/>
                                 </group>
                                 <group>
                                     <field name="el_mbjysj"/>
