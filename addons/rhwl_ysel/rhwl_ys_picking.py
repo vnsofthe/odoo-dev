@@ -319,8 +319,9 @@ class rhwl_picking(osv.osv):
                         box_dict[g.genes_id.hospital.id]["qty"] +=1
                         box_dict[g.genes_id.hospital.id]["detail_no"].append(g.genes_id.name)
                     else:
-                        p_id = self.pool.get("res.partner").get_Contact_person(cr,uid,g.genes_id.hospital.id,u"叶酸报告收件人",context=context)
-                        if not p_id:
+                        if g.genes_id.hospital.ys_report:
+                            p_id = g.genes_id.hospital.ys_report.id
+                        else:
                             p_id = g.genes_id.hospital.user_id.partner_id.id
                         if not p_id:
                             raise osv.except_osv("error",u"送检机构没有设置叶酸报告收件人，同时也没有对应的销售人员。")
