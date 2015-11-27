@@ -34,6 +34,8 @@
                             <group cols="4">
                                 <field name="name"/>
                                 <field name="date"/>
+                                <field name="update_detail"/>
+                                <field name="persons" attrs="{'invisible':[('update_detail','=',False)]}"/>
                                 <field name="project" attrs="{'required':True}" options="{'no_open':True,'no_create':True}"/>
                             </group>
                             <group cols="4">

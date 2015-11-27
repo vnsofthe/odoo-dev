@@ -43,6 +43,8 @@ class rhwl_lib(osv.osv):
         "note":fields.text("Note"),
         "active":fields.boolean("Active"),
         "project":fields.many2one("res.company.project","Project",required=True),
+        "update_detail":fields.boolean(u"带入项目物料"),
+        "persons":fields.integer(u"需做人份数"),
         "is_rd":fields.boolean("R&D"),
         "picking_state":fields.function(_get_picking_state,type="char",string=u"出库单状态"),
     }
@@ -52,7 +54,8 @@ class rhwl_lib(osv.osv):
         "user_id":lambda obj,cr,uid,context=None:uid,
         "date":fields.date.today,
         "active":True,
-        "is_rd":False
+        "is_rd":False,
+        "update_detail":False
     }
 
     def create(self, cr, uid, vals, context=None):
@@ -62,7 +65,29 @@ class rhwl_lib(osv.osv):
             vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'rhwl.library.request') or '/'
         return super(rhwl_lib,self).create(cr,uid,vals,context)
 
+    @api.onchange("project")
+    def onchange_project(self):
+        if self.project and self.update_detail:
+            p_ids = self.env["rhwl.product.project"].search([("project_id","=",self.project.id)])
+            lines = []
+            for i in p_ids:
+                lines.append({"product_id":i.product_id.id,"qty":round(self.persons/i.sample_count,5)})
+            self.line = lines
+
     def action_state_confirm(self,cr,uid,ids,context=None):
+        if isinstance(ids,(long,int)):
+            ids=[ids]
+        if not context:
+            context={}
+
+        for i in self.browse(cr,uid,ids,context=None):
+            new_context = context.copy()
+            new_context.update({"location":i.location_id.id})
+            for d in i.line:
+                qty_available = self.pool.get("product.product")._product_available(cr,uid,[d.product_id.id],context=new_context)
+                if qty_available[d.product_id.id]["qty_available"]<d.qty:
+                    raise osv.except_osv("Error",u"产品[%s]库存数量[%s]小于本次领用数量[%s]，不可以确认。"%(d.product_id.name,qty_available[d.product_id.id]["qty_available"],d.qty))
+
         self.write(cr,uid,ids,{"state":"confirm"},context=context)
 
     def action_state_reset(self,cr,uid,ids,context=None):
