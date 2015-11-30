@@ -418,7 +418,7 @@ class rhwl_export_excel(osv.osv_memory):
         ws.write(0,4,u"身份证号",style=self.get_excel_style(font_size=11)),
         ws.write(0,5,u"备注",style=self.get_excel_style(font_size=11)),
         ws.write(0,6,u"手机号",style=self.get_excel_style(font_size=11)),
-        ws.write(0,7,u"会员部反馈",style=self.get_excel_style(font_size=11))
+        ws.write(0,7,u"反馈",style=self.get_excel_style(font_size=11))
         ws.col(1).width = 4500 #1000 = 3.14(Excel)
         ws.col(4).width = 7000
         ws.col(5).width = 8000

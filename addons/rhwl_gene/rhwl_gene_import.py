@@ -483,3 +483,75 @@ class rhwl_import(osv.osv_memory):
         finally:
             f.close()
             if os.path.exists(xlsname+'.xls'):os.remove(xlsname+'.xls')
+
+    def import_report7(self, cr, uid, ids, context=None):
+        """接收质检数据"""
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, ids[0])
+
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        f=open(xlsname+'.xls','wb')
+        fileobj.close()
+        try:
+            #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
+            b=this.file_bin2.decode('base64')
+            f.write(b)
+            f.close()
+
+            try:
+                bk = xlrd.open_workbook(xlsname+".xls")
+                sh = bk.sheet_by_index(0)
+            except:
+               raise osv.except_osv(u"打开出错",u"请确认质检数据文件格式是否为正确的报告标准格式。")
+            nrows = sh.nrows
+            genes_ids=[]
+            for i in range(2,nrows):
+                no=sh.cell_value(i,1)
+                if not no:continue
+                if type(no)==type(1.0):no = no.__trunc__()
+                id=self.pool.get("rhwl.easy.genes.new").search(cr,uid,[("name","=",no)],context=context)
+                if not id:
+                    raise osv.except_osv(u"错误",u"基因编号[%s]不存在."%(no,))
+                if genes_ids.count(id[0])>0:
+                    raise osv.except_osv(u"错误",u"基因编号[%s]在Excel中存在多笔。"%(no,))
+                genes_ids.append(id[0])
+                self.pool.get("rhwl.easy.genes.new").write(cr,uid,id,{"log":[[0,0,{"note":u"导入质检数据","data":"DNA"}]]},context=context)
+                obj_ids = self.pool.get("rhwl.easy.genes.new.check").search(cr,uid,[("genes_id.name",'=',no)],context=context)
+                if obj_ids:
+                    self.pool.get("rhwl.easy.genes.new.check").write(cr,uid,obj_ids,{"active":False})
+                t1=sh.cell_value(i,4)
+                t2=sh.cell_value(i,5)
+                t3=sh.cell_value(i,6)
+                t4=sh.cell_value(i,8)
+                if not t4:t4=0
+                val={
+                        "genes_id":id[0],
+                        "date":self.date_trun(sh.cell_value(i,0)),
+                        "dna_date":self.date_trun(sh.cell_value(i,2)),
+                        "concentration":round(t1,2),
+                        "lib_person":sh.cell_value(i,3),
+                        "od260_280":round(t2,2),
+                        "od260_230":round(t3,2),
+                        "chk_person":sh.cell_value(i,7),
+                        "data_loss":str(round(t4,4)*100)+"%",
+                        "loss_person":sh.cell_value(i,9),
+                        "loss_date":self.date_trun(sh.cell_value(i,10)),
+                        "active":True,
+                    }
+
+                self.pool.get("rhwl.easy.genes.new.check").create(cr,uid,val,context=context)
+
+                if (t4>0.01):
+                    self.pool.get("rhwl.easy.genes.new").action_state_dna(cr,uid,id,context=context)
+                else:
+                    genes_obj = self.pool.get("rhwl.easy.genes.new").browse(cr,uid,id,context=context)
+                    if genes_obj.state in ('except_confirm','confirm'):
+                        self.pool.get("rhwl.easy.genes.new").action_state_dnaok(cr,uid,id,context=context)
+
+        finally:
+            f.close()
+            os.remove(xlsname+'.xls')
+
+        return

@@ -10,7 +10,7 @@
                         <field name="hospital" invisible="not context.get('file_type5',False)"/>
                         <field name="cust_prop" invisible="not context.get('file_type5',False)"/>
                         <field name="file_bin" invisible="(not context.get('file_type1',False)) and (not context.get('file_type10',False)) and (not context.get('file_type5',False)) and (not context.get('file_type6',False))"/>
-                        <field name="file_bin2" invisible="(not context.get('file_type2',False)) and (not context.get('file_type4',False)) "/>
+                        <field name="file_bin2" invisible="(not context.get('file_type2',False)) and (not context.get('file_type4',False))  and (not context.get('file_type7',False))"/>
                         <field name="file_bin3" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
                         <field name="is_over" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
                     </group>
@@ -22,6 +22,7 @@
                         <button name="import_report10" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type10',False)"/>
                         <button name="import_report5" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type5',False)"/>
                         <button name="import_report6" string="转换" type="object"  class="oe_highlight"  invisible="not context.get('file_type6',False)"/>
+                        <button name="import_report7" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type7',False)"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel" />
                     </footer>
@@ -95,6 +96,17 @@
             <field name="target">new</field>
         </record>
         <menuitem action="action_rhwl_genes_import_report6" id="menu_rhwl_easy_genes_new_instance6" name="实验编码转换" parent="menu_rhwl_easy_genes_new_import" sequence="80" />
+
+        <record id="action_rhwl_genes_import_report7" model="ir.actions.act_window">
+            <field name="name">DNA质检数据接收</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type7":1}</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_rhwl_genes_import_report7" id="menu_rhwl_easy_genes_new_instance7" name="DNA质检数据接收" parent="menu_rhwl_easy_genes_new_import" sequence="30" />
 
     </data>
 </openerp>

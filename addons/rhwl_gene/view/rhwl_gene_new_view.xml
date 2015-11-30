@@ -612,5 +612,22 @@
         <menuitem id="menu_genes_base_set" parent="menu_rhwl_easy_genes_new_configure" name="套餐信息维护" sequence="30"
                   action='action_genes_base_set' groups="rhwl_base_tjs"/>
 
+        <record id="action_easy_genes_new_dnaexcept" model="ir.actions.act_window">
+            <field name="name">质检异常样本</field>
+            <field name="res_model">rhwl.easy.genes.new</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="rhwl_easy_genes_new_view_tree"/>
+            <field name="domain">[('state','=','dna_except')]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_easy_genes_new_dnaexcept" parent="menu_rhwl_easy_genes_new" name="质检异常样本" sequence="15"
+                  action='action_easy_genes_new_dnaexcept' groups="rhwl_base_tjs"/>
     </data>
 </openerp>

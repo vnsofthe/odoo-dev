@@ -45,7 +45,7 @@ class rhwl_material(osv.osv):
     _defaults={
         "user_id":lambda obj,cr,uid,context:uid,
         "state":"draft",
-        "invoice":False,
+        "invoice":True,
         "inventory":False,
     }
     _sql_constraints = [

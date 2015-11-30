@@ -149,6 +149,15 @@ class WebClient(http.Controller):
 
     @http.route("/web/api/mongo/post_detail/",type="http",auth="public")
     def _post_detail(self,**kw):
+        if not request.uid:
+            return "权限不足"
+        registry = RegistryManager.get(request.session.db)
+        with registry.cursor() as cr:
+            user = registry.get("res.users")
+            user_obj = user.browse(cr,SUPERUSER_ID,request.uid)
+            if not user.has_group(cr,request.uid,"mongo.rhwl_mongo_manager"):
+                return "权限不足"
+
         db = self._get_cursor()
         contents = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
         no = contents.get(kw.get("lang")).get("sets").get(kw.get("tc")).get("list").get(kw.get("no"))

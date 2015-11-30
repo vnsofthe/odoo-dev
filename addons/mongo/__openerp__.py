@@ -15,7 +15,7 @@ MongoDB
     'website': 'https://www.odoo.com/page/crm',
     # 'images': ['images/Sale_order_line_to_invoice.jpeg','images/sale_order.jpeg','images/sales_analysis.jpeg'],
     'depends': ['web'],
-    'data': [ ],
+    'data': ["security/rhwl_security.xml" ],
     "qweb":[],
     'demo': [],
     'test': [],
