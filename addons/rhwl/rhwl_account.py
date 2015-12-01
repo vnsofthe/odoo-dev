@@ -141,8 +141,8 @@ class rhwl_material(osv.osv):
             for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
                 if not i.purchase_line_id.invoice_lines:continue
                 for inv in i.purchase_line_id.invoice_lines:
-                    if inv.invoice_id.type=="in_invoice" and (obj.invoice or (not inv.invoice_id.state in ("draft","cancel"))):
-                        if inv.invoice_id.period_id.date_stop < period_obj.date_start:
+                    if inv.invoice_id.type=="in_invoice" and inv.invoice_id.state not in ("cancel") and (obj.invoice or (not inv.invoice_id.state in ("draft","cancel"))):
+                        if obj.invoice or inv.invoice_id.period_id.date_stop < period_obj.date_start:
                             val={
                                 "parent_id":obj.id,
                                 "data_kind":"this",
@@ -157,22 +157,25 @@ class rhwl_material(osv.osv):
                             self.pool.get("stock.move").write(cr,SUPERUSER_ID,i.id,{"cost_mark":obj.id},context=context)
                             break
 
-
         #领料统计
         picking_ids=[]
         request_ids = self.pool.get("rhwl.library.request").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
         for i in request_ids:
             request_obj = self.pool.get("rhwl.library.request").browse(cr,SUPERUSER_ID,i,context=context)
             picking_ids_1 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",request_obj.name),("state","=","done")],context=context)
-            if picking_ids_1:
-                picking_ids = picking_ids + picking_ids_1
+            for p in picking_ids_1:
+                picking_moves = self.pool.get("stock.move").search_count(cr,SUPERUSER_ID,[("picking_id","=",p),("state","=","done"),("cost_mark","=",0)],context=context)
+                if picking_moves>0:
+                    picking_ids.append(p)
 
         consump_ids = self.pool.get("rhwl.library.consump").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
         for i in consump_ids:
             consump_obj = self.pool.get("rhwl.library.consump").browse(cr,SUPERUSER_ID,i,context=context)
             picking_ids_2 = self.pool.get("stock.picking").search(cr,SUPERUSER_ID,[("origin","=",consump_obj.name),("state","=","done")],context=context)
-            if picking_ids_2:
-                picking_ids = picking_ids + picking_ids_2
+            for p in picking_ids_2:
+                picking_moves = self.pool.get("stock.move").search_count(cr,SUPERUSER_ID,[("picking_id","=",p),("state","=","done"),("cost_mark","=",0)],context=context)
+                if picking_moves>0:
+                    picking_ids.append(p)
 
         for p in self.pool.get("stock.picking").browse(cr,SUPERUSER_ID,picking_ids,context=context):
             move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_dest_id","in",production_location_id),("picking_id","=",p.id),("state","=","done"),("cost_mark","=",0)],context=context)
@@ -202,7 +205,7 @@ class rhwl_material(osv.osv):
 
                     if il_ids:
                         if obj.invoice:
-                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:
+                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.state","in",["cancel"])],context=context)>0:
                                 continue
                         else:
                             if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),'|',("invoice_id.state","in",["draft","cancel"]),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:

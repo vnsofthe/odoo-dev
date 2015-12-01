@@ -71,6 +71,7 @@ class rhwl_lib(osv.osv):
             p_ids = self.env["rhwl.product.project"].search([("project_id","=",self.project.id)])
             lines = []
             for i in p_ids:
+                if i.sample_count==0:continue
                 lines.append({"product_id":i.product_id.id,"qty":round(self.persons/i.sample_count,5)})
             self.line = lines
 

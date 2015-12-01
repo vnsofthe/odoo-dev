@@ -31,7 +31,7 @@
                             <group>
                                 <group>
                                     <field name="date" attrs="{'readonly':[('state','=','done')]}"/>
-                                    <field name="invoice"/>
+                                    <field name="invoice" readonly="1"/>
                                     <field name="inventory"/>
                                 </group>
                                 <group>

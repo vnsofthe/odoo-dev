@@ -463,6 +463,8 @@ class Home(http.Controller):
 
     @http.route('/', type='http', auth="none")
     def index(self, s_action=None, db=None, **kw):
+        _logger.info(dir(request.httprequest))
+        _logger.info(request.httprequest.remote_addr)
         return http.local_redirect('/web', query=request.params, keep_hash=True)
 
     @http.route('/web', type='http', auth="none")
