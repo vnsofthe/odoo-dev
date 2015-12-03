@@ -183,6 +183,33 @@ class rhwl_import(osv.osv):
     def action_done(self,cr,uid,ids,context=None):
         ids = self.search(cr,uid,[],context=context)
         product_template = self.pool.get("product.template")
+        for i in self.browse(cr,uid,ids,context=context):
+            pt_id = product_template.search_count(cr,uid,[("default_code","=",i.col1)])
+            if pt_id>0:continue
+            p_project=[]
+            if i.col4:
+                p_project.append([0,0,{"project_id":7,"sample_count":i.col4}])
+            if i.col5:
+                p_project.append([0,0,{"project_id":16,"sample_count":i.col5}])
+            if i.col6:
+                p_project.append([0,0,{"project_id":17,"sample_count":i.col6}])
+            if i.col7:
+                p_project.append([0,0,{"project_id":18,"sample_count":i.col7}])
+            vals={
+                "name":u"探针:"+i.col1,
+                "sale_ok":False,
+                "uom_id":146,
+                "default_code":i.col1,
+                "cost_allocation":True,
+                "uom_po_id":146,
+                "categ_id":68,
+                "project_ids":p_project
+            }
+            product_template.create(cr,uid,vals)
+
+    def action_done_old(self,cr,uid,ids,context=None):
+        ids = self.search(cr,uid,[],context=context)
+        product_template = self.pool.get("product.template")
         product_attribute = self.pool.get("product.attribute")
         product_attribute_value = self.pool.get("product.attribute.value")
 
