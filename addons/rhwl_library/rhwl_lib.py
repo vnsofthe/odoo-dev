@@ -84,9 +84,11 @@ class rhwl_lib(osv.osv):
         for i in self.browse(cr,uid,ids,context=None):
             new_context = context.copy()
             new_context.update({"location":i.location_id.id})
-            for d in i.line:
+            line_ids = self.pool.get("rhwl.library.request.line").search(cr,uid,[("name","=",i.id)])
+            for d in self.pool.get("rhwl.library.request.line").browse(cr,uid,line_ids,context=context):
                 qty_available = self.pool.get("product.product")._product_available(cr,uid,[d.product_id.id],context=new_context)
-                if qty_available[d.product_id.id]["qty_available"]<d.qty:
+                if qty_available[d.product_id.id]["qty_available"]<round(d.qty,6):
+
                     raise osv.except_osv("Error",u"产品[%s]库存数量[%s]小于本次领用数量[%s]，不可以确认。"%(d.product_id.name,qty_available[d.product_id.id]["qty_available"],d.qty))
 
         self.write(cr,uid,ids,{"state":"confirm"},context=context)

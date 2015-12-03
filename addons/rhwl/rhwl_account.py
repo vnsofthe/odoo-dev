@@ -176,7 +176,7 @@ class rhwl_material(osv.osv):
                 picking_moves = self.pool.get("stock.move").search_count(cr,SUPERUSER_ID,[("picking_id","=",p),("state","=","done"),("cost_mark","=",0)],context=context)
                 if picking_moves>0:
                     picking_ids.append(p)
-
+        _logger.error(picking_ids)
         for p in self.pool.get("stock.picking").browse(cr,SUPERUSER_ID,picking_ids,context=context):
             move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_dest_id","in",production_location_id),("picking_id","=",p.id),("state","=","done"),("cost_mark","=",0)],context=context)
 
@@ -193,6 +193,8 @@ class rhwl_material(osv.osv):
                 #            p_ids.append(h.purchase_line_id.id)
                 #获取跟此笔移库相关的采购明细ID
                 p_ids = self.pool.get("stock.move")._get_purchase_order_line(cr,SUPERUSER_ID,m.id,context=context)
+                p_ids = [i for i in p_ids if i]
+                _logger.debug("move_id is %s,and purchase_order_line_id is %s"%(m.id,p_ids))
                 if p_ids:
                     il_ids=[]
 
@@ -202,10 +204,10 @@ class rhwl_material(osv.osv):
                             break
                         for il in l.invoice_lines:
                             il_ids.append(il.id)
-
+                    _logger.debug("invoice ids is %s"%(il_ids))
                     if il_ids:
                         if obj.invoice:
-                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.state","in",["cancel"])],context=context)>0:
+                            if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),("invoice_id.state","not in",["cancel"])],context=context)==0:
                                 continue
                         else:
                             if self.pool.get("account.invoice.line").search_count(cr,SUPERUSER_ID,[("id","in",il_ids),'|',("invoice_id.state","in",["draft","cancel"]),("invoice_id.period_id.date_start",">",period_obj.date_stop)],context=context)>0:

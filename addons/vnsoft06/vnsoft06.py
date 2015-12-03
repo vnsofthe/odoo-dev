@@ -37,6 +37,7 @@ class rhwl_sample_report(osv.osv):
             res[id]=False
 
             line_ids = self.pool.get("stock.move")._get_purchase_order_line(cr,SUPERUSER_ID,move_obj.id,context=context)
+            line_ids = [x for x in line_ids if x]
             if line_ids:
                 for p in self.pool.get("purchase.order.line").browse(cr,SUPERUSER_ID,line_ids,context=context):
                     for inv in p.invoice_lines:
