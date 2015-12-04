@@ -182,30 +182,20 @@ class rhwl_import(osv.osv):
 
     def action_done(self,cr,uid,ids,context=None):
         ids = self.search(cr,uid,[],context=context)
-        product_template = self.pool.get("product.template")
+        product_template = self.pool.get("product.product")
         for i in self.browse(cr,uid,ids,context=context):
-            pt_id = product_template.search_count(cr,uid,[("default_code","=",i.col1)])
-            if pt_id>0:continue
-            p_project=[]
-            if i.col4:
-                p_project.append([0,0,{"project_id":7,"sample_count":i.col4}])
-            if i.col5:
-                p_project.append([0,0,{"project_id":16,"sample_count":i.col5}])
-            if i.col6:
-                p_project.append([0,0,{"project_id":17,"sample_count":i.col6}])
-            if i.col7:
-                p_project.append([0,0,{"project_id":18,"sample_count":i.col7}])
+            pt_id = product_template.search(cr,uid,[("default_code","=",i.col1)])
+            if not pt_id:continue
+            pt_obj = product_template.browse(cr,uid,pt_id,context=context)
+            lot_id = self.pool.get('stock.production.lot').create(cr,uid,{'name':"0000",'product_id':pt_obj.id},context=context)
             vals={
-                "name":u"探针:"+i.col1,
-                "sale_ok":False,
-                "uom_id":146,
-                "default_code":i.col1,
-                "cost_allocation":True,
-                "uom_po_id":146,
-                "categ_id":68,
-                "project_ids":p_project
+                'product_id':pt_obj.id,
+                'new_quantity':i.col2,
+                'lot_id':lot_id,
+                'location_id':102
             }
-            product_template.create(cr,uid,vals)
+            qty_id = self.pool.get("stock.change.product.qty").create(cr,uid,vals)
+            self.pool.get("stock.change.product.qty").change_product_qty(cr,uid,qty_id,context=context)
 
     def action_done_old(self,cr,uid,ids,context=None):
         ids = self.search(cr,uid,[],context=context)
