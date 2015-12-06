@@ -29,7 +29,8 @@ class rhwl_gene(osv.osv):
         ('report_done', u"报告已生成"),
         ("result_done", u"风险报告确认"),
         ("deliver", u"印刷厂已接收"),
-        ('done', u'客户已收货')
+        ('done', u'客户已收货'),
+        ("reuse",u"需重采")
     ]
     STATE_SELECT = dict(STATE_SELECT_LIST)
 
@@ -472,6 +473,11 @@ class rhwl_gene(osv.osv):
 
     def action_state_result_done(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {"state": "result_done"})
+
+    @api.one
+    def action_state_reuse(self):
+        self.env["rhwl.easy.genes.new.reuse"].create({"name":self.id})
+        self.write({"state":"reuse"})
 
     def action_view_pdf(self, cr, uid, ids, context=None):
         return {'type': 'ir.actions.act_url',

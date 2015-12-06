@@ -27,6 +27,7 @@
                         <button name="action_state_confirm" string="样本确认" states="draft,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_reset" string="重置为草稿" states="confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <button name="action_state_done" string="报告已发放" states="confirm,except_confirm" type="object" groups="rhwl_gene.rhwl_base_gene"/>
+                        <button name="action_state_reuse" string="需重采样" states="draft,confirm,except,except_confirm,dna_except" type="object" groups="rhwl_gene.rhwl_base_gene"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,confirm,ok,report,report_done,deliver,done" statusbar_colors='{"except":"red,","dna_except":"red","done":"blue"}' readonly="1"/>
                     </header>
                     <sheet>
