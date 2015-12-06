@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="gbsoft_weixin_menu_tree">
+            <field name="name">gbsoft.weixin.menu.tree</field>
+            <field name="model">gbsoft.weixin.usermenu</field>
+            <field name="arch" type="xml">
+                <tree string="WeiXin">
+                    <field name="seq"/>
+                    <field name="type"/>
+                    <field name="name"/>
+                    <field name="key"/>
+                    <field name="url"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="gbsoft_weixin_menu_form">
+            <field name="name">gbsoft.weixin.menu.form</field>
+            <field name="model">gbsoft.weixin.usermenu</field>
+            <field name="arch" type="xml">
+                <form string="WeiXin">
+                    <sheet>
+                        <group colspan="8">
+                                 <field name="seq"/>
+                                <field name="type"/>
+                                <field name="name"/>
+                                <field name="key" attrs="{'readonly':[('type','!=','click')]}"/>
+                                <field name="url" attrs="{'readonly':[('type','!=','view')]}"/>
+                        </group>
+                        <field name="details">
+                            <tree>
+                                 <field name="seq"/>
+                                <field name="type"/>
+                                <field name="name"/>
+                                <field name="need_user"/>
+                                <field name="key"/>
+                                <field name="url"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group colspan="8">
+                                             <field name="seq"/>
+                                            <field name="type"/>
+                                            <field name="name"/>
+                                            <field name="need_user"/>
+                                            <field name="groups"/>
+                                            <field name="key" attrs="{'readonly':[('type','!=','click')]}"/>
+                                            <field name="url" attrs="{'readonly':[('type','!=','view')]}"/>
+                                    </group>
+                                    <notebook>
+                                        <page string="图文菜单">
+                                            <field name="htmlmsg">
+                                                <tree>
+                                                    <field name="seq"/>
+                                                    <field name="title"/>
+                                                    <field name="description"/>
+                                                    <field name="picurl"/>
+                                                    <field name="url"/>
+                                                </tree>
+                                            </field>
+                                        </page>
+                                    </notebook>
+                                </sheet>
+                            </form>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="gbsoft_weixin_menu_search">
+            <field name="name">gbsoft.weixin.menu.search</field>
+            <field name="model">gbsoft.weixin.usermenu</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+
+                </search>
+            </field>
+        </record>
+        <record id="action_gbsoft_weixin_menu" model="ir.actions.act_window">
+            <field name="name">微信自定义菜单</field>
+            <field name="res_model">gbsoft.weixin.usermenu</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_gbsoft_weixin_menu" parent="menu_weixin_first" name="自定义菜单" sequence="20"
+                  action='action_gbsoft_weixin_menu' />
+    </data>
+</openerp>

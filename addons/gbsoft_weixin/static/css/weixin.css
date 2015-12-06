@@ -1,0 +1,28 @@
+.status {
+    width:50px;
+    padding:10px;
+}
+
+.status-first-active{
+    background: url("../img/ico_status.gif") 0px center no-repeat;
+}
+
+.status-first-invisible{
+    background: url("../img/ico_status.gif") -50px center no-repeat;
+}
+
+.status-second-active{
+    background: url("../img/ico_status.gif") -100px center no-repeat;
+}
+
+.status-second-invisible{
+    background: url("../img/ico_status.gif") -150px center no-repeat;
+}
+
+.status-end-active{
+    background: url("../img/ico_status.gif") -200px center no-repeat;
+}
+
+.status-end-invisible{
+    background: url("../img/ico_status.gif") -250px center no-repeat;
+}

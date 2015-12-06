@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="gbsoft_weixin_tree">
+            <field name="name">gbsoft.weixin.tree</field>
+            <field name="model">gbsoft.weixin</field>
+            <field name="arch" type="xml">
+                <tree string="WeiXin">
+                    <field name="openid"/>
+                    <field name="active"/>
+                    <field name="user_id"/>
+
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="gbsoft_weixin_form">
+            <field name="name">gbsoft.weixin.form</field>
+            <field name="model">gbsoft.weixin</field>
+            <field name="arch" type="xml">
+                <form string="WeiXin">
+                    <sheet>
+                        <group col="9">
+                            <group colspan="3">
+                                <field name="openid"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="user_id"/>
+                            </group>
+                            <group colspan="3">
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <group>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="gbsoft_weixin_search">
+            <field name="name">gbsoft.weixin.search</field>
+            <field name="model">gbsoft.weixin</field>
+            <field name="arch" type="xml">
+                <search string="Sale Sample">
+                    <field name="openid" string="OpenID"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_gbsoft_weixin" model="ir.actions.act_window">
+            <field name="name">WeiXin</field>
+            <field name="res_model">gbsoft.weixin</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_gbsoft_weixin" parent="menu_weixin_first" name="微信用户" sequence="15"
+                  action='action_gbsoft_weixin' />
+
+    </data>
+</openerp>
