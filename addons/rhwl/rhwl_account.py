@@ -157,6 +157,29 @@ class rhwl_material(osv.osv):
                             self.pool.get("stock.move").write(cr,SUPERUSER_ID,i.id,{"cost_mark":obj.id},context=context)
                             break
 
+        #处理本期发生的退料，当作本期入库处理
+        move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("location_id","=",production_location_id[0]),("cost_mark","=",0),("date",">=",period_obj.date_start),("date","<=",period_obj.date_stop),("state","=","done")],context=context)
+        if move_ids:
+            for i in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
+                if not i.origin_returned_move_id.id:continue
+                origin_move = self.pool.get("stock.move").browse(cr,SUPERUSER_ID,i.origin_returned_move_id.id,context=context)
+                if origin_move.cost_mark==0:continue
+                for mq in i.quant_ids:
+                    if mq.qty<0:continue
+                    val={
+                        "parent_id":obj.id,
+                        "data_kind":"this",
+                        "product_id":mq.product_id.id,
+                        "qty":mq.qty,
+                        "price":mq.cost,
+                        "amount":mq.qty *mq.cost ,
+                        "move_type":"in"
+                    }
+
+                    self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                    self.pool.get("stock.move").write(cr,SUPERUSER_ID,i.id,{"cost_mark":obj.id},context=context)
+
+
         #领料统计
         picking_ids=[]
         request_ids = self.pool.get("rhwl.library.request").search(cr,SUPERUSER_ID,[("date","<=",period_obj.date_stop),("state","=","done")],context=context)
@@ -182,6 +205,7 @@ class rhwl_material(osv.osv):
 
             #处理每笔出库单对象的未完结的库存移动.
             for m in self.pool.get("stock.move").browse(cr,SUPERUSER_ID,move_ids,context=context):
+                is_computer=False
                 #检查是否有退货
                 back_move_ids = self.pool.get("stock.move").search(cr,SUPERUSER_ID,[("origin_returned_move_id","=",m.id),("location_id","=",m.location_dest_id.id),("location_dest_id","=",m.location_id.id),("state","=","done"),("product_qty","=",m.product_qty)])
                 if back_move_ids:continue
@@ -266,6 +290,7 @@ class rhwl_material(osv.osv):
                             }
 
                             self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
+                            is_computer = True
                     else:
                         val={
                             "parent_id":obj.id,
@@ -279,7 +304,8 @@ class rhwl_material(osv.osv):
                             "is_rd":p.is_rd
                         }
                         self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
-                self.pool.get("stock.move").write(cr,SUPERUSER_ID,m.id,{"cost_mark":obj.id},context=context)
+                        is_computer = True
+                if is_computer:self.pool.get("stock.move").write(cr,SUPERUSER_ID,m.id,{"cost_mark":obj.id},context=context)
 
         #期末结算
         begin_detail_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","begin")],context=context)

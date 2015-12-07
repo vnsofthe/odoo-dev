@@ -40,12 +40,13 @@ class rhwl_sample_report(osv.osv):
             line_ids = [x for x in line_ids if x]
             if line_ids:
                 for p in self.pool.get("purchase.order.line").browse(cr,SUPERUSER_ID,line_ids,context=context):
+                    inv_state=[]
                     for inv in p.invoice_lines:
-                        if inv.invoice_id.state in ("open","paid"):
-                            res[id]=True
-                        else:
-                            res[id]=False
+                        inv_state.append(inv.invoice_id.state)
 
+                    if inv_state.count("open")>0 or inv_state.count("paid")>0 or inv_state.count("draft")>0:
+                        res[id]=True
+                        break
         return res
 
     def _get_project(self,cr,uid,ids,fields_names,arg,context=None):

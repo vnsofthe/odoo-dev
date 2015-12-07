@@ -505,8 +505,8 @@ class rhwl_picking(osv.osv):
             ws.write_merge(3,3,2,4,u"天津市武清开发区新源道18号天狮国际健康产业园泰济生医院",style)
         else:
             ws.write_merge(0,0, 2, 4,u'天狮集团泰济生国际医院会员管理处',style)
-            ws.write_merge(1,1,2,4,u"虞俊安",style)
-            ws.write_merge(2,2,2,4,u"13622162034",style)
+            ws.write_merge(1,1,2,4,u"韩磊",style)
+            ws.write_merge(2,2,2,4,u"15002230510",style)
             ws.write_merge(3,3,2,4,u"天津市武清开发区新源道18号",style)
 
         ws.write(0,7,u"寄件单位：",style)
@@ -521,7 +521,7 @@ class rhwl_picking(osv.osv):
         ws.write_merge(6,6,0,7,u"易感检测报告书送货清单",style1)
         ws.write_merge(6,6,8,9,u"NO."+obj.name,style2)
 
-        ws.write_merge(7,7,0,5,u"客户名称：泰济生国际医院（虞俊安）",style4)
+        ws.write_merge(7,7,0,5,u"客户名称：泰济生国际医院（韩磊）",style4)
         ws.write_merge(7,7,6,9,u"日期：  "+obj.date,style5)
         ws.write_merge(8,9,0,0,u"序号",style3)
         ws.write_merge(8,9,1,1,u"货品名称",style3)

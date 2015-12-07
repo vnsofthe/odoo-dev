@@ -138,7 +138,7 @@ class rhwl_partner(osv.osv):
             for unid in cr.fetchall():
                 max_id = unid[0]
             if max_id:
-                max_id = max_id[:4] + str(int(max_id[4:]) + 1).zfill(4)
+                max_id = max_id[:-4] + str(int(max_id[-4:]) + 1).zfill(4)
             else:
                 max_id = state_code + city_code + '0001'
 
