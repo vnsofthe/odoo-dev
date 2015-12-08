@@ -357,6 +357,14 @@ class rhwl_material(osv.osv):
                     }
                     self.pool.get("rhwl.material.cost.line").create(cr,uid,val,context=context)
 
+        #调整数量为0，但有金额的期末
+        end_ids = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","end"),("qty","=",0),("amount","!=",0)])
+        for i in self.pool.get("rhwl.material.cost.line").browse(cr,uid,end_ids,context=context):
+            max_product_id = self.pool.get("rhwl.material.cost.line").search(cr,uid,[("parent_id","=",obj.id),("data_kind","=","this"),("move_type","=","out"),("product_id","=",i.product_id.id),("price","=",i.price)],order="amount desc",context=context)
+            if max_product_id:
+                cr.execute("update rhwl_material_cost_line set amount = amount+(%s) where id=%s"%(i.amount,max_product_id[0]))
+                cr.execute("update rhwl_material_cost_line set amount=0 where id=%s"%(i.id))
+        cr.commit()
         #更新计算时间
         self.write(cr,uid,obj.id,{"compute_date":fields.datetime.now()},context=context)
         pass
