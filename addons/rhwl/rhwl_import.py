@@ -181,21 +181,21 @@ class rhwl_import(osv.osv):
         return unit_id1,unit_id2
 
     def action_done(self,cr,uid,ids,context=None):
-        ids = self.search(cr,uid,[],context=context)
-        product_template = self.pool.get("product.product")
-        for i in self.browse(cr,uid,ids,context=context):
-            pt_id = product_template.search(cr,uid,[("default_code","=",i.col1)])
-            if not pt_id:continue
-            pt_obj = product_template.browse(cr,uid,pt_id,context=context)
-            lot_id = self.pool.get('stock.production.lot').create(cr,uid,{'name':"0000",'product_id':pt_obj.id},context=context)
-            vals={
-                'product_id':pt_obj.id,
-                'new_quantity':i.col2,
-                'lot_id':lot_id,
-                'location_id':102
-            }
-            qty_id = self.pool.get("stock.change.product.qty").create(cr,uid,vals)
-            self.pool.get("stock.change.product.qty").change_product_qty(cr,uid,qty_id,context=context)
+        ids = self.pool.get("product.product").search(cr,uid,[("name","ilike",u"探针:")],context=context)
+        if ids:
+            for i in self.pool.get("product.product").browse(cr,uid,ids,context=context):
+                point_id = self.pool.get("stock.warehouse.orderpoint").search(cr,uid,[("product_id","=",i.id)])
+                if point_id:continue
+                res_qty = self.pool.get("stock.warehouse.orderpoint").onchange_min_work_days(cr,uid,0,45,i.id,context=context)
+                vals={
+                    'warehouse_id':1,
+                    'location_id':1130,
+                    'product_id':i.id,
+                    "min_work_days":45,
+                }
+                if res_qty["value"]:
+                    vals.update(res_qty["value"])
+                self.pool.get("stock.warehouse.orderpoint").create(cr,uid,vals,context=context)
 
     def action_done_old(self,cr,uid,ids,context=None):
         ids = self.search(cr,uid,[],context=context)
