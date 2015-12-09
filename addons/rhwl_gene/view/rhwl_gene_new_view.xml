@@ -126,53 +126,55 @@
                             </page>
                             <page string="问卷调查">
                                 <group col="16">
-
                                     <group colspan="16">
                                         <label for="q1_0" string="您目前或曾患下列哪些疾病？"/>
                                        <div >
+                                            <field name="q1_0" />
                                             <label string="无" for="q1_0"/>
-                                            <field name="q1_0"  style="width: 95%%" />
+                                            <br/>
+                                            <field name="q1_1"  attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <label string="肿瘤" for="q1_1" style="display:inline-block;width:70px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                            <label string="肿瘤" for="q1_1" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_1"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_2"  attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <label string="糖尿病" for="q1_2" style="display:inline-block;width:80px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                            <label string="糖尿病" for="q1_2" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_2" style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_3"   attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <label string="呼吸性疾病"  for="q1_3" style="display:inline-block;width:100px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                            <label string="呼吸性疾病" for="q1_3" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_3"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_4"  attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <label string="心脑血管疾病" for="q1_4" style="display:inline-block;width:120px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                            <label string="心脑血管疾病" for="q1_4" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_4"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_5"   attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                           <label string="消化道溃疡" for="q1_5" style="display:inline-block;width:100px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                           <label string="消化道溃疡" for="q1_5" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_5"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_6"   attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                           <label string="妇科病" for="q1_6" style="display:inline-block;width:100px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                           <label string="妇科病" for="q1_6" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_6"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                            <field name="q1_7"   attrs="{'invisible':[('q1_0','!=',False)]}"/>
+                                           <label string="过敏史" for="q1_7" style="display:inline-block;width:100px;" attrs="{'invisible':[('q1_0','!=',False)]}"/>
 
-                                           <label string="过敏史" for="q1_7" attrs="{'invisible':[('q1_0','!=',False)]}"/>
-                                            <field name="q1_7"  style="width: 4%%" attrs="{'invisible':[('q1_0','!=',False)]}"/>
                                         </div>
                                     </group>
                                     <group colspan="16">
                                         <label for="q2_0" string="亲属中（祖父母，父母，兄弟姐妹及子女）有无患上述疾病？"/>
                                        <div >
-                                               <label string="无" for="q2_0"/>
-                                                <field name="q2_0"  style="width: 95%%" />
+                                           <field name="q2_0"/>
+                                           <label string="无" for="q2_0"/>
+                                           <br/>
+                                            <field name="q2_1"  attrs="{'invisible':[('q2_0','!=',False)]}"/>
+                                            <label string="有" for="q2_1" style="display:inline-block;width:30px;" attrs="{'invisible':[('q2_0','!=',False)]}"/>
 
-                                            <label string="有" for="q2_1" attrs="{'invisible':[('q2_0','!=',False)]}"/>
-                                            <field name="q2_1"  style="width: 4%%" attrs="{'invisible':[('q2_0','!=',False)]}"/>
 
                                             <label string="请列举" for="q2_2" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
-                                            <field name="q2_2"  style="width: 50%%" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
+                                            <field name="q2_2"  style="width: 40%%" attrs="{'invisible':['|',('q2_0','!=',False),('q2_1','=',False)]}"/>
                                         </div>
                                     </group>
                                     <group colspan="16">
                                         <label for="q3_0" string="您目前正在服用或曾服用以下哪些药物？"/>
                                        <div >
+                                            <field name="q3_0" />
                                             <label string="无" for="q3_0"/>
-                                            <field name="q3_0"  style="width: 90%%" />
+                                            <br/>
 
                                             <label string="抗感染药" for="q3_1" attrs="{'invisible':[('q3_0','!=',False)]}"/>
                                             <field name="q3_1"  style="width: 4%%" attrs="{'invisible':[('q3_0','!=',False)]}"/>
