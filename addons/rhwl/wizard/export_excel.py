@@ -350,7 +350,7 @@ class export_excel(osv.osv_memory):
         if isinstance(ids,(list,tuple)):
             ids.sort()
 
-        excel_head=[u"样本编码",u"T21",u"T18",u"T13"]
+        excel_head=[u"样本编码",u"T13",u"T18",u"T21"]
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
         for i in range(0,len(excel_head)):
@@ -359,9 +359,9 @@ class export_excel(osv.osv_memory):
         rows=1
         for i in self.pool.get("sale.sampleone").browse(cr,uid,ids,context=context):
             ws.write(rows,0,i.name)
-            ws.write(rows,1,i.lib_t21)
+            ws.write(rows,3,i.lib_t21)
             ws.write(rows,2,i.lib_t18)
-            ws.write(rows,3,i.lib_t13)
+            ws.write(rows,1,i.lib_t13)
 
             rows+=1
         self.pool.get("sale.sampleone").write(cr,uid,ids,{"is_export":True},context=context)
