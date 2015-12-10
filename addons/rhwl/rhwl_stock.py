@@ -62,14 +62,22 @@ class rhwl_move(osv.osv):
     def _get_purchase_order_line(self,cr,uid,ids,context=None):
         if isinstance(ids,(long,int)):
             ids = [ids]
+        if not context:
+            context={}
         line_ids=[]
+        exists_id=context.get("exists_id",[])
         for i in self.browse(cr,uid,ids,context=context):
+            if exists_id.count(i.id)>0:continue
+
+            exists_id.append(i.id)
             for q in i.quant_ids:
                 for h in q.history_ids:
                     if h.purchase_line_id != False and h.state=="done":
                         line_ids.append(h.purchase_line_id.id)
-                    if h.origin_returned_move_id:
-                        line_ids += self._get_purchase_order_line(cr,uid,h.origin_returned_move_id.id,context=context)
+                    if h.state=='done' and h.origin_returned_move_id:
+                        c=context.copy()
+                        c["exists_id"]=exists_id
+                        line_ids += self._get_purchase_order_line(cr,uid,h.origin_returned_move_id.id,context=c)
         return line_ids
 
 class rhwl_warehouse_orderpoint(osv.osv):
