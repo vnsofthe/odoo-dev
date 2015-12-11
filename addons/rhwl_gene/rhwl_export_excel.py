@@ -62,6 +62,8 @@ class rhwl_export_excel(osv.osv_memory):
             return self.action_excel_gene_new(cr,uid,ids,context=context)
         elif context.get("func_name","")=="new_genes":
             return self.action_excel_new_gene(cr,uid,ids,context=context)
+        elif context.get("func_name","")=="genes_picking":
+            return self.action_excel_genes_picking(cr,uid,ids,context=context)
 
     def action_excel_gene_new(self,cr,uid,ids,context=None):
         if not context.get("active_id"):return
@@ -496,6 +498,74 @@ class rhwl_export_excel(osv.osv_memory):
             'views': [(False, 'form')],
             'target': 'new',
             'name':u"导出样本问题反馈Excel"
+        }
+
+    def action_excel_genes_picking(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet("Sheet1")
+        ws.write_merge(0,0,0,6,u"易感基因检测项目质量报告")
+        ws.write(1,0,u"序号",style=self.get_excel_style(font_size=11))
+        ws.write(1,1,u"送检日期",style=self.get_excel_style(font_size=11)),
+        ws.write(1,2,u"样本（报告书）编号",style=self.get_excel_style(font_size=11)),
+        ws.write(1,3,u"检测项目",style=self.get_excel_style(font_size=11)),
+        ws.write(1,4,u"受检者姓名",style=self.get_excel_style(font_size=11)),
+        ws.write(1,5,u"性别",style=self.get_excel_style(font_size=11)),
+        ws.write(1,6,u"身份证号码",style=self.get_excel_style(font_size=11)),
+
+        ws.col(1).width = 4500 #1000 = 3.14(Excel)
+        ws.col(4).width = 7000
+        ws.col(5).width = 8000
+        ws.col(6).width = 6000
+        rows=2
+        seq=1
+
+        for i in self.pool.get("rhwl.genes.picking").browse(cr,uid,ids[0],context=context):
+            p_name = i.name
+            genes_id = self.pool.get("rhwl.genes.picking.box.line").search(cr,uid,[("box_id.line_id.picking_id.id","=",i.id)])
+            for l in self.pool.get("rhwl.genes.picking.box.line").browse(cr,uid,genes_id,context=context):
+                ws.write(rows,0,seq,style=self.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_CENTER))
+                ws.write(rows,1,l.genes_id.date,style=self.get_excel_style(font_size=11))
+                ws.write(rows,2,l.genes_id.name,style=self.get_excel_style(font_size=11))
+                ws.write(rows,3,u"6大类72疾病",style=self.get_excel_style(font_size=11))
+                ws.write(rows,4,l.genes_id.cust_name,style=self.get_excel_style(font_size=11))
+                ws.write(rows,5,u"男" if l.genes_id.sex=="T" else u"女",style=self.get_excel_style(font_size=11))
+                ws.write(rows,6,True and l.genes_id.identity or "",style=self.get_excel_style(font_size=11))
+
+                rows +=1
+                seq += 1
+        note_text="""备注：我司系卫计委批准设立的独立第三方医学实验室，专业从事基因检测业务。以上易感基因检测项目报告书系我司根据受检者的采样标本，通过卫计委认可的检测方式、在检测范围内出具的易感基因检测报告，我司对报告书中载明的检测数据、检测结果的真实性负责。
+　	　	　	　	日期：	质检员："""
+        ws.write_merge(rows,rows,0,6,note_text,style=self.get_excel_style(font_size=11))
+
+
+        t_path = u"/data/odoo/file/upload/tjs/样本质量报告"
+        if not os.path.exists(t_path):
+            os.mkdir(t_path)
+        t_file = os.path.join(t_path,u"易感基因检测项目质量报告-%s.xls"%(p_name))
+        if os.path.exists(t_file):
+            os.remove(t_file)
+        w.save(t_file)
+        id = self.create(cr,uid,{"state":"netdisk",})
+
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'rhwl.gene.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出易感基因检测项目质量报告"
         }
 
     def action_excel_new_gene(self,cr,uid,ids,context=None):

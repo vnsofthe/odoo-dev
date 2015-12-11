@@ -78,6 +78,16 @@
             multi="True"
             key2="client_action_multi"
             id="action_new_genes_export_excel"/>
+
+        <act_window name="导出检测项目质量保证书"
+            context="{'func_name': 'genes_picking'}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.genes.picking"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_genes_export_picking_excel"/>
     </data>
 </openerp>
 
