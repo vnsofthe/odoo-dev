@@ -56,7 +56,7 @@ class stock_picking(osv.osv_memory):
         ws.col(1).width = 9000 #1000 = 3.715(Excel)
         ws.col(2).width = 4500
         ws.col(3).width = 4500
-        ws.col(7).width = 4500
+        ws.col(8).width = 4500
         ws.write_merge(0,0,0,8,u"人和未来物资入库单",self.get_excel_style(18,xlwt.Alignment.HORZ_CENTER))
 
         rows=1
@@ -71,9 +71,10 @@ class stock_picking(osv.osv_memory):
             ws.write(rows,3,u"货号",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
             ws.write(rows,4,u"规格",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
             ws.write(rows,5,u"数量",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
-            ws.write(rows,6,u"单位",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
-            ws.write(rows,7,u"库位",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
-            ws.write(rows,8,u"类别",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+            ws.write(rows,6,u"金额",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+            ws.write(rows,7,u"单位",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+            ws.write(rows,8,u"库位",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+            ws.write(rows,9,u"类别",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
             rows += 1
             row_seq=1
             for j in i.pack_operation_ids:
@@ -83,17 +84,21 @@ class stock_picking(osv.osv_memory):
                 ws.write(rows,3,j.product_id.default_code  if j.product_id.default_code else "",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 ws.write(rows,4,j.product_id.attribute_value_ids.name if j.product_id.attribute_value_ids.name else "",self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 ws.write(rows,5,j.product_qty,self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
-                ws.write(rows,6,_(j.product_uom_id.name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
-                ws.write(rows,7,_(j.location_dest_id.display_name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
-                ws.write(rows,8,_(j.product_id.categ_id.name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+                all_amt=0
+                for c in j.linked_move_operation_ids:
+                    all_amt += c.move_id.price_unit * c.move_id.product_qty
+                ws.write(rows,6,round(all_amt,2),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+                ws.write(rows,7,_(j.product_uom_id.name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+                ws.write(rows,8,_(j.location_dest_id.display_name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
+                ws.write(rows,9,_(j.product_id.categ_id.name),self.get_excel_style(12,border=xlwt.Borders.MEDIUM))
                 rows += 1
                 row_seq += 1
 
             rows += 2
 
-        ws.write(rows,1,u"主管：",self.get_excel_style(12))
+        ws.write(rows,1,u"采购人员：",self.get_excel_style(12))
         ws.write(rows,6,u"入库人员：",self.get_excel_style(12))
-
+        ws.write_merge(2,18,10,10,u"白\n联\n：\n仓\n库\n \n黄\n联\n：\n财\n务\n \n红\n联\n：\n采\n购",xlwt.easyxf('align: wrap on'))
         w.save(xlsname+".xls")
         f=open(xlsname+".xls",'rb')
         id = self.create(cr,uid,{"state":"done","file_name":u"入库单.xls","file_bin": base64.encodestring(f.read())})
