@@ -118,8 +118,9 @@ class rhwl_picking(osv.osv):
                 if os.path.exists(os.path.join(pdf_path,i[0])):
                     if (not os.path.exists(os.path.join(k,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(k,i[0])).st_size:
                         shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(k,i[0]))
-                    lines.append(i[1])
-                    u_count += 1
+                    if lines.count(i[1])==0:
+                        lines.append(i[1])
+                        u_count += 1
         if lines:
             self.pool.get("rhwl.genes.picking.box.line").write(cr,uid,lines,{"has_pdf":True})
         return (t_count,u_count)
@@ -171,6 +172,10 @@ class rhwl_picking(osv.osv):
                         for bl in b.detail:#循环处理每个箱号下的样本
                             pdf_file = bl.genes_id.name+".pdf"
                             files[box_path].append([pdf_file,bl.id])
+                            if bl.genes_id.language!="CN":
+                                files[box_path].append([bl.genes_id.name+"_EN.pdf",bl.id])
+                            if bl.genes_id.language not in ("CN","EN"):
+                                files[box_path].append([bl.genes_id.name+"_"+bl.genes_id.language+".pdf",bl.id])
                             sheet_data[str(l.seq)+"-"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex,dict_level[b.level],bl.genes_id.date,bl.genes_id.batch_no])
                 elif l.batch_kind=="resend":
                     line_path=os.path.join(d_path,u"重新印刷")
@@ -186,6 +191,10 @@ class rhwl_picking(osv.osv):
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
                             files[box_path].append([pdf_file,bl.id])
+                            if bl.genes_id.language!="CN":
+                                files[box_path].append([bl.genes_id.name+"_EN.pdf",bl.id])
+                            if bl.genes_id.language not in ("CN","EN"):
+                                files[box_path].append([bl.genes_id.name+"_"+bl.genes_id.language+".pdf",bl.id])
                             sheet_data["R"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex,u"重新印刷","",""])
                 elif l.batch_kind=="vip":
                     line_path=os.path.join(d_path,u"会员部VIP")
@@ -201,6 +210,10 @@ class rhwl_picking(osv.osv):
                         for bl in b.detail:
                             pdf_file = bl.genes_id.name+".pdf"
                             files[box_path].append([pdf_file,bl.id])
+                            if bl.genes_id.language!="CN":
+                                files[box_path].append([bl.genes_id.name+"_EN.pdf",bl.id])
+                            if bl.genes_id.language not in ("CN","EN"):
+                                files[box_path].append([bl.genes_id.name+"_"+bl.genes_id.language+".pdf",bl.id])
                             sheet_data["V"+b.name].append([bl.genes_id.name,bl.genes_id.cust_name,bl.genes_id.sex,u"会员部VIP","",""])
                 self.create_sheet_excel(line_path,sheet_data)
                 self.picking_export_pdf(line_path,sheet_data)

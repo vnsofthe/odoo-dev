@@ -237,7 +237,7 @@ class rhwl_gene(osv.osv):
                         raise osv.except_osv(u"错误",u"身份证号码中的年月日不在合理范围。")
                 except:
                     raise osv.except_osv(u"错误",u"身份证号码中的年月日格式错误。")
-        if val.get("identity"):
+        if val.get("identity") and len(val.get("identity"))==18:
             val["birthday"]=datetime.datetime.strptime(val.get("identity")[6:14],"%Y%m%d")
 
         if val.has_key("state"):
@@ -397,6 +397,7 @@ class rhwl_gene(osv.osv):
             if not os.path.exists(tname):
                 os.mkdir(tname)
             att_obj = self.pool.get('ir.attachment').browse(cr,uid,i.img_atta.id,context=context)
+            if not os.path.exists(os.path.join(filestore,att_obj.store_fname)):continue
             if (not os.path.exists(os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))) or os.stat(os.path.join(filestore,att_obj.store_fname)).st_size != os.stat(os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg")).st_size:
                 shutil.copy(os.path.join(filestore,att_obj.store_fname),os.path.join(tname,i.name+u"_"+i.cust_name+u".jpg"))
             self.write(cr,uid,i.id,{"log":[[0,0,{"note":u"图片导出","data":"expimg"}]],"export_img":True})

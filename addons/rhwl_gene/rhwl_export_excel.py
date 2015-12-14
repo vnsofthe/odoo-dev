@@ -512,7 +512,7 @@ class rhwl_export_excel(osv.osv_memory):
 
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
-        ws.write_merge(0,0,0,6,u"易感基因检测项目质量报告")
+
         ws.write(1,0,u"序号",style=self.get_excel_style(font_size=11))
         ws.write(1,1,u"送检日期",style=self.get_excel_style(font_size=11)),
         ws.write(1,2,u"样本（报告书）编号",style=self.get_excel_style(font_size=11)),
@@ -528,24 +528,26 @@ class rhwl_export_excel(osv.osv_memory):
         rows=2
         seq=1
 
+        style1 = self.get_excel_style(font_size=11)
+        style2 = self.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_CENTER)
         for i in self.pool.get("rhwl.genes.picking").browse(cr,uid,ids[0],context=context):
-            p_name = i.name
+            p_name = i.date.replace("-","")
             genes_id = self.pool.get("rhwl.genes.picking.box.line").search(cr,uid,[("box_id.line_id.picking_id.id","=",i.id)])
             for l in self.pool.get("rhwl.genes.picking.box.line").browse(cr,uid,genes_id,context=context):
-                ws.write(rows,0,seq,style=self.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_CENTER))
-                ws.write(rows,1,l.genes_id.date,style=self.get_excel_style(font_size=11))
-                ws.write(rows,2,l.genes_id.name,style=self.get_excel_style(font_size=11))
-                ws.write(rows,3,u"6大类72疾病",style=self.get_excel_style(font_size=11))
-                ws.write(rows,4,l.genes_id.cust_name,style=self.get_excel_style(font_size=11))
-                ws.write(rows,5,u"男" if l.genes_id.sex=="T" else u"女",style=self.get_excel_style(font_size=11))
-                ws.write(rows,6,True and l.genes_id.identity or "",style=self.get_excel_style(font_size=11))
+                ws.write(rows,0,seq,style=style2)
+                ws.write(rows,1,l.genes_id.date,style=style1)
+                ws.write(rows,2,l.genes_id.name,style=style1)
+                ws.write(rows,3,u"6大类72疾病",style=style1)
+                ws.write(rows,4,l.genes_id.cust_name,style=style1)
+                ws.write(rows,5,u"男" if l.genes_id.sex=="T" else u"女",style=style1)
+                ws.write(rows,6,True and l.genes_id.identity or "",style=style1)
 
                 rows +=1
                 seq += 1
         note_text="""备注：我司系卫计委批准设立的独立第三方医学实验室，专业从事基因检测业务。以上易感基因检测项目报告书系我司根据受检者的采样标本，通过卫计委认可的检测方式、在检测范围内出具的易感基因检测报告，我司对报告书中载明的检测数据、检测结果的真实性负责。
 　	　	　	　	日期：	质检员："""
         ws.write_merge(rows,rows,0,6,note_text,style=self.get_excel_style(font_size=11))
-
+        ws.write_merge(0,0,0,6,u"易感基因检测项目质量报告-"+p_name)
 
         t_path = u"/data/odoo/file/upload/tjs/样本质量报告"
         if not os.path.exists(t_path):
