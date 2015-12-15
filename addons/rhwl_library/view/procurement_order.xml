@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <record id="action_procurement_order_cancel" model="ir.actions.server">
+            <field name="name">取消补货单</field>
+            <field name="model_id" ref="procurement.model_procurement_order"/>
+            <field name="state">code</field>
+            <field name="code">
+                if context.get('active_model') == 'procurement.order' and context.get('active_ids'):
+                    self.cancel(cr, uid, context['active_ids'], context=context)
+            </field>
+        </record>
+
+        <record id="ir_procurement_order_cancel" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'procurement.order'" name="model"/>
+            <field name="name">取消补货单</field>
+            <field eval="'ir.actions.server,%d'%action_procurement_order_cancel" name="value"/>
+        </record>
+
+    </data>
+</openerp>

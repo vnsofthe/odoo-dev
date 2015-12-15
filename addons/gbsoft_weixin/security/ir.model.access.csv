@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gbsoft_weixin,access_gbsoft_weixin,model_gbsoft_weixin,base.group_system,1,1,1,1
+access_gbsoft_weixin_base,access_gbsoft_weixin_base,model_gbsoft_weixin_base,base.group_system,1,1,1,1
+access_gbsoft_weixin_usermenu,access_gbsoft_weixin_usermenu,model_gbsoft_weixin_usermenu,base.group_system,1,1,1,1
+access_gbsoft_weixin_usermenu2,access_gbsoft_weixin_usermenu2,model_gbsoft_weixin_usermenu2,base.group_system,1,1,1,1
+access_gbsoft_weixin_htmlmsg,access_gbsoft_weixin_htmlmsg,model_gbsoft_weixin_htmlmsg,base.group_system,1,1,1,1
