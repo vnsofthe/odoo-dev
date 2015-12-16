@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_gene_stock_dna_line_view_tree">
+            <field name="name">rhwl.gene.stock.dna.line.tree</field>
+            <field name="model">rhwl.gene.stock.dna.line</field>
+            <field name="arch" type="xml">
+                <tree string="DNA库存明细" editable="bottom">
+                    <field name="name"/>
+                    <field name="box_no"/>
+                    <field name="hole_no"/>
+                    <field name="note"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_gene_stock_dna_view_tree">
+            <field name="name">rhwl.gene.stock.dna.tree</field>
+            <field name="model">rhwl.gene.stock.dna</field>
+            <field name="arch" type="xml">
+                <tree string="DNA库存" >
+                    <field name="name"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="is_ok"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_gene_stock_dna_view_form">
+            <field name="name">rhwl.gene.stock.dna.form</field>
+            <field name="model">rhwl.gene.stock.dna</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group cols="8">
+                            <field name="name"/>
+                            <field name="start_date" />
+                            <field name="end_date"/>
+                            <field name="is_ok"/>
+                        </group>
+                        <field name="line">
+                            <tree string="Line" editable="bottom">
+                                <field name="name"/>
+                                <field name="box_no"/>
+                                <field name="hole_no"/>
+                                <field name="note"/>
+                            </tree>
+                        </field>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_gene_stock_dna_search">
+            <field name="name">rhwl.gene.stock.dna.search</field>
+            <field name="model">rhwl.gene.stock.dna</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                    <field name="line"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="rhwl_gene_stock_dna_line_search">
+            <field name="name">rhwl.gene.stock.dna.line.search</field>
+            <field name="model">rhwl.gene.stock.dna.line</field>
+            <field name="arch" type="xml">
+                <search string="Gene">
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_gene_stock_dna" model="ir.actions.act_window">
+            <field name="name">DNA库存记录</field>
+            <field name="res_model">rhwl.gene.stock.dna</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_gene_stock_dna_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <record id="action_rhwl_gene_stock_dna_line" model="ir.actions.act_window">
+            <field name="name">DNA库存记录明细</field>
+            <field name="res_model">rhwl.gene.stock.dna.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="rhwl_gene_stock_dna_line_view_tree"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem action="action_rhwl_gene_stock_dna" id="menu_rhwl_gene_stock_dna" name="DNA库存记录" parent="menu_rhwl_easy_genes_lib" sequence="40" groups="rhwl_base_library"/>
+        <menuitem action="action_rhwl_gene_stock_dna_line" id="menu_rhwl_gene_stock_dna_line" name="DNA库存记录明细" parent="menu_rhwl_easy_genes_lib" sequence="50" groups="rhwl_base_library"/>
+    </data>
+</openerp>

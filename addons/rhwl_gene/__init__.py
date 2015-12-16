@@ -8,3 +8,4 @@ import rhwl_account
 import rhwl_base
 import rhwl_gene_new
 import rhwl_gene_new_picking
+import rhwl_stock_dna
