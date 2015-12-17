@@ -555,3 +555,46 @@ class rhwl_import(osv.osv_memory):
             os.remove(xlsname+'.xls')
 
         return
+
+    def import_report11(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, ids[0])
+
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        f=open(xlsname+'.xls','wb')
+        fileobj.close()
+        try:
+            #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
+            b=this.file_bin.decode('base64')
+            f.write(b)
+            f.close()
+
+            try:
+                bk = xlrd.open_workbook(xlsname+".xls")
+                sh = bk.sheet_by_index(0)
+            except:
+               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+            nrows = sh.nrows
+            ncols = sh.ncols
+            batch_no={}
+            for i in range(2,nrows):
+                no=sh.cell_value(i,0)
+                if not no:continue
+                no = no.__trunc__().__str__() if isinstance(no,(long,int,float)) else no
+                gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)])
+                if not gene_id:
+                    raise osv.except_osv(u"出错",u"找不到样本编号[%s]"%(no,))
+                val={
+                    "name":gene_id[0],
+                    "box_no":sh.cell_value(i,1),
+                    "hole_no": sh.cell_value(i,2),
+                    "user_name":sh.cell_value(i,3).encode("utf-8").replace(".","·").replace("▪","·"),
+                    "note":sh.cell_value(i,4),
+                }
+
+                self.pool.get("rhwl.gene.stock.dna.line").create(cr,uid,val,context=context)
+        finally:
+            f.close()
+            os.remove(xlsname+'.xls')

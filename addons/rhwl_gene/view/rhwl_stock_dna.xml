@@ -10,6 +10,7 @@
                     <field name="box_no"/>
                     <field name="hole_no"/>
                     <field name="note"/>
+                    <field name="user_name"/>
                 </tree>
             </field>
         </record>
@@ -39,14 +40,30 @@
                             <field name="end_date"/>
                             <field name="is_ok"/>
                         </group>
-                        <field name="line">
-                            <tree string="Line" editable="bottom">
-                                <field name="name"/>
-                                <field name="box_no"/>
-                                <field name="hole_no"/>
-                                <field name="note"/>
-                            </tree>
-                        </field>
+                        <notebook>
+                            <page string="DNA库存">
+                                <field name="line">
+                                    <tree string="Line" editable="bottom">
+                                        <field name="name"/>
+                                        <field name="box_no"/>
+                                        <field name="hole_no"/>
+                                        <field name="note"/>
+                                        <field name="user_name"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="原始样本库存">
+                                <field name="original">
+                                    <tree string="Line" editable="bottom">
+                                        <field name="name"/>
+                                        <field name="box_no"/>
+                                        <field name="hole_no"/>
+                                        <field name="user_name"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
                     </sheet>
                 </form>
             </field>
@@ -117,5 +134,14 @@
 
         <menuitem action="action_rhwl_genes_import_dna_stock" id="menu_rhwl_easy_genes_dna_stock" name="接收DNA库存记录" parent="menu_rhwl_easy_genes_lib" sequence="60" groups="rhwl_base_library"/>
 
+        <act_window name="导出DNA库存记录"
+            context="{'func_name': 'stock_dna','project_path':'tjs'}"
+            res_model="rhwl.gene.export.excel"
+            src_model="rhwl.gene.stock.dna"
+            view_mode="form"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            id="action_genes_export_stock_dna_excel"/>
     </data>
 </openerp>

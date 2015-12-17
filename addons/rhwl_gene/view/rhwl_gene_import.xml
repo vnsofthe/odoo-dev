@@ -9,7 +9,7 @@
                     <group>
                         <field name="hospital" invisible="not context.get('file_type5',False)"/>
                         <field name="cust_prop" invisible="not context.get('file_type5',False)"/>
-                        <field name="file_bin" invisible="(not context.get('file_type1',False)) and (not context.get('file_type10',False)) and (not context.get('file_type5',False)) and (not context.get('file_type6',False))"/>
+                        <field name="file_bin" invisible="(not context.get('file_type1',False)) and (not context.get('file_type10',False)) and (not context.get('file_type5',False)) and (not context.get('file_type6',False)) and (not context.get('file_type11',False))"/>
                         <field name="file_bin2" invisible="(not context.get('file_type2',False)) and (not context.get('file_type4',False))  and (not context.get('file_type7',False))"/>
                         <field name="file_bin3" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
                         <field name="is_over" invisible="(not context.get('file_type3',False)) and (not context.get('file_type4',False))"/>
@@ -23,6 +23,7 @@
                         <button name="import_report5" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type5',False)"/>
                         <button name="import_report6" string="转换" type="object"  class="oe_highlight"  invisible="not context.get('file_type6',False)"/>
                         <button name="import_report7" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type7',False)"/>
+                        <button name="import_report11" string="导入" type="object"  class="oe_highlight"  invisible="not context.get('file_type11',False)"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel" />
                     </footer>
