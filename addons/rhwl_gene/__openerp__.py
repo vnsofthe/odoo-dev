@@ -19,7 +19,7 @@
              "security/ir.model.access.csv",
              "view/rhwl_gene_view.xml",
              "view/rhwl_gene_import.xml",
-             "report/gene_report.xml",
+
              "view/rhwl_risk.xml",
              "view/rhwl_gene_picking.xml",
              "view/rhwl_lib.xml",

@@ -13,7 +13,8 @@
     'data': [
         'stock_inventory.xml',
         'express.xml',
-        "sample_export.xml"
+        "sample_export.xml",
+        "report/gene_report.xml",
     ],
     "demo": [],
     "test": [],

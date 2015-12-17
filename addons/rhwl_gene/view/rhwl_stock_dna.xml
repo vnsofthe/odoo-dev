@@ -104,5 +104,18 @@
 
         <menuitem action="action_rhwl_gene_stock_dna" id="menu_rhwl_gene_stock_dna" name="DNA库存记录" parent="menu_rhwl_easy_genes_lib" sequence="40" groups="rhwl_base_library"/>
         <menuitem action="action_rhwl_gene_stock_dna_line" id="menu_rhwl_gene_stock_dna_line" name="DNA库存记录明细" parent="menu_rhwl_easy_genes_lib" sequence="50" groups="rhwl_base_library"/>
+
+        <record id="action_rhwl_genes_import_dna_stock" model="ir.actions.act_window">
+            <field name="name">接收DNA库存记录</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type11":1}</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem action="action_rhwl_genes_import_dna_stock" id="menu_rhwl_easy_genes_dna_stock" name="接收DNA库存记录" parent="menu_rhwl_easy_genes_lib" sequence="60" groups="rhwl_base_library"/>
+
     </data>
 </openerp>
