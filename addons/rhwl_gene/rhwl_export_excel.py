@@ -64,6 +64,8 @@ class rhwl_export_excel(osv.osv_memory):
             return self.action_excel_new_gene(cr,uid,ids,context=context)
         elif context.get("func_name","")=="genes_picking":
             return self.action_excel_genes_picking(cr,uid,ids,context=context)
+        elif context.get("func_name","")=="stock_dna":
+            return self.action_excel_stock_dna(cr,uid,ids,context=context)
 
     def action_excel_gene_new(self,cr,uid,ids,context=None):
         if not context.get("active_id"):return
@@ -619,6 +621,97 @@ class rhwl_export_excel(osv.osv_memory):
             'name':u"导出样本信息Excel"
         }
 
+    def action_excel_stock_dna(self,cr,uid,ids,context=None):
+        if not context.get("active_ids"):return
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        fileobj.close()
+
+        ids=context.get("active_ids")
+        if isinstance(ids,(list,tuple)):
+            ids.sort()
+
+        style1 = self.get_excel_style(font_size=11)
+        style2 = self.get_excel_style(font_size=11,color=2)
+        w = xlwt.Workbook(encoding='utf-8')
+        ws = w.add_sheet(u"总表")
+
+        ws.write(0,1,u"送样时间段",style=style1),
+        ws.write(0,2,u"送检数量",style=style1),
+        ws.write(0,3,u"归还DNA数量",style=style1),
+        ws.write(0,4,u"已用完DNA数量",style=style1),
+        ws.col(1).width = 8500 #1000 = 3.14(Excel)
+        ws.col(2).width = 3500
+        ws.col(3).width = 4000
+        ws.col(4).width = 4000
+
+        batch_ok_count_total = 0
+        batch_loss_count_total = 0
+        sheet1_row = 0
+        for i in self.pool.get("rhwl.gene.stock.dna").browse(cr,uid,ids,context=context):
+            w1 = w.add_sheet(i.name)
+            w1.write(0,0,u"送检日期",style=style1)
+            w1.write(0,1,u"样本编号",style=style1)
+            w1.write(0,2,u"姓名",style=style1)
+            w1.write(0,3,u"性别",style=style1)
+            w1.write(0,4,u"盒子号",style=style1)
+            w1.write(0,5,u"孔号",style=style1)
+            w1.write(0,6,u"备注",style=style1)
+            w1.col(0).width = 3500
+            w1.col(1).width = 3500
+            w1.col(2).width = 3500
+            w1.col(6).width = 3500
+            rows=1
+            sheet1_row +=1
+            ws.write(sheet1_row,1,".".join(i.start_date.split("-"))+"-"+".".join(i.end_date.split("-")),style=style1)
+
+            batch_ok_count = 0
+            batch_loss_count = 0
+            cr.execute("select a.id from rhwl_gene_stock_dna_line a join rhwl_easy_genes b on a.name=b.id where a.parent_id=%s order by b.date,b.name"%(i.id))
+            line_ids = [id[0] for id in cr.fetchall()]
+            for g in self.pool.get("rhwl.gene.stock.dna.line").browse(cr,uid,line_ids,context=context):
+                if not g.is_first:continue
+                if g.note==u"样本已用完":
+                    st = style2
+                    batch_loss_count += 1
+                else:
+                    st = style1
+                    batch_ok_count += 1
+                w1.write(rows,0,g.name.date,style=st)
+                w1.write(rows,1,g.name.name,style=st)
+                w1.write(rows,2,g.name.cust_name,style=st)
+                w1.write(rows,3,u"男" if g.name.sex==u"M" else u"女",style=st)
+                w1.write(rows,4,g.box_no and g.box_no or "",style=st)
+                w1.write(rows,5,g.hole_no and g.hole_no or "",style=st)
+                w1.write(rows,6,g.note and g.note or "",style=st)
+                rows +=1
+            ws.write(sheet1_row,2,batch_loss_count+batch_ok_count,style=style1)
+            ws.write(sheet1_row,3,batch_ok_count,style=style1)
+            ws.write(sheet1_row,4,batch_loss_count,style=style1)
+            batch_ok_count_total += batch_ok_count
+            batch_loss_count_total += batch_loss_count
+
+        ws.write(sheet1_row+2,0,u"汇总",style=style1)
+        ws.write(sheet1_row+2,2,batch_ok_count_total+batch_loss_count_total,style=style1)
+        ws.write(sheet1_row+2,3,batch_ok_count_total,style=style1)
+        ws.write(sheet1_row+2,4,batch_loss_count_total,style=style1)
+        w.save(xlsname)
+        f=open(xlsname,'rb')
+        id=self.create(cr,uid,{"file":base64.encodestring(f.read()),"name":u"DNA样本存放记录.xls","state":"excel"})
+        f.close()
+
+        os.remove(xlsname)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'rhwl.gene.export.excel',
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': id,
+            'views': [(False, 'form')],
+            'target': 'new',
+            'name':u"导出DNA库存记录"
+        }
+
     def zip_dir(self,path, stream, include_dir=True):      # TODO add ignore list
         path = os.path.normpath(path)
         len_prefix = len(os.path.dirname(path)) if include_dir else len(path)
@@ -638,12 +731,13 @@ class rhwl_export_excel(osv.osv_memory):
                         if os.path.isfile(path):
                             zipf.write(path, path[len_prefix:].decode('utf-8'))
 
-    def get_excel_style(self,font_size=10,horz=xlwt.Alignment.HORZ_LEFT,border=xlwt.Borders.NO_LINE):
+    def get_excel_style(self,font_size=10,horz=xlwt.Alignment.HORZ_LEFT,border=xlwt.Borders.NO_LINE,color=0x7FFF):
         #18号字，加边框，水平靠右，垂直居中
         style2 = xlwt.XFStyle()
         style2.font = xlwt.Font()
         style2.font.name=u"宋体"
         style2.font.height = 20*font_size
+        style2.font.colour_index = color
         style2.alignment = xlwt.Alignment()
         style2.alignment.horz = horz
         style2.alignment.vert = xlwt.Alignment.VERT_CENTER

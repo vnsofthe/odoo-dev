@@ -586,15 +586,20 @@ class rhwl_import(osv.osv_memory):
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)])
                 if not gene_id:
                     raise osv.except_osv(u"出错",u"找不到样本编号[%s]"%(no,))
+                hole_no = sh.cell_value(i,2)
+                hole_no = hole_no.__trunc__().__str__() if isinstance(hole_no,(long,int,float)) else hole_no
                 val={
                     "name":gene_id[0],
                     "box_no":sh.cell_value(i,1),
-                    "hole_no": sh.cell_value(i,2),
+                    "hole_no": hole_no,
                     "user_name":sh.cell_value(i,3).encode("utf-8").replace(".","·").replace("▪","·"),
                     "note":sh.cell_value(i,4),
                 }
-
-                self.pool.get("rhwl.gene.stock.dna.line").create(cr,uid,val,context=context)
+                line_id =self.pool.get("rhwl.gene.stock.dna.line").search(cr,uid,[("name","=",gene_id[0]),("is_first","=",True)])
+                if line_id:
+                    self.pool.get("rhwl.gene.stock.dna.line").write(cr,uid,line_id,val,context=context)
+                else:
+                    self.pool.get("rhwl.gene.stock.dna.line").create(cr,uid,val,context=context)
         finally:
             f.close()
             os.remove(xlsname+'.xls')

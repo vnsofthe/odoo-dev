@@ -91,9 +91,12 @@ class rhwl_dna_line(osv.osv):
         "hole_no":fields.char(u"孔号",size=3),
         "note":fields.char(u"备注",size=20),
         "user_name":fields.char(u"操作人员",size=50),
-
+        "is_first":fields.boolean(u"首次提取")
     }
 
+    _defaults={
+        "is_first":True,
+    }
 
     def create(self,cr,uid,val,context=None):
         d = self.pool.get("rhwl.easy.genes").browse(cr,uid,val["name"],context=context).date
