@@ -1,0 +1,4 @@
+#. module: hr_expense
+#: field:hr.expense.expense,journal_id:0 field:hr.expense.report,journal_id:0
+msgid "Force Journal"
+msgstr "付款方式"

@@ -102,7 +102,7 @@
                                 <span t-esc="formatLang(line.credit)"/>
                             </td>
                             <td class="text-center">
-                                <span t-esc="get_direction(line.debit-line.credit)"/>
+                                
                             </td>
                             <td class="text-center">
                                 <span t-esc="formatLang(line.debit-line.credit)"/>

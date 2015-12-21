@@ -152,6 +152,9 @@
                     <field name="period_id"/>
                     <field name="account_id"/>
                     <field name="company_id" groups="base.group_multi_company"/>
+                    <group string="分组">
+                        <filter string="会计期间" name="period_group" context="{'group_by': 'period_id'}"/>
+                    </group>
                 </search>
             </field>
         </record>

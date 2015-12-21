@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id='act_private_mail' model="ir.actions.act_window">
+            <field name='name'>私信</field>
+            <field name='view_type'>form</field>
+            <field name='view_mode'>form</field>
+            <field name='res_model'>mail.compose.message</field>
+            <field name='target'>new</field>
+            <!-- TODO context 里放什么才能阻止他显示收件人后面的那一行小字-->
+            <field name='context'>{}</field>
+        </record>
+        <menuitem id='menu_private_mail' string='私信' action='act_private_mail' parent='mail.mail_feeds' sequence='99'/>
+    </data>
+</openerp>

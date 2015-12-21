@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    <template id="assets_backend" name="osbzr_assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/osbzr_set_default/static/src/js/set_default.js"/>
+        </xpath>
+    </template>
+    </data>
+</openerp>
+

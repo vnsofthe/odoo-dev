@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+		<!--继承人力资源中费用form视图，journal_id（付款方式）位置的修改,增加客户字段-->
+		<record id="view_expenses_form_inherit" model="ir.ui.view">
+			<field name="name">hr.expense.form.inherit</field>
+			<field name="model">hr.expense.expense</field>
+			<field name="inherit_id" ref="hr_expense.view_expenses_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='journal_id']" position='replace'>
+            	</xpath>
+				<field name='user_valid' position='after'>
+					<field name='journal_id' domain="[('type','in',('bank','cash'))]" widget="selection"/>
+				</field>
+			</field>
+		</record>
+		
+		
+	</data>
+</openerp>

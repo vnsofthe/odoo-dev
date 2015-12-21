@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="oecn_help_from_view">
+            <field name="name">osbzr.help.form</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="base.module_form"/>
+            <field name="model">ir.module.module</field>
+            <field name="arch" type="xml">
+                <field name="author" position="after">
+                    <button name="open_osbzr_help" type="object" string="" icon="gtk-help"/>
+                </field>
+            </field>
+        </record>
+        <template id="assets_backend" name="osbzr_help assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/osbzr_help/static/src/css/osbzr_help.css"/>
+                <script type="text/javascript" src="/osbzr_help/static/src/js/osbzr_help.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>

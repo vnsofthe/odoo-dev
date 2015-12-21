@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Product Template Form-->
+        <record id='osbzr_show_price_product_template_form' model='ir.ui.view'>
+            <field name='name'>product.template.common.form.show.price</field>
+            <field name='model'>product.template</field>
+            <field name='inherit_id' ref='stock_account.view_template_property_form'/>
+            <field name='arch' type='xml'>
+                <field name='list_price' position='attributes'>
+                    <attribute name='groups'>osbzr_show_price.group_show_list_price</attribute>
+                </field>
+                <label for="standard_price" position='attributes'>
+                    <attribute name='groups'>osbzr_show_price.group_show_standard_price</attribute>
+                </label>
+                <field name='standard_price' position='attributes'>
+                    <attribute name='groups'>osbzr_show_price.group_show_standard_price</attribute>
+                </field>
+            </field>
+        </record>
+        <!-- Product Template Kanban -->
+        <record id='osbzr_show_price_product_template_kanban_view' model='ir.ui.view'>
+            <field name='name'>Product.template.product.kanban.show.price</field>
+            <field name='model'>product.template</field>
+            <field name='inherit_id' ref='product.product_template_kanban_view'/>
+            <field name='arch' type='xml'>
+                <xpath expr="//li" position='attributes'>
+                    <attribute name='groups'>osbzr_show_price.group_show_list_price</attribute>
+                </xpath>
+            </field>
+        </record>
+        <!-- Product Form-->
+        <record id='osbzr_show_price_product_normal_form_view' model='ir.ui.view'>
+            <field name='name'>product.normal.form.view.show.price</field>
+            <field name='model'>product.product</field>
+            <field name='inherit_id' ref='product.product_normal_form_view'/>
+            <field name='arch' type='xml'>
+                <field name='lst_price' position='attributes'>
+                    <attribute name='groups'>osbzr_show_price.group_show_list_price</attribute>
+                </field>
+            </field>
+        </record>
+        <!-- Product Tree-->
+        <record id='osbzr_show_price_product_product_tree_view' model='ir.ui.view'>
+            <field name='name'>product.normal.form.view.show.price</field>
+            <field name='model'>product.product</field>
+            <field name='inherit_id' ref='product.product_product_tree_view'/>
+            <field name='arch' type='xml'>
+                <field name='lst_price' position='attributes'>
+                    <attribute name='groups'>osbzr_show_price.group_show_list_price</attribute>
+                </field>
+            </field>
+        </record>
+    </data>
+</openerp>

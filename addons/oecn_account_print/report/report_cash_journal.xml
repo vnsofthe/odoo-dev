@@ -17,6 +17,10 @@
                                         <span t-esc="type(data)['report_name']"/>
                                     </h2>
                                 </div>
+                                <div class='col-xs-6'>
+                                    <span>科目：</span>
+                                    <span t-esc="account_name(data['account_id'][0])"/>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class='col-xs-6 pull-left'>

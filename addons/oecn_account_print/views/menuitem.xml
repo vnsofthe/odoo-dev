@@ -9,7 +9,7 @@
             <field name="view_mode">tree</field>
             <field name="search_view_id" ref="view_account_periodly_search"/>
             <field name="view_id" ref="view_account_periodly_tree"/>
-            <field name="context">{'group_by':[], 'group_by_no_leaf':0}</field>
+            <field name="context">{'search_default_period_group':1}</field>
         </record>
         <record id="action_china_move_journal_line" model="ir.actions.act_window">
             <field name="name">China Journal Entries</field>

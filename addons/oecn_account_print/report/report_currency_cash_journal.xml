@@ -85,7 +85,7 @@
                                                         <td t-esc='line.move_id.name'/>
                                                         <td class="text-left" style="padding-left: 5px;" t-esc='line.name'/>
                                                         <td class="text-left" style="padding-left: 5px;" t-esc="contrepartie([line.id])[line.id]"/>
-                                                        <td t-esc="formatLang(line.amount_currency and line.debit or line.credit / abs(line.amount_currency) or 0, digits=4)"/>
+                                                        <td t-esc="formatLang((line.amount_currency and line.debit or line.credit / abs(line.amount_currency)) if line.amount_currency else 0, digits=4)"/>
                                                         <td t-esc="formatLang(line.debit and line.amount_currency)"/>
                                                         <td t-esc="formatLang(line.debit)"/>
                                                         <td t-esc="formatLang(line.credit and abs(line.amount_currency))"/>

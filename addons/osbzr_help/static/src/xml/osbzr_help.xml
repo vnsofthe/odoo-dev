@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+    <t t-extend="ViewManagerAction">
+         <t t-jquery="h2.oe_view_title" t-operation="prepend">
+            <a class="osbzr_model_help" href="javascript: osbzr_model_help" title="在线中文帮助">
+                <img t-att-src='_s + "/web/static/src/img/icons/gtk-help.png"'/>
+            </a>
+        </t>
+    </t>
+
+</templates>

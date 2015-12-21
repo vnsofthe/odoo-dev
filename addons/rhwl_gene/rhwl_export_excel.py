@@ -667,7 +667,7 @@ class rhwl_export_excel(osv.osv_memory):
 
             batch_ok_count = 0
             batch_loss_count = 0
-            cr.execute("select a.id from rhwl_gene_stock_dna_line a join rhwl_easy_genes b on a.name=b.id where a.parent_id=%s order by b.date,b.name"%(i.id))
+            cr.execute("select a.id,b.date,a.box_no,a.hole_no,(case when a.hole_no!='' then a.hole_no::integer else 999 end) from rhwl_gene_stock_dna_line a join rhwl_easy_genes b on a.name=b.id where a.parent_id=%s  order by 2,3,5"%(i.id))
             line_ids = [id[0] for id in cr.fetchall()]
             for g in self.pool.get("rhwl.gene.stock.dna.line").browse(cr,uid,line_ids,context=context):
                 if not g.is_first:continue

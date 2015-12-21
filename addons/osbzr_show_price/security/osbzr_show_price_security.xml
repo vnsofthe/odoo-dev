@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="group_show_list_price" model="res.groups">
+            <field name="name">允许查看产品销售价</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+        <record id="group_show_standard_price" model="res.groups">
+            <field name="name">允许查看产品成本价</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+    </data>
+</openerp>

@@ -44,7 +44,7 @@
                             </div>
                             <style>
                                 body {
-                                   font-size: 15px;
+                                   font-size: 16px;
                                 }
                                .padding_override {
                                     padding-left: 2px !important;
@@ -53,13 +53,9 @@
                                 .row_margin {
                                     margin-left: -50px !important;
                                 }
-                                .mb32 {
-                                    margin-bottom: 0px !important;
-                                    margin-top: 0px !important;
-                                }
-
-                                .table > tbody > tr > td {
-                                    padding: 3px !important;
+                                .important_row {
+                                    font-size: 18px;
+                                    font-weight: bold !important;
                                 }
                             </style>
                             <table class="table col-xs-12">
@@ -83,7 +79,7 @@
                                     <tr t-foreach="get_lines(data)" t-as="a">
                                         <t t-if="a['level'] != 0">
                                             <td>
-                                                <div class="row row_margin">
+                                                <div t-att-class="'row row_margin important_row' if a.get('important') else 'row row_margin'">
                                                     <div t-att-class="'padding_override text-right col-xs-2 col-xs-offset-'+ str(a['level']-1)"
                                                          t-esc="a.get('plus_word')"/>
                                                     <div class="col-xs-9 padding_override" t-esc="a.get('name')"/>

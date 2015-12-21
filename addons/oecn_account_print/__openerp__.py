@@ -20,6 +20,7 @@
 ##############################################################################
 # __author__ = jeff@openerp.cn
 # __author__ = cysnake4713@gmail.com
+# __author__ = hdjmd@qq.com
 
 {
     "name": "符合中国会计习惯的财务功能",
@@ -57,7 +58,7 @@
     use this concept. They care more about move number and move number must
     be organized in a period
     ''',
-    "author": "开阖软件,cysnake4713@gmail.com",
+    "author": "开阖软件,cysnake4713@gmail.com,hdjmd@qq.com",
     "website": "http://www.osbzr.com",
     "depends": ["account", "account_accountant", "l10n_cn"],
     "data": [
