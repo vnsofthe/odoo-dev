@@ -19,9 +19,11 @@ class rhwl_import(osv.osv_memory):
         "is_over":fields.boolean(u"是否覆盖已转入数据?"),
         "hospital":fields.many2one("res.partner",u"送检机构",domain="[('is_company', '=', True), ('customer', '=', True)]"),
         "cust_prop":fields.selection([("hospital",u"医院"),("insurance",u"保险"),("internal",u"内部员工"),("custom",u"公司客户"),("other",u"其它")],string=u"客户属性"),
+        "is_second":fields.boolean(u"重提DAN库存"),
     }
     _defaults={
-        "is_over":False
+        "is_over":False,
+        "is_second":False
     }
 
     def date_trun(self,val):
@@ -560,6 +562,68 @@ class rhwl_import(osv.osv_memory):
         if context is None:
             context = {}
         this = self.browse(cr, uid, ids[0])
+        is_second = this.is_second
+        fileobj = NamedTemporaryFile('w+',delete=True)
+        xlsname =  fileobj.name
+        f=open(xlsname+'.xls','wb')
+        fileobj.close()
+        try:
+            #fileobj.write(base64.decodestring(this.file_bin.decode('base64')))
+            b=this.file_bin.decode('base64')
+            f.write(b)
+            f.close()
+
+            try:
+                bk = xlrd.open_workbook(xlsname+".xls")
+                sh = bk.sheet_by_index(0)
+            except:
+               raise osv.except_osv(u"打开出错",u"请确认文件格式是否为正确的报告标准格式。")
+            nrows = sh.nrows
+            ncols = sh.ncols
+            batch_no={}
+            for i in range(2,nrows):
+                no=sh.cell_value(i,0) #样本编号
+                if not no:continue
+
+                no = no.__trunc__().__str__() if isinstance(no,(long,int,float)) else no
+                gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)])
+                if not gene_id:
+                    raise osv.except_osv(u"出错",u"找不到样本编号[%s]"%(no,))
+                hole_no = sh.cell_value(i,2) #孔号
+                hole_no = hole_no.__trunc__().__str__() if isinstance(hole_no,(long,int,float)) else hole_no
+                if is_second:
+                    second_note = sh.cell_value(i,5)
+                    if (not second_note) or second_note not in (u"重提",u"样本已用完"):
+                        raise osv.except_osv(u"出错",u"重提样本库存转入时，必须指定重提原因，并且重提原因只能是[重提]或[样本已用完]。")
+                    if second_note==u"样本已用完":
+                        line_id = self.pool.get("rhwl.gene.stock.dna.line").search(cr,uid,[("name","=",gene_id[0]),("is_first","=",True)])
+                        if not line_id:
+                            raise osv.except_osv(u"出错",u"样本编号[%s]没有首提的库存记录，不能转入重提库存记录。"%(no))
+                        if sh.cell_value(i,4)==u"样本已用完":
+                            self.pool.get("rhwl.gene.stock.dna.line").write(cr,uid,line_id,{"box_no":"","hole_no":"","note":u"样本已用完"},context=context)
+                        else:
+                            continue
+                val={
+                    "name":gene_id[0],
+                    "box_no":sh.cell_value(i,1), #盒号
+                    "hole_no": hole_no,
+                    "user_name":sh.cell_value(i,3).encode("utf-8").replace(".","·").replace("▪","·"), #操作人
+                    "note":sh.cell_value(i,4), #备注
+                    "is_first":not is_second,
+                }
+                line_id =self.pool.get("rhwl.gene.stock.dna.line").search(cr,uid,[("name","=",gene_id[0]),("is_first","=",True)])
+                if line_id:
+                    self.pool.get("rhwl.gene.stock.dna.line").write(cr,uid,line_id,val,context=context)
+                else:
+                    self.pool.get("rhwl.gene.stock.dna.line").create(cr,uid,val,context=context)
+        finally:
+            f.close()
+            os.remove(xlsname+'.xls')
+
+    def import_report12(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        this = self.browse(cr, uid, ids[0])
 
         fileobj = NamedTemporaryFile('w+',delete=True)
         xlsname =  fileobj.name
@@ -580,26 +644,28 @@ class rhwl_import(osv.osv_memory):
             ncols = sh.ncols
             batch_no={}
             for i in range(2,nrows):
-                no=sh.cell_value(i,0)
+                no=sh.cell_value(i,0) #样本编号
                 if not no:continue
+
                 no = no.__trunc__().__str__() if isinstance(no,(long,int,float)) else no
                 gene_id = self.pool.get("rhwl.easy.genes").search(cr,uid,[("name","=",no)])
                 if not gene_id:
                     raise osv.except_osv(u"出错",u"找不到样本编号[%s]"%(no,))
-                hole_no = sh.cell_value(i,2)
+                hole_no = sh.cell_value(i,2) #孔号
                 hole_no = hole_no.__trunc__().__str__() if isinstance(hole_no,(long,int,float)) else hole_no
+
                 val={
                     "name":gene_id[0],
-                    "box_no":sh.cell_value(i,1),
+                    "box_no":sh.cell_value(i,1), #盒号
                     "hole_no": hole_no,
-                    "user_name":sh.cell_value(i,3).encode("utf-8").replace(".","·").replace("▪","·"),
-                    "note":sh.cell_value(i,4),
+                    "user_name":sh.cell_value(i,3).encode("utf-8").replace(".","·").replace("▪","·"), #操作人
+
                 }
-                line_id =self.pool.get("rhwl.gene.stock.dna.line").search(cr,uid,[("name","=",gene_id[0]),("is_first","=",True)])
+                line_id =self.pool.get("rhwl.gene.stock.dna.original").search(cr,uid,[("name","=",gene_id[0])])
                 if line_id:
-                    self.pool.get("rhwl.gene.stock.dna.line").write(cr,uid,line_id,val,context=context)
+                    self.pool.get("rhwl.gene.stock.dna.original").write(cr,uid,line_id,val,context=context)
                 else:
-                    self.pool.get("rhwl.gene.stock.dna.line").create(cr,uid,val,context=context)
+                    self.pool.get("rhwl.gene.stock.dna.original").create(cr,uid,val,context=context)
         finally:
             f.close()
             os.remove(xlsname+'.xls')

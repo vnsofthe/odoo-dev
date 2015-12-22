@@ -143,5 +143,18 @@
             multi="True"
             key2="client_action_multi"
             id="action_genes_export_stock_dna_excel"/>
+
+        <record id="action_rhwl_genes_original_dna_stock" model="ir.actions.act_window">
+            <field name="name">接收原始样本库存记录</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.genes.import</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="context">{"file_type12":1}</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem action="action_rhwl_genes_original_dna_stock" id="menu_rhwl_easy_genes_original_dna_stock" name="接收原始样本库存记录" parent="menu_rhwl_easy_genes_lib" sequence="70" groups="rhwl_base_library"/>
+
     </data>
 </openerp>

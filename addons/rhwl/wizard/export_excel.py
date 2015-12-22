@@ -69,8 +69,8 @@ class export_excel(osv.osv_memory):
         xlsname =  fileobj.name
         fileobj.close()
         ids=context.get("active_ids")
-        if isinstance(ids,(list,tuple)):
-            ids.sort()
+        #if isinstance(ids,(list,tuple)):
+        #    ids.sort()
 
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
@@ -82,7 +82,8 @@ class export_excel(osv.osv_memory):
         ws.write(0,4,u"采血日期")
 
         rows=1
-        for i in self.pool.get("sale.sampleone").browse(cr,uid,ids,context=context):
+        for id in ids:
+            i = self.pool.get("sale.sampleone").browse(cr,uid,id,context=context)
             ws.write(rows,0,i.name)
             ws.write(rows,1,i.yfxm)
             ws.write(rows,2,i.yftelno)
