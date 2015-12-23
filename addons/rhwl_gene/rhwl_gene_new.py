@@ -415,7 +415,12 @@ class rhwl_gene(osv.osv):
                         self.write(cr, uid, ids,
                                    {"pdf_file": "rhwl_gene/"+LOCAL_REPORT_PATH+"/" + f2, "state": "report_done"})
                         pdf_count += 1
-
+                elif len(name_list)==4:
+                    f2 = ".".join([name_list[0]+"_"+name_list[2],name_list[3]])
+                    shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
+                elif len(name_list)==5:
+                    f2 = ".".join([name_list[0]+"_"+name_list[3],name_list[4]])
+                    shutil.move(os.path.join(newfile, f1), os.path.join(tpath, f2))
 
             if os.path.getmtime(newfile) < last_week:
                 os.rmdir(newfile)

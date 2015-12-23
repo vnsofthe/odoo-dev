@@ -76,7 +76,7 @@ class rhwl_picking(osv.osv):
             self.pool.get("rhwl.easy.genes.new").write(cr,uid,genes_id,{"state":stat[val["state"]]},context=context)
         return id
 
-    def pdf_copy(self,cr,uid,pdf_path,d_path,files):
+    def pdf_copy(self,cr,uid,pdf_path,d_path,tname,files):
         u_count = 0
         t_count = 0
 
@@ -86,7 +86,7 @@ class rhwl_picking(osv.osv):
                     t_count += len(v1)
                     for i in v1:
                         if os.path.exists(os.path.join(pdf_path,i[0])):
-                            f_path = os.path.join(os.path.join(os.path.join(d_path,k),k2),k1)
+                            f_path = os.path.join(os.path.join(os.path.join(os.path.join(d_path,k),tname),k2),k1)
                             if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
                                 shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
 
@@ -110,6 +110,7 @@ class rhwl_picking(osv.osv):
             d=obj.name #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
             files={} #pdf文件目录位置,第一层批号，第二层送检机构，第三层检测项目，第四层报告编号清单
+            index_files={} #致词文件
             if not os.path.exists(d_path):
                 os.mkdir(d_path) #创建发货单号目录
             for l in obj.line:#遍历发货单下的批次
@@ -118,28 +119,46 @@ class rhwl_picking(osv.osv):
                 line_path=os.path.join(d_path,k1)  #批次所在的目录
                 if not os.path.exists(line_path):
                     os.mkdir(line_path) #创建批次目录
-                if not files.has_key(k1):files[k1]={}
+                index_path = os.path.join(line_path,u"致词页")
+                if not os.path.exists(index_path):
+                    os.mkdir(index_path)
 
+                line_path = os.path.join(line_path,u"报告")
+                if not os.path.exists(line_path):
+                    os.mkdir(line_path)
+
+                if not files.has_key(k1):files[k1]={}
+                if not index_files.has_key(k1):index_files[k1]={}
                 for b in l.detail:
                     hospital_name = b.genes_id.hospital.name
                     hospital_path = os.path.join(line_path,hospital_name)
                     if not os.path.exists(hospital_path):
                         os.mkdir(hospital_path)
 
-                    if not files[k1].has_key(hospital_name):files[k1][hospital_name]={}
+                    hospital_index_path = os.path.join(index_path,hospital_name)
+                    if not os.path.exists(hospital_index_path):
+                        os.mkdir(hospital_index_path)
 
+                    if not files[k1].has_key(hospital_name):files[k1][hospital_name]={}
+                    if not index_files[k1].has_key(hospital_name):index_files[k1][hospital_name]={}
                     k2=b.genes_id.package_id.name
                     box_path=os.path.join(hospital_path,k2)
                     if not os.path.exists(box_path):
                         os.mkdir(box_path)
-
+                    box_index_path = os.path.join(hospital_index_path,k2)
+                    if not os.path.exists(box_index_path):
+                        os.mkdir(box_index_path)
                     if not files[k1][hospital_name].has_key(k2):files[k1][hospital_name][k2]=[]
-
+                    if not index_files[k1][hospital_name].has_key(k2):index_files[k1][hospital_name][k2]=[]
                     pdf_file = b.genes_id.name+".pdf"
-                    files[k1][hospital_name][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex])
+                    index_pdf_file = b.genes_id.name+"_index.pdf"
+                    address = "".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x])
+                    files[k1][hospital_name][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile])
+                    index_files[k1][hospital_name][k2].append([index_pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile])
 
-            t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,files)
-            os.system("chmod 666 -R "+d_path)
+            t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,u"报告",files)
+            self.pdf_copy(cr,uid,pdf_path,d_path,u"致词页",index_files)
+            os.system("chmod 777 -R "+d_path)
             vals={
                 "upload":u_count,
             }
@@ -151,25 +170,105 @@ class rhwl_picking(osv.osv):
 
     def export_excel_to_print(self,d_path,files):
         w = xlwt.Workbook(encoding='utf-8')
+        hospital_dict={}
+        person_dict={}
         for k,v in files.items():
             ws = w.add_sheet(k)
             row=0
             batch=v.keys()
             batch.sort()
-
-            ws.write(row,0,u"样本编号")
-            ws.write(row,1,u"姓名")
-            ws.write(row,2,u"性别")
-            ws.write(row,3,u"套餐")
+            ws.write(row,0,u"送检机构")
+            ws.write(row,1,u"套餐")
+            ws.write(row,2,u"样本编号")
+            ws.write(row,3,u"收样日期")
+            ws.write(row,4,u"姓名")
+            ws.write(row,5,u"性别")
+            ws.col(0).width = 4950
             row +=1
-            for k1 in batch:
-                for i in v[k1]:
 
-                    ws.write(row,0,i[1])
-                    ws.write(row,1,i[2])
-                    ws.write(row,2,u"男" if i[3]=="M" else u"女" )
-                    ws.write(row,3,k1)
+            for k1 in batch: #遍历送检机构
+                hospital_dict[k1]={}
+                for k2,v2 in v[k1].items(): #遍历机构下套餐
+                    hospital_dict[k1][k2]=[]
+                    for i in v2:
+                        ws.write(row,0,k1)
+                        ws.write(row,1,k2)
+                        ws.write(row,2,i[1])
+                        ws.write(row,3,i[4])
+                        ws.write(row,4,i[2])
+                        ws.write(row,5,u"男" if i[3]=="M" else u"女" )
+                        row +=1
+
+                        if not i[5]:
+                            hospital_dict[k1][k2].append(i)
+                        else:
+                            if not person_dict.has_key(k1):
+                                person_dict[k1]={}
+                            if not person_dict[k1].has_key(k2):
+                                person_dict[k1][k2]=[]
+                            person_dict[k1][k2].append(i)
+        #处理单个机构的发货单内容
+        for k1,v1 in hospital_dict.items():
+            w1 = w.add_sheet(u"装箱单-"+k1)
+            w1.write_merge(0,0,0,3,u"易感基因检测报告书装箱明细")
+            w1.write(1,0,u"套餐")
+            w1.write(1,1,u"样本编号")
+            w1.write(1,2,u"姓名")
+            w1.write(1,3,u"性别")
+            row = 2
+            for k2,v2 in v1.items():
+                for i in v2:
+                    w1.write(row,0,k2)
+                    w1.write(row,1,i[1])
+                    w1.write(row,2,i[2])
+                    w1.write(row,3,u"男" if i[3]=="M" else u"女")
                     row +=1
+            row +=1
+            w1.write_merge(row,row,0,3,u"发货汇总表")
+            row +=1
+            w1.write(row,0,u"序号")
+            w1.write_merge(row,row,1,2,u"套餐")
+            w1.write(row,3,u"数量（本）")
+            row_seq=1
+            row +=1
+            t_count=0
+            for k2,v2 in v1.items():
+                w1.write(row,0,row_seq)
+                w1.write_merge(row,row,1,2,k2)
+                w1.write(row,3,len(v2))
+                t_count += len(v2)
+                row+=1
+                row_seq +=1
+            w1.write(row,0,u"汇总")
+            w1.write(row,3,t_count)
+            row += 1
+            w1.write_merge(row,row,0,3,u"收件人：")
+            w1.write_merge(row+1,row+1,0,3,u"收货地址：")
+
+        #处理单独邮寄的发货单
+        if person_dict.values():
+            w1 = w.add_sheet(u"装箱单-个人单独邮寄")
+            w1.write(0,0,u"送检机构")
+            w1.write(0,1,u"套餐")
+            w1.write(0,2,u"样本编号")
+            w1.write(0,3,u"收样日期")
+            w1.write(0,4,u"姓名")
+            w1.write(0,5,u"性别")
+            w1.write(0,6,u"邮寄地址")
+            w1.write(0,7,u"电话")
+            row = 1
+            for k1,v1 in person_dict.items():
+                for k2,v2 in v1.items():
+                    for i in v2:
+                        w1.write(row,0,k1)
+                        w1.write(row,1,k2)
+                        w1.write(row,2,i[1])
+                        w1.write(row,3,i[4])
+                        w1.write(row,4,i[2])
+                        w1.write(row,5,u"男" if i[3]=="M" else u"女")
+                        w1.write(row,6,i[6])
+                        w1.write(row,7,i[7])
+                        row +=1
         w.save(os.path.join(d_path,u"易感发货单(印刷)")+".xls")
 
     def action_box_detail(self,cr,uid,id,context=None):

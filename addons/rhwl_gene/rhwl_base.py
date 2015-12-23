@@ -149,7 +149,7 @@ class rhwl_base_package_snp(osv.osv):
     _name = "rhwl.genes.base.package.snp"
     _columns={
         "parent_id":fields.many2one("rhwl.genes.base.package","Parent"),
-        "snp":fields.char("SNP",size=10),
+        "snp":fields.char("SNP",size=15),
     }
 
 class rhwl_barcode(osv.osv):
