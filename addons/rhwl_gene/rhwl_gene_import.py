@@ -581,7 +581,7 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             batch_no={}
-            for i in range(2,nrows):
+            for i in range(1,nrows):
                 no=sh.cell_value(i,0) #样本编号
                 if not no:continue
 
@@ -643,7 +643,7 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             batch_no={}
-            for i in range(2,nrows):
+            for i in range(1,nrows):
                 no=sh.cell_value(i,0) #样本编号
                 if not no:continue
 
