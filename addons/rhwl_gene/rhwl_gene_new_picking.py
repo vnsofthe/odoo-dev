@@ -11,6 +11,7 @@ import logging
 import os
 import shutil
 import xlwt
+import rhwl_excel_constant as ec
 import re
 _logger = logging.getLogger(__name__)
 
@@ -153,7 +154,7 @@ class rhwl_picking(osv.osv):
                     pdf_file = b.genes_id.name+".pdf"
                     index_pdf_file = b.genes_id.name+"_index.pdf"
                     address = "".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x])
-                    files[k1][hospital_name][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile])
+                    files[k1][hospital_name][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile,b.genes_id.hospital.id])
                     index_files[k1][hospital_name][k2].append([index_pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile])
 
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,u"报告",files)
@@ -166,9 +167,9 @@ class rhwl_picking(osv.osv):
                 vals["state"]="upload"
             self.write(cr,uid,i,vals,context=context)
             #生成印刷版的发货单
-            self.export_excel_to_print(d_path,files)
+            self.export_excel_to_print(cr,uid,d_path,files,context=context)
 
-    def export_excel_to_print(self,d_path,files):
+    def export_excel_to_print(self,cr,uid,d_path,files,context=None):
         w = xlwt.Workbook(encoding='utf-8')
         hospital_dict={}
         person_dict={}
@@ -187,9 +188,9 @@ class rhwl_picking(osv.osv):
             row +=1
 
             for k1 in batch: #遍历送检机构
-                hospital_dict[k1]={}
+                if not hospital_dict.has_key(k1):hospital_dict[k1]={}
                 for k2,v2 in v[k1].items(): #遍历机构下套餐
-                    hospital_dict[k1][k2]=[]
+                    if not hospital_dict[k1].has_key(k2):hospital_dict[k1][k2]=[]
                     for i in v2:
                         ws.write(row,0,k1)
                         ws.write(row,1,k2)
@@ -207,44 +208,108 @@ class rhwl_picking(osv.osv):
                             if not person_dict[k1].has_key(k2):
                                 person_dict[k1][k2]=[]
                             person_dict[k1][k2].append(i)
+        style_title = ec.get_excel_style(font_size=16,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN)
+        style1 = ec.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_CENTER,border=xlwt.Borders.THIN)
+        style2 = ec.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_LEFT,border=xlwt.Borders.THIN)
+        #处理汇总表内容
+        total_package={"1":{},"0":{}}
+        for k,v in hospital_dict.items():
+            for k1,v1 in v.items():
+                if not total_package["1"].has_key(k):
+                    total_package["1"][k]={}
+                if not total_package["1"][k].has_key(k1):
+                    total_package["1"][k][k1]=0
+                if not total_package["0"].has_key(k1):
+                    total_package["0"][k1]=0
+                total_package["1"][k][k1] = total_package["1"][k][k1] + len(v1)
+                total_package["0"][k1] = total_package["0"][k1] + len(v1)
+
+        for k,v in person_dict.items():
+            for k1,v1 in v.items():
+                if not total_package["1"].has_key(k):
+                    total_package["1"][k]={}
+                if not total_package["1"][k].has_key(k1):
+                    total_package["1"][k][k1]=0
+                if not total_package["0"].has_key(k1):
+                    total_package["0"][k1]=0
+                total_package["1"][k][k1] = total_package["1"][k][k1] + len(v1)
+                total_package["0"][k1] = total_package["0"][k1] + len(v1)
+
+        w0 = w.add_sheet(u"总表")
+        w0.write_merge(0,0,0,2,u"发货单总表",style=style_title)
+        row=1
+        w0.write(row,0,u"送检机构",style=style1)
+        w0.write(row,1,u"检测项目",style=style1)
+        w0.write(row,2,u"数量",style=style1)
+        w0.col(0).width = 5950
+        w0.col(1).width = 4950
+        row +=1
+        for k,v in total_package["1"].items():
+            for k2,v2 in v.items(): #遍历机构下套餐
+                w0.write(row,0,k,style=style2)
+                w0.write(row,1,k2,style=style2)
+                w0.write(row,2,v2,style=style1)
+                row +=1
+        total_start_row = row
+        for k,v in total_package["0"].items():
+            w0.write(row,1,k,style=style2)
+            w0.write(row,2,v,style=style1)
+            row +=1
+        w0.write_merge(total_start_row,row-1,0,0,u"汇总",style=style1)
+
         #处理单个机构的发货单内容
         for k1,v1 in hospital_dict.items():
             w1 = w.add_sheet(u"装箱单-"+k1)
-            w1.write_merge(0,0,0,3,u"易感基因检测报告书装箱明细")
-            w1.write(1,0,u"套餐")
-            w1.write(1,1,u"样本编号")
-            w1.write(1,2,u"姓名")
-            w1.write(1,3,u"性别")
+            w1.write_merge(0,0,0,3,u"易感基因检测报告书装箱明细",style=style_title)
+            w1.write(1,0,u"套餐",style=style1)
+            w1.write(1,1,u"样本编号",style=style1)
+            w1.write(1,2,u"姓名",style=style1)
+            w1.write(1,3,u"性别",style=style1)
+            w1.col(0).width = 5050
+            w1.col(1).width = 4050
+            w1.col(2).width = 4050
+            w1.col(3).width = 4050
             row = 2
+            hospital_id = 0
             for k2,v2 in v1.items():
                 for i in v2:
-                    w1.write(row,0,k2)
-                    w1.write(row,1,i[1])
-                    w1.write(row,2,i[2])
-                    w1.write(row,3,u"男" if i[3]=="M" else u"女")
+                    w1.write(row,0,k2,style=style2)
+                    w1.write(row,1,i[1],style=style2)
+                    w1.write(row,2,i[2],style=style2)
+                    w1.write(row,3,u"男" if i[3]=="M" else u"女",style=style1)
+                    hospital_id = i[8]
                     row +=1
             row +=1
-            w1.write_merge(row,row,0,3,u"发货汇总表")
+            w1.write_merge(row,row,0,3,u"发货汇总表",style=style_title)
             row +=1
-            w1.write(row,0,u"序号")
-            w1.write_merge(row,row,1,2,u"套餐")
-            w1.write(row,3,u"数量（本）")
+            w1.write(row,0,u"序号",style=style1)
+            w1.write_merge(row,row,1,2,u"套餐",style=style1)
+            w1.write(row,3,u"数量（本）",style=style1)
             row_seq=1
             row +=1
             t_count=0
             for k2,v2 in v1.items():
-                w1.write(row,0,row_seq)
-                w1.write_merge(row,row,1,2,k2)
-                w1.write(row,3,len(v2))
+                w1.write(row,0,row_seq,style=style1)
+                w1.write_merge(row,row,1,2,k2,style=style2)
+                w1.write(row,3,len(v2),style=style1)
                 t_count += len(v2)
                 row+=1
                 row_seq +=1
-            w1.write(row,0,u"汇总")
-            w1.write(row,3,t_count)
+            w1.write(row,0,u"汇总",style=style2)
+            w1.write_merge(row,row,1,2,"",style=style2)
+            w1.write(row,3,t_count,style=style1)
             row += 1
-            w1.write_merge(row,row,0,3,u"收件人：")
-            w1.write_merge(row+1,row+1,0,3,u"收货地址：")
-
+            if hospital_id:
+                hospital_obj = self.pool.get("res.partner").browse(cr,uid,hospital_id,context=context)
+                if hospital_obj.yg_report:
+                    w1.write_merge(row,row,0,3,u"收件人：%s,%s"%(hospital_obj.yg_report.name,hospital_obj.yg_report.mobile),style=style2)
+                    w1.write_merge(row+1,row+1,0,3,u"收货地址："+self.pool.get("res.partner").get_detail_address(cr,uid,hospital_obj.yg_report.id,context=context),style=style2)
+                else:
+                    w1.write_merge(row,row,0,3,u"收件人：",style=style2)
+                    w1.write_merge(row+1,row+1,0,3,u"收货地址：",style=style2)
+            else:
+                w1.write_merge(row,row,0,3,u"收件人：",style=style2)
+                w1.write_merge(row+1,row+1,0,3,u"收货地址：",style=style2)
         #处理单独邮寄的发货单
         if person_dict.values():
             w1 = w.add_sheet(u"装箱单-个人单独邮寄")
