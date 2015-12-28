@@ -663,19 +663,21 @@ class rhwl_gene(osv.osv):
                       from rhwl_easy_genes
                       where cust_prop in ('tjs','tjs_vip')
                       and state in ('confirm','except_confirm')
-                      and date<=(now() - interval '5 day')::date group by date""")
+                      and date<=(now() - interval '4 day')::date group by date""")
         res=[]
         for i in cr.fetchall():
             res.append("日期:"+str(i[0])+",样本数:"+str(i[1]))
         if res:
             js={
                 "first":"易感样本实验进度提醒：",
-                "keyword1":"5天之前送达样本",
+                "keyword1":"4天之前送达样本",
                 "keyword2":";".join(res),
                 "keyword3":(datetime.datetime.utcnow() + datetime.timedelta(hours=8)).strftime("%Y/%m/%d %H:%M:%S"),
                 "remark":"亲爱的实验同事，以上样本，须在本周日之前出结果，否则就会超出和客户约定的送货周期。收到本条消息时，请及时和运营部同事确认，谢谢。"
             }
             self.pool.get("rhwl.weixin.base").send_template2(cr,uid,js,"is_library",context=context)
+            content="易感样本实验进度提醒，统计周期：%s,提醒说明：%s,%s"%(js["keyword1"],js["keyword2"],js["remark"])
+            self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,'rhwlyy',"is_library",content,context=context)
 
     #根据中间日期计算本周期的起迄日期
     def date_between(self,days=20):

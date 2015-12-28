@@ -261,15 +261,16 @@ class rhwl_picking(osv.osv):
         for k1,v1 in hospital_dict.items():
             w1 = w.add_sheet(u"装箱单-"+k1)
             w1.write_merge(0,0,0,3,u"易感基因检测报告书装箱明细",style=style_title)
-            w1.write(1,0,u"套餐",style=style1)
-            w1.write(1,1,u"样本编号",style=style1)
-            w1.write(1,2,u"姓名",style=style1)
-            w1.write(1,3,u"性别",style=style1)
+            w1.write_merge(1,1,0,3,k1,style=style_title)
+            w1.write(2,0,u"套餐",style=style1)
+            w1.write(2,1,u"样本编号",style=style1)
+            w1.write(2,2,u"姓名",style=style1)
+            w1.write(2,3,u"性别",style=style1)
             w1.col(0).width = 5050
             w1.col(1).width = 4050
             w1.col(2).width = 4050
             w1.col(3).width = 4050
-            row = 2
+            row = 3
             hospital_id = 0
             for k2,v2 in v1.items():
                 for i in v2:
@@ -369,7 +370,7 @@ class rhwl_picking(osv.osv):
                         else:
                             p_id = g.genes_id.hospital.user_id.partner_id.id
                         if not p_id:
-                            raise osv.except_osv("error",u"送检机构没有设置易感报告收件人，同时也没有对应的销售人员。")
+                            raise osv.except_osv("error",u"送检机构[%s]没有设置易感报告收件人，同时也没有对应的销售人员。"%(g.genes_id.hospital.name))
 
                         add_dict = self.pool.get("res.partner").get_detail_address_dict(cr,uid,p_id,context=context)
                         partner_obj = self.pool.get("res.partner").browse(cr,uid,p_id,context=context)

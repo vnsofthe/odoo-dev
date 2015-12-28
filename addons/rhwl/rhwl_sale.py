@@ -487,7 +487,8 @@ class rhwl_sample_info(osv.osv):
     def action_check_reused(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse',"library_date":fields.date.today()}, context=context)
         for i in ids:
-            self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
+            if self.pool.get("sale.sampleone.reuse").search_count(cr,SUPERUSER_ID,[("name","=",i)],context=context)==0:
+                self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
             self.send_weixin(cr,uid,i,context=context)
 
     def action_check_except(self, cr, uid, ids, context=None):

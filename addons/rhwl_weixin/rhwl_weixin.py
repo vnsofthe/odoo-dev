@@ -466,7 +466,7 @@ class rhwl_config(osv.osv):
                     token=self._get_token(cr,SUPERUSER_ID,i.base_id.code.encode('utf-8'),context=context)
             vals["touser"] = '|'.join(touser)
             vals["text"]["content"] = content.encode('utf-8')
-            _logger.error(vals)
+            #_logger.error(vals)
             s=requests.post("https://qyapi.weixin.qq.com/cgi-bin/message/send",
                             params={"access_token":token},
                             data=json.dumps(vals,ensure_ascii=False),
