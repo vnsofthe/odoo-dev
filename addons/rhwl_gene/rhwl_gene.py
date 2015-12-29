@@ -662,7 +662,7 @@ class rhwl_gene(osv.osv):
         cr.execute("""select date,count(*) c
                       from rhwl_easy_genes
                       where cust_prop in ('tjs','tjs_vip')
-                      and state in ('confirm','except_confirm')
+                      and state in ('confirm','except_confirm','draft','except')
                       and date<=(now() - interval '4 day')::date group by date""")
         res=[]
         for i in cr.fetchall():
