@@ -70,64 +70,15 @@ class rhwl_export_excel(osv.osv_memory):
     def action_excel_gene_new(self,cr,uid,ids,context=None):
         if not context.get("active_id"):return
         ids = context.get("active_id")
-        picking_obj = self.pool.get("rhwl.genes.new.picking").browse(cr,uid,ids,context=context)
-        w = xlwt.Workbook(encoding='utf-8')
-        ws = w.add_sheet(u"易感发货-送检机构")
-        ws.col(1).width =3500
-        ws.write(0,0,u"送检机构")
-        ws.write(0,1,u"套餐")
-        ws.write(0,2,u"样本编号")
-        ws.write(0,3,u"收样日期")
-        ws.write(0,4,u"姓名")
-        ws.write(0,5,u"性别")
-        excel_row=1
-        genes_ids = self.pool.get("rhwl.genes.new.picking.line.detail").search(cr,uid,[("line_id.picking_id.id","=",ids),("genes_id.is_single_post","=",False)],context=context)
-        new_genes_ids=[]
-        for d in self.pool.get("rhwl.genes.new.picking.line.detail").browse(cr,uid,genes_ids,context=context):
-            new_genes_ids.append(d.genes_id.id)
-        genes_ids = self.pool.get("rhwl.easy.genes.new").search(cr,uid,[("id","in",new_genes_ids)],order="hospital,package_id,name",context=context)
-        for i in self.pool.get("rhwl.easy.genes.new").browse(cr,uid,genes_ids,context=context):
-            ws.write(excel_row,0,i.hospital.name)
-            ws.write(excel_row,1,i.package_id.name)
-            ws.write(excel_row,2,i.name)
-            ws.write(excel_row,3,i.receiv_date)
-            ws.write(excel_row,4,i.cust_name)
-            ws.write(excel_row,5,u"男" if i.sex=="M" else u"女")
-            excel_row +=1
-
-        #导出单独邮寄
-        genes_ids = self.pool.get("rhwl.genes.new.picking.line.detail").search(cr,uid,[("line_id.picking_id.id","=",ids),("genes_id.is_single_post","=",True)],context=context)
-        if genes_ids:
-            ws2 = w.add_sheet(u"单独邮寄")
-            ws2.col(1).width =3500
-            ws2.write(0,0,u"送检机构")
-            ws2.write(0,1,u"套餐")
-            ws2.write(0,2,u"样本编号")
-            ws2.write(0,3,u"收样日期")
-            ws2.write(0,4,u"姓名")
-            ws2.write(0,5,u"性别")
-            ws2.write(0,6,u"联系电话")
-            ws2.write(0,7,u"邮寄地址")
-
-            excel_row=1
-            new_genes_ids=[]
-            for d in self.pool.get("rhwl.genes.new.picking.line.detail").browse(cr,uid,genes_ids,context=context):
-                new_genes_ids.append(d.genes_id.id)
-            genes_ids = self.pool.get("rhwl.easy.genes.new").search(cr,uid,[("id","in",new_genes_ids)],order="hospital,package_id,name",context=context)
-            for i in self.pool.get("rhwl.easy.genes.new").browse(cr,uid,genes_ids,context=context):
-                ws2.write(excel_row,0,i.hospital.name)
-                ws2.write(excel_row,1,i.package_id.name)
-                ws2.write(excel_row,2,i.name)
-                ws2.write(excel_row,3,i.receiv_date)
-                ws2.write(excel_row,4,i.cust_name)
-                ws2.write(excel_row,5,u"男" if i.sex=="M" else u"女")
-                ws2.write(excel_row,6,i.mobile)
-                ws2.write(excel_row,7,"".join([x for x in [i.state_id.name,i.city_id.name,i.area_id.name,i.address] if x]))
-                excel_row +=1
         fileobj = NamedTemporaryFile('w+',delete=True)
         xlsname =  fileobj.name
         fileobj.close()
-        w.save(xlsname)
+        context_new = context.copy()
+        context_new["excel_path"]=xlsname
+        context_new["express"]=True
+        picking_obj = self.pool.get("rhwl.genes.new.picking").browse(cr,uid,ids,context=context)
+        self.pool.get("rhwl.genes.new.picking").action_pdf_upload(cr,uid,ids,context=context_new)
+
         f=open(xlsname,'rb')
         id=self.create(cr,uid,{"file":base64.encodestring(f.read()),"name":picking_obj.name+u"易感发货单.xls","state":"excel"})
         f.close()

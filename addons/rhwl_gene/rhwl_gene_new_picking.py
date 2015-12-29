@@ -105,7 +105,8 @@ class rhwl_picking(osv.osv):
 
         if isinstance(id,(long,int)):
             id=[id]
-
+        if not context:
+            context = {}
         for i in id:
             obj=self.browse(cr,uid,i,context=context)
             d=obj.name #发货单需创建的目录名称
@@ -167,9 +168,9 @@ class rhwl_picking(osv.osv):
                 vals["state"]="upload"
             self.write(cr,uid,i,vals,context=context)
             #生成印刷版的发货单
-            self.export_excel_to_print(cr,uid,d_path,files,context=context)
+            self.export_excel_to_print(cr,uid,d_path,files,id,context=context)
 
-    def export_excel_to_print(self,cr,uid,d_path,files,context=None):
+    def export_excel_to_print(self,cr,uid,d_path,files,picking_id,context=None):
         w = xlwt.Workbook(encoding='utf-8')
         hospital_dict={}
         person_dict={}
@@ -305,9 +306,17 @@ class rhwl_picking(osv.osv):
                 if hospital_obj.yg_report:
                     w1.write_merge(row,row,0,3,u"收件人：%s,%s"%(hospital_obj.yg_report.name,hospital_obj.yg_report.mobile),style=style2)
                     w1.write_merge(row+1,row+1,0,3,u"收货地址："+self.pool.get("res.partner").get_detail_address(cr,uid,hospital_obj.yg_report.id,context=context),style=style2)
+                    w1.row(row+1).height_mismatch=True
+                    w1.row(row+1).height=600
                 else:
                     w1.write_merge(row,row,0,3,u"收件人：",style=style2)
                     w1.write_merge(row+1,row+1,0,3,u"收货地址：",style=style2)
+                if context.has_key("express"):
+                    box_id = self.pool.get("rhwl.genes.new.picking.box").search(cr,uid,[("picking_id","in",picking_id),("partner_id","=",hospital_id)])
+                    if box_id:
+                        box_obj = self.pool.get("rhwl.genes.new.picking.box").browse(cr,uid,box_id,context=context)
+                        if box_obj.express_id:
+                            w1.write_merge(row+2,row+2,0,3,u"快递单号：%s,%s" %(box_obj.express_id.deliver_id.name,box_obj.express_id.num_express),style=style2)
             else:
                 w1.write_merge(row,row,0,3,u"收件人：",style=style2)
                 w1.write_merge(row+1,row+1,0,3,u"收货地址：",style=style2)
@@ -335,7 +344,11 @@ class rhwl_picking(osv.osv):
                         w1.write(row,6,i[6])
                         w1.write(row,7,i[7])
                         row +=1
-        w.save(os.path.join(d_path,u"易感发货单(印刷)")+".xls")
+        if context.has_key("excel_path"):
+            excel_name = context.get("excel_path")
+        else:
+            excel_name = os.path.join(d_path,u"易感发货单(印刷)")+".xls"
+        w.save(excel_name)
 
     def action_box_detail(self,cr,uid,id,context=None):
         if isinstance(id,(list,tuple)):
