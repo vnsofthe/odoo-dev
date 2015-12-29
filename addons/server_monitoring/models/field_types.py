@@ -23,7 +23,7 @@ from openerp.osv import orm, fields
 from openerp import models
 
 class bigint(fields.integer):
-    _type = 'int8'
+    _type = 'integer'
 
 
 fields.bigint = bigint

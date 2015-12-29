@@ -59,7 +59,7 @@ from openerp.osv import orm, fields, osv
 from openerp import pooler
 from openerp import SUPERUSER_ID
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
-
+import openerp.service.model as model
 _logger = logging.getLogger(__name__)
 
 BLACKLIST = (
@@ -87,7 +87,7 @@ class ClassInstanceCount(orm.Model):
 
 
 def _monkey_patch_object_proxy_execute():
-    orig_execute_cr = osv.object_proxy.execute_cr
+    orig_execute_cr = model.execute_cr
 
     def execute_cr(self, cr, uid, obj, method, *args, **kw):
         result = orig_execute_cr(self, cr, uid, obj, method, *args, **kw)
@@ -97,7 +97,7 @@ def _monkey_patch_object_proxy_execute():
                                 False, False, context)
         return result
 
-    osv.object_proxy.execute_cr = execute_cr
+    model.execute_cr = execute_cr
 
 
 class ServerMonitorProcess(orm.Model):
