@@ -115,7 +115,7 @@ class WebClient(http.Controller):
             if not pd:continue
             if not result.has_key(pd["category"]):
                 result[pd["category"]]=[]
-            result[pd["category"]].append([k,pd.get(kw.get("lang")).get("title","")])
+            result[pd["category"]].append([k,pd.get(kw.get("lang")).get("title",""),pd.get("sex")])
 
         for i in tc.get("region"):
             res.append([i,category.get(kw.get("lang")).get(i),result[i]])

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>编辑</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container-fluid">
+        <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist" id="myTabs">
+          <li role="presentation" ><a href="#disease_nav" aria-controls="disease" role="tab" data-toggle="tab">疾病详情</a></li>
+          <li role="presentation" ><a href="#snp_nav" aria-controls="snp" role="tab" data-toggle="tab">位点说明</a></li>
+      </ul>
+        <!-- Tab panes -->
+      <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="disease_nav">
+
+            </div>
+            <div role="tabpanel" class="tab-pane" id="snp_nav">
+
+            </div>
+      </div>
+
+    </div>
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script src="/mongo/static/js/jquery.form.js"></script>
+    <script src="/mongo/static/js/json2.js"></script>
+    <script src="/mongo/static/js/vnsoft.js"></script>
+
+    <script>
+        $(document).ajaxStart(function(){
+            $("<div id=\"wait_ajax\">数据加载中，请稍候......</div>").prependTo($("body"));
+            });
+        $(document).ajaxStop(function(){
+            $("#wait_ajax").remove();
+            });
+
+        $.ajax(
+                {
+                    type: 'POST',
+                      url: "/web/api/mongo/get_detail/?lang="+ getUrlVar("lang")+"&id="+getUrlVar("id")+"&tc="+getUrlVar("tc")+"&no="+getUrlVar("no"),
+                      data: {},
+                      success: function(data){
+                          var t_data = data[0];
+                          var d_data = data[1];
+                            console.log(data);
+                          document.title = data[1].title;
+                          $.each(t_data,function(k,v){
+                              for(var p in v){
+                                  if(p=="pic"||p=="category" || p=="subclass" || p=="order" || p=="reportdesc"){
+                                      continue;
+                                  }else if(p=="sex") {
+                                      var sex_string="男女均可";
+                                      if(d_data[p]=="M"){
+                                          sex_string="男";
+                                      }else if(d_data[p]=="女"){
+                                          sex_string="女";
+                                      }
+                                      $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4  >适应性别</h4></div>");
+                                      $("#disease_nav").append("<div class=\"col-lg-11 col-md-10 \"><pre>"+sex_string+"</pre></div>");
+
+                                  }else if(p=="title"){
+
+                                      $("#disease_nav").append("<div class=\"col-lg-12 col-md-12\"><label><h2>"+d_data[p]+"</h2></label></div>");
+                                  }else if(typeof v[p]=="string"){
+                                      $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"\" class=\"control-label\">"+v[p]+"</label></div>")
+                                        $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\"><p name=\""+p+"\" id=\""+p+"\" >"+d_data[p]+"</p></div>");
+
+                                  }else if(typeof v[p]=="object"){
+                                      $.each(v[p],function(k1,v1){
+                                          if(k1==0){
+                                              $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4>"+v[p][0]["node"]+"</h4></div>")
+                                          }else{
+
+                                                $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\">"+
+                                                                            "<div id=\""+p+"\">"+
+                                                                                "<ul class=\"nav nav-tabs\" role=\"tablist\" id=\"myTabs_"+p+"\"></ul>"+
+                                                                                "<div class=\"tab-content\" id=\"myContent_"+p+"\"></div>"+
+                                                                            "</div>"+
+                                                                            "</div>");
+
+                                                for(var p1 in v1){
+                                                    var vv="";
+                                                    if(d_data[p]!=undefined&&d_data[p][p1]!=undefined){
+                                                        vv=d_data[p][p1];
+                                                    }
+                                                    if(p1.startsWith("descriptionM")&&(d_data["sex"]=="M"||d_data["sex"]=="B")){
+                                                        $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_m\""+" aria-controls=\"sex_m\" role=\"tab\" data-toggle=\"tab\">男</a></li>")
+                                                        $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_m\"><pre   name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\"  >"+vv+"</pre></div>")
+                                                    }else{
+
+                                                    }
+                                                }
+                                          }
+                                      })
+                                  }
+
+                              }
+                          })
+                      }
+                }
+        );
+        $('#myTabs a:first').tab('show')
+    </script>
+
+  </body>
+</html>

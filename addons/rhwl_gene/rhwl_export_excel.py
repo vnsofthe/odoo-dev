@@ -546,13 +546,13 @@ class rhwl_export_excel(osv.osv_memory):
         ws.col(4).width = 6000
         rows=1
         seq=1
-
+        style1 = self.get_excel_style(font_size=11)
         for i in self.pool.get("rhwl.easy.genes.new").browse(cr,uid,ids,context=context):
-            ws.write(rows,0,i.cust_name,style=self.get_excel_style(font_size=11))
-            ws.write(rows,1,u"男" if i.sex==u"M" else u"女",style=self.get_excel_style(font_size=11))
-            ws.write(rows,2,i.name,style=self.get_excel_style(font_size=11))
-            ws.write(rows,3,i.hospital.name,style=self.get_excel_style(font_size=11))
-            ws.write(rows,4,i.package_id.name,style=self.get_excel_style(font_size=11))
+            ws.write(rows,0,i.cust_name,style=style1)
+            ws.write(rows,1,u"男" if i.sex==u"M" else u"女",style=style1)
+            ws.write(rows,2,i.name,style=style1)
+            ws.write(rows,3,i.hospital.name,style=style1)
+            ws.write(rows,4,i.package_id.name,style=style1)
             rows +=1
 
         w.save(xlsname)
