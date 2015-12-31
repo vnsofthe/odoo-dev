@@ -575,6 +575,7 @@ class rhwl_reuse(osv.osv):
         "date": fields.related('name', 'date', type='char', string=u'送检日期', readonly=1),
         "mobile": fields.related('name', 'mobile', type='char', string=u'手机号码', readonly=1),
         "hospital": fields.related('name', 'hospital', relation="res.partner", type='many2one', string=u'送检机构', readonly=1,store=True),
+        "new_name":fields.many2one("rhwl.easy.genes.new",u"新样本编号"),
         "notice_user": fields.many2one("res.users", u"通知人员"),
         "notice_date": fields.date(u"通知日期"),
         "reuse_note": fields.char(u"重采原因", size=200),
@@ -598,3 +599,6 @@ class rhwl_reuse(osv.osv):
 
     def action_cancel(self, cr, uid, ids, context=None):
         self.write(cr, uid, ids, {'state': 'cancel','notice_user':uid}, context=context)
+
+    def action_reuse(self,cr,uid,ids,context=None):
+        self.write(cr, uid, ids, {'state': 'reuse'}, context=context)

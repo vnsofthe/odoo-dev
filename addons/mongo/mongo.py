@@ -13,7 +13,7 @@ import datetime
 import logging
 import pymongo
 import base64
-import os
+import os,re
 
 _logger = logging.getLogger(__name__)
 
@@ -23,9 +23,10 @@ class WebClient(http.Controller):
     DB_NAME = "susceptibility"
     COMMON={}
 
-    def _get_cursor(self):
+
+    def _get_cursor(self,dbname=DB_NAME):
         conn = pymongo.Connection(self.DB_SERVER,self.DB_PORT)
-        db = conn[self.DB_NAME]
+        db = conn[dbname]
         return db
 
     def _get_common(self):
@@ -135,14 +136,26 @@ class WebClient(http.Controller):
 
         res=[]
 
-        #result={}
-        #for k,v in content.get(kw.get("lang")).get("sets").get(kw.get("tc")).get("list").items():
-        #    if not result.has_key(v["category"]):
-        #        result[v["category"]]=[]
-        #    result[v["category"]].append([k,v["title"]])
+        gtids = pd.get("gtids",[])
+        if gtids:
+            snp_db = self._get_cursor("snps")
+            snp_ids = snp_db.snps.find({"gtid":{'$in':gtids } } )
+            rsid=[]
+            genes=[]
+            for i in snp_ids:
+                rsid.append(i["_id"])
+            genes_db = self._get_cursor("genes")
+            if rsid:
+                rsid_ids = genes_db.rsid2genes.find({"_id":{'$in':rsid}})
+                for i in rsid_ids:
+                    genes = genes + i.get("gene")
+                if genes:
+                    for i in genes_db.geneFunctions.find({"_id":{'$in':genes}}):
+                        res.append([i["_id"],i["function"]["description"]])
+
         data = pd.get(kw.get("lang").encode("utf-8"))
         data["sex"] = pd.get("sex")
-        res = [template.get("itms"),data]
+        res = [template.get("itms"),data,res]
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
@@ -189,4 +202,14 @@ class WebClient(http.Controller):
         db.prodata.update({"_id":no},pd)
 
         response = request.make_response("数据提交成功，<a href=\"javascript:history.back(-2);\">后退</a>")
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/mongo/get_genes/",type="http",auth="public")
+    def _get_genes(self,**kw):
+        genes_db = self._get_cursor("genes")
+        res=[]
+        for i in genes_db.geneFunctions.find({"_id":{'$in':[re.compile(kw.get("no").encode("utf-8"))]}}):
+            res.append([i["_id"],i["function"]["description"]])
+
+        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)

@@ -132,7 +132,7 @@
                             <page string="问卷调查">
                                 <group col="16">
                                     <group colspan="16">
-                                        <label for="q1_0" string="您目前或曾患下列哪些疾病？"/>
+                                        <label for="q1_0" string="Q1.您目前或曾患下列哪些疾病？"/>
                                        <div >
                                             <field name="q1_0" />
                                             <label string="无" for="q1_0"/>
@@ -161,7 +161,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q2_0" string="亲属中（祖父母，父母，兄弟姐妹及子女）有无患上述疾病？"/>
+                                        <label for="q2_0" string="Q2.亲属中（祖父母，父母，兄弟姐妹及子女）有无患上述疾病？"/>
                                        <div >
                                            <field name="q2_0"/>
                                            <label string="无" for="q2_0"/>
@@ -175,7 +175,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q3_0" string="您目前正在服用或曾服用以下哪些药物？"/>
+                                        <label for="q3_0" string="Q3.您目前正在服用或曾服用以下哪些药物？"/>
                                        <div >
                                             <field name="q3_0" />
                                             <label string="无" for="q3_0"/>
@@ -202,7 +202,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q4_0" string="您是否有以下习惯？"/>
+                                        <label for="q4_0" string="Q4.您是否有以下习惯？"/>
                                        <div >
                                            <field name="q4_0"   />
                                             <label string="无" for="q4_0"/>
@@ -224,7 +224,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q5_0" string="您是否有以下消化系统不适？"/>
+                                        <label for="q5_0" string="Q5.您是否有以下消化系统不适？"/>
                                        <div >
                                            <field name="q5_0"  />
                                             <label string="无" for="q5_0"/>
@@ -248,7 +248,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q6_0" string="您是否有以下神经系统不适？"/>
+                                        <label for="q6_0" string="Q6.您是否有以下神经系统不适？"/>
                                        <div >
                                            <field name="q6_0"  />
                                             <label string="无" for="q6_0"/>
@@ -272,7 +272,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q7_0" string="您是否有以下循环系统不适？"/>
+                                        <label for="q7_0" string="Q7.您是否有以下循环系统不适？"/>
                                        <div >
                                            <field name="q7_0"  />
                                             <label string="无" for="q7_0"/>
@@ -293,7 +293,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q8_0" string="您是否有以下运动系统不适？"/>
+                                        <label for="q8_0" string="Q8.您是否有以下运动系统不适？"/>
                                        <div >
                                            <field name="q8_0"   />
                                             <label string="无" for="q8_0"/>
@@ -314,7 +314,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q9_0" string="您是否有以下免疫系统不适？"/>
+                                        <label for="q9_0" string="Q9.您是否有以下免疫系统不适？"/>
                                        <div >
                                            <field name="q9_0"   />
                                             <label string="无" for="q9_0"/>
@@ -335,7 +335,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q10_0" string="您是否有以下内分泌系统不适？"/>
+                                        <label for="q10_0" string="Q10.您是否有以下内分泌系统不适？"/>
                                        <div >
                                            <field name="q10_0"   />
                                             <label string="无" for="q10_0"/>
@@ -355,7 +355,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q11_0" string="您是否有以下呼吸系统不适？"/>
+                                        <label for="q11_0" string="Q11.您是否有以下呼吸系统不适？"/>
                                        <div >
                                            <field name="q11_0"  />
                                             <label string="无" for="q11_0"/>
@@ -378,7 +378,7 @@
                                         </div>
                                     </group>
                                     <group colspan="16">
-                                        <label for="q12_0" string="您是否有以下泌尿生殖系统不适？"/>
+                                        <label for="q12_0" string="Q12.您是否有以下泌尿生殖系统不适？"/>
                                        <div >
                                            <field name="q12_0"  />
                                             <label string="无" for="q12_0"/>
@@ -548,8 +548,10 @@
                     <header>
                         <button name="action_done" states="draft" string="已通知" type="object"
                                 groups="base.group_user" class="oe_highlight"/>
-                        <button name="action_cancel" states="done" string="孕妇放弃" type="object"
+                        <button name="action_cancel" states="done" string="客户放弃" type="object"
                                 groups="base.group_user" class="oe_highlight"/>
+                        <button name="action_reuse" states="done" string="已重采" type="object"
+                                groups="base.group_user" />
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
                     </header>
@@ -560,7 +562,7 @@
                                 <field name="cust_name"/>
                                 <field name="date"/>
                                 <field name="mobile"/>
-
+                                <field name="new_name"/>
                             </group>
                             <group>
                                 <field name="hospital"/>

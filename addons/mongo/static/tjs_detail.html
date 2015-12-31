@@ -29,7 +29,29 @@
 
             </div>
             <div role="tabpanel" class="tab-pane" id="snp_nav">
+                <br/>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="输入搜索基因名..." id="input_gene_search">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btn_gene_search">搜索</button>
+                      </span>
+                    </div><!-- /input-group -->
+                  </div><!-- /.col-lg-6 -->
+                </div><!-- /.row -->
+                <br/>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>基因</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
+                    </tbody>
+                </table>
             </div>
       </div>
 
@@ -61,7 +83,8 @@
                       success: function(data){
                           var t_data = data[0];
                           var d_data = data[1];
-                            console.log(data);
+                          var r_data = data[2];
+
                           document.title = data[1].title;
                           $.each(t_data,function(k,v){
                               for(var p in v){
@@ -71,7 +94,7 @@
                                       var sex_string="男女均可";
                                       if(d_data[p]=="M"){
                                           sex_string="男";
-                                      }else if(d_data[p]=="女"){
+                                      }else if(d_data[p]=="F"){
                                           sex_string="女";
                                       }
                                       $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4  >适应性别</h4></div>");
@@ -85,40 +108,68 @@
                                         $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\"><p name=\""+p+"\" id=\""+p+"\" >"+d_data[p]+"</p></div>");
 
                                   }else if(typeof v[p]=="object"){
+
                                       $.each(v[p],function(k1,v1){
                                           if(k1==0){
                                               $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4>"+v[p][0]["node"]+"</h4></div>")
-                                          }else{
-
-                                                $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\">"+
+                                              $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\">"+
                                                                             "<div id=\""+p+"\">"+
                                                                                 "<ul class=\"nav nav-tabs\" role=\"tablist\" id=\"myTabs_"+p+"\"></ul>"+
                                                                                 "<div class=\"tab-content\" id=\"myContent_"+p+"\"></div>"+
                                                                             "</div>"+
                                                                             "</div>");
+                                          }else{
 
-                                                for(var p1 in v1){
+                                                if(v1["descriptionM"]!=undefined&&(d_data["sex"]=="M"||d_data["sex"]=="B")){
                                                     var vv="";
-                                                    if(d_data[p]!=undefined&&d_data[p][p1]!=undefined){
-                                                        vv=d_data[p][p1];
+                                                    if(d_data[p]!=undefined&&d_data[p]["descriptionM"]!=undefined){
+                                                        vv=d_data[p]["descriptionM"];
                                                     }
-                                                    if(p1.startsWith("descriptionM")&&(d_data["sex"]=="M"||d_data["sex"]=="B")){
-                                                        $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_m\""+" aria-controls=\"sex_m\" role=\"tab\" data-toggle=\"tab\">男</a></li>")
-                                                        $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_m\"><pre   name=\""+p+"_"+p1+"\" id=\""+p+"_"+p1+"\"  >"+vv+"</pre></div>")
-                                                    }else{
-
-                                                    }
+                                                    $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_m\""+" aria-controls=\"sex_m\" role=\"tab\" data-toggle=\"tab\">男性</a></li>")
+                                                    $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_m\"><pre   name=\""+p+"_descriptionM\" id=\""+p+"_descriptionM\"  >"+vv+"</pre></div>")
                                                 }
                                           }
-                                      })
+                                      });
+                                      $.each(v[p],function(k1,v1){
+                                          if(k1>0){
+                                              if(v1["descriptionF"]!=undefined&&(d_data["sex"]=="F"||d_data["sex"]=="B")){
+                                                    var vv="";
+                                                    if(d_data[p]!=undefined&&d_data[p]["descriptionF"]!=undefined){
+                                                        vv=d_data[p]["descriptionF"];
+                                                    }
+                                                    $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_f\""+" aria-controls=\"sex_f\" role=\"tab\" data-toggle=\"tab\">女性</a></li>")
+                                                    $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_f\"><pre   name=\""+p+"_descriptionF\" id=\""+p+"_descriptionF\"  >"+vv+"</pre></div>")
+                                                }
+                                          }
+                                      });
+                                      $('#myTabs_'+p+' a:first').tab('show')
                                   }
 
                               }
-                          })
+                          });
+                          $.each(r_data,function(k,v){
+                              $("#snp_nav table tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                          });
                       }
                 }
         );
         $('#myTabs a:first').tab('show')
+        $("#btn_gene_search").bind("click",function(e){
+            var no = $("#input_gene_search").val();
+            $.ajax(
+                    {
+                        type: 'POST',
+                        url: "/web/api/mongo/get_genes/?no=" + no,
+                        data: {},
+                        success: function (data) {
+
+                            $("#snp_nav table tbody tr").remove();
+                            $.each(data,function(k,v){
+                                  $("#snp_nav table tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                              });
+                        }
+                    });
+        })
     </script>
 
   </body>
