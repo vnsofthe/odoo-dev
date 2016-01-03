@@ -30,18 +30,8 @@
             </div>
             <div role="tabpanel" class="tab-pane" id="snp_nav">
                 <br/>
-                <div class="row">
-                  <div class="col-lg-6">
-                    <div class="input-group">
-                      <input type="text" class="form-control" placeholder="输入搜索基因名..." id="input_gene_search">
-                      <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="btn_gene_search">搜索</button>
-                      </span>
-                    </div><!-- /input-group -->
-                  </div><!-- /.col-lg-6 -->
-                </div><!-- /.row -->
-                <br/>
-                <table class="table table-hover table-bordered">
+                <label >疾病关联基因：</label>
+                <table class="table table-hover table-bordered" id="snp_tab_data">
                     <thead>
                         <tr>
                             <th>基因</th>
@@ -52,6 +42,42 @@
 
                     </tbody>
                 </table>
+
+                <br/>
+                <label>其它基因查询：</label>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="输入搜索基因名..." id="input_gene_search" onkeypress="if(event.keyCode==13||event.which==13){$('#btn_gene_search').click();return false;}">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btn_gene_search">搜索</button>
+                      </span>
+                    </div><!-- /input-group -->
+                  </div><!-- /.col-lg-6 -->
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="alert alert-danger" role="alert" style="display: none" id="search_tips">
+
+                          <strong>提示!</strong> 查询条件不能为空。
+                      </div>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-bordered" id="search_data" style="display: none">
+                    <thead>
+                        <tr>
+                            <th>基因</th>
+                            <th>描述</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+
+
             </div>
       </div>
 
@@ -97,12 +123,12 @@
                                       }else if(d_data[p]=="F"){
                                           sex_string="女";
                                       }
-                                      $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4  >适应性别</h4></div>");
+                                      $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4  ><label>适应性别</label></h4></div>");
                                       $("#disease_nav").append("<div class=\"col-lg-11 col-md-10 \"><pre>"+sex_string+"</pre></div>");
 
                                   }else if(p=="title"){
 
-                                      $("#disease_nav").append("<div class=\"col-lg-12 col-md-12\"><label><h2>"+d_data[p]+"</h2></label></div>");
+                                      $("#disease_nav").append("<div class=\"col-lg-12 col-md-12\"><h2><label>"+d_data[p]+"</label></h2></div>");
                                   }else if(typeof v[p]=="string"){
                                       $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><label for=\""+p+"\" class=\"control-label\">"+v[p]+"</label></div>")
                                         $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\"><p name=\""+p+"\" id=\""+p+"\" >"+d_data[p]+"</p></div>");
@@ -111,7 +137,7 @@
 
                                       $.each(v[p],function(k1,v1){
                                           if(k1==0){
-                                              $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4>"+v[p][0]["node"]+"</h4></div>")
+                                              $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4><label>"+v[p][0]["node"]+"</label></h4></div>")
                                               $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\">"+
                                                                             "<div id=\""+p+"\">"+
                                                                                 "<ul class=\"nav nav-tabs\" role=\"tablist\" id=\"myTabs_"+p+"\"></ul>"+
@@ -148,7 +174,7 @@
                               }
                           });
                           $.each(r_data,function(k,v){
-                              $("#snp_nav table tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                              $("#snp_tab_data tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
                           });
                       }
                 }
@@ -156,17 +182,27 @@
         $('#myTabs a:first').tab('show')
         $("#btn_gene_search").bind("click",function(e){
             var no = $("#input_gene_search").val();
+            if(no==""){
+                $("#search_tips").show();
+                return;
+            }
+            $("#search_tips").hide();
             $.ajax(
                     {
                         type: 'POST',
                         url: "/web/api/mongo/get_genes/?no=" + no,
                         data: {},
                         success: function (data) {
-
-                            $("#snp_nav table tbody tr").remove();
+                            var has_data=false;
+                            $("#search_data tbody tr").remove();
                             $.each(data,function(k,v){
-                                  $("#snp_nav table tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                                  $("#search_data tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                                has_data=true;
                               });
+                            if(!has_data){
+                                $("#search_data tbody").append("<tr><td></td><td>没有符合条件的资料</td></tr>");
+                            }
+                            $("#search_data").show();
                         }
                     });
         })
