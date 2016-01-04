@@ -413,7 +413,8 @@ class rhwl_import(osv.osv_memory):
                         val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
                     except:
                         pass
-
+                if self.pool.get("rhwl.easy.genes.new").search_count(cr,uid,[("name","=",val["name"])])>0:
+                    raise osv.except_osv(u"出错",u"样本编码[%s]已经存在，不可重新导入。"%(val["name"]))
                 self.pool.get("rhwl.easy.genes.new").create(cr,uid,val,context=context)
 
         finally:
