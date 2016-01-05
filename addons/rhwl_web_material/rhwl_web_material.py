@@ -9,7 +9,7 @@ import logging
 
 class web_material(osv.osv):
     _name = "rhwl.web.material"
-
+    _order = "date desc"
     def _get_picking_state(self,cr,uid,ids,field_names,args,context=None):
         res={}
         for i in self.browse(cr,uid,ids,context=context):

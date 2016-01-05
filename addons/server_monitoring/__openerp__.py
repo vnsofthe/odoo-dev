@@ -59,5 +59,5 @@ The logs are available through the menu Reporting -> Server Monitoring.
         'tests/test_monitor_process.yml',
         'tests/test_monitor_database.yml',
         ],
-    'installable': True,
+    'installable': False,
 }

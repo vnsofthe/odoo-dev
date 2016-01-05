@@ -619,6 +619,18 @@ class rhwl_sample_info(osv.osv):
                 self.pool.get("sale.sampleone.reuse").write(cr,SUPERUSER_ID,reuse,{'state':'reuse'})
         self.create_sale_order(cr,uid,ids,context) #建立销售订单
 
+    def action_replace_cxyy(self,cr,uid,ids,context=None):
+        obj = self.browse(cr,uid,ids,context=context)
+        if obj.lyyy == obj.cxyy or obj.lyys == obj.cxys:
+            raise osv.except_osv("ERROR",u"来源医院与采血医院一致，不可以替换。")
+        amt = obj.lyyy.amt
+        order_id = self.pool.get("sale.order").search(cr,uid,[("client_order_ref","=",obj.name)],context=context)
+        order_obj = self.pool.get("sale.order").browse(cr,uid,order_id,context=context)
+        order_line_id = self.pool.get("sale.order.line").search(cr,uid,[("order_id","=",order_obj.id)],context=context)
+        self.pool.get("sale.order.line").write(cr,uid,order_line_id,{"price_unit":amt},context=context)
+        self.pool.get("sale.order").write(cr,uid,order_id,{"partner_id":obj.lyys.id,"amount_untaxed":amt,"partner_invoice_id":obj.lyyy.id,"amount_total":amt,"partner_shipping_id":obj.lyys.id},context=context)
+        self.write(cr,uid,obj.id,{"cxyy":obj.lyyy.id,"cxys":obj.lyys.id},context=context)
+
     def get_year_count(self,cr,uid,context=None):
         ids = self.pool.get("res.partner").search(cr,uid,[("jnsjrs","!=",False)],context=context)
         if ids:

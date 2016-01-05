@@ -71,6 +71,7 @@ class rhwl_gene(osv.osv):
         "email":fields.char(u"电子邮箱",size=50),
         "weixin":fields.char(u"微信号",size=20),
         "hospital":fields.many2one('res.partner', string=u'送检机构',domain="[('is_company', '=', True), ('customer', '=', True)]", required=True),
+        "receiv_dept":fields.char(u"收货分支",size=10),
         "birthday": fields.date(u"出生日期"),
         "receiv_date": fields.date(u"收样日期"),
         "is_reuse":fields.boolean(u"重采"),

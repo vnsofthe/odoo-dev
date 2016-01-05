@@ -385,7 +385,7 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             batch_no={}
-            """检测项目，姓名，性别，联系电话，样本编码，身份证号，采样日期，"""
+            """检测项目，姓名，性别，联系电话，样本编码，身份证号，采样日期，收货分支"""
             for i in range(1,nrows):
                 if not sh.cell_value(i,1):continue
 
@@ -397,6 +397,8 @@ class rhwl_import(osv.osv_memory):
                     raise osv.except_osv(u"出错",u"检测项目[%s]不存在。"%(package_name,))
                 mobile = sh.cell_value(i,3)
                 if type(mobile)==type(1.0):mobile = mobile.__trunc__()
+                receiv_dept=""
+                if ncols>7:receiv_dept = sh.cell_value(i,7)
                 val={
                     "cust_name":name_col.encode("utf-8").replace(".","·").replace("▪","·"),
                     "sex": 'M' if sh.cell_value(i,2)==u"男" else 'F',
@@ -406,7 +408,8 @@ class rhwl_import(osv.osv_memory):
                     "date":self.date_trun(sh.cell_value(i,6)),
                     "hospital":this.hospital.id,
                     "cust_prop":this.cust_prop,
-                    "package_id":package_ids[0]
+                    "package_id":package_ids[0],
+                    "receiv_dept":receiv_dept
                 }
                 if idt and len(idt)==18:
                     try:

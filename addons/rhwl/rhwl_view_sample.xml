@@ -98,6 +98,8 @@
                                 groups="base.group_user" class="oe_highlight"/>
                         <button name="action_sms" string="短信通知" type="object" attrs="{'invisible':[('check_state','not in',('ok','reuse','except'))]}"
                                 groups="base.group_user"/>
+                        <button name="action_replace_cxyy" states="done" string="替换采血医院" type="object"
+                                groups="base.group_user"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"
                                statusbar_colors='{"cancel":"red","done":"blue"}' readonly="1"/>
                     </header>

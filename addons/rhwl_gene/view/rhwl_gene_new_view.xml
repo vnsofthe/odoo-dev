@@ -109,8 +109,11 @@
                             <group colspan="6">
                                 <field name="hospital" options="{'no_open': True, 'no_create': True}" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
-                            <group colspan="16">
+                            <group colspan="10">
                                 <field name="package_id" attrs="{'readonly':[('state','!=','draft')]}"/>
+                            </group>
+                            <group colspan="6">
+                                <field name="receiv_dept" attrs="{'readonly':[('state','!=','draft')]}"/>
                             </group>
                         </group>
                         <notebook>
