@@ -20,7 +20,7 @@
     <div class="container-fluid">
         <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist" id="myTabs">
-          <li role="presentation" ><a href="#disease_nav" aria-controls="disease" role="tab" data-toggle="tab">疾病详情</a></li>
+          <li role="presentation" ><a href="#disease_nav" aria-controls="disease" role="tab" data-toggle="tab">概述保健</a></li>
           <li role="presentation" ><a href="#snp_nav" aria-controls="snp" role="tab" data-toggle="tab">位点说明</a></li>
       </ul>
         <!-- Tab panes -->
@@ -34,8 +34,11 @@
                 <table class="table table-hover table-bordered" id="snp_tab_data">
                     <thead>
                         <tr>
+                            <th>位点</th>
                             <th>基因</th>
-                            <th>描述</th>
+                            <th>全名</th>
+                            <th>功能</th>
+                            <th>概述</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,7 +47,7 @@
                 </table>
 
                 <br/>
-                <label>其它基因查询：</label>
+                <label>其它位点/基因查询：</label>
                 <div class="row">
                   <div class="col-lg-6">
                     <div class="input-group">
@@ -68,8 +71,11 @@
                 <table class="table table-hover table-bordered" id="search_data" style="display: none">
                     <thead>
                         <tr>
+                            <th>位点</th>
                             <th>基因</th>
-                            <th>描述</th>
+                            <th>全名</th>
+                            <th>功能</th>
+                            <th>概述</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -174,7 +180,7 @@
                               }
                           });
                           $.each(r_data,function(k,v){
-                              $("#snp_tab_data tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                              $("#snp_tab_data tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td><td>"+v[2]+"</td><td>"+v[3]+"</td><td>"+v[4]+"</td></tr>");
                           });
                       }
                 }
@@ -196,7 +202,7 @@
                             var has_data=false;
                             $("#search_data tbody tr").remove();
                             $.each(data,function(k,v){
-                                  $("#search_data tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td></tr>");
+                                  $("#search_data tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td><td>"+v[2]+"</td><td>"+v[3]+"</td><td>"+v[4]+"</td></tr>");
                                 has_data=true;
                               });
                             if(!has_data){

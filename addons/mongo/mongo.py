@@ -116,9 +116,10 @@ class WebClient(http.Controller):
             if not pd:continue
             if not result.has_key(pd["category"]):
                 result[pd["category"]]=[]
-            result[pd["category"]].append([k,pd.get(kw.get("lang")).get("title",""),pd.get("sex")])
+            result[pd["category"]].append([k,pd.get(kw.get("lang")).get("title",""),pd.get("sex"),int(pd.get(kw.get("lang")).get("subclass").get("order"))*100+int(pd.get(kw.get("lang")).get("order")),pd.get(kw.get("lang")).get("subclass").get("name")])
 
         for i in tc.get("region"):
+            result[i].sort(lambda x,y:cmp(x[3],y[3]))
             res.append([i,category.get(kw.get("lang")).get(i),result[i]])
 
         response = request.make_response(json.dumps([tc["name"],res],ensure_ascii=False), [('Content-Type', 'application/json')])
@@ -139,19 +140,21 @@ class WebClient(http.Controller):
         gtids = pd.get("gtids",[])
         if gtids:
             snp_db = self._get_cursor("snps")
-            snp_ids = snp_db.snps.find({"gtid":{'$in':gtids } } )
-            rsid=[]
-            genes=[]
-            for i in snp_ids:
-                rsid.append(i["_id"])
             genes_db = self._get_cursor("genes")
-            if rsid:
-                rsid_ids = genes_db.rsid2genes.find({"_id":{'$in':rsid}})
-                for i in rsid_ids:
-                    genes = genes + i.get("gene")
-                if genes:
-                    for i in genes_db.geneFunctions.find({"_id":{'$in':genes}}):
-                        res.append([i["_id"],i["function"]["description"]])
+            for g in gtids:
+                snp_ids = snp_db.snps.find({"gtid":{'$in':[g] } } )
+                rsid=[]
+                genes=[]
+                for i in snp_ids:
+                    rsid.append(i["_id"])
+
+                if rsid:
+                    rsid_ids = genes_db.rsid2genes.find({"_id":{'$in':rsid}})
+                    for i in rsid_ids:
+                        genes = genes + i.get("gene")
+                    if genes:
+                        for i in genes_db.geneFunctions.find({"_id":{'$in':genes}}):
+                            res.append([g,i["_id"],i["fullname"],i["function"]["pathway_go"],i["function"]["summary"]])
 
         data = pd.get(kw.get("lang").encode("utf-8"))
         data["sex"] = pd.get("sex")
@@ -207,9 +210,20 @@ class WebClient(http.Controller):
     @http.route("/web/api/mongo/get_genes/",type="http",auth="public")
     def _get_genes(self,**kw):
         genes_db = self._get_cursor("genes")
+        snps_db = self._get_cursor("snps")
         res=[]
+        snps_ids={}
+        gene_ids=[]
+        for i in snps_db.snps.find({"gtid":{"$in":[re.compile(kw.get("no").encode("utf-8"))]}}):
+            snps_ids[i["_id"]] = i["gtid"]
+        for k,v in snps_ids.items():
+            for i in genes_db.rsid2genes.find({"_id":{"$in":[k]}}):
+                gene_ids = i["gene"]
+                for i in genes_db.geneFunctions.find({"_id":{'$in':gene_ids}}):
+                    res.append([v,i["_id"],i["fullname"],i["function"]["pathway_go"],i["function"]["summary"]])
+
         for i in genes_db.geneFunctions.find({"_id":{'$in':[re.compile(kw.get("no").encode("utf-8"))]}}):
-            res.append([i["_id"],i["function"]["description"]])
+            res.append(["--",i["_id"],i["fullname"],i["function"]["pathway_go"],i["function"]["summary"]])
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
