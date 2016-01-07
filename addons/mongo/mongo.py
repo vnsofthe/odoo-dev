@@ -42,6 +42,30 @@ class WebClient(http.Controller):
             if k=="disease":
                 return [[]]
 
+    @http.route("/tjs/",type="http",auth="user")
+    def index_tjs(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/tjs.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
+    @http.route("/tjs/list/",type="http",auth="user")
+    def index_tjs_list(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/tjs_list.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
+    @http.route("/tjs/detail/",type="http",auth="user")
+    def index_tjs_detail(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/tjs_detail.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
     @http.route("/web/mongo/index/",type="http",auth="user")
     def index(self,**kw):
         fname = os.path.join(os.path.split(__file__)[0],"html/index_new.html")
