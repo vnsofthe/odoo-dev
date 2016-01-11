@@ -229,7 +229,7 @@ class rhwl_config(osv.osv):
                     #if re.search("[^0-9a-zA-Z]",content):
                     #    return self.customer_service(fromUser,toUser)
                     #else:
-                    return u"您所查询的样品编码不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!"
+                    return u"您所查询的样品编码[%s]不存在，请重新输入，输入时注意区分大小写字母，并去掉多余的空格!"%(content)
 
         else:
             return u"欢迎光临"

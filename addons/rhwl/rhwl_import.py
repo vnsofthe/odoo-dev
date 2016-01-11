@@ -181,6 +181,48 @@ class rhwl_import(osv.osv):
         return unit_id1,unit_id2
 
     def action_done(self,cr,uid,ids,context=None):
+        ids = self.search(cr,uid,[],context=context)
+        product_template = self.pool.get("product.template")
+        for i in self.browse(cr,uid,ids,context=context):
+            pt_id = product_template.search_count(cr,uid,[("default_code","=",i.col1)])
+            if pt_id>0:
+                pt_id = product_template.search(cr,uid,[("default_code","=",i.col1)])
+                if i.col2:
+                    if self.pool.get("rhwl.product.project").search_count(cr,uid,[("product_id.product_tmpl_id","in",pt_id),("project_id","=",21)])==0:
+                        project_id = self.pool.get("product.product").search(cr,uid,[("product_tmpl_id","in",pt_id)])
+                        for p in project_id:
+                            self.pool.get("rhwl.product.project").create(cr,uid,{"product_id":p,"project_id":21,"sample_count":i.col2},context=context)
+                if i.col3:
+                    if self.pool.get("rhwl.product.project").search_count(cr,uid,[("product_id.product_tmpl_id","in",pt_id),("project_id","=",20)])==0:
+                        project_id = self.pool.get("product.product").search(cr,uid,[("product_tmpl_id","in",pt_id)])
+                        for p in project_id:
+                            self.pool.get("rhwl.product.project").create(cr,uid,{"product_id":p,"project_id":20,"sample_count":i.col3},context=context)
+                if i.col4:
+                    if self.pool.get("rhwl.product.project").search_count(cr,uid,[("product_id.product_tmpl_id","in",pt_id),("project_id","=",22)])==0:
+                        project_id = self.pool.get("product.product").search(cr,uid,[("product_tmpl_id","in",pt_id)])
+                        for p in project_id:
+                            self.pool.get("rhwl.product.project").create(cr,uid,{"product_id":p,"project_id":22,"sample_count":i.col4},context=context)
+                continue
+            p_project=[]
+            if i.col2:
+                p_project.append([0,0,{"project_id":21,"sample_count":i.col2}])
+            if i.col3:
+                p_project.append([0,0,{"project_id":20,"sample_count":i.col3}])
+            if i.col4:
+                p_project.append([0,0,{"project_id":22,"sample_count":i.col4}])
+
+            vals={
+                "name":u"探针:"+i.col1,
+                "sale_ok":False,
+                "uom_id":146,
+                "default_code":i.col1,
+                "cost_allocation":True,
+                "uom_po_id":146,
+                "categ_id":68,
+                "project_ids":p_project
+            }
+            product_template.create(cr,uid,vals)
+
         ids = self.pool.get("product.product").search(cr,uid,[("name","ilike",u"探针:")],context=context)
         if ids:
             for i in self.pool.get("product.product").browse(cr,uid,ids,context=context):
@@ -189,7 +231,7 @@ class rhwl_import(osv.osv):
                 res_qty = self.pool.get("stock.warehouse.orderpoint").onchange_min_work_days(cr,uid,0,45,i.id,context=context)
                 vals={
                     'warehouse_id':1,
-                    'location_id':1130,
+                    'location_id':12,
                     'product_id':i.id,
                     "min_work_days":45,
                 }

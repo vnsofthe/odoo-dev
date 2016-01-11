@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_rhwl_product_rs_graph" model="ir.ui.view">
+             <field name="name">product.rs.graph</field>
+             <field name="model">rhwl.product.rs</field>
+             <field name="arch" type="xml">
+                 <graph string="Sample Analysis" type="pivot" stacked="True">
+                     <field name="name" type="row"/>
+                     <field name="project_name" type="col"/>
+                     <field name="qty" type="measure"/>
+                 </graph>
+             </field>
+        </record>
+
+        <record id="view_rhwl_product_rs_search" model="ir.ui.view">
+            <field name="name">rhwl.product.rs.search</field>
+            <field name="model">rhwl.product.rs</field>
+            <field name="arch" type="xml">
+                <search string="Sample Analysis">
+                    <separator/>
+                    <field name="name"/>
+                    <field name="project_name"/>
+                    <separator/>
+                    <group expand="1" string="Group By">
+
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_product_rs_all" model="ir.actions.act_window">
+            <field name="name">探针标准人份</field>
+            <field name="res_model">rhwl.product.rs</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph</field>
+            <field name="search_view_id" ref="view_rhwl_product_rs_search"/>
+            <field name="view_id" ref="view_rhwl_product_rs_graph"/>
+        </record>
+
+
+        <menuitem action="action_rhwl_product_rs_all" id="menu_rhwl_product_rs_all" parent="base.next_id_73" sequence="20"/>
+    </data>
+</openerp>
