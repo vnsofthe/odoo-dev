@@ -69,35 +69,71 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             batch_no={}
-            for i in range(2,nrows+1):
-                if not sh.cell_value(i-1,0):continue
-                date_col=self.date_trun(sh.cell_value(i-1,0))
-                idt=sh.cell_value(i-1,4)
-                val={
-                    "date":date_col,
-                    "cust_name":sh.cell_value(i-1,1).encode("utf-8").replace(".","·").replace("▪","·"),
-                    "sex": 'T' if sh.cell_value(i-1,2)==u"男" else 'F',
-                    "name":sh.cell_value(i-1,3),
-                    "identity":idt,
-                    "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False,
-                    "receiv_date":self.datetime_trun(sh.cell_value(i-1,5))
+            if sh.cell_value(2,0)==u"检测套餐":
+                package_dict={
+                    u"A本":"A",u"尊享版":"B",u"升级版+":"C",u"优雅女士":"D",u"快乐儿童":"E",u"精英男士":"F"
                 }
-                if idt and len(idt)==18:
-                    try:
-                        val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
-                    except:
-                        pass
-                if batch_no.get(date_col):
-                    val["batch_no"]=batch_no.get(date_col)
-                else:
-                    cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
-                    max_no="0"
-                    for no in cr.fetchall():
-                        max_no = no[0]
-                    max_no=str(int(max_no)+1).zfill(3)
-                    batch_no[date_col]=max_no
-                    val["batch_no"]=max_no
-                self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)
+                for i in range(3,nrows):
+                    if not sh.cell_value(i,0):continue
+                    date_col=self.date_trun(sh.cell_value(i,1))
+                    idt=sh.cell_value(i,5)
+                    val={
+                        "date":date_col,
+                        "cust_name":sh.cell_value(i,2).encode("utf-8").replace(".","·").replace("▪","·"),
+                        "sex": 'T' if sh.cell_value(i,3)==u"男" else 'F',
+                        "name":sh.cell_value(i,4),
+                        "identity":idt,
+                        "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False,
+                        "receiv_date":self.datetime_trun(sh.cell_value(i,1)),
+                        "mobile":sh.cell_value(i,6),
+                        "package":package_dict[sh.cell_value(i,0)]
+                    }
+                    if idt and len(idt)==18:
+                        try:
+                            val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
+                        except:
+                            pass
+                    if batch_no.get(date_col):
+                        val["batch_no"]=batch_no.get(date_col)
+                    else:
+                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
+                        max_no="0"
+                        for no in cr.fetchall():
+                            max_no = no[0]
+                        max_no=str(int(max_no)+1).zfill(3)
+                        batch_no[date_col]=max_no
+                        val["batch_no"]=max_no
+                    self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)
+            else:
+                for i in range(2,nrows+1):
+                    if not sh.cell_value(i-1,0):continue
+                    date_col=self.date_trun(sh.cell_value(i-1,0))
+                    idt=sh.cell_value(i-1,4)
+                    val={
+                        "date":date_col,
+                        "cust_name":sh.cell_value(i-1,1).encode("utf-8").replace(".","·").replace("▪","·"),
+                        "sex": 'T' if sh.cell_value(i-1,2)==u"男" else 'F',
+                        "name":sh.cell_value(i-1,3),
+                        "identity":idt,
+                        "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False,
+                        "receiv_date":self.datetime_trun(sh.cell_value(i-1,5))
+                    }
+                    if idt and len(idt)==18:
+                        try:
+                            val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
+                        except:
+                            pass
+                    if batch_no.get(date_col):
+                        val["batch_no"]=batch_no.get(date_col)
+                    else:
+                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
+                        max_no="0"
+                        for no in cr.fetchall():
+                            max_no = no[0]
+                        max_no=str(int(max_no)+1).zfill(3)
+                        batch_no[date_col]=max_no
+                        val["batch_no"]=max_no
+                    self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)
 
         finally:
             f.close()

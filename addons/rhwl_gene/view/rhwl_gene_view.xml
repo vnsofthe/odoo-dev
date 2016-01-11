@@ -42,6 +42,7 @@
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
+                                <field name="package" attrs="{'readonly':[('state','not in',['draft','except_confirm'])],'required':'1'}"/>
                                 <field name="mobile"/>
                                 <field name="cust_prop" />
                                 <field name="language" />
@@ -162,6 +163,23 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="rhwl_easy_genes_view_tree"/>
             <field name="context">{'search_default_type_draft':1,'search_default_type_exceptconfirm':1}</field>
+            <field name="domain">[('package','=','A')]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+        <record id="action_easy_genes_package" model="ir.actions.act_window">
+            <field name="name">新易感套餐样本信息</field>
+            <field name="res_model">rhwl.easy.genes</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="rhwl_easy_genes_view_tree"/>
+            <field name="context">{'search_default_type_draft':1,'search_default_type_exceptconfirm':1}</field>
+            <field name="domain">[('package','!=','A')]</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                 </p>
@@ -176,6 +194,8 @@
 
         <menuitem id="menu_easy_genes" parent="menu_rhwl_easy_genes" name="样本信息维护" sequence="10"
                   action='action_easy_genes' groups="rhwl_base_tjs"/>
+        <menuitem id="menu_easy_genes_package" parent="menu_rhwl_easy_genes" name="新套餐样本信息维护" sequence="11"
+                  action='action_easy_genes_package' groups="rhwl_base_tjs"/>
 
         <record model="ir.actions.act_url" id="action_easy_genes_image">
             <field name="name">Gene Images</field>

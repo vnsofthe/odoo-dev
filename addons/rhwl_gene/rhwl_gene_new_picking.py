@@ -82,16 +82,18 @@ class rhwl_picking(osv.osv):
         t_count = 0
 
         for k,v in files.items():
-            for k2,v2 in v.items():
-                for k1,v1 in v2.items():
-                    t_count += len(v1)
-                    for i in v1:
-                        if os.path.exists(os.path.join(pdf_path,i[0])):
-                            f_path = os.path.join(os.path.join(os.path.join(os.path.join(d_path,k),tname),k2),k1)
-                            if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
-                                shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
+            t_count += len(v)
+            k = k.split("/")
+            k.insert(1,tname)
+            f_path = os.path.join(d_path,"/".join(k))
+            if not os.path.exists(f_path):
+                os.makedirs(f_path)
+            for i in v:
+                if os.path.exists(os.path.join(pdf_path,i[0])):
+                    if (not os.path.exists(os.path.join(f_path,i[0]))) or os.stat(os.path.join(pdf_path,i[0])).st_size != os.stat(os.path.join(f_path,i[0])).st_size:
+                        shutil.copy(os.path.join(pdf_path,i[0]),os.path.join(f_path,i[0]))
+                    u_count += 1
 
-                            u_count += 1
         return (t_count,u_count)
 
     #根据发货单，生成需要上传的目录结构，并复制pdf文件到相应的目录中。
@@ -111,52 +113,23 @@ class rhwl_picking(osv.osv):
             obj=self.browse(cr,uid,i,context=context)
             d=obj.name #发货单需创建的目录名称
             d_path=os.path.join(upload_path,d)
-            files={} #pdf文件目录位置,第一层批号，第二层送检机构，第三层检测项目，第四层报告编号清单
+            files={} #pdf文件目录位置,第一层批号+数量，第二层送检机构，第三层收货分支，第四层检测项目，第五层报告编号清单
             index_files={} #致词文件
             if not os.path.exists(d_path):
                 os.mkdir(d_path) #创建发货单号目录
             for l in obj.line:#遍历发货单下的批次
                 if l.qty==0:continue
                 k1=l.batch_no+"-"+str(l.qty)
-                line_path=os.path.join(d_path,k1)  #批次所在的目录
-                if not os.path.exists(line_path):
-                    os.mkdir(line_path) #创建批次目录
-                index_path = os.path.join(line_path,u"致词页")
-                if not os.path.exists(index_path):
-                    os.mkdir(index_path)
 
-                line_path = os.path.join(line_path,u"报告")
-                if not os.path.exists(line_path):
-                    os.mkdir(line_path)
-
-                if not files.has_key(k1):files[k1]={}
-                if not index_files.has_key(k1):index_files[k1]={}
                 for b in l.detail:
-                    hospital_name = b.genes_id.hospital.name
-                    hospital_path = os.path.join(line_path,hospital_name)
-                    if not os.path.exists(hospital_path):
-                        os.mkdir(hospital_path)
-
-                    hospital_index_path = os.path.join(index_path,hospital_name)
-                    if not os.path.exists(hospital_index_path):
-                        os.mkdir(hospital_index_path)
-
-                    if not files[k1].has_key(hospital_name):files[k1][hospital_name]={}
-                    if not index_files[k1].has_key(hospital_name):index_files[k1][hospital_name]={}
-                    k2=b.genes_id.package_id.name
-                    box_path=os.path.join(hospital_path,k2)
-                    if not os.path.exists(box_path):
-                        os.mkdir(box_path)
-                    box_index_path = os.path.join(hospital_index_path,k2)
-                    if not os.path.exists(box_index_path):
-                        os.mkdir(box_index_path)
-                    if not files[k1][hospital_name].has_key(k2):files[k1][hospital_name][k2]=[]
-                    if not index_files[k1][hospital_name].has_key(k2):index_files[k1][hospital_name][k2]=[]
+                    p_path_str = "/".join([x for x in [k1,b.genes_id.hospital.name,b.genes_id.receiv_dept and b.genes_id.receiv_dept or "",b.genes_id.package_id.name] if x])
+                    if not files.has_key(p_path_str):files[p_path_str]=[]
+                    if not index_files.has_key(p_path_str):index_files[p_path_str]=[]
                     pdf_file = b.genes_id.name+".pdf"
                     index_pdf_file = b.genes_id.name+"_index.pdf"
                     address = "".join([x for x in [b.genes_id.state_id.name,b.genes_id.city_id.name,b.genes_id.area_id.name,b.genes_id.address] if x])
-                    files[k1][hospital_name][k2].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile,b.genes_id.hospital.id])
-                    index_files[k1][hospital_name][k2].append([index_pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile])
+                    files[p_path_str].append([pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile,b.genes_id.hospital.id])
+                    index_files[p_path_str].append([index_pdf_file,b.genes_id.name,b.genes_id.cust_name,b.genes_id.sex,b.genes_id.date,b.genes_id.is_single_post,address,b.genes_id.mobile])
 
             t_count,u_count=self.pdf_copy(cr,uid,pdf_path,d_path,u"报告",files)
             self.pdf_copy(cr,uid,pdf_path,d_path,u"致词页",index_files)
@@ -170,7 +143,22 @@ class rhwl_picking(osv.osv):
             #生成印刷版的发货单
             self.export_excel_to_print(cr,uid,d_path,files,id,context=context)
 
-    def export_excel_to_print(self,cr,uid,d_path,files,picking_id,context=None):
+    def export_excel_to_print(self,cr,uid,d_path,pfiles,picking_id,context=None):
+        files={}
+        for k,v in pfiles.items():
+            k=k.split("/")
+            if len(k)==4:
+                k1 = [k[0],k[1]+"-"+k[2],k[3]]
+            else:
+                k1 = k
+            if not files.has_key(k1[0]):
+                files[k1[0]]={}
+            if not files[k1[0]].has_key(k1[1]):
+                files[k1[0]][k1[1]]={}
+            if not files[k1[0]][k1[1]].has_key(k1[2]):
+                files[k1[0]][k1[1]][k1[2]]=[]
+            files[k1[0]][k1[1]][k1[2]]=v
+
         w = xlwt.Workbook(encoding='utf-8')
         hospital_dict={}
         person_dict={}
