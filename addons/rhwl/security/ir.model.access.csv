@@ -32,3 +32,4 @@ access_sale_sampleone_days_line,access_sale_sampleone_days_line,model_sale_sampl
 access_rhwl_material_cost,access_rhwl_material_cost,model_rhwl_material_cost,,1,1,1,0
 access_rhwl_material_cost_line,access_rhwl_material_cost_line,model_rhwl_material_cost_line,,1,1,1,1
 access_rhwl_product_rs,access_rhwl_product_rs,model_rhwl_product_rs,,1,0,0,0
+access_rhwl_product_stock_rs,access_rhwl_product_stock_rs,model_rhwl_product_stock_rs,,1,0,0,0

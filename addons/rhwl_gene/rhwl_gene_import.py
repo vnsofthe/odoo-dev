@@ -71,7 +71,7 @@ class rhwl_import(osv.osv_memory):
             batch_no={}
             if sh.cell_value(2,0)==u"检测套餐":
                 package_dict={
-                    u"A本":"A",u"尊享版":"B",u"升级版+":"C",u"优雅女士":"D",u"快乐儿童":"E",u"精英男士":"F"
+                    u"易感基因检测":"A",u"尊享版":"B",u"升级版+":"C",u"优雅女士":"D",u"快乐儿童":"E",u"精英男士":"F"
                 }
                 for i in range(3,nrows):
                     if not sh.cell_value(i,0):continue
@@ -96,11 +96,11 @@ class rhwl_import(osv.osv_memory):
                     if batch_no.get(date_col):
                         val["batch_no"]=batch_no.get(date_col)
                     else:
-                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
-                        max_no="0"
+                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') and package='%s' "%(val["package"]))
+                        max_no=val["package"]+"000"
                         for no in cr.fetchall():
                             max_no = no[0]
-                        max_no=str(int(max_no)+1).zfill(3)
+                        max_no=max_no[0]+str(int(max_no[1:])+1).zfill(3)
                         batch_no[date_col]=max_no
                         val["batch_no"]=max_no
                     self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)

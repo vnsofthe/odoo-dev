@@ -88,7 +88,7 @@ class rhwl_gene(osv.osv):
         "language":fields.selection([("CN",u"中文"),("EN",u"英文"),("RU",u"俄文"),("VN",u"越南文"),("MY",u"马来语"),("ID",u"印度尼西亚语"),("IN",u"印度")],u"报告语种"),
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
-        "package":fields.selection([("A",u"A本"),("B",u"尊享版"),("C",u"升级版+"),("D",u"优雅女士"),("E",u"快乐儿童"),("F",u"精英男士")],string=u"套餐"),
+        "package":fields.selection([("A",u"易感基因检测"),("B",u"尊享版"),("C",u"升级版+"),("D",u"优雅女士"),("E",u"快乐儿童"),("F",u"精英男士")],string=u"套餐"),
         "img": fields.binary(u"图片"),
         "img_atta":fields.many2one("ir.attachment","IMG"),
         "img_new":fields.related("img_atta","datas",type="binary"),
