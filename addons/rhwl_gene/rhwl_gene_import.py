@@ -93,15 +93,20 @@ class rhwl_import(osv.osv_memory):
                             val["birthday"] = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
                         except:
                             pass
-                    if batch_no.get(date_col):
-                        val["batch_no"]=batch_no.get(date_col)
+                    if not batch_no.has_key(date_col):
+                        batch_no[date_col]={}
+                    if batch_no.get(date_col).get(val["package"]):
+                        val["batch_no"]=batch_no.get(date_col).get(val["package"])
                     else:
                         cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') and package='%s' "%(val["package"]))
                         max_no=val["package"]+"000"
                         for no in cr.fetchall():
                             max_no = no[0]
-                        max_no=max_no[0]+str(int(max_no[1:])+1).zfill(3)
-                        batch_no[date_col]=max_no
+                        if val["package"]=="A":
+                            max_no=str(int(max_no)+1).zfill(3)
+                        else:
+                            max_no=max_no[0]+str(int(max_no[1:])+1).zfill(3)
+                        batch_no[date_col][val["package"]]=max_no
                         val["batch_no"]=max_no
                     self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)
             else:
@@ -126,7 +131,7 @@ class rhwl_import(osv.osv_memory):
                     if batch_no.get(date_col):
                         val["batch_no"]=batch_no.get(date_col)
                     else:
-                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs'")
+                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs' and package='A'")
                         max_no="0"
                         for no in cr.fetchall():
                             max_no = no[0]

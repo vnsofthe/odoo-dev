@@ -9,7 +9,8 @@
     'description': """
 人和未来生物科技(长沙)有限公司
 ==================================
-MongoDB
+1.对接分析部门MongoDB数据，开发疾病、性状、用药基础数据维护UI。
+2.开发泰济生易感套餐信息检索平台。
     """,
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',

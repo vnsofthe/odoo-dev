@@ -10,6 +10,7 @@
 人和未来生物科技(长沙)有限公司
 ==================================
 快钱MAS交易后实时通知接口
+公司POS借出管理
     """,
     'author': 'VnSoft',
     'website': 'https://www.odoo.com/page/crm',
