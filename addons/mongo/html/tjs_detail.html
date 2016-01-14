@@ -184,10 +184,16 @@
                                               if(k1>0){
                                                   if(v1["description"]!=undefined){
                                                         var vv="";
+                                                        var sex="男女适应";
+                                                        if(d_data["sex"]=="M"){
+                                                            sex="男性";
+                                                        }else if(d_data["sex"]=="F"){
+                                                            sex="女性";
+                                                        }
                                                         if(d_data[p]!=undefined&&d_data[p]["description"]!=undefined){
                                                             vv=d_data[p]["description"];
                                                         }
-                                                        $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_f\""+" aria-controls=\"sex_f\" role=\"tab\" data-toggle=\"tab\">男女适应</a></li>")
+                                                        $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_f\""+" aria-controls=\"sex_f\" role=\"tab\" data-toggle=\"tab\">"+sex+"</a></li>")
                                                         $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_f\"><pre   name=\""+p+"_description\" id=\""+p+"_description\"  >"+vv+"</pre></div>")
                                                       has_sex = true;
                                                     }
