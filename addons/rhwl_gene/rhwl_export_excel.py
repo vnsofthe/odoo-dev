@@ -383,20 +383,23 @@ class rhwl_export_excel(osv.osv_memory):
         if isinstance(ids,(list,tuple)):
             ids.sort()
 
+        style1 = self.get_excel_style(font_size=11)
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet(u"样本问题反馈")
-        ws.write(0,0,u"序号",style=self.get_excel_style(font_size=11))
-        ws.write(0,1,u"基因样品编码",style=self.get_excel_style(font_size=11)),
-        ws.write(0,2,u"姓名",style=self.get_excel_style(font_size=11)),
-        ws.write(0,3,u"性别",style=self.get_excel_style(font_size=11)),
-        ws.write(0,4,u"身份证号",style=self.get_excel_style(font_size=11)),
-        ws.write(0,5,u"备注",style=self.get_excel_style(font_size=11)),
-        ws.write(0,6,u"手机号",style=self.get_excel_style(font_size=11)),
-        ws.write(0,7,u"反馈",style=self.get_excel_style(font_size=11))
-        ws.col(1).width = 4500 #1000 = 3.14(Excel)
-        ws.col(4).width = 7000
-        ws.col(5).width = 8000
-        ws.col(6).width = 6000
+        ws.write(0,0,u"序号",style=style1)
+        ws.write(0,1,u"送检机构",style=style1),
+        ws.write(0,2,u"基因样品编码",style=style1),
+        ws.write(0,3,u"姓名",style=style1),
+        ws.write(0,4,u"性别",style=style1),
+        ws.write(0,5,u"身份证号",style=style1),
+        ws.write(0,6,u"备注",style=style1),
+        ws.write(0,7,u"手机号",style=style1),
+        ws.write(0,8,u"反馈",style=style1)
+        ws.col(1).width = 7000
+        ws.col(2).width = 4500 #1000 = 3.14(Excel)
+        ws.col(5).width = 7000
+        ws.col(6).width = 8000
+        ws.col(7).width = 6000
         rows=1
         seq=1
         old_date=""
@@ -423,13 +426,14 @@ class rhwl_export_excel(osv.osv_memory):
                 f.close()
 
             ws.write(rows,0,seq,style=self.get_excel_style(font_size=11,horz=xlwt.Alignment.HORZ_CENTER))
-            ws.write(rows,1,i.name,style=self.get_excel_style(font_size=11))
-            ws.write(rows,2,i.cust_name,style=self.get_excel_style(font_size=11))
-            ws.write(rows,3,u"男" if i.sex==u"T" else u"女",style=self.get_excel_style(font_size=11))
-            ws.write(rows,4,True and i.identity or "",style=self.get_excel_style(font_size=11))
-            ws.write(rows,5,i.except_note,style=self.get_excel_style(font_size=11))
-            ws.write(rows,6,True and i.mobile or "",style=self.get_excel_style(font_size=11))
-            ws.write(rows,7,True and i.confirm_note or "",style=self.get_excel_style(font_size=11))
+            ws.write(rows,1,i.hospital.name,style=style1)
+            ws.write(rows,2,i.name,style=style1)
+            ws.write(rows,3,i.cust_name,style=style1)
+            ws.write(rows,4,u"男" if i.sex==u"T" else u"女",style=style1)
+            ws.write(rows,5,True and i.identity or "",style=style1)
+            ws.write(rows,6,i.except_note,style=style1)
+            ws.write(rows,7,True and i.mobile or "",style=style1)
+            ws.write(rows,8,True and i.confirm_note or "",style=style1)
             rows +=1
             seq += 1
             old_date=i.date
