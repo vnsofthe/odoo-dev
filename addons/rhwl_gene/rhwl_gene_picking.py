@@ -232,6 +232,7 @@ class rhwl_picking(osv.osv):
             self.excel_upload(cr,uid,i,False,context=context)
             if vals.get("state","")=="upload":
                 self.report_pdf_zip(cr,uid,obj.name,d,context=context)
+            os.system("chmod -R 777 "+d_path)
 
     #产生每个箱号下面的装箱单PDF
     def picking_export_pdf(self,line_path,data):

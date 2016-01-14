@@ -9,6 +9,7 @@ import logging
 import os
 import shutil
 import re
+import urllib2
 from openerp import tools
 from lxml import etree
 _logger = logging.getLogger(__name__)
@@ -732,6 +733,53 @@ class rhwl_gene(osv.osv):
                     line_row.append(data[s][k][i])
                 f.write("\t".join(line_row) + '\n')
         f.close()
+
+    #在线接收T客户样本信息
+    def action_get_online_genes(self,cr,uid,ids,context=None):
+        today= datetime.datetime.today().strftime("%Y-%m-%d")
+        before_day = (datetime.datetime.today()+datetime.timedelta(days=-3)).strftime("%Y-%m-%d")
+        u = urllib2.urlopen("http://genereport.taiji-sun.com/file/API/SampleInfoToGenetalks?beginTime="+before_day+"&endTime="+today)
+        data = u.readlines()
+
+        if not data:return
+        content = eval(data[0])
+        package={
+            "01":"A"
+        }
+        batch_no={}
+        for i in  content:
+            id = self.search(cr,uid,[("name","=",i["SampleCode"])],context=context)
+            if id:continue
+            if not package.has_key(i["SampleCatalogCode"]):
+                raise osv.except_osv("Error",u"检测代号[%s]名称[%s]在系统未设置，不可以转入。"%(i["SampleCatalogCode"],i["SampleCatalogName"]))
+            sex = i["Gender"]==u"男" and "T" or "F"
+            date = i["CreatedTime"].split(" ")[0]
+            cust_prop = i["IsVIP"]==u"否" and "tjs" or "tjs_vip"
+            idt = i["IDNumber"]
+            is_child = True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False
+            birthday = False
+            if idt and len(idt)==18:
+                try:
+                    birthday = datetime.datetime.strptime(idt[6:14],"%Y%m%d").strftime("%Y/%m/%d")
+                except:
+                    pass
+            if not batch_no.has_key(date):
+                batch_no[date]={}
+            if batch_no.get(date).get(package.get(i["SampleCatalogCode"])):
+                max_no=batch_no.get(date).get(package.get(i["SampleCatalogCode"]))
+            else:
+                cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') and package='%s' "%(package.get(i["SampleCatalogCode"])))
+                max_no=package.get(i["SampleCatalogCode"])+"000"
+                for no in cr.fetchall():
+                    max_no = no[0]
+                if package.get(i["SampleCatalogCode"])=="A":
+                    max_no=str(int(max_no)+1).zfill(3)
+                else:
+                    max_no=max_no[0]+str(int(max_no[1:])+1).zfill(3)
+                batch_no[date][package.get(i["SampleCatalogCode"])]=max_no
+
+            self.create(cr,uid,{"name":i["SampleCode"],"receiv_date":i["RecivedTime"],"identity":i["IDNumber"],"cust_name":i["ClientName"],"sex":sex,"date":date,"cust_prop":cust_prop,"is_child":is_child,"birthday":birthday,"package":package.get(i["SampleCatalogCode"]),"batch_no":max_no},context=context)
+
 
 #样本对象操作日志
 class rhwl_gene_log(osv.osv):

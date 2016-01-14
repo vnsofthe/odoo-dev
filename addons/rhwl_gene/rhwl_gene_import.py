@@ -442,7 +442,7 @@ class rhwl_import(osv.osv_memory):
                 if ncols>7:receiv_dept = sh.cell_value(i,7)
                 val={
                     "cust_name":name_col.encode("utf-8").replace(".","·").replace("▪","·"),
-                    "sex": 'M' if sh.cell_value(i,2)==u"男" else 'F',
+                    "sex": 'M' if sh.cell_value(i,2).rstrip()==u"男" else 'F',
                     "mobile":mobile,
                     "name":sh.cell_value(i,4),
                     "identity":idt,

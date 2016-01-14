@@ -160,7 +160,7 @@
             <field name="name">易感样本信息</field>
             <field name="res_model">rhwl.easy.genes</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">tree_rhwl_gene_tjs_online,form</field>
             <field name="view_id" ref="rhwl_easy_genes_view_tree"/>
             <field name="context">{'search_default_type_draft':1,'search_default_type_exceptconfirm':1}</field>
             <field name="domain">[('package','=','A')]</field>
