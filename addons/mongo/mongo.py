@@ -50,6 +50,14 @@ class WebClient(http.Controller):
         f.close()
         return ''.join(html)
 
+    @http.route("/rhwl/",type="http",auth="user")
+    def index_rhwl(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/rhwl.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
     @http.route("/tjs/list/",type="http",auth="user")
     def index_tjs_list(self,**kw):
         fname = os.path.join(os.path.split(__file__)[0],"html/tjs_list.html")
@@ -161,24 +169,17 @@ class WebClient(http.Controller):
 
         res=[]
 
-        gtids = pd.get("gtids",[])
-        if gtids:
-            snp_db = self._get_cursor("snps")
-            genes_db = self._get_cursor("genes")
-            for g in gtids:
-                snp_ids = snp_db.snps.find({"gtid":{'$in':[g] } } )
-                rsid=[]
-                genes=[]
-                for i in snp_ids:
-                    rsid.append(i["_id"])
-
-                if rsid:
-                    rsid_ids = genes_db.rsid2genes.find({"_id":{'$in':rsid}})
-                    for i in rsid_ids:
-                        genes = genes + i.get("gene")
-                    if genes:
-                        for i in genes_db.geneFunctions.find({"_id":{'$in':genes}}):
-                            res.append([g,i["_id"],i["fullname"],i["function"]["pathway_go"],i["function"]["summary"]])
+        susceptibility_db = self._get_cursor("susceptibility")
+        genes_db = self._get_cursor("genes")
+        for r in susceptibility_db.relations.find({'itm': pd.get("_id")}):
+            rsid= [r.get("rsid")]
+            genes=[]
+            rsid_ids = genes_db.rsid2genes.find({"_id":{'$in':rsid}})
+            for i in rsid_ids:
+                genes = genes + i.get("gene")
+            if genes:
+                for i in genes_db.geneFunctions.find({"_id":{'$in':genes}}):
+                    res.append([r.get("gtid"),i["_id"],i["fullname"],i["function"]["pathway_go"],i["function"]["summary"]])
 
         data = pd.get(kw.get("lang").encode("utf-8"))
         data["sex"] = pd.get("sex")

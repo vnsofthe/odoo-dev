@@ -116,7 +116,7 @@
                           var t_data = data[0];
                           var d_data = data[1];
                           var r_data = data[2];
-
+                            console.log(data)
                           document.title = data[1].title;
                           $.each(t_data,function(k,v){
                               for(var p in v){
@@ -140,7 +140,7 @@
                                         $("#disease_nav").append("<div class=\"col-lg-11 col-md-10\"><p name=\""+p+"\" id=\""+p+"\" >"+d_data[p]+"</p></div>");
 
                                   }else if(typeof v[p]=="object"){
-
+                                        var has_sex=false;
                                       $.each(v[p],function(k1,v1){
                                           if(k1==0){
                                               $("#disease_nav").append("<div class=\"col-lg-1 col-md-2\"><h4><label>"+v[p][0]["node"]+"</label></h4></div>")
@@ -152,14 +152,18 @@
                                                                             "</div>");
                                           }else{
 
-                                                if(v1["descriptionM"]!=undefined&&(d_data["sex"]=="M"||d_data["sex"]=="B")){
-                                                    var vv="";
-                                                    if(d_data[p]!=undefined&&d_data[p]["descriptionM"]!=undefined){
-                                                        vv=d_data[p]["descriptionM"];
+                                                if(v1["descriptionM"]!=undefined){
+                                                    if(d_data["sex"]=="M"||d_data["sex"]=="B"){
+                                                        var vv="";
+                                                        if(d_data[p]!=undefined&&d_data[p]["descriptionM"]!=undefined){
+                                                            vv=d_data[p]["descriptionM"];
+                                                        }
+                                                        $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_m\""+" aria-controls=\"sex_m\" role=\"tab\" data-toggle=\"tab\">男性</a></li>")
+                                                        $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_m\"><pre   name=\""+p+"_descriptionM\" id=\""+p+"_descriptionM\"  >"+vv+"</pre></div>")
                                                     }
-                                                    $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_m\""+" aria-controls=\"sex_m\" role=\"tab\" data-toggle=\"tab\">男性</a></li>")
-                                                    $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_m\"><pre   name=\""+p+"_descriptionM\" id=\""+p+"_descriptionM\"  >"+vv+"</pre></div>")
+                                                    has_sex = true;
                                                 }
+
                                           }
                                       });
                                       $.each(v[p],function(k1,v1){
@@ -171,9 +175,25 @@
                                                     }
                                                     $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_f\""+" aria-controls=\"sex_f\" role=\"tab\" data-toggle=\"tab\">女性</a></li>")
                                                     $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_f\"><pre   name=\""+p+"_descriptionF\" id=\""+p+"_descriptionF\"  >"+vv+"</pre></div>")
+                                                  has_sex = true;
                                                 }
                                           }
                                       });
+                                      if(!has_sex){
+                                          $.each(v[p],function(k1,v1){
+                                              if(k1>0){
+                                                  if(v1["description"]!=undefined){
+                                                        var vv="";
+                                                        if(d_data[p]!=undefined&&d_data[p]["description"]!=undefined){
+                                                            vv=d_data[p]["description"];
+                                                        }
+                                                        $("#myTabs_"+p).append("<li role=\"presentation\" ><a href=\"#myContent_"+p+"_f\""+" aria-controls=\"sex_f\" role=\"tab\" data-toggle=\"tab\">男女适应</a></li>")
+                                                        $("#myContent_"+p).append("<div role=\"tabpanel\" class=\"tab-pane\" id=\"myContent_"+p+"_f\"><pre   name=\""+p+"_description\" id=\""+p+"_description\"  >"+vv+"</pre></div>")
+                                                      has_sex = true;
+                                                    }
+                                              }
+                                          });
+                                      }
                                       $('#myTabs_'+p+' a:first').tab('show')
                                   }
 
