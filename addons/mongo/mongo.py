@@ -66,6 +66,14 @@ class WebClient(http.Controller):
         f.close()
         return ''.join(html)
 
+    @http.route("/rhwl/list/",type="http",auth="user")
+    def index_rhwl_list(self,**kw):
+        fname = os.path.join(os.path.split(__file__)[0],"html/rhwl_list.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
     @http.route("/tjs/detail/",type="http",auth="user")
     def index_tjs_detail(self,**kw):
         fname = os.path.join(os.path.split(__file__)[0],"html/tjs_detail.html")
@@ -135,26 +143,36 @@ class WebClient(http.Controller):
     @http.route("/web/api/mongo/get_list/",type='http', auth="public",website=True)
     def _get_list(self,**kw):
         db = self._get_cursor()
+        susceptibility_db = self._get_cursor("susceptibility")
+        genes_db = self._get_cursor("genes")
+
         content = db.products.find_one({"_id":kw.get("id").encode("utf-8")}) #取套餐数据
 
         tc = content.get(kw.get("lang").encode("utf-8"),{}).get("sets",{}).get(kw.get("tc").encode("utf-8"),{}) #取指定套餐内容
         #template = db.pagemodes.find_one({"_id":tc.get("xmlmode")}) # 取套餐模板
         category = self._get_common().get("category")
         res=[]
-
         result={}
+        snp_result=[]
         for k,v in tc.get("list").items():
             pd = db.prodata.find_one({"_id":v})
             if not pd:continue
             if not result.has_key(pd["category"]):
                 result[pd["category"]]=[]
             result[pd["category"]].append([k,pd.get(kw.get("lang")).get("title",""),pd.get("sex"),int(pd.get(kw.get("lang")).get("subclass").get("order"))*100+int(pd.get(kw.get("lang")).get("order")),pd.get(kw.get("lang")).get("subclass").get("name")])
+            for r in susceptibility_db.relations.find({'itm': pd.get("_id")}):
+                rsid= [r.get("rsid")]
+                genes=[]
+                rsid_ids = genes_db.rsid2genes.find({"_id":{'$in':rsid}})
+                for i in rsid_ids:
+                    for g in i.get("gene"):
+                        snp_result.append([pd.get(kw.get("lang")).get("title",""),r.get("gtid"),g])
 
         for i in tc.get("region"):
             result[i].sort(lambda x,y:cmp(x[3],y[3]))
             res.append([i,category.get(kw.get("lang")).get(i),result[i]])
 
-        response = request.make_response(json.dumps([tc["name"],res],ensure_ascii=False), [('Content-Type', 'application/json')])
+        response = request.make_response(json.dumps([tc["name"],res,snp_result],ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
     @http.route("/web/api/mongo/get_detail/",type='http', auth="public",website=True)
