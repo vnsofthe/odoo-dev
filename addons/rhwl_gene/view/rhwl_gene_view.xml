@@ -4,6 +4,7 @@
         <record model="ir.ui.view" id="rhwl_easy_genes_view_tree">
             <field name="name">rhwl.easy.genes.view.tree</field>
             <field name="model">rhwl.easy.genes</field>
+            <field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <tree string="易感基因" >
                     <field name="date"/>
@@ -163,7 +164,7 @@
             <field name="view_mode">tree_rhwl_gene_tjs_online,form</field>
             <field name="view_id" ref="rhwl_easy_genes_view_tree"/>
             <field name="context">{'search_default_type_draft':1,'search_default_type_exceptconfirm':1}</field>
-            <field name="domain">[('package','=','A')]</field>
+            <field name="domain">[('package','=','01')]</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                 </p>
@@ -179,7 +180,7 @@
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="rhwl_easy_genes_view_tree"/>
             <field name="context">{'search_default_type_draft':1,'search_default_type_exceptconfirm':1}</field>
-            <field name="domain">[('package','!=','A')]</field>
+            <field name="domain">[('package','!=','01')]</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                 </p>

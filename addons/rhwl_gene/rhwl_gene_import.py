@@ -69,24 +69,20 @@ class rhwl_import(osv.osv_memory):
             nrows = sh.nrows
             ncols = sh.ncols
             batch_no={}
-            if sh.cell_value(2,0)==u"检测套餐":
-                package_dict={
-                    u"易感基因检测":"A",u"尊享版":"B",u"升级版+":"C",u"优雅女士":"D",u"快乐儿童":"E",u"精英男士":"F"
-                }
+            if ncols>=7 and sh.cell_value(2,7)==u"产品类别":
                 for i in range(3,nrows):
                     if not sh.cell_value(i,0):continue
-                    date_col=self.date_trun(sh.cell_value(i,1))
-                    idt=sh.cell_value(i,5)
+                    date_col=self.date_trun(sh.cell_value(i,0))
+                    idt=sh.cell_value(i,4)
                     val={
                         "date":date_col,
-                        "cust_name":sh.cell_value(i,2).encode("utf-8").replace(".","·").replace("▪","·"),
-                        "sex": 'T' if sh.cell_value(i,3)==u"男" else 'F',
-                        "name":sh.cell_value(i,4),
+                        "cust_name":sh.cell_value(i,1).encode("utf-8").replace(".","·").replace("▪","·"),
+                        "sex": 'T' if sh.cell_value(i,2)==u"男" else 'F',
+                        "name":sh.cell_value(i,3),
                         "identity":idt,
                         "is_child":True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False,
-                        "receiv_date":self.datetime_trun(sh.cell_value(i,1)),
-                        "mobile":sh.cell_value(i,6),
-                        "package":package_dict[sh.cell_value(i,0)]
+                        "receiv_date":self.datetime_trun(sh.cell_value(i,5)),
+                        "package":sh.cell_value(i,8)
                     }
                     if idt and len(idt)==18:
                         try:
@@ -99,13 +95,13 @@ class rhwl_import(osv.osv_memory):
                         val["batch_no"]=batch_no.get(date_col).get(val["package"])
                     else:
                         cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') and package='%s' "%(val["package"]))
-                        max_no=val["package"]+"000"
+                        max_no=val["package"]+"-000"
                         for no in cr.fetchall():
                             max_no = no[0]
-                        if val["package"]=="A":
+                        if val["package"]=="01":
                             max_no=str(int(max_no)+1).zfill(3)
                         else:
-                            max_no=max_no[0]+str(int(max_no[1:])+1).zfill(3)
+                            max_no=max_no[0:3]+str(int(max_no[3:])+1).zfill(3)
                         batch_no[date_col][val["package"]]=max_no
                         val["batch_no"]=max_no
                     self.pool.get("rhwl.easy.genes").create(cr,uid,val,context=context)

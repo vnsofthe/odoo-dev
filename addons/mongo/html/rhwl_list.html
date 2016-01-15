@@ -21,12 +21,48 @@
 
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist" id="myTabs">
+            <li role="presentation" ><a href="#disease" aria-controls="disease" role="tab" data-toggle="tab">项目列表</a></li>
+            <li role="presentation" ><a href="#gtrs" aria-controls="gtrs" role="tab" data-toggle="tab">位点基因</a></li>
 
       </ul>
 
       <!-- Tab panes -->
       <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="disease"><table class="table table-striped"><thead><th>类别</th><th>名称</th><th>适应性别</th></thead><tbody></tbody></table></div>
+            <div role="tabpanel" class="tab-pane active" id="gtrs">
+                <br/>
+                <div class="row">
+                  <div class="col-lg-6">
+                    <div class="input-group">
+                      <input type="text" class="form-control" placeholder="输入搜索gt..." id="input_gene_search" onkeypress="if(event.keyCode==13||event.which==13){$('#btn_gene_search').click();return false;}">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="btn_gene_search">搜索</button>
+                      </span>
+                    </div><!-- /input-group -->
+                  </div><!-- /.col-lg-6 -->
 
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="alert alert-danger" role="alert" style="display: none" id="search_tips">
+
+                          <strong>提示!</strong> 查询条件不能为空。
+                      </div>
+                    </div>
+                </div>
+                <table class="table table-striped" id="rsgt" style="display:none">
+                    <thead>
+                        <th>rs号</th><th>gt号</th><th></th><th></th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <table class="table table-striped" id="listsnps">
+                    <thead>
+                        <th>疾病名称</th><th>位点名称</th><th>基因名称</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
       </div>
 
     </div>
@@ -48,8 +84,7 @@
                           document.title = data[0];
                           $.each(data[1],function(k,v){
                                 if(v[0]=='disease'){
-                                    $(".nav-tabs").append("<li role=\"presentation\" ><a href=\"#"+v[0]+"\" aria-controls=\""+v[0]+"\" role=\"tab\" data-toggle=\"tab\">项目列表</a></li>");
-                                    $(".tab-content").append("<div role=\"tabpanel\" class=\"tab-pane active\" id=\""+v[0]+"\"><table class=\"table table-striped\"><thead><th>类别</th><th>名称</th><th>适应性别</th></thead><tbody></tbody></table></div>");
+
                                       if(v[2].length>0){
                                           $.each(v[2],function(k1,v1){
                                               var s='男女均可';
@@ -65,20 +100,39 @@
                                 }
                           });
                           $.each(data[2],function(k,v){
-                              if(k==0){
-                                  $(".nav-tabs").append("<li role=\"presentation\" ><a href=\"#gtrs\" aria-controls=\"gtrs\" role=\"tab\" data-toggle=\"tab\">位点基因</a></li>");
-                                    $(".tab-content").append("<div role=\"tabpanel\" class=\"tab-pane active\" id=\"gtrs\"><table class=\"table table-striped\"><thead><th>疾病名称</th><th>位点名称</th><th>基因名称</th></thead><tbody></tbody></table></div>");
-                              }
-
-                              $("#gtrs table tbody").append("<tr><td>"+ v[0]+"</td><td>"+v[1]+"</td><td>"+ v[2]+"</td></tr>");
-
+                              $("#listsnps tbody").append("<tr><td>"+ v[0]+"</td><td>"+v[1]+"</td><td><a href=\"http://www.genecards.org/cgi-bin/carddisp.pl?gene="+v[2]+"\" target='_bank'>"+ v[2]+"</a></td></tr>");
                           });
                            $('#myTabs a:first').tab('show')
                       }
                 }
         );
 
-
+        $("#btn_gene_search").bind("click",function(e){
+            var no = $("#input_gene_search").val();
+            if(no==""){
+                $("#search_tips").show();
+                return;
+            }
+            $("#search_tips").hide();
+            $.ajax(
+                    {
+                        type: 'POST',
+                        url: "/web/api/mongo/get_rs_from_gt/?rs=" + no,
+                        data: {},
+                        success: function (data) {
+                            var has_data=false;
+                            $("#rsgt tbody tr").remove();
+                            $.each(data,function(k,v){
+                                  $("#rsgt tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td><td><a href=\"http://www.ncbi.nlm.nih.gov/SNP/snp_ref.cgi?searchType=adhoc_search&type=rs&rs=rs" target="_bank">SNPedia</a></td><td></td></tr>");
+                                has_data=true;
+                              });
+                            if(!has_data){
+                                $("#rsgt tbody").append("<tr><td></td><td>没有符合条件的资料</td></tr>");
+                            }
+                            $("#rsgt").show();
+                        }
+                    });
+        })
     </script>
   </body>
 </html>

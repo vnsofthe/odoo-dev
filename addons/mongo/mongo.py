@@ -206,7 +206,7 @@ class WebClient(http.Controller):
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
 
-    @http.route("/web/api/mongo/post_detail/",type="http",auth="public")
+    @http.route("/web/api/mongo/post_detail/",type="http",auth="user")
     def _post_detail(self,**kw):
         if not request.uid:
             return "权限不足"
@@ -250,7 +250,7 @@ class WebClient(http.Controller):
         response = request.make_response("数据提交成功，<a href=\"javascript:history.back(-2);\">后退</a>")
         return response.make_conditional(request.httprequest)
 
-    @http.route("/web/api/mongo/get_genes/",type="http",auth="public")
+    @http.route("/web/api/mongo/get_genes/",type="http",auth="user")
     def _get_genes(self,**kw):
         genes_db = self._get_cursor("genes")
         snps_db = self._get_cursor("snps")
@@ -267,6 +267,16 @@ class WebClient(http.Controller):
 
         for i in genes_db.geneFunctions.find({"_id":{'$in':[re.compile(kw.get("no").encode("utf-8"))]}}):
             res.append(["--",i["_id"],i["fullname"],i["function"]["pathway_go"],i["function"]["summary"]])
+
+        response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/mongo/get_rs_from_gt/",type="http",auth="user")
+    def _get_rs_from_gt(self,**kw):
+        snps_db = self._get_cursor("snps")
+        res=[]
+        for i in snps_db.snps.find({"gtid":{"$in":[re.compile(kw.get("rs").encode("utf-8"))]}}):
+            res.append([i.get("_id"),i.get("gtid")])
 
         response = request.make_response(json.dumps(res,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)

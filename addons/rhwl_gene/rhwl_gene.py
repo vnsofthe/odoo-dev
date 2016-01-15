@@ -89,7 +89,7 @@ class rhwl_gene(osv.osv):
         "language":fields.selection([("CN",u"中文"),("EN",u"英文"),("RU",u"俄文"),("VN",u"越南文"),("MY",u"马来语"),("ID",u"印度尼西亚语"),("IN",u"印度")],u"报告语种"),
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
-        "package":fields.selection([("A",u"易感基因检测"),("B",u"尊享版"),("C",u"升级版+"),("D",u"优雅女士"),("E",u"快乐儿童"),("F",u"精英男士")],string=u"套餐"),
+        "package":fields.selection([("01",u"标准版"),("03",u"尊享版"),("02",u"升级版+"),("04",u"优雅女士"),("06",u"快乐儿童"),("05",u"精英男士")],string=u"产品类别"),
         "img": fields.binary(u"图片"),
         "img_atta":fields.many2one("ir.attachment","IMG"),
         "img_new":fields.related("img_atta","datas",type="binary"),
@@ -194,21 +194,8 @@ class rhwl_gene(osv.osv):
     }
 
     def init(self, cr):
-        ids = self.search(cr,SUPERUSER_ID,[("img","!=",False),("img_atta","=",False)])
-        for i in ids:
-            obj = self.browse(cr,SUPERUSER_ID,i)
-            val={
-                "name":obj.name,
-                "datas_fname":obj.name+".jpg",
-                "description":obj.name+" information to IMG",
-                "res_model":"rhwl.easy.genes",
-                "res_id":obj.id,
-                "create_date":fields.datetime.now,
-                "create_uid":SUPERUSER_ID,
-                "datas":obj.img,
-            }
-            atta_id = self.pool.get('ir.attachment').create(cr,SUPERUSER_ID,val)
-            self.write(cr,SUPERUSER_ID,obj.id,{"img_atta":atta_id})
+        ids = self.search(cr,SUPERUSER_ID,[("package","=","A")])
+        self.write(cr,SUPERUSER_ID,ids,{"package":"01"})
 
         ids = self.search(cr,SUPERUSER_ID,[("birthday","=",False)])
         for i in ids:
