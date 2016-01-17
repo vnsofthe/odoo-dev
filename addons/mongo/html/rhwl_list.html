@@ -123,7 +123,7 @@
                             var has_data=false;
                             $("#rsgt tbody tr").remove();
                             $.each(data,function(k,v){
-                                  $("#rsgt tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td><td><a href=\"http://www.ncbi.nlm.nih.gov/SNP/snp_ref.cgi?searchType=adhoc_search&type=rs&rs=rs" target="_bank">SNPedia</a></td><td></td></tr>");
+                                  $("#rsgt tbody").append("<tr><td>"+v[0]+"</td><td>"+v[1]+"</td><td><a href=\"http://www.ncbi.nlm.nih.gov/SNP/snp_ref.cgi?searchType=adhoc_search&type=rs&rs="+v[0]+"\" target=\"_bank\">dbSNP</a></td><td><a href=\"http://www.snpedia.com/index.php/"+v[0]+"\" target=\"_bank\">SNPedia</a></td></tr>");
                                 has_data=true;
                               });
                             if(!has_data){
