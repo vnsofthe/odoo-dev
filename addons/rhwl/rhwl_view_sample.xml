@@ -136,6 +136,7 @@
                                 <field name="cxys" options="{'no_open': True, 'no_create': True}" on_change="onchange_ys(lyyy,cxyy,cxys,'lyys')" attrs="{'readonly':['|',('state','=','done'),('state','=','checkok')]}"/>
                                 <field name="fzr"/>
                                 <field name="hospital_seq"/>
+                                <field name="batch_no" readonly="1"/>
                             </group>
                         </group>
 
@@ -414,7 +415,9 @@
                         <filter string="收样人员" icon="terp-partner" domain="[]" context="{'group_by':'receiv_user'}"/>
                         <filter string="样品区域(省)" icon="terp-partner" domain="[]" context="{'group_by':'state_id'}"/>
                         <filter string="采血日期" icon="terp-partner" domain="[]" context="{'group_by':'cx_date'}"/>
-                        <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="样本状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="检验状态" icon="terp-partner" domain="[]" context="{'group_by':'check_state'}"/>
+                        <filter string="批次" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                     </group>
                 </search>
             </field>

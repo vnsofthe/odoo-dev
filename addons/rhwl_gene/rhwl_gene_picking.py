@@ -780,7 +780,7 @@ class rhwl_picking(osv.osv):
         #统计需要转出的样本数据
         gene_ids=[]
         for i in obj.line:
-            if i.batch_kind=="resend":continue
+            #if i.batch_kind=="resend":continue
             for b in i.box_line:
                 for bl in b.detail:
                     gene_ids.append(bl.genes_id.id)

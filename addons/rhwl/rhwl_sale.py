@@ -139,7 +139,8 @@ class rhwl_sample_info(osv.osv):
         "has_invoice":fields.boolean(u"是否开发票"),
         "has_sms":fields.boolean(u"短信已通知",readonly=True,copy=False),
         "is_export":fields.boolean(u"结果是否导出",readonly=True,copy=False),
-        "check_center":fields.selection([("arud",u"安诺优达"),("xyyx",u"湘雅医学检验所"),("rhwl",u"人和未来")],string=u"检测中心")
+        "check_center":fields.selection([("arud",u"安诺优达"),("xyyx",u"湘雅医学检验所"),("rhwl",u"人和未来")],string=u"检测中心"),
+        "batch_no":fields.char(u"批次",size=10),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -433,6 +434,10 @@ class rhwl_sample_info(osv.osv):
                     else:
                         self.action_check_except(cr,uid,i.id,context=context)
                         sample_result["except"].append(i.name)
+
+                    #产生批号
+                    batch_no = "WC%s%s%s"%(time.gmtime().tm_year,time.gmtime().tm_mon,time.gmtime().tm_mday)
+                    self.write(cr,uid,i.id,{"batch_no":batch_no},context=context)
         return sample_result
 
     def get_all_library(self, cr, user, context=None):
