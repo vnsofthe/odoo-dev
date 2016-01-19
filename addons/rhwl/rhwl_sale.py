@@ -436,7 +436,7 @@ class rhwl_sample_info(osv.osv):
                         sample_result["except"].append(i.name)
 
                     #产生批号
-                    batch_no = "WC%s%s%s"%(time.gmtime().tm_year,time.gmtime().tm_mon,time.gmtime().tm_mday)
+                    batch_no = "WC%s"%(datetime.datetime.today().strftime("%Y%m%d"))
                     self.write(cr,uid,i.id,{"batch_no":batch_no},context=context)
         return sample_result
 

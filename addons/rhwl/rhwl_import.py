@@ -234,6 +234,8 @@ class rhwl_import(osv.osv):
                     'location_id':12,
                     'product_id':i.id,
                     "min_work_days":45,
+                    'product_min_qty':0,
+                    'product_max_qty':0,
                 }
                 if res_qty["value"]:
                     vals.update(res_qty["value"])
