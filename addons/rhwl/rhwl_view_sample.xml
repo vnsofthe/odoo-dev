@@ -176,11 +176,27 @@
                                     <group colspan="4">
                                         <field name="yfzjmc"/>
                                     </group>
-                                    <group colspan="12">
+                                    <group colspan="10">
                                         <field name="yfzjmc_no" placeholder="请输入证件号码"
                                                    on_change="onchange_zjmcno(yfzjmc_no,yfzjmc)"/>
                                     </group>
+                                    <group colspan="2">
+                                        <field name="single_post"/>
+                                    </group>
 
+                                    <group colspan="2">
+                                        <field name="yftelno" attrs="{'required':[('single_post','=',True)]}"/>
+                                    </group>
+                                    <group colspan="3">
+                                        <field name="yfjjlltel"/>
+                                    </group>
+
+                                    <group colspan="9">
+                                        <field name="yfpostaddr" attrs="{'required':[('single_post','=',True)]}"/>
+                                    </group>
+                                    <group colspan="2">
+                                        <field name="yfpostno"/>
+                                    </group>
 
                                 </group>
                                 <group col="18" string="医生填写">
@@ -247,19 +263,7 @@
                                             <field name="yftsqkbz"/>
                                         </group>
 
-                                        <group colspan="1">
-                                            <field name="yftelno"/>
-                                        </group>
-                                        <group colspan="2">
-                                            <field name="yfjjlltel"/>
-                                        </group>
 
-                                        <group colspan="2">
-                                            <field name="yfpostaddr"/>
-                                        </group>
-                                        <group colspan="1">
-                                            <field name="yfpostno"/>
-                                        </group>
 
                                     </group>
                                 </group>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_sale_back">
+            <field name="name">rhwl.sampleone.sale.back.tree</field>
+            <field name="model">rhwl.sampleone.sale.back</field>
+            <field name="arch" type="xml">
+                    <tree>
+                        <field name="name"/>
+                        <field name="yfxm"/>
+                        <field name="cx_date"/>
+                        <field name="yfage"/>
+                        <field name="yfyzweek"/>
+                        <field name="yftelno"/>
+                        <field name="cxys"/>
+                        <field name="cxyy"/>
+                        <field name="back_done"/>
+                        <field name="back_pages"/>
+                        <field name="state"/>
+                    </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_sale_back_form">
+            <field name="name">rhwl.sampleone.sale.back.form</field>
+            <field name="model">rhwl.sampleone.sale.back</field>
+            <field name="arch" type="xml">
+                    <form>
+                        <header>
+                            <button name="action_state_confirm" type="object" string="退费中" states="draft"/>
+                            <button name="action_state_done" type="object" string="完成" states="confirm"/>
+                            <field name="state" widget="statusbar" readonly="1"/>
+                        </header>
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                    <field name="back_note"/>
+                                    <field name="back_done"/>
+                                    <field name="back_pages"/>
+                                    <field name="user_id"/>
+
+                                </group>
+                                <group>
+                                    <field name="yfxm"/>
+                                    <field name="yfzjmc_no"/>
+                                    <field name="cx_date"/>
+                                    <field name="yfage"/>
+                                    <field name="yfyzweek"/>
+                                    <field name="yftelno"/>
+                                    <field name="cxys"/>
+                                    <field name="cxyy"/>
+
+                                </group>
+                            </group>
+                            <group>
+                                <field name="note"/>
+                            </group>
+                        </sheet>
+                    </form>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_sale_back_search">
+            <field name="name">rhwl.sampleone.sale.back.search</field>
+            <field name="model">rhwl.sampleone.sale.back</field>
+            <field name="arch" type="xml">
+                <search string="Sample Express">
+                    <field name="name"/>
+                    <field name="yfxm"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_sale_back" model="ir.actions.act_window">
+            <field name="name">无创退费</field>
+            <field name="res_model">rhwl.sampleone.sale.back</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+    </data>
+</openerp>

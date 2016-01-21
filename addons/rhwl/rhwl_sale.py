@@ -141,6 +141,7 @@ class rhwl_sample_info(osv.osv):
         "is_export":fields.boolean(u"结果是否导出",readonly=True,copy=False),
         "check_center":fields.selection([("arud",u"安诺优达"),("xyyx",u"湘雅医学检验所"),("rhwl",u"人和未来")],string=u"检测中心"),
         "batch_no":fields.char(u"批次",size=10),
+        "single_post":fields.boolean(u"单独邮寄"),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -158,7 +159,14 @@ class rhwl_sample_info(osv.osv):
         "has_invoice":False,
         "has_sms":False,
         "is_export":False,
-        "check_center":"arud"
+        "check_center":"arud",
+        "yfcsjc":"0",
+        "yfyczk":"1",
+        "yfyyjrxccss":"0",
+        "yfzlfz":"0",
+        "yfynnytsx":"0",
+        "yfxbzl":"0",
+        "single_post":False,
     }
     _sql_constraints = [
         ('sample_number_uniq', 'unique(name)', u'样品编号不能重复!'),

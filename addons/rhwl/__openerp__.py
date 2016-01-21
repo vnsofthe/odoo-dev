@@ -61,6 +61,7 @@ CRM业务增加模块:
              "views/purchase_requisition.xml",
              "views/rhwl_sample_express.xml",
              "views/rhwl_account.xml",
+             "views/rhwl_sale_back.xml",
              "views/rhwl_menu.xml",
              "wizard/export_excel.xml",
 
