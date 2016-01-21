@@ -127,7 +127,7 @@ class rhwl_import(osv.osv_memory):
                     if batch_no.get(date_col):
                         val["batch_no"]=batch_no.get(date_col)
                     else:
-                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs' and package='A'")
+                        cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop='tjs' and package='01'")
                         max_no="0"
                         for no in cr.fetchall():
                             max_no = no[0]
