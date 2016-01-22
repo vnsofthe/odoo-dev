@@ -184,14 +184,14 @@
                                         <field name="single_post"/>
                                     </group>
 
-                                    <group colspan="2">
+                                    <group colspan="4">
                                         <field name="yftelno" attrs="{'required':[('single_post','=',True)]}"/>
                                     </group>
-                                    <group colspan="3">
+                                    <group colspan="4">
                                         <field name="yfjjlltel"/>
                                     </group>
 
-                                    <group colspan="9">
+                                    <group colspan="6">
                                         <field name="yfpostaddr" attrs="{'required':[('single_post','=',True)]}"/>
                                     </group>
                                     <group colspan="2">
