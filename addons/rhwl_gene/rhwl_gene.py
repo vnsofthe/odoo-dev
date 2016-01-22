@@ -190,7 +190,7 @@ class rhwl_gene(osv.osv):
         "export_img":False,
         "language":"CN",
         "ftp_upload":False,
-        "package":"A"
+        "package":"01"
     }
 
     def init(self, cr):
