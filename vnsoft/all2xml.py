@@ -13,7 +13,7 @@ import re
 def str2trans(s):
     if not s:return ""
     if isinstance(s,(long,int,float)):s=str(s)
-    s = s.replace("%","{\%}").replace("\n","\n\n").replace(u"Ⅰ","\\RNum{1}").replace(u"Ⅱ","\\RNum{2}").replace(u"Ⅲ","\\RNum{3}").replace(u"Ⅳ","\\RNum{4}").replace(u"Ⅴ","\\RNum{5}").replace(u"Ⅵ","\\RNum{6}").replace(u"Ⅶ","\\RNum{7}").replace(u"Ⅷ","\\RNum{8}").replace(u"Ⅸ","\\RNum{9}").replace(u"Ⅹ","\\RNum{10}").replace(u"Ⅺ","\\RNum{11}").replace(u"Ⅻ","\\RNum{12}").replace(u"ⅩⅢ","\\RNum{13}").replace(u"α", "\\textalpha ").replace(u"β", "\\textbeta ").replace(u"γ", "\\textgamma ").replace(u"μ", "\\textmu ").replace(u"δ", "\\textdelta ").replace(u"κ", "\\textkappa ").replace(u"≥","$\\geq$").replace(u"≤", "$\\leq$").replace(u"~", "\\textasciitilde ")
+    s = s.replace(u"{", "\\{").replace(u"}", "\\}").replace("%","{\%}").replace("\n","\n\n").replace(u"Ⅰ","\\RNum{1}").replace(u"Ⅱ","\\RNum{2}").replace(u"Ⅲ","\\RNum{3}").replace(u"Ⅳ","\\RNum{4}").replace(u"Ⅴ","\\RNum{5}").replace(u"Ⅵ","\\RNum{6}").replace(u"Ⅶ","\\RNum{7}").replace(u"Ⅷ","\\RNum{8}").replace(u"Ⅸ","\\RNum{9}").replace(u"Ⅹ","\\RNum{10}").replace(u"Ⅺ","\\RNum{11}").replace(u"Ⅻ","\\RNum{12}").replace(u"ⅩⅢ","\\RNum{13}").replace(u"α", "\\textalpha ").replace(u"β", "\\textbeta ").replace(u"γ", "\\textgamma ").replace(u"μ", "\\textmu ").replace(u"δ", "\\textdelta ").replace(u"κ", "\\textkappa ").replace(u"$", "\\$").replace(u"≥","$\\geq$").replace(u"≤", "$\\leq$").replace(u"~", "\\textasciitilde ").replace(u"_", "\\_").replace(u"#", "\\#").replace(u"/", "{/}")
     rgx = re.findall("\^(\D+)", s)
     for rg in rgx:
         s = s.replace("^", "\\^{}")
@@ -24,9 +24,10 @@ def str2trans(s):
 #        print ori
 #        print nwi
         s = s.replace(ori, nwi)
+    s = s.replace(u"【",u"\\vskip.6\\baselineskip\\noindent {\\bfseries\\wuhao 【")
+    s = s.replace(u"】",u"】}\\smallskip")
+    s = s.replace(u"腘", u"\mbox{\\scalebox{0.5}[1]{月 }\\kern-.15em\\scalebox{0.75}[1]{国}}")
     return s
-	#.replace("%","{\%}").replace("\n","\n\n").replace(u"Ⅰ","\\RNum{1}").replace(u"Ⅱ","\\RNum{2}").replace(u"Ⅲ","\\RNum{3}").replace(u"Ⅳ","\\RNum{4}").replace(u"Ⅴ","\\RNum{5}").replace(u"Ⅵ","\\RNum{6}").replace(u"Ⅶ","\\RNum{7}").replace(u"Ⅷ","\\RNum{8}").replace(u"Ⅸ","\\RNum{9}").replace(u"Ⅹ","\\RNum{10}").replace(u"Ⅺ","\\RNum{11}").replace(u"Ⅻ","\\RNum{12}").replace(u"ⅩⅢ","\\RNum{13}").replace(u"α", "\\textalpha ").replace(u"β", "\\textbeta ").replace(u"γ", "\\textgamma ").replace(u"μ", "\\textmu ").replace(u"δ", "\\textdelta ").replace(u"κ", "\\textkappa ").replace(u"≥","$\\geq$").replace(u"≤", "$\\leq$").replace(u"~", "\\textasciitilde ").replace(u"10^9/L", "10$^{9}$/L").replace(u"^2", "$^{2}$").replace(u"^3", "$^{3}$")
-	#.replace(u"Ⅰ","I").replace(u"Ⅲ","III").replace(u"Ⅱ","II").replace(u"Ⅳ","IV").replace(u"Ⅵ","VI").replace(u"Ⅶ","VII").replace(u"Ⅸ","IX").replace(u"Ⅺ","XI").replace(u"β","beta")
     
 def image_resize(f):
     img = Image.open(f)
@@ -53,10 +54,12 @@ def dict2file(pd,pm,lang):
     if not pd.has_key("_id"):return
     opt = etree.Element("opt")
     etree.SubElement(opt, "id").text=pd.get("_id")
+    etree.SubElement(opt, "oriid").text=pd.get("oriid")
     lang_element = etree.SubElement(opt, lang)
     check_dir(os.path.join(sys.argv[5],pd["category"]))
     l_path = check_dir(os.path.join(os.path.join(sys.argv[5],pd["category"]),lang)) #判断目录是否存在
 
+#    print pd.get("_id")
     for l in pm:
         for k,v in l.items():
             if k=="sex":
@@ -65,7 +68,7 @@ def dict2file(pd,pm,lang):
                 pic_path= os.path.join(l_path,"pic")
                 check_dir(pic_path)
                 if  pd.get(lang).get("pic",{}).get("base64"):
-                    imgname= pic_path+"/section_"+pd.get("_id").replace("'","").replace("`","").replace(" ","")+"."+(pd.get(lang).get("pic").get("mimetype").split("/")[1])
+                    imgname= pic_path+"/section_"+pd.get("oriid").replace("'","").replace("`","").replace(" ","")+"."+(pd.get(lang).get("pic").get("mimetype").split("/")[1])
                     fimg = open(imgname,"wb")
                     pic_base64 = pd.get(lang).get("pic").get("base64")
                     fimg.write(pic_base64.decode('base64','strict'))
@@ -74,15 +77,24 @@ def dict2file(pd,pm,lang):
                 else:
                     etree.SubElement(lang_element,"pic")
             elif isinstance(v,(type(u""),)):
-                etree.SubElement(lang_element,k).text=str2trans(pd[lang][k])
+                etree.SubElement(lang_element,k).text=str2trans(pd[lang].get(k, ""))
             elif isinstance(v,(list,)):
                 ele = etree.SubElement(lang_element,k)
                 for e in v:
                     if e.has_key("node"):continue
                     etree.SubElement(ele,e.keys()[0]).text = str2trans(pd.get(lang,{}).get(k,{}).get(e.keys()[0],""))
+
+    if pd.get(lang,{}).has_key("responses"):
+        responses = etree.SubElement(lang_element,"responses")
+        for i in pd.get(lang,{}).get("responses",[]):
+            response = etree.SubElement(responses,"response")
+            for k,v in i.items():
+                etree.SubElement(response,k).text=v
+
+    etree.SubElement(opt, "orititle").text=pd.get(lang).get("title")
     xml_path= os.path.join(l_path,"section")
     check_dir(xml_path)
-    f=open(xml_path+"/section_"+pd.get("_id").replace("'","").replace("`","").replace(" ","")+".xml","w")
+    f=open(xml_path+"/section_"+pd.get("oriid").replace("'","").replace("`","").replace(" ","")+".xml","w")
     f.write(etree.tostring(opt, encoding="utf-8", method="xml"))
     f.close()
 
@@ -115,4 +127,5 @@ if __name__=="__main__":
                 pagemode = pd.get("pagemode")
                 pm = db.pagemodes.find_one({"_id":pagemode})
                 dict2file(pd,pm.get("itms"),sys.argv[2].decode("utf-8"))
+
 
