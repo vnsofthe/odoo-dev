@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="rhwl_sample_picking_tree">
+            <field name="name">rhwl.sampleone.picking.tree</field>
+            <field name="model">rhwl.sample.picking</field>
+            <field name="arch" type="xml">
+                    <tree>
+                        <field name="name"/>
+                        <field name="batch_no"/>
+                        <field name="date"/>
+                        <field name="state"/>
+                    </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_sample_picking_form">
+            <field name="name">rhwl.sampleone.picking.form</field>
+            <field name="model">rhwl.sample.picking</field>
+            <field name="arch" type="xml">
+                    <form>
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="batch_no"/>
+                                </group>
+                                <group>
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                </group>
+                            </group>
+                            <notebook>
+                                <page string="样本明细">
+                                    <field name="line">
+                                        <tree string="样本明细" editable="top">
+                                            <field name="name"/>
+                                            <field name="yfxm"/>
+                                            <field name="cx_date"/>
+                                            <field name="yfage"/>
+                                            <field name="yfyzweek"/>
+                                            <field name="yftelno"/>
+                                            <field name="cxys"/>
+                                            <field name="cxyy"/>
+                                        </tree>
+                                     </field>
+                                </page>
+                                <page string="快递明细">
+                                    <field name="express">
+                                        <tree string="Express">
+                                            <field name="partner_id"/>
+                                            <field name="partner_text"/>
+                                            <field name="address"/>
+                                            <field name="mobile"/>
+                                            <field name="qty"/>
+                                            <field name="express_id"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                            </notebook>
+
+                        </sheet>
+                    </form>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="rhwl_sampleone_picking_search">
+            <field name="name">rhwl.sampleone.picking.search</field>
+            <field name="model">rhwl.sample.picking</field>
+            <field name="arch" type="xml">
+                <search string="Sample Express">
+                    <field name="name"/>
+                    <field name="user_id"/>
+                    <field name="line"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+                        <filter string="发件人" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+                        <filter string="发件日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_rhwl_sampleone_picking" model="ir.actions.act_window">
+            <field name="name">无创发货单</field>
+            <field name="res_model">rhwl.sample.picking</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+    </data>
+</openerp>

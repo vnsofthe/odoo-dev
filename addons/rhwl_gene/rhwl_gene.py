@@ -731,7 +731,12 @@ class rhwl_gene(osv.osv):
         if not data:return
         content = eval(data[0])
         package={
-            "01":"A"
+            "01":"01",
+            "02":"02",
+            "03":"03",
+            "04":"04",
+            "05":"05",
+            "06":"06"
         }
         batch_no={}
         for i in  content:
@@ -759,10 +764,10 @@ class rhwl_gene(osv.osv):
                 max_no=package.get(i["SampleCatalogCode"])+"000"
                 for no in cr.fetchall():
                     max_no = no[0]
-                if package.get(i["SampleCatalogCode"])=="A":
+                if package.get(i["SampleCatalogCode"])=="01":
                     max_no=str(int(max_no)+1).zfill(3)
                 else:
-                    max_no=max_no[0]+str(int(max_no[1:])+1).zfill(3)
+                    max_no=max_no[0:3]+str(int(max_no[3:])+1).zfill(3)
                 batch_no[date][package.get(i["SampleCatalogCode"])]=max_no
 
             self.create(cr,uid,{"name":i["SampleCode"],"receiv_date":i["RecivedTime"],"identity":i["IDNumber"],"cust_name":i["ClientName"],"sex":sex,"date":date,"cust_prop":cust_prop,"is_child":is_child,"birthday":birthday,"package":package.get(i["SampleCatalogCode"]),"batch_no":max_no},context=context)

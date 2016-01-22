@@ -141,7 +141,7 @@ class rhwl_sample_info(osv.osv):
         "is_export":fields.boolean(u"结果是否导出",readonly=True,copy=False),
         "check_center":fields.selection([("arud",u"安诺优达"),("xyyx",u"湘雅医学检验所"),("rhwl",u"人和未来")],string=u"检测中心"),
         "batch_no":fields.char(u"批次",size=10),
-        "single_post":fields.boolean(u"单独邮寄"),
+        "single_post":fields.boolean(u"邮寄本人"),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",

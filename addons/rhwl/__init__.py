@@ -16,3 +16,4 @@ import rhwl_purchase
 import rhwl_purchase_requisition
 import wizard
 import rhwl_sale_back
+import rhwl_sample_pick
