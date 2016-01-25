@@ -19,20 +19,32 @@
             <field name="model">rhwl.sample.picking</field>
             <field name="arch" type="xml">
                     <form>
+                        <header>
+                            <button name="action_state_confirm" states="draft" string="确认" type="object"
+                                groups="base.group_user"/>
+
+                            <button name="action_state_done" states="confirm" string="完成" type="object"
+                                groups="base.group_user"/>
+                            <button name="action_create_express" states="confirm" string="生成装箱明细" type="object"
+                                groups="base.group_user"/>
+                            <button name="action_send_sms" states="confirm" string="短信通知" type="object"
+                                groups="base.group_user"/>
+                            <field name="state" widget="statusbar" statusbar_visible="draft,confirm,done" readonly="1"/>
+                        </header>
                         <sheet>
                             <group>
                                 <group>
-                                    <field name="name"/>
-                                    <field name="batch_no"/>
+                                    <field name="name" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                    <field name="batch_no" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 </group>
                                 <group>
-                                    <field name="date"/>
-                                    <field name="user_id"/>
+                                    <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
+                                    <field name="user_id" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 </group>
                             </group>
                             <notebook>
                                 <page string="样本明细">
-                                    <field name="line">
+                                    <field name="line" attrs="{'readonly':[('state','!=','draft')]}">
                                         <tree string="样本明细" editable="top">
                                             <field name="name"/>
                                             <field name="yfxm"/>
@@ -46,7 +58,7 @@
                                      </field>
                                 </page>
                                 <page string="快递明细">
-                                    <field name="express">
+                                    <field name="express" attrs="{'readonly':1}">
                                         <tree string="Express">
                                             <field name="partner_id"/>
                                             <field name="partner_text"/>
@@ -54,6 +66,8 @@
                                             <field name="mobile"/>
                                             <field name="qty"/>
                                             <field name="express_id"/>
+                                            <button name="action_create_express" string="生成快递单" attrs="{'invisible':[('express_id','!=',False)]}" type="object"/>
+                                            <button name="action_open_express" string="打开快递单" attrs="{'invisible':[('express_id','=',False)]}" type="object"/>
                                         </tree>
                                     </field>
                                 </page>

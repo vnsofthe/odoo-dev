@@ -33,3 +33,6 @@ access_rhwl_material_cost,access_rhwl_material_cost,model_rhwl_material_cost,,1,
 access_rhwl_material_cost_line,access_rhwl_material_cost_line,model_rhwl_material_cost_line,,1,1,1,1
 access_rhwl_product_rs,access_rhwl_product_rs,model_rhwl_product_rs,,1,0,0,0
 access_rhwl_product_stock_rs,access_rhwl_product_stock_rs,model_rhwl_product_stock_rs,,1,0,0,0
+access_rhwl_sample_picking,access_rhwl_sample_picking,model_rhwl_sample_picking,,1,1,1,1
+access_rhwl_sample_picking_line,access_rhwl_sample_picking_line,model_rhwl_sample_picking_line,,1,1,1,1
+access_rhwl_sample_picking_express,access_rhwl_sample_picking_express,model_rhwl_sample_picking_express,,1,1,1,1
