@@ -429,7 +429,7 @@ class rhwl_export_excel(osv.osv_memory):
             ws.write(rows,1,i.hospital.name,style=style1)
             ws.write(rows,2,i.name,style=style1)
             ws.write(rows,3,i.cust_name,style=style1)
-            ws.write(rows,4,u"男" if i.sex==u"T" else u"女",style=style1)
+            ws.write(rows,4,u"男" if i.sex==u"M" else u"女",style=style1)
             ws.write(rows,5,True and i.identity or "",style=style1)
             ws.write(rows,6,i.except_note,style=style1)
             ws.write(rows,7,True and i.mobile or "",style=style1)
@@ -555,27 +555,30 @@ class rhwl_export_excel(osv.osv_memory):
         ids=context.get("active_ids")
         if isinstance(ids,(list,tuple)):
             ids.sort()
-
+        style1 = self.get_excel_style(font_size=11)
         w = xlwt.Workbook(encoding='utf-8')
         ws = w.add_sheet("Sheet1")
-        ws.write(0,0,u"姓名",style=self.get_excel_style(font_size=11))
-        ws.write(0,1,u"性别",style=self.get_excel_style(font_size=11)),
-        ws.write(0,2,u"样本编号",style=self.get_excel_style(font_size=11)),
-        ws.write(0,3,u"送检机构",style=self.get_excel_style(font_size=11)),
-        ws.write(0,4,u"检测项目",style=self.get_excel_style(font_size=11)),
+        ws.write(0,0,u"姓名",style=style1)
+        ws.write(0,1,u"性别",style=style1),
+        ws.write(0,2,u"样本编号",style=style1),
+        ws.write(0,3,u"身份证号",style=style1)
+        ws.write(0,4,u"送检机构",style=style1),
+        ws.write(0,5,u"检测项目",style=style1),
         ws.col(0).width = 4500 #1000 = 3.14(Excel)
         ws.col(2).width = 7000
-        ws.col(3).width = 8000
-        ws.col(4).width = 6000
+        ws.col(3).width = 7000
+        ws.col(4).width = 8000
+        ws.col(5).width = 6000
         rows=1
         seq=1
-        style1 = self.get_excel_style(font_size=11)
+
         for i in self.pool.get("rhwl.easy.genes.new").browse(cr,uid,ids,context=context):
             ws.write(rows,0,i.cust_name,style=style1)
             ws.write(rows,1,u"男" if i.sex==u"M" else u"女",style=style1)
             ws.write(rows,2,i.name,style=style1)
-            ws.write(rows,3,i.hospital.name,style=style1)
-            ws.write(rows,4,i.package_id.name,style=style1)
+            ws.write(rows,3,i.identity,style=style1)
+            ws.write(rows,4,i.hospital.name,style=style1)
+            ws.write(rows,5,i.package_id.name,style=style1)
             rows +=1
 
         w.save(xlsname)
