@@ -173,7 +173,12 @@ class rhwl_export_excel(osv.osv_memory):
         file_s=""
         file_e=""
         package_dict={
-                    "A":u"A本","B":u"尊享版","C":u"升级版+","D":u"优雅女士","E":u"快乐儿童","F":u"精英男士"
+                    "01":u"标准版",
+                    "03":u"尊享版",
+                    "02":u"升级版+",
+                    "04":u"优雅女士",
+                    "06":u"快乐儿童",
+                    "05":u"精英男士"
                 }
         for i in self.pool.get("rhwl.easy.genes").browse(cr,uid,ids,context=context):
             if not file_s:
@@ -298,7 +303,12 @@ class rhwl_export_excel(osv.osv_memory):
         file_s=""
         file_e=""
         package_dict={
-                    "A":u"A本","B":u"尊享版","C":u"升级版+","D":u"优雅女士","E":u"快乐儿童","F":u"精英男士"
+                    "01":u"标准版",
+                    "03":u"尊享版",
+                    "02":u"升级版+",
+                    "04":u"优雅女士",
+                    "06":u"快乐儿童",
+                    "05":u"精英男士"
                 }
         for i in self.pool.get("rhwl.easy.genes").browse(cr,uid,ids,context=context):
             if not file_s:
