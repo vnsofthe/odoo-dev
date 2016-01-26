@@ -422,6 +422,7 @@
                         <filter string="样本状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="检验状态" icon="terp-partner" domain="[]" context="{'group_by':'check_state'}"/>
                         <filter string="批次" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
+                        <filter string="检测中心" icon="terp-partner" domain="[]" context="{'group_by':'check_center'}"/>
                     </group>
                 </search>
             </field>
