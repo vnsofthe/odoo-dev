@@ -687,7 +687,7 @@ class rhwl_gene(osv.osv):
     def ftp_uploads(self,cr,uid,ids,context=None):
         ids = self.search(cr,uid,[("state","=","done"),("ftp_upload","=",False),("cust_prop","in",["tjs","tjs_vip"])],limit=100)
         for i in self.browse(cr,uid,ids,context=context):
-            os.system("scp /data/odoo/file/report/%s*.pdf rhwlwz@222.240.161.194:/home/rhwlwz/ftp/"%(i.name.encode("utf-8"),))
+            os.system("scp /data/odoo/file/report/%s*.pdf rhwlwz@119.39.48.126:/home/rhwlwz/ftp/"%(i.name.encode("utf-8"),))
             self.write(cr,uid,i.id,{"ftp_upload":True})
 
     #导出样本位点数据到报告生成服务器
@@ -748,6 +748,7 @@ class rhwl_gene(osv.osv):
             date = i["CreatedTime"].split(" ")[0]
             cust_prop = i["IsVIP"]==u"否" and "tjs" or "tjs_vip"
             idt = i["IDNumber"]
+
             is_child = True if len(idt)==18 and int(idt[6:10])>=(datetime.datetime.today().year-12) and int(idt[6:10])<(datetime.datetime.today().year) else False
             birthday = False
             if idt and len(idt)==18:
@@ -761,9 +762,10 @@ class rhwl_gene(osv.osv):
                 max_no=batch_no.get(date).get(package.get(i["SampleCatalogCode"]))
             else:
                 cr.execute("select max(batch_no) from rhwl_easy_genes where cust_prop in ('tjs','tjs_vip') and package='%s' "%(package.get(i["SampleCatalogCode"])))
-                max_no=package.get(i["SampleCatalogCode"])+"000"
+                max_no=None
                 for no in cr.fetchall():
                     max_no = no[0]
+                if not max_no:max_no=package.get(i["SampleCatalogCode"])+"-000"
                 if package.get(i["SampleCatalogCode"])=="01":
                     max_no=str(int(max_no)+1).zfill(3)
                 else:
