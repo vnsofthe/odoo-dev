@@ -1,4 +1,5 @@
 div.oe_view_manager_view_chart-d3 {
+    display: none;
     height: 400px;
 }
 div.oe_chart_d3 {

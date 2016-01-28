@@ -12,12 +12,23 @@
         'base',
         'web',
         'web_graph',
-        'purchase'
     ],
-    'data': ["view/web_d3_chart.xml"],
-
+    'data': [
+    ],
+    'js': [
+        'static/lib/canvg/rgbcolor.js',
+        'static/lib/canvg/StackBlur.js',
+        'static/lib/canvg/canvg.js',
+        'static/lib/d3.min.js',
+        'static/lib/d3_chart.js',
+        'static/src/js/view_d3.js',
+    ],
     'qweb': [
         'static/src/xml/view_d3.xml',
+    ],
+    'css': [
+        'static/lib/d3_chart.css',
+        'static/src/css/view_d3.css',
     ],
     'installable': True,
     'application': False,

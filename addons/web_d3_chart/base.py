@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from openerp.osv import osv
-from openerp import models, fields, api, _
 from openerp.tools.translate import _
 from openerp.addons.base.ir.ir_actions import VIEW_TYPES
 from logging import getLogger
@@ -12,17 +11,20 @@ VIEW_TYPE = ('chart-d3', _('Chart D3'))
 VIEW_TYPES.append(VIEW_TYPE)
 
 
-class IrUiView(models.Model):
-    _inherit = 'ir.ui.view'
+class iruiview(osv.Model):
+    _name = "ir.ui.view"
+    _inherit = ['ir.ui.view']
 
-    type = fields.Selection(selection_add=[VIEW_TYPE,])
-    #def __init__(self, pool, cr):
-    #    res = super(IrUiView, self).__init__(pool, cr)
-    #    _logger.info(self._columns)
-    #    select = [k for k, v in self._columns['type'].selection]
-    #    if VIEW_TYPE[0] not in select:
-    #        self._columns['type'].selection.append(VIEW_TYPE)
-    #    return res
+    _columns={}
+
+    def __init__(self, pool,cr):
+        res = super(iruiview, self).__init__(pool,cr)
+        return res
+        #_logger.info(type(self._columns))
+        select = [k for k, v in self._columns['type'].selection]
+        if VIEW_TYPE[0] not in select:
+            self._columns['type'].selection.append(VIEW_TYPE)
+        return res
 
     def valid_type_chart_d3_field_exist(self, cr, uid, model, field,
                                         context=None):
@@ -37,7 +39,7 @@ class IrUiView(models.Model):
 
     def valid_type_chart_d3_options(self, cr, uid, arch, context=None):
         res = True
-        #TODO
+        # TODO
         return res
 
     def valid_type_chart_d3_x_axis(self, cr, uid, arch, model, context=None):
