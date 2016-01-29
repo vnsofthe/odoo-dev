@@ -142,6 +142,9 @@ class rhwl_sample_info(osv.osv):
         "check_center":fields.selection([("arud",u"安诺优达"),("xyyx",u"湘雅医学检验所"),("rhwl",u"人和未来")],string=u"检测中心"),
         "batch_no":fields.char(u"批次",size=10),
         "single_post":fields.boolean(u"邮寄本人"),
+        "log":fields.one2many("sale.sampleone.log","parent_id",string="LOG",readonly=True),
+        "img_atta":fields.many2one("ir.attachment","IMG"),
+        "img_new":fields.related("img_atta","datas",type="binary"),
     }
     _defaults = {
         "state": lambda obj, cr, uid, context: "draft",
@@ -188,7 +191,7 @@ class rhwl_sample_info(osv.osv):
         else:
             max_id = cxyy_obj.partner_unid+'-1'
         vals["hospital_seq"]=max_id
-
+        vals["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
         return super(rhwl_sample_info,self).create(cr,uid,vals,context)
 
     def _check_zjno(self, cr, uid, ids, context=None):
@@ -474,10 +477,10 @@ class rhwl_sample_info(osv.osv):
             content = "%s%s[%s],接收时间：%s,%s" %(js["first"],js["keyword1"],js["keyword2"],js["keyword3"],js["remark"])
             self.pool.get("rhwl.weixin.base").send_qy_text(cr,user,"rhwlyy","is_sampleresult",content,context=context)
     def action_cancel(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'cancel'}, context=context)
+        self.write(cr, uid, ids, {'state': 'cancel',"log":[[0, 0, {"note": u"取消", "data": "cancel"}]]}, context=context)
 
     def action_cancel2draft(self,cr,uid,ids,context=None):
-        self.write(cr,uid,ids,{'state':'draft'},context=context)
+        self.write(cr,uid,ids,{'state':'draft',"log":[[0, 0, {"note": u"重置为草稿", "data": "reset"}]]},context=context)
 
     def action_sms(self,cr,uid,ids,context=None):
         for i in self.browse(cr,uid,ids,context=context):
@@ -492,20 +495,20 @@ class rhwl_sample_info(osv.osv):
                 res = self.pool.get("res.company").send_sms(cr,uid,i.yftelno,str )
                 if res.split('/')[0]!="000":
                     raise osv.except_osv(u"错误",u"短信发送错误，"+res)
-                self.write(cr,uid,i.id,{"has_sms":True},context=context)
+                self.write(cr,uid,i.id,{"has_sms":True,"log":[[0, 0, {"note": u"发送短信通知", "data": "sms"}]]},context=context)
 
     def action_check_ok(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok","library_date":fields.date.today()}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "ok","library_date":fields.date.today(),"log":[[0, 0, {"note": u"检测完成", "data": "library_ok"}]]}, context=context)
 
     def action_check_reused(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse',"library_date":fields.date.today()}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': 'reuse',"library_date":fields.date.today(),"log":[[0, 0, {"note": u"检测完成", "data": "reused"}]]}, context=context)
         for i in ids:
             if self.pool.get("sale.sampleone.reuse").search_count(cr,SUPERUSER_ID,[("name","=",i)],context=context)==0:
                 self.pool.get("sale.sampleone.reuse").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
             self.send_weixin(cr,uid,i,context=context)
 
     def action_check_except(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today()}, context=context)
+        self.write(cr, uid, ids, {'state': 'checkok','check_state': "except","library_date":fields.date.today(),"log":[[0, 0, {"note": u"检测完成", "data": "except"}]]}, context=context)
         if not isinstance(ids,(list,tuple)):ids=[ids]
         for i in ids:
             self.pool.get("sale.sampleone.exception").create(cr,SUPERUSER_ID,{"name":i,"state":'draft'},context=context)
@@ -622,7 +625,7 @@ class rhwl_sample_info(osv.osv):
         move_obj.action_done(cr,SUPERUSER_ID,move_id,context=context)
 
     def action_done(self, cr, uid, ids, context=None):
-        self.write(cr, uid, ids, {'state': 'done'}, context=context)
+        self.write(cr, uid, ids, {'state': 'done',"log":[[0, 0, {"note": u"确认", "data": "confirm"}]]}, context=context)
         cxys = self.browse(cr, uid, ids, context=context)
 
         #如果样品是重采血，则将原来的重采血样品状态改为已重采血
@@ -642,7 +645,7 @@ class rhwl_sample_info(osv.osv):
         order_line_id = self.pool.get("sale.order.line").search(cr,uid,[("order_id","=",order_obj.id)],context=context)
         self.pool.get("sale.order.line").write(cr,uid,order_line_id,{"price_unit":amt},context=context)
         self.pool.get("sale.order").write(cr,uid,order_id,{"partner_id":obj.lyys.id,"amount_untaxed":amt,"partner_invoice_id":obj.lyyy.id,"amount_total":amt,"partner_shipping_id":obj.lyys.id},context=context)
-        self.write(cr,uid,obj.id,{"cxyy":obj.lyyy.id,"cxys":obj.lyys.id},context=context)
+        self.write(cr,uid,obj.id,{"cxyy":obj.lyyy.id,"cxys":obj.lyys.id,"log":[[0, 0, {"note": u"替换采血医院", "data": "hospital"}]]},context=context)
 
     def get_year_count(self,cr,uid,context=None):
         ids = self.pool.get("res.partner").search(cr,uid,[("jnsjrs","!=",False)],context=context)
@@ -796,6 +799,48 @@ class rhwl_sample_info(osv.osv):
         send_text +=";".join(["%s:%s"%(x,sample_result[x]) for x in sample_result.keys()])
 
         self.pool.get("rhwl.weixin.base").send_qy_text(cr,uid,"rhwlyy","is_lims_state",send_text,context=context)
+
+    def _post_images(self,cr,uid,id,img,context=None):
+        val={}
+        val["log"] = [[0, 0, {"note": u"图片变更", "data": "img"}]]
+
+        if context.has_key("name"):
+            obj_name = context["name"]
+        else:
+            obj = self.browse(cr,SUPERUSER_ID,id,context=context)
+            obj_name = obj.name
+
+        vals={
+            "name":obj_name,
+            "datas_fname":obj_name+".jpg",
+            "description":obj_name+" information to IMG",
+            "res_model":"sale.sampleone",
+            "res_id":id[0],
+            "create_date":fields.datetime.now,
+            "create_uid":SUPERUSER_ID,
+            "datas":img,
+        }
+        atta_obj = self.pool.get('ir.attachment')
+        atta_id = atta_obj.create(cr,SUPERUSER_ID,vals)
+        val["img_atta"]=atta_id
+
+        return self.write(cr,uid,id,val,context=context)
+
+class rhwl_sample_log(osv.osv):
+    _name = "sale.sampleone.log"
+    _order = "date desc"
+    _columns = {
+        "parent_id": fields.many2one("sale.sampleone", "LOG",select=True),
+        "date": fields.datetime(u"时间"),
+        "user_id": fields.many2one("res.users", u"操作人员"),
+        "note": fields.text(u"作业说明"),
+        "data": fields.char("Data")
+    }
+
+    _defaults = {
+        "date": fields.datetime.now,
+        "user_id": lambda obj, cr, uid, context: uid,
+    }
 
 class rhwl_sample_lims(osv.osv):
     _name = "sale.sampleone.lims"

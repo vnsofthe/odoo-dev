@@ -354,7 +354,7 @@ class rhwl_import(osv.osv_memory):
 
                     loss_snp = self.pool.get("rhwl.genes.base.package")._check_snp(cr,uid,genes_obj.package_id.id,snp.values(),context=context)
                     if loss_snp:
-                        raise osv.except_osv(u"错误",u"套餐[%s]所需检测位点[%s]在本次导入不存在。"%(genes_obj.package_id.name,u",".join(loss_snp)))
+                        raise osv.except_osv(u"错误",u"样本[%s]检测套餐[%s]所需检测位点[%s]在本次导入不存在。"%(genes_obj.name,genes_obj.package_id.name,u",".join(loss_snp)))
                     is_checked_package.append(genes_obj.package_id.id)
 
                 self.pool.get("rhwl.easy.genes.new").write(cr,uid,id,{"log":[[0,0,{"note":u"导入位点数据","data":"SNP"}]]},context=context)

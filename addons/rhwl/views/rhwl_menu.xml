@@ -31,6 +31,14 @@
 
         <menuitem action="action_rhwl_material_cost" id="menu_rhwl_material_cost" name="物料月结" parent="account.menu_finance_periodical_processing" sequence="80" />
 
+        <record model="ir.actions.act_url" id="action_sale_sampleone_image">
+            <field name="name">Images</field>
+            <field name="url">/web/rhwl_sampleone/images/</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem id="menu_sale_sampleone_image" parent="menu_rhwl_sample_one" name="样本图像采集" sequence="15"
+                  action='action_sale_sampleone_image' groups="rhwl_base_sample"/>
+
     </data>
 
 </openerp>

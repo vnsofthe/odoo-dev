@@ -15,7 +15,10 @@ from openerp.tools.translate import _
 from .. import rhwl_sale,rhwl_sms
 from .. import rhwl_sf
 from lxml import etree
-
+import os
+import cStringIO
+import Image
+import base64
 STATE = {
     'done':u"完成",
     'progress':u"待确认",
@@ -566,6 +569,56 @@ class WebClient(http.Controller):
 
         response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
         return response.make_conditional(request.httprequest)
+
+    @http.route("/web/rhwl_sampleone/images/",type="http",auth="user")
+    def rhwl_sampleone_images(self,**kw):
+        fname = os.path.join(os.path.split(os.path.split(__file__)[0])[0],"static/webcam_wc.html")
+        f=open(fname,"r")
+        html=f.readlines()
+        f.close()
+        return ''.join(html)
+
+    @http.route("/web/rhwl_sampleone/get/",type="http",auth="user")
+    def get_rhwl_sampleone_detail(self,**kw):
+        registry = RegistryManager.get(request.session.db)
+        obj = registry.get("sale.sampleone")
+
+        with registry.cursor() as cr:
+            id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
+            if not id:
+                data={}
+            else:
+                res = obj.browse(cr,request.uid,id,context={'lang': "zh_CN",'tz': "Asia/Shanghai"})
+                data={
+                    "name":res.name,
+                    "hospital":res.cxyy.name,
+                    "doctor":res.cxys.name or "",
+                    "date":res.cx_date,
+                    "cust_name":res.yfxm,
+                    "identity":res.yfzjmc_no,
+                    "tel":res.yftelno or ""
+                }
+
+        response = request.make_response(json.dumps(data,ensure_ascii=False), [('Content-Type', 'application/json')])
+        return response.make_conditional(request.httprequest)
+
+    @http.route("/web/api/rhwl_sampleone/pic/",type="http",auth="user")
+    def rhwl_sampleone_imagepost(self,**kw):
+        registry = RegistryManager.get(request.session.db)
+        obj = registry.get("sale.sampleone")
+        with registry.cursor() as cr:
+            id = obj.search(cr,request.uid,[("name","=",kw.get("no"))])
+            if not id:
+                return "NO_DATA_FOUND"
+            file_like = cStringIO.StringIO(kw.get("img1").split(";")[-1].split(",")[-1].decode('base64','strict'))
+            img = Image.open(file_like)
+            img = img.transpose(Image.ROTATE_270)
+            val={"img":base64.encodestring(img.tostring("jpeg",img.mode))}
+
+            obj._post_images(cr,request.uid,id,val["img"],context={'lang': "zh_CN",'tz': "Asia/Shanghai","name":kw.get("no")})
+
+            return "OK"
+
 """<?xml version='1.0' encoding='UTF-8'?>
 <Response service="RouteService">
 <Head>OK</Head><Body><RouteResponse mailno="106119552844">
