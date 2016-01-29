@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="web_action_add_button.view_ir_actions_act_window_menu_tree">
+            <field name="name">ir.actions.act_window.menu.tree</field>
+            <field name="model">ir.actions.act_window.menu</field>
+            <field name="arch" type="xml">
+                <tree string="Menu of buttons in action" editable="bottom">
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="web_action_add_button.view_ir_actions_act_window_menu_search">
+            <field name="name">ir.actions.act_window.menu.search</field>
+            <field name="model">ir.actions.act_window.menu</field>
+            <field name="arch" type="xml">
+                <search string="Menu of buttons in action">
+                    <field name="name" select="True"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="web_action_add_button.act_open_ir_actions_act_window_menu_view">
+            <field name="name">Menu of buttons in action</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="res_model">ir.actions.act_window.menu</field>
+            <field name="search_view_id" ref="web_action_add_button.view_ir_actions_act_window_menu_search"/>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+        </record>
+        <menuitem id="menu_ir_actions_act_window_menu" 
+            parent="base.next_id_2"
+            sequence="20"
+            action="act_open_ir_actions_act_window_menu_view"/>
+
+
+        <record model="ir.ui.view" id="web_action_add_button.view_ir_actions_act_window_button_tree">
+            <field name="name">ir.actions.act_window.button.tree</field>
+            <field name="model">ir.actions.act_window.button</field>
+            <field name="arch" type="xml">
+                <tree string="Buttons to add in actions" editable="bottom">
+                    <field name="name"/>
+                    <field name="action_from_id"/>
+                    <field name="action_to_open_id"/>
+                    <field name="menu_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="web_action_add_button.view_ir_actions_act_window_button_search">
+            <field name="name">ir.actions.act_window.button.search</field>
+            <field name="model">ir.actions.act_window.button</field>
+            <field name="arch" type="xml">
+                <search string="Buttons to add in actions">
+                    <field name="name" select="True"/>
+                    <field name="action_from_id"/>
+                    <field name="action_to_open_id"/>
+                    <field name="menu_id"/>
+                    <field name="active"/>
+                </search>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="web_action_add_button.act_open_ir_actions_act_window_button_view">
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+            <field name="name">Buttons to add in actions</field>
+            <field name="res_model">ir.actions.act_window.button</field>
+            <field name="search_view_id" ref="web_action_add_button.view_ir_actions_act_window_button_search"/>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+        </record>
+        <menuitem id="menu_ir_actions_act_window_button" 
+            parent="base.next_id_2"
+            sequence="20"
+            action="act_open_ir_actions_act_window_button_view"/>
+
+        <record model="ir.ui.view" id="web_action_add_button.view_ir_actions_act_window_form">
+            <field name="name">ir.actions.act_window.form</field>
+            <field name="model">ir.actions.act_window</field>
+            <field name="inherit_id" ref="base.view_window_action_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/notebook/page/group[@string='Views']" position="after">
+                    <group string="Buttons settings">
+                        <field name="buttons_ids" colspan="4" nolabel="1" context="{'default_action_from_id': active_id}"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

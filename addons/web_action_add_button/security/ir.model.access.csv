@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_ir_actions_act_window_menu,access_ir_actions_act_window_menu,model_ir_actions_act_window_menu,,1,1,1,1
+access_ir_actions_act_window_button,access_ir_actions_act_window_button,model_ir_actions_act_window_button,,1,1,1,1
