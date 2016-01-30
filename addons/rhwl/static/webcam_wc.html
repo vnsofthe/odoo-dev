@@ -160,9 +160,7 @@
                 var img1=$('#img0');
 
                 var id=$("#doc-ipt-3").val();
-                var is_chk=$("#chk_confirm");
-                var excepttext=$("#except_text").val();
-                var except_type=$("select").val();
+
                 if(id==""){
                     alert("请扫描样品编码。");
                     $("#doc-ipt-3").focus();
@@ -171,7 +169,7 @@
                 $.ajax({
                   type: 'POST',
                   url: "/web/api/rhwl_sampleone/pic/",
-                  data: {img1:img1[0].src,no:id,is_confirm:is_chk[0].checked,etx:excepttext,etx_type:except_type},
+                  data: {img1:img1[0].src,no:id},
                   success: function(data){
                       if(data=="NO_DATA_FOUND"){
                           alert("样本编码在数据库不存在，请确认。");

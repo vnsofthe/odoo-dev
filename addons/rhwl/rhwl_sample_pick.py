@@ -43,9 +43,16 @@ class rhwl_picking(osv.osv):
 
     def action_send_sms(self,cr,uid,ids,context=None):
         obj = self.browse(cr,uid,ids,context=context)
+        err_count = 0
         for i in obj.line:
             if i.name.check_state=="ok" and (not i.name.has_sms):
-                self.pool.get("sale.sampleone").action_sms(cr,uid,i.name.id,context=context)
+                try:
+                    self.pool.get("sale.sampleone").action_sms(cr,uid,i.name.id,context=context)
+                except:
+                    err_count += 1
+        cr.commit()
+        if err_count>0:
+            raise osv.except_osv("ERROR",u"有[%s]笔短信没有发送成功，请检查孕妇姓名是否有生僻字。"%(err_count))
 
     def action_state_confirm(self,cr,uid,ids,context=None):
         if self.pool.get("rhwl.sample.picking.line").search_count(cr,uid,[("parent_id","=",ids)])==0:

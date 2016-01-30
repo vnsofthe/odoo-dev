@@ -163,7 +163,9 @@ class weixin(http.Controller):
 
     def replyWeiXin(self,toUser,fromUser,text,encrypt=False,AgentID=None,kw=None):
         """微信号统一回复方法"""
-        _logger.error((toUser,fromUser,text,encrypt,AgentID,kw))
+        #_logger.error((toUser,fromUser,text,encrypt,AgentID,kw))
+        if not isinstance(text,str):
+            text = str(text)
         if AgentID:
             temp = "<xml><ToUserName><![CDATA[%s]]></ToUserName><FromUserName><![CDATA[%s]]></FromUserName><CreateTime>%s</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[%s]]></Content><AgentID>"+AgentID+"</AgentID></xml>"
             temp = temp % (toUser,fromUser,time.time().__trunc__().__str__(),text.encode("utf-8"))
@@ -174,7 +176,7 @@ class weixin(http.Controller):
             sCorpID = "wx77bc43a51cdb049b"
             wxcpt=WXBizMsgCrypt.WXBizMsgCrypt(sToken,sEncodingAESKey,sCorpID)
             ret,sEncryptMsg=wxcpt.EncryptMsg(temp, sVerifyNonce, sVerifyTimeStamp)
-            _logger.error((ret,sEncryptMsg))
+            #_logger.error((ret,sEncryptMsg))
             if( ret!=0 ):
                return "ERR: EncryptMsg ret: " + ret
             return sEncryptMsg
