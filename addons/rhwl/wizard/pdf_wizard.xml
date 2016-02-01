@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_rhwl_sample_one_zip_excel" model="ir.ui.view">
+            <field name="name">rhwl.sample.one.zip</field>
+            <field name="model">rhwl.sample.one.zip</field>
+            <field name="arch" type="xml">
+               <form string="Merge Requisition">
+                   <field invisible="1" name="state"/>
+                   <field invisible="1" name="name"/>
+                    <group states="draft">
+                        <field name="file_bin" filename="name" />
+                    </group>
+
+                    <footer  states="draft">
+                        <button name="zip_upload" string="上传" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_rhwl_sample_one_zip" model="ir.actions.act_window">
+            <field name="name">无创检测报告上传</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">rhwl.sample.one.zip</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem action="action_rhwl_sample_one_zip" id="menu_rhwl_sample_one_zip" name="无创检测报告上传" parent="menu_rhwl_sample_two" sequence="20" groups="rhwl_manager_sample"/>
+
+
+    </data>
+</openerp>

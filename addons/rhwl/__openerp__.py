@@ -65,6 +65,7 @@ CRM业务增加模块:
              "views/rhwl_sample_pick.xml",
              "views/rhwl_menu.xml",
              "wizard/export_excel.xml",
+             "wizard/pdf_wizard.xml"
 
     ],
     "qweb":["static/src/xml/base.xml"],
