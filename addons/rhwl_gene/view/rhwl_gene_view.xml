@@ -152,6 +152,7 @@
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                         <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
+                        <filter string="套餐" icon="terp-partner" domain="[]" context="{'group_by':'package'}"/>
                     </group>
                 </search>
             </field>

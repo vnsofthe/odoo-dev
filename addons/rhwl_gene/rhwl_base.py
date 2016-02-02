@@ -165,3 +165,10 @@ class rhwl_barcode(osv.osv):
         "express":fields.char(u"快递公司",size=10),
         "express_no":fields.char(u"快递单号",size=15)
     }
+
+class rhwl_genes_base_package(osv.osv):
+    _name = "rhwl.tjs.genes.base.package"
+    _columns = {
+        "name":fields.char(u"名称",size=50,required=True),
+        "code":fields.char(u"代号",size=10,required=True)
+    }

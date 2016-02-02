@@ -90,6 +90,7 @@ class rhwl_gene(osv.osv):
         "cust_prop": fields.selection([("tjs", u"泰济生普通客户"), ("tjs_vip",u"泰济生VIP客户"),("employee", u"内部员工"), ("vip", u"内部VIP客户"), ("extra", u"外部人员")],
                                       string=u"客户属性"),
         "package":fields.selection([("01",u"标准版"),("03",u"尊享版"),("02",u"升级版+"),("04",u"优雅女士"),("06",u"快乐儿童"),("05",u"精英男士")],string=u"产品类别"),
+        "package_id":fields.many2one("rhwl.tjs.genes.base.package",string=u"检测项目"),
         "img": fields.binary(u"图片"),
         "img_atta":fields.many2one("ir.attachment","IMG"),
         "img_new":fields.related("img_atta","datas",type="binary"),
@@ -206,6 +207,8 @@ class rhwl_gene(osv.osv):
                     self.write(cr,SUPERUSER_ID,i,{"birthday":d})
                 except:
                     pass
+        #ids = self.search(cr,SUPERUSER_ID,[("package_id","=",False)])
+
 
     def create(self, cr, uid, val, context=None):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
@@ -216,6 +219,14 @@ class rhwl_gene(osv.osv):
     def write(self, cr, uid, id, val, context=None):
         if not context:
             context={}
+        if val.has_key("package") and (not val.has_key("package_id")):
+            p_id = self.pool.get("rhwl.tjs.genes.base.package").search(cr,uid,[("code","=",val.get("package"))])
+            p_obj = self.pool.get("rhwl.tjs.genes.base.package").browse(cr,uid,p_id,context=context)
+            val["packaage_id"] = p_obj.id
+        if val.has_key("package_id") and (not val.has_key("package")):
+            p_obj = self.pool.get("rhwl.tjs.genes.base.package").browse(cr,uid,val.get("package_id"))
+            val["package"] = p_obj.code
+
         if val.get("state","") in ("confirm",):
             obj = self.browse(cr,SUPERUSER_ID,id,context=context)
             identity = val.get("identity",obj.identity)
