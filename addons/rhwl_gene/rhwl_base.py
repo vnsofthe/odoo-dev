@@ -170,5 +170,6 @@ class rhwl_genes_base_package(osv.osv):
     _name = "rhwl.tjs.genes.base.package"
     _columns = {
         "name":fields.char(u"名称",size=50,required=True),
-        "code":fields.char(u"代号",size=10,required=True)
+        "code":fields.char(u"代号",size=10,required=True),
+        "report_no":fields.char(u"报告分析代号",size=5)
     }

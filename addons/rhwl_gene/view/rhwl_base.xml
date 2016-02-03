@@ -256,6 +256,7 @@
                 <tree string="T客户套餐维护" >
                     <field name="code"/>
                     <field name="name"/>
+                    <field name="report_no"/>
                 </tree>
             </field>
         </record>
@@ -270,6 +271,7 @@
                             <group>
                                 <field name="code"/>
                                 <field name="name"/>
+                                <field name="report_no"/>
                             </group>
                         </group>
                     </sheet>

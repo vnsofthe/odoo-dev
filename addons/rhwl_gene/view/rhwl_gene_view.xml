@@ -43,7 +43,7 @@
                                 <field name="name" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                                 <field name="date" attrs="{'readonly':[('state','!=','draft')]}"/>
                                 <field name="cust_name" attrs="{'readonly':[('state','not in',['draft','except_confirm'])]}"/>
-                                <field name="package" attrs="{'readonly':[('state','not in',['draft','except_confirm'])],'required':'1'}"/>
+                                <field name="package_id" attrs="{'readonly':[('state','not in',['draft','except_confirm'])],'required':'1'}"/>
                                 <field name="mobile"/>
                                 <field name="cust_prop" />
                                 <field name="language" />
@@ -152,7 +152,7 @@
                         <filter string="批号" icon="terp-partner" domain="[]" context="{'group_by':'batch_no'}"/>
                         <filter string="状态" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
                         <filter string="日期" icon="terp-partner" domain="[]" context="{'group_by':'date'}"/>
-                        <filter string="套餐" icon="terp-partner" domain="[]" context="{'group_by':'package'}"/>
+                        <filter string="套餐" icon="terp-partner" domain="[]" context="{'group_by':'package_id'}"/>
                     </group>
                 </search>
             </field>

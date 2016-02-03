@@ -208,6 +208,10 @@ class rhwl_gene(osv.osv):
                 except:
                     pass
         #ids = self.search(cr,SUPERUSER_ID,[("package_id","=",False)])
+        #for i in self.browse(cr,SUPERUSER_ID,ids):
+        #    pid = self.pool.get("rhwl.tjs.genes.base.package").search(cr,SUPERUSER_ID,[("code","=",i.package)])
+        #    self.write(cr,SUPERUSER_ID,i.id,{"package_id":pid[0]})
+
 
 
     def create(self, cr, uid, val, context=None):
