@@ -247,8 +247,8 @@ class rhwl_import(osv.osv_memory):
             for i in range(1,ncols):
                 v=sh.cell_value(0,i)
                 if not v:continue
-                if not rhwl_gene_check.snp_check.has_key(v):
-                    raise osv.except_osv(u"错误",u"转入数据中的位点名称[%s]不正确。" %(v,))
+                #if not rhwl_gene_check.snp_check.has_key(v):
+                    #raise osv.except_osv(u"错误",u"转入数据中的位点名称[%s]不正确。" %(v,))
                 snp[i]=v
 
             genes_ids=[]
@@ -278,13 +278,13 @@ class rhwl_import(osv.osv_memory):
                             v=old_type[snp.get(k)]
                         if this.is_over==False and old_type[snp.get(k)] != v:
                             raise osv.except_osv(u"错误",u"基因样本编码[%s]位点[%s]原来的值为[%s],现在的值为[%s],请确认原因。"%(no,snp.get(k),old_type[snp.get(k)],v))
-                    for s in list(v.replace("/","")):
-                        if rhwl_gene_check.snp_check[snp.get(k)].count(s)==0:
-                            raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
-                    if snp.get(k) in ('GSTM1','GSTT1') and len(v)!=1:
-                        raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
-                    if snp.get(k) not in ('GSTM1','GSTT1') and len(v)!=2:
-                        raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
+                    # for s in list(v.replace("/","")):
+                    #     if rhwl_gene_check.snp_check[snp.get(k)].count(s)==0:
+                    #         raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
+                    # if snp.get(k) in ('GSTM1','GSTT1') and len(v)!=1:
+                    #     raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
+                    # if snp.get(k) not in ('GSTM1','GSTT1') and len(v)!=2:
+                    #     raise osv.except_osv(u"错误",u"基因样本编码[%s]的位点[%s]数据是[%s]，不能通过检验。"%(no,snp.get(k),v))
 
                     val={
                         "genes_id":id[0],

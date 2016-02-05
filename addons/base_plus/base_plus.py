@@ -27,12 +27,15 @@ class base_plus(osv.osv):
             if model_name in registry:
                 model = registry[model_name]
                 if hasattr(model, method_name):
-                    msg =getattr(model, method_name)(cr, SUPERUSER_ID, *args)
+                    try:
+                        msg =getattr(model, method_name)(cr, SUPERUSER_ID, *args)
+                    except Exception,e:
+                        msg = e.message()
                     openerp.modules.registry.RegistryManager.signal_caches_change(cr.dbname)
                 else:
                     msg = "Method `%s.%s` does not exist." % (model_name, method_name)
             else:
                 msg = "Model `%s` does not exist." % model_name
-            return msg
+            return str(msg)
 
         return super(base_plus,self).action_text_input(self,cr,content,original,fromUser)

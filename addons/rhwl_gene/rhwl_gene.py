@@ -218,6 +218,12 @@ class rhwl_gene(osv.osv):
         val["log"] = [[0, 0, {"note": u"资料新增", "data": "create"}]]
         if not val.get("batch_no",None):
             val["batch_no"]=datetime.datetime.strftime(datetime.datetime.today(),"%m-%d")
+        if val.has_key("package") and (not val.has_key("package_id")):
+            p_id = self.pool.get("rhwl.tjs.genes.base.package").search(cr,uid,[("code","=",val.get("package"))])
+            val["packaage_id"] = p_id[0]
+        if val.has_key("package_id") and (not val.has_key("package")):
+            p_obj = self.pool.get("rhwl.tjs.genes.base.package").browse(cr,uid,val.get("package_id"))
+            val["package"] = p_obj.code
         return super(rhwl_gene, self).create(cr, uid, val, context=context)
 
     def write(self, cr, uid, id, val, context=None):
@@ -408,17 +414,30 @@ class rhwl_gene(osv.osv):
             self.write(cr,uid,i.id,{"log":[[0,0,{"note":u"图片导出","data":"expimg"}]],"export_img":True})
 
     #导出样本位点数据到报告生成服务器
-    def create_gene_type_file(self, cr, uid, ids, context=None):
+    def create_gene_type_file(self,cr,uid,ids,context=None):
         self.pool.get("rhwl.genes.picking").export_box_genes(cr,uid,context=context) #先导出已经分箱的样本
         self.export_genes_img(cr,uid,context=context) #导出图片信息
-        ids = self.search(cr, uid, [("state", "=", "ok"),("package","=","01"),("typ","!=",False)], order="batch_no,name",limit=200,context=context)
+        cr.execute("select package,count(*) from rhwl_easy_genes where state='ok' group by package")
+        for i in cr.fetchall():
+            self.create_gene_type_file_package(cr,uid,ids,i[0],context=context)
+
+    def create_gene_type_file_package(self, cr, uid, ids, package,context=None):
+
+        ids = self.search(cr, uid, [("state", "=", "ok"),("package","=",package),("typ","!=",False)], order="batch_no,name",limit=200,context=context)
         if not ids:return
 
         if isinstance(ids, (long, int)):
             ids = [ids]
         data = self.get_gene_type_list(cr,uid,ids,context=context)
-        snp_name = "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
+        if package=="01":
+            snp_name = "snp_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            fpath = os.path.join(os.path.split(__file__)[0], "static/remote/snp")
+        else:
+            pid = self.pool.get("rhwl.tjs.genes.base.package").search(cr,SUPERUSER_ID,[("code","=",package)])
+            pobj = self.pool.get("rhwl.tjs.genes.base.package").browse(cr,SUPERUSER_ID,pid,context=context)
+            snp_name = pobj.report_no+"_"+datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            fpath = os.path.join(os.path.split(__file__)[0], "static/tjs_new_remote/snp")
+
         fname = os.path.join(fpath, snp_name + ".txt")
         header=[]
         f = open(fname, "w+")
@@ -440,6 +459,7 @@ class rhwl_gene(osv.osv):
                     line_row.append(data[s][k][i])
                 f.write("\t".join(line_row) + '\n')
         f.close()
+        os.system("chmod 777 "+fname)
         self.action_state_report(cr, uid, ids, context=context)
         self.write(cr,uid,ids,{"snp_name":snp_name},context=context)
         js={
@@ -470,14 +490,21 @@ class rhwl_gene(osv.osv):
     #接收风险报告
     def get_gene_pdf_file(self, cr, uid, context=None):
         #_logger.warn("cron job get_gene_pdf_file")
+        pdf_files=[]
         model_path=os.path.split(__file__)[0]
         fpath = os.path.join(model_path, "static/remote/report")
+        for f in os.listdir(fpath):
+            pdf_files.append(os.path.join(fpath,f))
+        fpath = os.path.join(model_path, "static/tjs_new_remote/report")
+        for f in os.listdir(fpath):
+            pdf_files.append(os.path.join(fpath,f))
+
         tpath = os.path.join(model_path, "static/local/report")
         pdf_count = 0
         last_week = time.time() - 60*60*24*3
         self.pool.get("rhwl.genes.picking")._clear_picking_dict()
-        for f in os.listdir(fpath):
-            newfile = os.path.join(fpath, f)
+        for newfile in pdf_files:
+            #newfile = os.path.join(fpath, f)
             if not os.path.isdir(newfile):continue
             for f1 in os.listdir(newfile):
                 name_list = re.split("[_\.]",f1) #分解文件名称
