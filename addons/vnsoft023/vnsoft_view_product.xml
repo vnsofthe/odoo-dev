@@ -95,6 +95,7 @@
                 <xpath expr="//field[@name='state']" position="after">
                    <field name="shipped" />
                    <field name="invoiced" />
+                    <field name="is_purchase" />
                 </xpath>
             </field>
         </record>

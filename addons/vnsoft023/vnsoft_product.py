@@ -43,9 +43,25 @@ class vnsoft_sale_order(osv.osv):
             res[i.id] = self.num2chn(i.amount_total)
         return res
 
+    def _get_purchase(self,cr,uid,ids,prop,arg,context=None):
+        res={}
+        product_qty={}
+        for i in self.browse(cr,uid,ids,context=context):
+            purchase_order_ids = self.pool.get("purchase.order.line").search(cr,uid,[("order_id.origin","=",i.name),("order_id.state","not in",["draft","cancel"])])
+            if not purchase_order_ids:
+                res[i.id] = False
+            else:
+                res[i.id] = True
+                for p in self.pool.get("purchase.order.line").browse(cr,uid,purchase_order_ids,context=context):
+                    product_qty[p.product_id.id] = product_qty.get(p.product_id.id,0) + p.product_qty
+                for l in i.order_line:
+                    if l.product_uom_qty > product_qty.get(l.product_id.id,0):
+                        res[i.id] = False
+        return res
     _columns={
         "vn_delay":fields.char(u"货期",size=100),
         "chn_amount_total":fields.function(_chn_amt,type="char",string="chn amount total"),
+        "is_purchase":fields.function(_get_purchase,type="boolean",string=u"已采购"),
     }
 
 

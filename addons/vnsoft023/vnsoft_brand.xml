@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.view" id="vnsoft_brand_tree">
+            <field name="name">vnsoft.brand.tree</field>
+            <field name="model">vnsoft.brand</field>
+            <field name="arch" type="xml">
+                    <tree>
+                        <field name="name"/>
+                        <field name="website"/>
+                    </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="vnsoft_brand_form">
+            <field name="name">vnsoft.brand.form</field>
+            <field name="model">vnsoft.brand</field>
+            <field name="arch" type="xml">
+                    <form>
+                        <sheet>
+                            <group>
+                                <group>
+                                    <field name="name" attrs="{'required':1}"/>
+                                    <field name="content"/>
+                                </group>
+                                <group>
+                                    <field name="website"/>
+                                    <field name="note"/>
+                                </group>
+                            </group>
+                            <notebook>
+                                <page string="供应商">
+                                    <field name="brand_partner" domain="[('is_company','=',True)]"/>
+                                </page>
+                                <page string="产品">
+                                    <field name="brand_product"/>
+                                </page>
+                            </notebook>
+
+                        </sheet>
+                    </form>
+
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="vnsoft_brand_search">
+            <field name="name">vnsoft.brand.search</field>
+            <field name="model">vnsoft.brand</field>
+            <field name="arch" type="xml">
+                <search string="Sample Express">
+                    <field name="name"/>
+                    <field name="brand_partner"/>
+                    <field name="brand_product"/>
+                    <separator/>
+                    <group expand="0" string="分组">
+
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_vnsoft_brand" model="ir.actions.act_window">
+            <field name="name">品牌资料维护</field>
+            <field name="res_model">vnsoft.brand</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                </p>
+                <p>
+                    Click to start creating a new
+                </p>
+            </field>
+        </record>
+
+        <menuitem action="action_vnsoft_brand" id="menu_vnsoft_brand" name="品牌资料维护" parent="base.menu_product" sequence="40" />
+    </data>
+</openerp>
